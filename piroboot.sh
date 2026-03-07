@@ -97,6 +97,10 @@ tty_reset="$(tty_escape 0)"
 tty_underline="$(tty_escape "4;39")"
 tty_yellow="$(tty_escape 33)"
 
+# Tanaab based colors
+tty_tp="$(tty_escape '38;2;0;200;138')"    # #00c88a
+tty_ts="$(tty_escape '38;2;219;39;119')"   # #db2777"
+
 get_abs_dir() {
   local file="$1"
   cd "$(dirname "$file")" || exit 1
@@ -147,7 +151,7 @@ BREWFILE="${TANAAB_BREWFILE:-"./Brewfile"}"
 
 # @TODO: do we want to also allow for also just dotfile?
 # DOTPKGS="${TANAAB_DOTPKGS-"ai,git,ssh"}"
-# FORCE="${TANAAB_FORCE:-}"
+FORCE="${TANAAB_FORCE:-}"
 
 # @TODO: we need to make sure this is masked in any display
 # OP_AUTH="${TANAAB_OP_AUTH:-$OP_SERVICE_ACCOUNT_TOKEN}"
@@ -162,15 +166,15 @@ usage() {
   cat <<EOS
 Usage: ${tty_dim}[NONINTERACTIVE=1] [CI=1]${tty_reset} ${tty_bold}piroboot.sh${tty_reset} ${tty_dim}[options]${tty_reset}
 
-${tty_green}Options:${tty_reset}
+${tty_tp}Options:${tty_reset}
   --brewfile       installs brewfile ${tty_dim}[default: ${TARGET}]${tty_reset}
   --target         installs dotpkgs and identities relative to here ${tty_dim}[default: ${TARGET}]${tty_reset}
-  --version        shows version of this script ${tty_dim}[default: ${VERSION}]${tty_reset}
+  --version        shows version of this script
   --debug          shows debug messages
   -h, --help       displays this help message
   -y, --yes        runs with all defaults and no prompts, sets NONINTERACTIVE=1
 
-${tty_green}Environment Variables:${tty_reset}
+${tty_tp}Environment Variables:${tty_reset}
   NONINTERACTIVE   installs without prompting for user input
   CI               installs in CI mode (e.g. does not prompt for user input)
 
@@ -181,7 +185,12 @@ EOS
 }
 
 show_version() {
-  printf "%s\n" "$SCRIPT_VERSION)"
+  # @TODO: consolidate this with similar usage further down
+  if [[ -z "${SCRIPT_VERSION-}" ]]; then
+    SCRIPT_VERSION="$(git describe --tags --always --abbrev=1)"
+  fi
+
+  printf "%s\n" "$SCRIPT_VERSION"
   exit 0
 }
 
