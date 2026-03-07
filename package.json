@@ -1,0 +1,37 @@
+{
+  "name": "@pirog/me",
+  "description": "Bootstrap script and release tooling for pirog.me.",
+  "version": "0.1.0",
+  "author": "Mike Pirog @pirog",
+  "license": "MIT",
+  "repository": "https://github.com/pirog/me",
+  "bugs": "https://github.com/pirog/me/issues",
+  "homepage": "https://github.com/pirog/me",
+  "packageManager": "bun@1.3.4",
+  "engines": {
+    "bun": ">=1.3.4"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^10.1.1",
+    "eslint-import-resolver-exports": "^1.0.0-beta.5",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-prettier": "^5.2.3",
+    "prettier": "^3.5.3",
+    "shellcheck": "^2.2.0",
+    "shx": "^0.3.4",
+    "ua-parser-js": "^1.0.37"
+  },
+  "scripts": {
+    "build": "bun run build:dist && bun run build:versions",
+    "build:dist": "shx rm -rf ./dist && shx mkdir -p ./dist && shx cp -f ./piroboot.sh ./dist/piroboot.sh",
+    "build:versions": "bun ./versioner.js",
+    "lint": "eslint . --ext .js && shellcheck piroboot.sh",
+    "prepare": "bun run build"
+  }
+}
