@@ -103,7 +103,7 @@ tty_ts="$(tty_escape '38;2;219;39;119')"   # #db2777
 #
 # RUNNER_DEBUG is used here so we can get good debug output when toggled in GitHub Actions
 # see https://github.blog/changelog/2022-05-24-github-actions-re-run-jobs-with-debug-logging/
-DEBUG="${TANAAB_DEBUG:-${RUNNER_DEBUG:-}}"
+DEBUG="${TANAAB_DEBUG:-${DEBUG:-${RUNNER_DEBUG:-}}}"
 BREWFILE="${TANAAB_BREWFILE:-"./Brewfile"}"
 FORCE="${TANAAB_FORCE:-}"
 TARGET="${TANAAB_TARGET:-$HOME}"
@@ -234,6 +234,16 @@ default_homebrew_prefix() {
 # @TODO: do we want to also allow for also just dotfile?
 # DOTPKGS="${TANAAB_DOTPKGS-"ai,git,ssh"}"
 
+# core packages that should be present regardless of any user-provided Brewfile
+declare -a TANAAB_CORE_BREW_PACKAGES=(
+  "formula|git|git"
+  "cask|1password-cli|op"
+  "formula|curl|curl"
+  "formula|zsh|zsh"
+  "formula|jq|jq"
+  "formula|stow|stow"
+)
+
 # @TODO: we need to make sure this is masked in any display
 # OP_AUTH="${TANAAB_OP_AUTH:-$OP_SERVICE_ACCOUNT_TOKEN}"
 
@@ -256,11 +266,6 @@ if [[ -z "${USER-}" ]]; then
   export USER
 fi
 
-# Set debug
-if [[ "$DEBUG" == "1" ]]; then
-  TANAAB_DEBUG="--debug"
-fi;
-
 # redefine this one
 abort() {
   printf "${tty_red}ERROR${tty_reset}: %s\n" "$(chomp "$1")" >&2
@@ -278,15 +283,31 @@ chomp() {
   printf "%s" "${1/"$'\n'"/}"
 }
 
+debug_enabled() {
+  case "${DEBUG:-}" in
+    '' | 0 | false | FALSE | False | no | NO | No | off | OFF | Off)
+      return 1
+      ;;
+    *)
+      return 0
+      ;;
+  esac
+}
+
+# set debug-related envvars for child processes
+if debug_enabled; then
+  export HOMEBREW_DEBUG=1
+fi
+
 debug() {
-  if [[ -n "${DEBUG-}" ]]; then
+  if debug_enabled; then
     printf "${tty_dim}debug${tty_reset} %s\n" "$(shell_join "$@")" >&2
   fi
 }
 
 # shellcheck disable=SC2329
 debug_multi() {
-  if [[ -n "${DEBUG-}" ]]; then
+  if debug_enabled; then
     while read -r line; do
       debug "$1 $line"
     done <<< "$@"
@@ -350,6 +371,10 @@ unset BREW
 unset BREW_NEEDS_INSTALL
 
 declare -a PLANNED_ACTIONS=()
+declare -a CORE_BREW_FORMULAS_TO_INSTALL=()
+declare -a CORE_BREW_CASKS_TO_INSTALL=()
+declare -a CORE_BREW_CASK_DISPLAY_TO_INSTALL=()
+declare -a CORE_BREW_DISPLAY_TO_INSTALL=()
 
 plan_action() {
   PLANNED_ACTIONS+=("$1")
@@ -370,6 +395,25 @@ show_planned_actions() {
   local action
   for action in "${PLANNED_ACTIONS[@]}"; do
     log "  - ${action}"
+  done
+}
+
+finish_noop() {
+  log "${tty_bold}nothing to do.${tty_reset} no changes are needed right now."
+  exit 0
+}
+
+comma_join() {
+  local item
+  local first="1"
+
+  for item in "$@"; do
+    if [[ "${first}" == "1" ]]; then
+      printf "%s" "${item}"
+      first="0"
+    else
+      printf ", %s" "${item}"
+    fi
   done
 }
 
@@ -397,6 +441,14 @@ test_brew() {
   fi
 
   "$1" --version &>/dev/null
+}
+
+brew_formula_installed() {
+  "${BREW}" list --formula "$1" &>/dev/null
+}
+
+brew_cask_installed() {
+  "${BREW}" list --cask "$1" &>/dev/null
 }
 
 find_first_existing_parent() {
@@ -480,6 +532,23 @@ load_homebrew_shellenv() {
   BREW="${brew}"
 }
 
+queue_core_brew_package() {
+  local type="$1"
+  local package="$2"
+  local display="$3"
+
+  CORE_BREW_DISPLAY_TO_INSTALL+=("${display}")
+
+  if [[ "${type}" == "formula" ]]; then
+    CORE_BREW_FORMULAS_TO_INSTALL+=("${package}")
+  elif [[ "${type}" == "cask" ]]; then
+    CORE_BREW_CASKS_TO_INSTALL+=("${package}")
+    CORE_BREW_CASK_DISPLAY_TO_INSTALL+=("${display}")
+  else
+    abort "unknown core homebrew package type: ${type}"
+  fi
+}
+
 plan_homebrew() {
   BREW="$(find_homebrew || true)"
 
@@ -490,13 +559,13 @@ plan_homebrew() {
   fi
 
   BREW_NEEDS_INSTALL="1"
-  plan_action "${tty_tp}install${tty_reset} Homebrew using the official installer ${tty_dim}(expected prefix: ${HOMEBREW_PREFIX})${tty_reset}"
+  plan_action "${tty_tp}install${tty_reset} homebrew using the official installer ${tty_dim}(expected prefix: ${HOMEBREW_PREFIX})${tty_reset}"
 }
 
 install_homebrew() {
   local installer="${TANAAB_TMPDIR}/homebrew-install.sh"
 
-  log "Homebrew is not installed. Installing it now..."
+  log "homebrew is not installed. installing it now..."
   execute "${CURL}" \
     --fail \
     --location \
@@ -514,11 +583,51 @@ install_homebrew() {
 
   BREW="$(find_homebrew || true)"
   if [[ -z "${BREW}" ]]; then
-    abort "Homebrew install finished but \`brew\` could not be found afterwards."
+    abort "homebrew install finished but \`brew\` could not be found afterwards."
   fi
 
   load_homebrew_shellenv "${BREW}"
   debug "using Homebrew at ${BREW}"
+}
+
+plan_core_homebrew_packages() {
+  local entry
+  local type
+  local package
+  local display
+
+  CORE_BREW_FORMULAS_TO_INSTALL=()
+  CORE_BREW_CASKS_TO_INSTALL=()
+  CORE_BREW_CASK_DISPLAY_TO_INSTALL=()
+  CORE_BREW_DISPLAY_TO_INSTALL=()
+
+  for entry in "${TANAAB_CORE_BREW_PACKAGES[@]}"; do
+    IFS='|' read -r type package display <<< "${entry}"
+
+    if [[ "${BREW_NEEDS_INSTALL:-0}" == "1" ]]; then
+      queue_core_brew_package "${type}" "${package}" "${display}"
+    elif [[ "${type}" == "formula" ]] && ! brew_formula_installed "${package}"; then
+      queue_core_brew_package "${type}" "${package}" "${display}"
+    elif [[ "${type}" == "cask" ]] && ! brew_cask_installed "${package}"; then
+      queue_core_brew_package "${type}" "${package}" "${display}"
+    fi
+  done
+
+  if [[ "${#CORE_BREW_DISPLAY_TO_INSTALL[@]}" -gt 0 ]]; then
+    plan_action "${tty_tp}install${tty_reset} core homebrew packages: $(comma_join "${CORE_BREW_DISPLAY_TO_INSTALL[@]}")"
+  fi
+}
+
+install_core_homebrew_packages() {
+  if [[ "${#CORE_BREW_FORMULAS_TO_INSTALL[@]}" -gt 0 ]]; then
+    log "installing core homebrew formulas: $(comma_join "${CORE_BREW_FORMULAS_TO_INSTALL[@]}")"
+    execute "${BREW}" install "${CORE_BREW_FORMULAS_TO_INSTALL[@]}"
+  fi
+
+  if [[ "${#CORE_BREW_CASKS_TO_INSTALL[@]}" -gt 0 ]]; then
+    log "installing core homebrew casks: $(comma_join "${CORE_BREW_CASK_DISPLAY_TO_INSTALL[@]}")"
+    execute "${BREW}" install --cask "${CORE_BREW_CASKS_TO_INSTALL[@]}"
+  fi
 }
 
 refresh_permission_dirs() {
@@ -633,6 +742,12 @@ EOABORT
 fi
 
 plan_homebrew
+plan_core_homebrew_packages
+
+if ! have_planned_actions; then
+  finish_noop
+fi
+
 refresh_permission_dirs
 
 # @NOTE: in order to do what we want here does the user actually need to be a sudoer?
@@ -794,6 +909,8 @@ fi
 if [[ "${BREW_NEEDS_INSTALL:-0}" == "1" ]]; then
   install_homebrew
 fi
+
+install_core_homebrew_packages
 
 # FIN!
 exit 0

@@ -1,7 +1,6 @@
 
 tap "oven-sh/bun"
 
-brew "curl"
 brew "gh"
 brew "git"
 brew "jq"
