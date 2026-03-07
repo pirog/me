@@ -44,9 +44,6 @@ set -u
 # Allow `[[ -n "$(command)" ]]`, `func "$(command)"`, pipes, etc.
 # shellcheck disable=SC2312
 
-# GET THE LTF right away
-TANAAB_TMPFILE="$(mktemp -t tanaab.XXXXXX)"
-
 # CONFIG
 MACOS_OLDEST_SUPPORTED="26.0"
 REQUIRED_CURL_VERSION="7.41.0"
@@ -99,65 +96,17 @@ tty_yellow="$(tty_escape 33)"
 
 # Tanaab based colors
 tty_tp="$(tty_escape '38;2;0;200;138')"    # #00c88a
-tty_ts="$(tty_escape '38;2;219;39;119')"   # #db2777"
+# shellcheck disable=SC2034
+tty_ts="$(tty_escape '38;2;219;39;119')"   # #db2777
 
-get_abs_dir() {
-  local file="$1"
-  cd "$(dirname "$file")" || exit 1
-  pwd
-}
-
-detect_arch() {
-  local arch
-  arch="$(/usr/bin/uname -m || /usr/bin/arch || uname -m || arch)"
-  if [[ "${arch}" == "arm64" ]] || [[ "${arch}" == "aarch64" ]]; then
-    DETECTED_ARCH="arm64"
-  elif [[ "${arch}" == "x86_64" ]] || [[ "${arch}" == "x64" ]]; then
-    DETECTED_ARCH="x64"
-  else
-    DETECTED_ARCH="${arch}"
-  fi
-}
-
-detect_os() {
-  local os
-  os="$(uname)"
-  if [[ "${os}" == "Linux" ]]; then
-    DETECTED_OS="linux"
-  elif [[ "${os}" == "Darwin" ]]; then
-    DETECTED_OS="macos"
-  else
-    DETECTED_OS="${os}"
-  fi
-}
-
-# get sysinfo
-detect_arch
-detect_os
-
-# set defaults but allow envvars to be used
+# Set cheap defaults needed by usage/arg parsing first so --help/--version stay fast.
 #
 # RUNNER_DEBUG is used here so we can get good debug output when toggled in GitHub Actions
 # see https://github.blog/changelog/2022-05-24-github-actions-re-run-jobs-with-debug-logging/
-ARCH="${TANAAB_ARCH:-"$DETECTED_ARCH"}"
 DEBUG="${TANAAB_DEBUG:-${RUNNER_DEBUG:-}}"
-OS="${TANAAB_OS:-"$DETECTED_OS"}"
-HOMEBREW_PREFIX="${HOMEBREW_PREFIX:-"/opt/homebrew"}"
-
-# @TODO: do we want to allow for this to be a comma separated list that can broken into an arrray?
-# @TODO: also support for "BREWFILES"?
-# @TODO: allow for URL based files?
 BREWFILE="${TANAAB_BREWFILE:-"./Brewfile"}"
-
-# @TODO: do we want to also allow for also just dotfile?
-# DOTPKGS="${TANAAB_DOTPKGS-"ai,git,ssh"}"
 FORCE="${TANAAB_FORCE:-}"
-
-# @TODO: we need to make sure this is masked in any display
-# OP_AUTH="${TANAAB_OP_AUTH:-$OP_SERVICE_ACCOUNT_TOKEN}"
 TARGET="${TANAAB_TARGET:-$HOME}"
-
-TANAAB_TMPDIR=$(get_abs_dir "$TANAAB_TMPFILE")
 
 # preserve originals OPTZ
 ORIGOPTS="$*"
@@ -239,6 +188,67 @@ while [[ $# -gt 0 ]]; do
       ;;
   esac
 done
+
+get_abs_dir() {
+  local file="$1"
+  cd "$(dirname "$file")" || exit 1
+  pwd
+}
+
+detect_arch() {
+  local arch
+  arch="$(/usr/bin/uname -m || /usr/bin/arch || uname -m || arch)"
+  if [[ "${arch}" == "arm64" ]] || [[ "${arch}" == "aarch64" ]]; then
+    DETECTED_ARCH="arm64"
+  elif [[ "${arch}" == "x86_64" ]] || [[ "${arch}" == "x64" ]]; then
+    DETECTED_ARCH="x64"
+  else
+    DETECTED_ARCH="${arch}"
+  fi
+}
+
+detect_os() {
+  local os
+  os="$(uname)"
+  if [[ "${os}" == "Darwin" ]]; then
+    DETECTED_OS="macos"
+  else
+    DETECTED_OS="${os}"
+  fi
+}
+
+default_homebrew_prefix() {
+  local arch="$1"
+
+  if [[ "${arch}" == "arm64" ]]; then
+    echo "/opt/homebrew"
+  else
+    echo "/usr/local"
+  fi
+}
+
+# @TODO: do we want to allow for this to be a comma separated list that can broken into an arrray?
+# @TODO: also support for "BREWFILES"?
+# @TODO: allow for URL based files?
+
+# @TODO: do we want to also allow for also just dotfile?
+# DOTPKGS="${TANAAB_DOTPKGS-"ai,git,ssh"}"
+
+# @TODO: we need to make sure this is masked in any display
+# OP_AUTH="${TANAAB_OP_AUTH:-$OP_SERVICE_ACCOUNT_TOKEN}"
+
+# GET THE LTF right away once we know we are not exiting through usage/version.
+TANAAB_TMPFILE="$(mktemp -t tanaab.XXXXXX)"
+
+# derive the rest of the runtime defaults after argument parsing
+detect_arch
+detect_os
+
+ARCH="${TANAAB_ARCH:-"$DETECTED_ARCH"}"
+OS="${TANAAB_OS:-"$DETECTED_OS"}"
+HOMEBREW_PREFIX="${HOMEBREW_PREFIX:-"$(default_homebrew_prefix "$ARCH")"}"
+HOMEBREW_INSTALLER_URL="https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
+TANAAB_TMPDIR=$(get_abs_dir "$TANAAB_TMPFILE")
 
 # USER isn't always set so provide a fall back for the installer and subprocesses.
 if [[ -z "${USER-}" ]]; then
@@ -325,6 +335,7 @@ debug raw ARCH="$ARCH"
 debug raw BREWFILE="$BREWFILE"
 debug raw DEBUG="$DEBUG"
 debug raw FORCE="$FORCE"
+debug raw HOMEBREW_PREFIX="$HOMEBREW_PREFIX"
 debug raw TARGET="$TARGET"
 debug raw OS="$OS"
 debug raw USER="$USER"
@@ -335,6 +346,32 @@ debug raw TMPDIR="$TANAAB_TMPDIR"
 
 # precautions
 unset HAVE_SUDO_ACCESS
+unset BREW
+unset BREW_NEEDS_INSTALL
+
+declare -a PLANNED_ACTIONS=()
+
+plan_action() {
+  PLANNED_ACTIONS+=("$1")
+}
+
+have_planned_actions() {
+  [[ "${#PLANNED_ACTIONS[@]}" -gt 0 ]]
+}
+
+show_planned_actions() {
+  if ! have_planned_actions; then
+    return 0
+  fi
+
+  log "${tty_bold}this script is about to:${tty_reset}"
+  log
+
+  local action
+  for action in "${PLANNED_ACTIONS[@]}"; do
+    log "  - ${action}"
+  done
+}
 
 # shellcheck disable=SC2230
 find_tool() {
@@ -353,6 +390,15 @@ find_tool() {
   done < <(which -a "$1")
 }
 
+# shellcheck disable=SC2329
+test_brew() {
+  if [[ ! -x "$1" ]]; then
+    return 1
+  fi
+
+  "$1" --version &>/dev/null
+}
+
 find_first_existing_parent() {
   dir="$1"
 
@@ -361,6 +407,26 @@ find_first_existing_parent() {
   done
 
   echo "$dir"
+}
+
+find_homebrew() {
+  local candidate
+  local -a candidates=()
+
+  if [[ -n "${HOMEBREW_PREFIX-}" ]]; then
+    candidates+=("${HOMEBREW_PREFIX}/bin/brew")
+  fi
+
+  candidates+=("/opt/homebrew/bin/brew" "/usr/local/bin/brew")
+
+  for candidate in "${candidates[@]}"; do
+    if test_brew "${candidate}"; then
+      echo "${candidate}"
+      return 0
+    fi
+  done
+
+  find_tool brew
 }
 
 have_sudo_access() {
@@ -404,6 +470,63 @@ have_sudo_access() {
   fi
 
   return "${HAVE_SUDO_ACCESS}"
+}
+
+load_homebrew_shellenv() {
+  local brew="$1"
+
+  eval "$("${brew}" shellenv)"
+  HOMEBREW_PREFIX="$("${brew}" --prefix)"
+  BREW="${brew}"
+}
+
+plan_homebrew() {
+  BREW="$(find_homebrew || true)"
+
+  if [[ -n "${BREW}" ]]; then
+    load_homebrew_shellenv "${BREW}"
+    debug "using Homebrew at ${BREW}"
+    return 0
+  fi
+
+  BREW_NEEDS_INSTALL="1"
+  plan_action "${tty_tp}install${tty_reset} Homebrew using the official installer ${tty_dim}(expected prefix: ${HOMEBREW_PREFIX})${tty_reset}"
+}
+
+install_homebrew() {
+  local installer="${TANAAB_TMPDIR}/homebrew-install.sh"
+
+  log "Homebrew is not installed. Installing it now..."
+  execute "${CURL}" \
+    --fail \
+    --location \
+    --silent \
+    --show-error \
+    --output "${installer}" \
+    "${HOMEBREW_INSTALLER_URL}"
+  execute chmod +x "${installer}"
+
+  if [[ -n "${NONINTERACTIVE-}" ]]; then
+    execute env NONINTERACTIVE=1 CI="${CI:-1}" /bin/bash "${installer}"
+  else
+    execute env NONINTERACTIVE=1 /bin/bash "${installer}"
+  fi
+
+  BREW="$(find_homebrew || true)"
+  if [[ -z "${BREW}" ]]; then
+    abort "Homebrew install finished but \`brew\` could not be found afterwards."
+  fi
+
+  load_homebrew_shellenv "${BREW}"
+  debug "using Homebrew at ${BREW}"
+}
+
+refresh_permission_dirs() {
+  HOMEBREW_PERM_DIR="$(find_first_existing_parent "$HOMEBREW_PREFIX")"
+  PERM_DIR="$(find_first_existing_parent "$TARGET")"
+
+  debug "resolved Homebrew prefix ${HOMEBREW_PREFIX} to a perm check on ${HOMEBREW_PERM_DIR}"
+  debug "resolved install destination ${TARGET} to a perm check on ${PERM_DIR}"
 }
 
 major_minor() {
@@ -461,14 +584,10 @@ fi
 CURL=$(find_tool curl);
 debug "using the cURL at ${CURL}"
 
-# determine existing dir we need to check
-PERM_DIR="$(find_first_existing_parent "$TARGET")"
-debug "resolved install destination ${TARGET} to a perm check on ${PERM_DIR}"
-
 ####################################################################### version validation
 
 needs_sudo() {
-  if [[ ! -w "$HOMEBREW_PREFIX" ]] || [[ ! -w "$PERM_DIR" ]] || [[ ! -w "$TANAAB_TMPDIR" ]]; then
+  if [[ ! -w "$HOMEBREW_PERM_DIR" ]] || [[ ! -w "$PERM_DIR" ]] || [[ ! -w "$TANAAB_TMPDIR" ]]; then
     return 0;
   else
     return 1;
@@ -483,23 +602,11 @@ if [[ "${EUID:-${UID}}" == "0" ]]; then
   abort "Cannot run this script as root"
 fi
 
-# @NOTE: in order to do what we want here does the user actually need to be a sudoer?
-
-# abort if dir
-if needs_sudo && ! have_sudo_access; then
-  abort_multi "$(cat <<EOABORT
-${tty_bold}${USER}${tty_reset} cannot write to ${tty_red}${TARGET}${tty_reset} and is not a ${tty_bold}sudo${tty_reset} user!
-Rerun setup with a sudoer or use --target to install to a directory ${tty_bold}${USER}${tty_reset} can write to.
-For more information on advanced usage rerurn with --help or check out: ${tty_underline}${tty_magenta}https://docs.lando.dev/install${tty_reset}
-EOABORT
-)"
-fi
-
 # abort if unsupported os
-if [[ "${OS}" != "macos" ]] && [[ "${OS}" != "linux" ]]; then
+if [[ "${OS}" != "macos" ]]; then
   abort_multi "$(cat <<EOABORT
-This script is only for ${tty_green}macOS${tty_reset} and ${tty_green}Linux${tty_reset}! ${tty_red}${OS}${tty_reset} is not supported!
-For installation on other OSes check out: ${tty_underline}${tty_magenta}https://docs.lando.dev/install${tty_reset}
+This script is only for ${tty_green}macOS${tty_reset}. ${tty_red}${OS}${tty_reset} is not supported!
+Check the project README for current support details: ${tty_underline}${tty_magenta}https://github.com/pirog/me${tty_reset}
 EOABORT
 )"
 fi
@@ -507,8 +614,8 @@ fi
 # abort if unsupported arch
 if [[ "${ARCH}" != "x64" ]] && [[ "${ARCH}" != "arm64" ]]; then
   abort_multi "$(cat <<EOABORT
-Lando can only be installed on ${tty_green}x64${tty_reset} or ${tty_green}arm64${tty_reset} based systems!
-For requirements check out: ${tty_underline}${tty_magenta}https://docs.lando.dev/requirements${tty_reset}
+This script currently only supports ${tty_green}x64${tty_reset} and ${tty_green}arm64${tty_reset} systems.
+Check the project README for current support details: ${tty_underline}${tty_magenta}https://github.com/pirog/me${tty_reset}
 EOABORT
 )"
 fi
@@ -519,10 +626,24 @@ if [[ "${OS}" == "macos" ]]; then
   if ! version_compare "${macos_version}" "${MACOS_OLDEST_SUPPORTED}"; then
     abort_multi "$(cat <<EOABORT
 Your macOS version ${tty_red}${macos_version}${tty_reset} is ${tty_bold}too old${tty_reset}! Min required version is ${tty_green}${MACOS_OLDEST_SUPPORTED}${tty_reset}
-For requirements check out: ${tty_underline}${tty_magenta}https://docs.lando.dev/requirements${tty_reset}
+Check the project README for current support details: ${tty_underline}${tty_magenta}https://github.com/pirog/me${tty_reset}
 EOABORT
 )"
   fi
+fi
+
+plan_homebrew
+refresh_permission_dirs
+
+# @NOTE: in order to do what we want here does the user actually need to be a sudoer?
+
+if needs_sudo && ! have_sudo_access; then
+  abort_multi "$(cat <<EOABORT
+${tty_bold}${USER}${tty_reset} cannot write to ${tty_red}${TARGET}${tty_reset} or the expected Homebrew location ${tty_red}${HOMEBREW_PREFIX}${tty_reset} and is not a ${tty_bold}sudo${tty_reset} user!
+Rerun setup with a sudoer or use --target to install into a directory ${tty_bold}${USER}${tty_reset} can write to.
+For more information on advanced usage rerurn with --help or check out: ${tty_underline}${tty_magenta}https://github.com/pirog/me${tty_reset}
+EOABORT
+)"
 fi
 
 ####################################################################### pre-script warnings
@@ -583,7 +704,7 @@ wait_for_user() {
   trap 'stty sane; tput sgr0; echo; exit 1' SIGINT
 
   echo
-  echo "Press ${tty_bold}RETURN${tty_reset}/${tty_bold}ENTER${tty_reset} to continue or any other key to abort:"
+  echo "press ${tty_bold}RETURN${tty_reset}/${tty_bold}ENTER${tty_reset} to continue or any other key to abort:"
   getc c
   # we test for \r and \n because some stuff does \r instead
   if ! [[ "${c}" == $'\r' || "${c}" == $'\n' ]]; then
@@ -658,13 +779,9 @@ fi
 # Also sudo prints a warning message for no good reason
 cd "/usr" || exit 1
 
-# if running non-interactively then lets try to summarize what we are going to do
-if [[ -z "${NONINTERACTIVE-}" ]]; then
-  log "${tty_bold}this script is about to:${tty_reset}"
-  log
-  # @TODO: we need to collect requirements first so we can inform the user what is about to happen here
-
-  # block for user
+# summarize planned changes only when the user can still choose to continue
+if [[ -z "${NONINTERACTIVE-}" ]] && have_planned_actions; then
+  show_planned_actions
   wait_for_user
 fi
 
@@ -674,7 +791,9 @@ if needs_sudo; then
   execute_sudo true
 fi
 
-# Create directories if we need to
+if [[ "${BREW_NEEDS_INSTALL:-0}" == "1" ]]; then
+  install_homebrew
+fi
 
 # FIN!
 exit 0

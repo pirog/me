@@ -1,6 +1,6 @@
 # Me
 
-The purpose of `me` is to be able to seed a machine with a base set of packages, access, id and skills so as to approximate me.
+The purpose of `me` is to be able to seed a machine running `macos` version `26` or above with a base set of packages, access, id and skills so as to approximate me.
 
 Specifically this means installing, maintaining, updating and managing:
 
@@ -45,14 +45,10 @@ Some notes on advanced usage:
 If you do not wish to download the script you can set options with environment variables and `curl` the script.
 
 ```zsh
-LANDO_VERSION=stable
-LANDO_INSTALLER_ARCH=auto
-LANDO_INSTALLER_DEBUG=0
-LANDO_INSTALLER_DEST="~/.lando/bin"
-LANDO_INSTALLER_FAT=0
-LANDO_INSTALLER_OS=macos
-LANDO_INSTALLER_SETUP=auto
-LANDO_INSTALLER_SYSLINK=auto
+TANAAB_BREWFILE=Brewfile.base
+TANAAB_DEBUG=0
+TANAAB_TARGET="/somewhere-else"
+
 ```
 
 #### Examples
@@ -61,13 +57,12 @@ These are equivalent commands and meant to demostrate environment variable usage
 
 ```zsh
 # use envvars
-LANDO_VERSION=3.23.11 \
-LANDO_INSTALLER_DEBUG=1 \
-LANDO_INSTALLER_SYSLINK=1 \
-  /bin/bash -c "$(curl -fsSL https://boot.pirog.me/piroboot.sh)"
+TANAAB_BREWFILE=Brewfile.base \
+TANAAB_DEBUG=1 \
+  /bin/bash -c "$(curl -fsSL https://boot.pirog.me)"
 
 # invoke directly
-bash piroboot.sh --version "3.23.11" --debug --syslink
+bash piroboot.sh --brewfile Brewfile.base --debug
 ```
 
 ## Development
