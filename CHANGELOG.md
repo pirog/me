@@ -1,5 +1,9 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+- Fixed bug preventing `dist` files from being stored in `git`
+
+## v0.1.0 - [March 9, 2026](https://github.com/pirog/me/releases/tag/v0.1.0)
+
 - Added Bun-based build, lint, and release packaging that stamps versioned shell artifacts into `dist/`.
 - Added CI workflows for linting, release artifact validation, and a macOS smoke test of the bootstrap script.
 - Added companion `brewgen.sh` tooling to generate filtered Brewfiles from an existing Homebrew installation.
