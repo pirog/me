@@ -31,7 +31,7 @@
     "build": "bun run build:dist && bun run build:versions",
     "build:dist": "shx rm -rf ./dist && shx mkdir -p ./dist && shx cp -f ./piroboot.sh ./brewgen.sh ./dist/",
     "build:versions": "bun ./versioner.js",
-    "lint": "eslint . --ext .js && shellcheck piroboot.sh brewgen.sh",
+    "lint": "eslint . && shellcheck piroboot.sh brewgen.sh",
     "prepare": "bun run build"
   }
 }
