@@ -76,7 +76,6 @@ tty_yellow="$(tty_escape 33)"
 
 # Tanaab based colors
 tty_tp="$(tty_escape '38;2;0;200;138')"    # #00c88a
-# shellcheck disable=SC2034
 tty_ts="$(tty_escape '38;2;219;39;119')"   # #db2777
 
 # Set cheap defaults needed by usage/arg parsing first so --help/--version stay fast.
@@ -1264,7 +1263,14 @@ backup_dotpkg_conflicts() {
     backup_path="${DOTPKG_BACKUP_DIR}/${conflict_target}"
     auto_mkdirp "${DOTPKG_BACKUP_DIR}"
     auto_mkdirp "$(dirname "${backup_path}")"
-    auto_mv "${source_path}" "${backup_path}"
+
+    if [[ -L "${source_path}" ]] && [[ -e "${source_path}" ]]; then
+      auto_cp_follow "${source_path}" "${backup_path}"
+      auto_rm "${source_path}"
+    else
+      auto_mv "${source_path}" "${backup_path}"
+    fi
+
     moved_any="0"
   done
 
@@ -1570,6 +1576,33 @@ auto_mv() {
     execute_sudo mv -f "$source" "$dest"
   else
     execute mv -f "$source" "$dest"
+  fi
+}
+
+# shellcheck disable=SC2329
+auto_cp_follow() {
+  local source="$1"
+  local dest="$2"
+  local perm_dest
+  perm_dest="$(find_first_existing_parent "$dest")"
+
+  if have_sudo_access && [[ ! -w "$perm_dest" ]]; then
+    execute_sudo cp -RL "$source" "$dest"
+  else
+    execute cp -RL "$source" "$dest"
+  fi
+}
+
+# shellcheck disable=SC2329
+auto_rm() {
+  local path="$1"
+  local perm_dir
+  perm_dir="$(find_first_existing_parent "$path")"
+
+  if have_sudo_access && [[ ! -w "$perm_dir" ]]; then
+    execute_sudo rm -f "$path"
+  else
+    execute rm -f "$path"
   fi
 }
 
