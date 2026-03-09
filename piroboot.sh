@@ -78,6 +78,32 @@ tty_yellow="$(tty_escape 33)"
 tty_tp="$(tty_escape '38;2;0;200;138')"    # #00c88a
 tty_ts="$(tty_escape '38;2;219;39;119')"   # #db2777
 
+mask_secret_for_display() {
+  local value="$1"
+  local length="${#value}"
+  local prefix_length="4"
+  local suffix_length="4"
+  local suffix_start
+
+  if [[ -z "${value}" ]]; then
+    printf "none"
+    return 0
+  fi
+
+  if [[ "${length}" -le 4 ]]; then
+    printf "****"
+    return 0
+  fi
+
+  if [[ "${length}" -le 8 ]]; then
+    prefix_length="2"
+    suffix_length="2"
+  fi
+
+  suffix_start=$((length - suffix_length))
+  printf "%s...%s" "${value:0:${prefix_length}}" "${value:${suffix_start}:${suffix_length}}"
+}
+
 # Set cheap defaults needed by usage/arg parsing first so --help/--version stay fast.
 #
 # RUNNER_DEBUG is used here so we can get good debug output when toggled in GitHub Actions
@@ -87,6 +113,8 @@ FORCE="${TANAAB_FORCE:-}"
 TARGET="${TANAAB_TARGET:-$HOME}"
 BREWFILES_CSV="${TANAAB_BREWFILE:-}"
 DOTPKGS_CSV="${TANAAB_DOTPKG:-}"
+OP_TOKEN="${TANAAB_OP_TOKEN:-${OP_SERVICE_ACCOUNT_TOKEN:-}}"
+SSH_KEYS_CSV="${TANAAB_SSH_KEY:-}"
 
 # accommodate TANAAB_BREWFILES as well
 if [[ -n "${TANAAB_BREWFILES:-}" ]]; then
@@ -98,6 +126,11 @@ if [[ -n "${TANAAB_DOTPKGS:-}" ]]; then
   DOTPKGS_CSV="${DOTPKGS_CSV}${DOTPKGS_CSV:+,}${TANAAB_DOTPKGS}"
 fi
 
+# accommodate TANAAB_SSH_KEYS as well
+if [[ -n "${TANAAB_SSH_KEYS:-}" ]]; then
+  SSH_KEYS_CSV="${SSH_KEYS_CSV}${SSH_KEYS_CSV:+,}${TANAAB_SSH_KEYS}"
+fi
+
 # collect them all togethers with fallback if still empty
 if [[ -z "${BREWFILES_CSV}" ]] && [[ -f "./Brewfile" ]]; then
   BREWFILES_CSV="./Brewfile"
@@ -105,6 +138,13 @@ fi
 
 BREWFILES_CSV_DISPLAY="${BREWFILES_CSV:-none}"
 DOTPKGS_CSV_DISPLAY="${DOTPKGS_CSV:-none}"
+SSH_KEYS_CSV_DISPLAY="${SSH_KEYS_CSV:-none}"
+
+if [[ -n "${OP_TOKEN:-}" ]]; then
+  OP_TOKEN_DISPLAY="$(mask_secret_for_display "${OP_TOKEN}")"
+else
+  OP_TOKEN_DISPLAY="none"
+fi
 
 # preserve originals OPTZ
 ORIGOPTS="$*"
@@ -220,10 +260,13 @@ append_unique_array_value() {
 # shellcheck disable=SC2034
 declare -a BREWFILES=()
 declare -a DOTPKGS=()
+declare -a SSH_KEYS=()
 append_csv_to_array BREWFILES "${BREWFILES_CSV}"
 append_csv_to_array DOTPKGS "${DOTPKGS_CSV}"
+append_csv_to_array SSH_KEYS "${SSH_KEYS_CSV}"
 BREWFILES_CSV="$(array_join "," BREWFILES)"
 DOTPKGS_CSV="$(array_join "," DOTPKGS)"
+SSH_KEYS_CSV="$(array_join "," SSH_KEYS)"
 
 for arg in "$@"; do
   case "${arg}" in
@@ -235,6 +278,10 @@ for arg in "$@"; do
       # shellcheck disable=SC2034
       DOTPKGS=()
       ;;
+    --ssh-key | --ssh-key=* | --ssh-keys | --ssh-keys=*)
+      # shellcheck disable=SC2034
+      SSH_KEYS=()
+      ;;
   esac
 done
 
@@ -245,6 +292,8 @@ Usage: ${tty_dim}[NONINTERACTIVE=1] [CI=1]${tty_reset} ${tty_bold}piroboot.sh${t
 ${tty_tp}Options:${tty_reset}
   --brewfile       installs brewfiles ${tty_dim}[default: ${BREWFILES_CSV_DISPLAY}]${tty_reset}
   --dotpkg         stows dot packages into target ${tty_dim}[default: ${DOTPKGS_CSV_DISPLAY}]${tty_reset}
+  --ssh-key        installs 1password ssh keys into target .ssh ${tty_dim}[default: ${SSH_KEYS_CSV_DISPLAY}]${tty_reset}
+  --op-token       1password service account token ${tty_dim}[default: ${OP_TOKEN_DISPLAY}]${tty_reset}
   --target         installs dotpkgs and identities relative to here ${tty_dim}[default: ${TARGET}]${tty_reset}
   --version        shows version of this script
   --debug          shows debug messages
@@ -254,6 +303,8 @@ ${tty_tp}Options:${tty_reset}
 ${tty_tp}Environment Variables:${tty_reset}
   TANAAB_BREWFILE  comma-separated list of brewfiles to install
   TANAAB_DOTPKG    comma-separated list of stow package paths to install
+  TANAAB_SSH_KEY   comma-separated list of 1password ssh keys as vault/item[:filename]
+  TANAAB_OP_TOKEN  1password service account token; falls back to OP_SERVICE_ACCOUNT_TOKEN
   TANAAB_TARGET    target directory for dotpkgs and identities
   TANAAB_FORCE     set to a truthy value to force supported operations
   TANAAB_DEBUG     set to a truthy value to show debug messages
@@ -307,6 +358,30 @@ while [[ $# -gt 0 ]]; do
       ;;
     --dotpkgs=*)
       append_csv_to_array DOTPKGS "${1#*=}"
+      shift
+      ;;
+    --ssh-key)
+      append_array_value SSH_KEYS "$2"
+      shift 2
+      ;;
+    --ssh-key=*)
+      append_array_value SSH_KEYS "${1#*=}"
+      shift
+      ;;
+    --ssh-keys)
+      append_csv_to_array SSH_KEYS "$2"
+      shift 2
+      ;;
+    --ssh-keys=*)
+      append_csv_to_array SSH_KEYS "${1#*=}"
+      shift
+      ;;
+    --op-token)
+      OP_TOKEN="$2"
+      shift 2
+      ;;
+    --op-token=*)
+      OP_TOKEN="${1#*=}"
       shift
       ;;
 
@@ -473,13 +548,116 @@ validate_dotpkgs() {
   done
 }
 
+ssh_key_spec_base() {
+  local ssh_key="$1"
+
+  printf "%s" "${ssh_key%%:*}"
+}
+
+ssh_key_spec_filename_override() {
+  local ssh_key="$1"
+
+  if [[ "${ssh_key}" == *:* ]]; then
+    printf "%s" "${ssh_key#*:}"
+  fi
+}
+
+ssh_key_spec_vault() {
+  local base
+
+  base="$(ssh_key_spec_base "$1")"
+  printf "%s" "${base%%/*}"
+}
+
+ssh_key_spec_item() {
+  local base
+
+  base="$(ssh_key_spec_base "$1")"
+  printf "%s" "${base#*/}"
+}
+
+ssh_key_filename() {
+  local filename_override
+
+  filename_override="$(ssh_key_spec_filename_override "$1")"
+  if [[ -n "${filename_override}" ]]; then
+    printf "%s" "${filename_override}"
+  else
+    ssh_key_spec_item "$1"
+  fi
+}
+
+ssh_key_secret_ref() {
+  local vault
+  local item
+
+  vault="$(ssh_key_spec_vault "$1")"
+  item="$(ssh_key_spec_item "$1")"
+  printf "op://%s/%s/private key?ssh-format=openssh" "${vault}" "${item}"
+}
+
+ssh_key_destination_path() {
+  local filename
+
+  filename="$(ssh_key_filename "$1")"
+  printf "%s/.ssh/%s" "${TARGET}" "${filename}"
+}
+
+validate_ssh_key_spec() {
+  local ssh_key="$1"
+  local base
+  local vault
+  local item
+  local filename_override
+
+  base="$(ssh_key_spec_base "${ssh_key}")"
+  vault="$(ssh_key_spec_vault "${ssh_key}")"
+  item="$(ssh_key_spec_item "${ssh_key}")"
+  filename_override="$(ssh_key_spec_filename_override "${ssh_key}")"
+
+  if [[ -z "${base}" ]] || [[ "${base}" != */* ]] || [[ -z "${vault}" ]] || [[ -z "${item}" ]] || [[ "${item}" == *"/"* ]]; then
+    abort "ssh key must use vault/item[:filename] format: ${ssh_key}"
+  fi
+
+  if [[ "${ssh_key}" == *:* ]] && [[ -z "${filename_override}" ]]; then
+    abort "ssh key filename override cannot be empty: ${ssh_key}"
+  fi
+
+  if [[ -n "${filename_override}" ]] && [[ "${filename_override}" == *"/"* || "${filename_override}" == *":"* || "${filename_override}" == "." || "${filename_override}" == ".." ]]; then
+    abort "ssh key filename override must be a single filename: ${ssh_key}"
+  fi
+}
+
+validate_ssh_keys() {
+  local ssh_key
+  local filename
+  local -a seen_filenames=()
+
+  if [[ "${#SSH_KEYS[@]}" -eq 0 ]]; then
+    return 0
+  fi
+
+  for ssh_key in "${SSH_KEYS[@]}"; do
+    validate_ssh_key_spec "${ssh_key}"
+
+    filename="$(ssh_key_filename "${ssh_key}")"
+    if array_contains "${filename}" seen_filenames; then
+      abort "ssh key destination filename is duplicated: ${filename}"
+    fi
+
+    seen_filenames+=("${filename}")
+  done
+}
+
 TARGET="$(normalize_local_path "${TARGET}")"
 normalize_brewfiles
 validate_brewfiles
 normalize_dotpkgs
 validate_dotpkgs
+validate_ssh_keys
 BREWFILES_CSV="$(array_join "," BREWFILES)"
 DOTPKGS_CSV="$(array_join "," DOTPKGS)"
+SSH_KEYS_CSV="$(array_join "," SSH_KEYS)"
 
 get_abs_dir() {
   local file="$1"
@@ -533,7 +711,7 @@ declare -a TANAAB_CORE_BREW_PACKAGES=(
 )
 
 # @TODO: we need to make sure this is masked in any display
-# OP_AUTH="${TANAAB_OP_AUTH:-$OP_SERVICE_ACCOUNT_TOKEN}"
+# OP_AUTH="${TANAAB_OP_AUTH:-$OP_TOKEN}"
 
 # GET THE LTF right away once we know we are not exiting through usage/version.
 TANAAB_TMPFILE="$(mktemp -t tanaab.XXXXXX)"
@@ -571,8 +749,8 @@ chomp() {
   printf "%s" "${1/"$'\n'"/}"
 }
 
-debug_enabled() {
-  case "${DEBUG:-}" in
+value_enabled() {
+  case "${1:-}" in
     '' | 0 | false | FALSE | False | no | NO | No | off | OFF | Off)
       return 1
       ;;
@@ -580,6 +758,14 @@ debug_enabled() {
       return 0
       ;;
   esac
+}
+
+debug_enabled() {
+  value_enabled "${DEBUG:-}"
+}
+
+force_enabled() {
+  value_enabled "${FORCE:-}"
 }
 
 # set debug-related envvars for child processes
@@ -645,6 +831,8 @@ debug raw BREWFILES="$(array_join "," BREWFILES)"
 debug raw DOTPKGS="$(array_join "," DOTPKGS)"
 debug raw DEBUG="$DEBUG"
 debug raw FORCE="$FORCE"
+debug raw SSH_KEYS="$(array_join "," SSH_KEYS)"
+debug raw OP_TOKEN="${OP_TOKEN_DISPLAY}"
 debug raw HOMEBREW_PREFIX="$HOMEBREW_PREFIX"
 debug raw TARGET="$TARGET"
 debug raw OS="$OS"
@@ -657,8 +845,10 @@ debug raw TMPDIR="$TANAAB_TMPDIR"
 # precautions
 unset HAVE_SUDO_ACCESS
 unset BREW
+unset OP_CLI
 unset BREW_NEEDS_INSTALL
 unset BREWFILES_NEED_INSTALL
+unset SSH_KEYS_NEED_INSTALL
 unset DOTPKGS_NEED_STOW
 unset EFFECTIVE_BREWFILE
 unset DOTPKG_BACKUP_DIR
@@ -670,6 +860,8 @@ declare -a CORE_BREW_CASKS_TO_INSTALL=()
 declare -a CORE_BREW_CASK_DISPLAY_TO_INSTALL=()
 declare -a CORE_BREW_DISPLAY_TO_INSTALL=()
 declare -a RESOLVED_BREWFILES=()
+declare -a SSH_KEY_DISPLAY_TO_INSTALL=()
+declare -a SSH_KEY_DISPLAY_TO_OVERWRITE=()
 declare -a DOTPKGS_TO_STOW=()
 declare -a DOTPKG_CONFLICT_TARGETS=()
 declare -a CURRENT_DOTPKG_CONFLICT_TARGETS=()
@@ -729,6 +921,15 @@ test_brew() {
 
 # shellcheck disable=SC2329
 test_stow() {
+  if [[ ! -x "$1" ]]; then
+    return 1
+  fi
+
+  "$1" --version &>/dev/null
+}
+
+# shellcheck disable=SC2329
+test_op() {
   if [[ ! -x "$1" ]]; then
     return 1
   fi
@@ -1076,6 +1277,181 @@ ensure_stow() {
 
   STOW="$(find_tool stow || true)"
   [[ -n "${STOW}" ]]
+}
+
+ensure_op() {
+  if [[ -n "${OP_CLI:-}" ]] && test_op "${OP_CLI}"; then
+    return 0
+  fi
+
+  OP_CLI="$(find_tool op || true)"
+  [[ -n "${OP_CLI}" ]]
+}
+
+ssh_dir_path() {
+  printf "%s/.ssh" "${TARGET}"
+}
+
+ssh_dir_ready_for_private_keys() {
+  local ssh_dir
+
+  ssh_dir="$(ssh_dir_path)"
+
+  if [[ -L "${ssh_dir}" ]]; then
+    abort_multi "$(cat <<EOABORT
+ssh key installation target is a symlinked directory: ${ssh_dir}
+refusing to write private keys through a symlink. replace it with a real directory first.
+EOABORT
+)"
+  fi
+
+  if [[ -e "${ssh_dir}" ]] && [[ ! -d "${ssh_dir}" ]]; then
+    abort "ssh key installation target exists but is not a directory: ${ssh_dir}"
+  fi
+}
+
+op_read_ssh_key_to_file() {
+  local ssh_key="$1"
+  local destination="$2"
+  local secret_ref
+  local ssh_key_base
+
+  secret_ref="$(ssh_key_secret_ref "${ssh_key}")"
+  ssh_key_base="$(ssh_key_spec_base "${ssh_key}")"
+  debug "${tty_blue}running${tty_reset}" "${OP_CLI}" read "${secret_ref}" ">" "${destination}"
+
+  if ! (
+    umask 077
+    /usr/bin/env \
+      -u OP_CONNECT_HOST \
+      -u OP_CONNECT_TOKEN \
+      OP_SERVICE_ACCOUNT_TOKEN="${OP_TOKEN}" \
+      "${OP_CLI}" read "${secret_ref}" > "${destination}"
+  ); then
+    abort "failed to read ssh key from 1password: ${ssh_key_base}"
+  fi
+
+  if [[ ! -s "${destination}" ]]; then
+    abort "1password returned an empty ssh key: ${ssh_key_base}"
+  fi
+}
+
+plan_ssh_keys() {
+  local ssh_key
+  local ssh_dir
+  local destination_path
+  local filename
+
+  SSH_KEYS_NEED_INSTALL=""
+  SSH_KEY_DISPLAY_TO_INSTALL=()
+  SSH_KEY_DISPLAY_TO_OVERWRITE=()
+
+  if [[ "${#SSH_KEYS[@]}" -eq 0 ]]; then
+    return 0
+  fi
+
+  if [[ -z "${OP_TOKEN:-}" ]]; then
+    abort_multi "$(cat <<EOABORT
+ssh key installation requires a 1password service account token.
+set TANAAB_OP_TOKEN or OP_SERVICE_ACCOUNT_TOKEN, or pass --op-token.
+EOABORT
+)"
+  fi
+
+  ssh_dir_ready_for_private_keys
+  ssh_dir="$(ssh_dir_path)"
+
+  for ssh_key in "${SSH_KEYS[@]}"; do
+    filename="$(ssh_key_filename "${ssh_key}")"
+    destination_path="$(ssh_key_destination_path "${ssh_key}")"
+    append_unique_array_value SSH_KEY_DISPLAY_TO_INSTALL "${filename}"
+
+    if [[ -e "${destination_path}" ]] || [[ -L "${destination_path}" ]]; then
+      if [[ -d "${destination_path}" ]] && [[ ! -L "${destination_path}" ]]; then
+        abort "ssh key destination exists as a directory: ${destination_path}"
+      fi
+
+      if ! force_enabled; then
+        abort_multi "$(cat <<EOABORT
+ssh key already exists: ${destination_path}
+remove or back up the existing key first, or rerun with --force to overwrite it.
+EOABORT
+)"
+      fi
+
+      append_unique_array_value SSH_KEY_DISPLAY_TO_OVERWRITE "${filename}"
+    fi
+  done
+
+  if [[ "${#SSH_KEY_DISPLAY_TO_INSTALL[@]}" -eq 0 ]]; then
+    return 0
+  fi
+
+  SSH_KEYS_NEED_INSTALL="1"
+
+  if [[ "${#SSH_KEY_DISPLAY_TO_OVERWRITE[@]}" -gt 0 ]]; then
+    plan_action "${tty_tp}install${tty_reset} ssh keys into ${tty_ts}${ssh_dir}${tty_reset}: ${tty_ts}$(array_join ", " SSH_KEY_DISPLAY_TO_INSTALL)${tty_reset} ${tty_dim}(overwriting: $(array_join ", " SSH_KEY_DISPLAY_TO_OVERWRITE))${tty_reset}"
+  else
+    plan_action "${tty_tp}install${tty_reset} ssh keys into ${tty_ts}${ssh_dir}${tty_reset}: ${tty_ts}$(array_join ", " SSH_KEY_DISPLAY_TO_INSTALL)${tty_reset}"
+  fi
+}
+
+install_ssh_keys() {
+  local ssh_key
+  local ssh_dir
+  local destination_path
+  local filename
+  local key_tmpfile
+  local installed_any="1"
+
+  if [[ -z "${SSH_KEYS_NEED_INSTALL:-}" ]]; then
+    return 0
+  fi
+
+  if ! ensure_op; then
+    abort "1password cli is required for ssh key installation but could not be found."
+  fi
+
+  ssh_dir_ready_for_private_keys
+  ssh_dir="$(ssh_dir_path)"
+  auto_mkdirp "${ssh_dir}"
+  auto_chmod 700 "${ssh_dir}"
+
+  for ssh_key in "${SSH_KEYS[@]}"; do
+    filename="$(ssh_key_filename "${ssh_key}")"
+    destination_path="$(ssh_key_destination_path "${ssh_key}")"
+
+    if [[ -e "${destination_path}" ]] || [[ -L "${destination_path}" ]]; then
+      if [[ -d "${destination_path}" ]] && [[ ! -L "${destination_path}" ]]; then
+        abort "ssh key destination exists as a directory: ${destination_path}"
+      fi
+
+      if ! force_enabled; then
+        abort_multi "$(cat <<EOABORT
+ssh key already exists: ${destination_path}
+remove or back up the existing key first, or rerun with --force to overwrite it.
+EOABORT
+)"
+      fi
+
+      log "${tty_tp}installing${tty_reset} ssh key ${tty_ts}${filename}${tty_reset} ${tty_dim}into${tty_reset} ${tty_ts}${ssh_dir}${tty_reset} ${tty_dim}(overwriting existing key)${tty_reset}"
+      auto_rm "${destination_path}"
+    else
+      log "${tty_tp}installing${tty_reset} ssh key ${tty_ts}${filename}${tty_reset} ${tty_dim}into${tty_reset} ${tty_ts}${ssh_dir}${tty_reset}"
+    fi
+
+    key_tmpfile="$(mktemp "${TANAAB_TMPDIR}/ssh-key.XXXXXX")"
+    op_read_ssh_key_to_file "${ssh_key}" "${key_tmpfile}"
+    auto_mv "${key_tmpfile}" "${destination_path}"
+    auto_chmod 600 "${destination_path}"
+    installed_any="0"
+  done
+
+  if [[ "${installed_any}" -eq 1 ]]; then
+    return 0
+  fi
+
+  log "${tty_bold}installed${tty_reset} ssh keys into ${tty_green}${ssh_dir}${tty_reset}"
 }
 
 timestamp_now() {
@@ -1464,6 +1840,7 @@ fi
 plan_homebrew
 plan_core_homebrew_packages
 plan_brewfiles
+plan_ssh_keys
 plan_dotpkgs
 
 if ! have_planned_actions; then
@@ -1607,6 +1984,20 @@ auto_rm() {
   fi
 }
 
+# shellcheck disable=SC2329
+auto_chmod() {
+  local mode="$1"
+  local path="$2"
+  local perm_dir
+  perm_dir="$(find_first_existing_parent "$path")"
+
+  if have_sudo_access && [[ ! -w "$perm_dir" ]]; then
+    execute_sudo chmod "${mode}" "$path"
+  else
+    execute chmod "${mode}" "$path"
+  fi
+}
+
 # Invalidate sudo timestamp before exiting (if it wasn't active before).
 if [[ -x /usr/bin/sudo ]] && ! /usr/bin/sudo -n -v 2>/dev/null; then
   trap '/usr/bin/sudo -k' EXIT
@@ -1634,6 +2025,7 @@ fi
 
 install_core_homebrew_packages
 install_brewfiles
+install_ssh_keys
 install_dotpkgs
 
 # FIN!
