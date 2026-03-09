@@ -44,8 +44,13 @@ Some notes on advanced usage:
 
 If you do not wish to download the script you can set options with environment variables and `curl` the script.
 
+`TANAAB_BREWFILE` accepts a comma-separated list. `--brewfile` can be passed more than once. brewfiles may be local file paths or urls, and relative file paths are resolved from the current working directory.
+
+`TANAAB_DOTPKG` accepts a comma-separated list of stow package paths. `--dotpkg` can be passed more than once. dot package paths are resolved from the current working directory, installed relative to `TANAAB_TARGET` or `--target`, and conflicting target files are backed up under `$TARGET/.tanaab-backups/` before stowing. `stow --dotfiles` is not currently implemented.
+
 ```zsh
-TANAAB_BREWFILE=Brewfile.base
+TANAAB_BREWFILE=Brewfile.base,Brewfile.two
+TANAAB_DOTPKG=dotfiles/git,dotfiles/zsh
 TANAAB_DEBUG=0
 TANAAB_TARGET="/somewhere-else"
 
@@ -57,12 +62,13 @@ These are equivalent commands and meant to demostrate environment variable usage
 
 ```zsh
 # use envvars
-TANAAB_BREWFILE=Brewfile.base \
+TANAAB_BREWFILE=Brewfile.base,Brewfile.two \
+TANAAB_DOTPKG=dotfiles/git,dotfiles/zsh \
 TANAAB_DEBUG=1 \
   /bin/bash -c "$(curl -fsSL https://boot.pirog.me)"
 
 # invoke directly
-bash piroboot.sh --brewfile Brewfile.base --debug
+bash piroboot.sh --brewfile Brewfile.base --brewfile Brewfile.two --dotpkg dotfiles/git --dotpkg dotfiles/zsh --debug
 ```
 
 ## Development
@@ -76,6 +82,8 @@ bun run build
 ```
 
 `bun run build` stages the release artifacts in `dist/` and prepends `SCRIPT_VERSION` when that environment variable is set.
+
+The repo also includes `./brewgen.sh`, which generates a Brewfile from the current Homebrew state for selected package types such as `tap`, `cask`, and `brew`, and can exclude specific packages with `--exclude`.
 
 ## Issues, Questions and Support
 

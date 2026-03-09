@@ -1,38 +1,18 @@
 #!/bin/bash
 set -u
-# Me setup script.
+# bootstrap a macOS machine using homebrew, brewfiles, dotfiles, and identity data.
 #
-# This script is the official and recommended way to setup me on your macOS
-# based computer.
+# examples:
 #
-# Script source is available at https://github.com/pirog/me
-
+#   $ ./piroboot.sh
+#   $ ./piroboot.sh --brewfile Brewfile.work --target ~/workstation
+#   $ DEBUG=1 ./piroboot.sh --yes
 #
-# Usage:
+# option precedence: cli options override environment variables, which override defaults.
 #
-# To setup the latest stable version of me with all defaults you can
-# directly curlbash:
+# run `./piroboot.sh --help` for more advanced usage.
 #
-# $ /bin/bash -c "$(curl -fsSL https://boot.pirog.me)" (this hasnt been setup yet)
-#
-# If you want to customize your installation you will need to download the
-# script and invoke directly so you can pass in options:
-#
-# 1. download
-#
-#   $ curl -fsSL https://boot.pirog.me/piroboot.sh -o piroboot.sh
-#
-# 2. make executable
-#
-#   $ chmod +x ./piroboot.sh
-#
-# 3. print advanced usage
-#
-#   $ bash piroboot.sh --help
-#
-# 4. run customized setup
-#
-#  $ bash piroboot.sh ...--options (options not complete yet)
+# note: stow --dotfiles is not currently implemented.
 
 # Any code that has been modified by the original falls under
 # Copyright (c) 2026, Tanaab Maneuvering Systems LLC
@@ -104,19 +84,168 @@ tty_ts="$(tty_escape '38;2;219;39;119')"   # #db2777
 # RUNNER_DEBUG is used here so we can get good debug output when toggled in GitHub Actions
 # see https://github.blog/changelog/2022-05-24-github-actions-re-run-jobs-with-debug-logging/
 DEBUG="${TANAAB_DEBUG:-${DEBUG:-${RUNNER_DEBUG:-}}}"
-BREWFILE="${TANAAB_BREWFILE:-"./Brewfile"}"
 FORCE="${TANAAB_FORCE:-}"
 TARGET="${TANAAB_TARGET:-$HOME}"
+BREWFILES_CSV="${TANAAB_BREWFILE:-}"
+DOTPKGS_CSV="${TANAAB_DOTPKG:-}"
+
+# accommodate TANAAB_BREWFILES as well
+if [[ -n "${TANAAB_BREWFILES:-}" ]]; then
+  BREWFILES_CSV="${BREWFILES_CSV}${BREWFILES_CSV:+,}${TANAAB_BREWFILES}"
+fi
+
+# accommodate TANAAB_DOTPKGS as well
+if [[ -n "${TANAAB_DOTPKGS:-}" ]]; then
+  DOTPKGS_CSV="${DOTPKGS_CSV}${DOTPKGS_CSV:+,}${TANAAB_DOTPKGS}"
+fi
+
+# collect them all togethers with fallback if still empty
+if [[ -z "${BREWFILES_CSV}" ]] && [[ -f "./Brewfile" ]]; then
+  BREWFILES_CSV="./Brewfile"
+fi
+
+BREWFILES_CSV_DISPLAY="${BREWFILES_CSV:-none}"
+DOTPKGS_CSV_DISPLAY="${DOTPKGS_CSV:-none}"
 
 # preserve originals OPTZ
 ORIGOPTS="$*"
+
+trim_whitespace() {
+  local value="$1"
+
+  value="${value#"${value%%[![:space:]]*}"}"
+  value="${value%"${value##*[![:space:]]}"}"
+
+  printf "%s" "${value}"
+}
+
+append_array_value() {
+  local array_name="$1"
+  local value
+  local quoted
+
+  value="$(trim_whitespace "$2")"
+  if [[ -n "${value}" ]]; then
+    printf -v quoted '%q' "${value}"
+    eval "${array_name}+=(${quoted})"
+  fi
+}
+
+append_csv_to_array() {
+  local array_name="$1"
+  local old_ifs="${IFS}"
+  local entry
+  local -a values=()
+
+  if [[ -z "${2}" ]]; then
+    return 0
+  fi
+
+  IFS=','
+  read -r -a values <<< "${2}"
+  IFS="${old_ifs}"
+
+  if [[ "${#values[@]}" -eq 0 ]]; then
+    return 0
+  fi
+
+  for entry in "${values[@]}"; do
+    append_array_value "${array_name}" "${entry}"
+  done
+}
+
+array_join() {
+  local delimiter="$1"
+  local array_name="$2"
+  local item
+  local first="1"
+  local value_count="0"
+  local -a values=()
+
+  eval "value_count=\${#${array_name}[@]}"
+  if [[ "${value_count}" -eq 0 ]]; then
+    return 0
+  fi
+
+  eval "values=(\"\${${array_name}[@]}\")"
+
+  for item in "${values[@]}"; do
+    if [[ "${first}" == "1" ]]; then
+      printf "%s" "${item}"
+      first="0"
+    else
+      printf "%s%s" "${delimiter}" "${item}"
+    fi
+  done
+}
+
+array_contains() {
+  local needle="$1"
+  local array_name="$2"
+  local item
+  local value_count="0"
+  local -a values=()
+
+  eval "value_count=\${#${array_name}[@]}"
+  if [[ "${value_count}" -eq 0 ]]; then
+    return 1
+  fi
+
+  eval "values=(\"\${${array_name}[@]}\")"
+
+  for item in "${values[@]}"; do
+    if [[ "${item}" == "${needle}" ]]; then
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+append_unique_array_value() {
+  local array_name="$1"
+  local value
+
+  value="$(trim_whitespace "$2")"
+  if [[ -z "${value}" ]]; then
+    return 0
+  fi
+
+  if array_contains "${value}" "${array_name}"; then
+    return 0
+  fi
+
+  append_array_value "${array_name}" "${value}"
+}
+
+# shellcheck disable=SC2034
+declare -a BREWFILES=()
+declare -a DOTPKGS=()
+append_csv_to_array BREWFILES "${BREWFILES_CSV}"
+append_csv_to_array DOTPKGS "${DOTPKGS_CSV}"
+BREWFILES_CSV="$(array_join "," BREWFILES)"
+DOTPKGS_CSV="$(array_join "," DOTPKGS)"
+
+for arg in "$@"; do
+  case "${arg}" in
+    --brewfile | --brewfile=* | --brewfiles | --brewfiles=*)
+      # shellcheck disable=SC2034
+      BREWFILES=()
+      ;;
+    --dotpkg | --dotpkg=* | --dotpkgs | --dotpkgs=*)
+      # shellcheck disable=SC2034
+      DOTPKGS=()
+      ;;
+  esac
+done
 
 usage() {
   cat <<EOS
 Usage: ${tty_dim}[NONINTERACTIVE=1] [CI=1]${tty_reset} ${tty_bold}piroboot.sh${tty_reset} ${tty_dim}[options]${tty_reset}
 
 ${tty_tp}Options:${tty_reset}
-  --brewfile       installs brewfile ${tty_dim}[default: ${TARGET}]${tty_reset}
+  --brewfile       installs brewfiles ${tty_dim}[default: ${BREWFILES_CSV_DISPLAY}]${tty_reset}
+  --dotpkg         stows dot packages into target ${tty_dim}[default: ${DOTPKGS_CSV_DISPLAY}]${tty_reset}
   --target         installs dotpkgs and identities relative to here ${tty_dim}[default: ${TARGET}]${tty_reset}
   --version        shows version of this script
   --debug          shows debug messages
@@ -124,9 +253,13 @@ ${tty_tp}Options:${tty_reset}
   -y, --yes        runs with all defaults and no prompts, sets NONINTERACTIVE=1
 
 ${tty_tp}Environment Variables:${tty_reset}
+  TANAAB_BREWFILE  comma-separated list of brewfiles to install
+  TANAAB_DOTPKG    comma-separated list of stow package paths to install
+  TANAAB_TARGET    target directory for dotpkgs and identities
+  TANAAB_FORCE     set to a truthy value to force supported operations
+  TANAAB_DEBUG     set to a truthy value to show debug messages
   NONINTERACTIVE   installs without prompting for user input
   CI               installs in CI mode (e.g. does not prompt for user input)
-
 EOS
   if [[ "${1:-0}" != "noexit" ]]; then
     exit "${1:-0}"
@@ -146,11 +279,35 @@ show_version() {
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --brewfile)
-      BREWFILE="$2"
+      append_array_value BREWFILES "$2"
       shift 2
       ;;
     --brewfile=*)
-      BREWFILE="${1#*=}"
+      append_array_value BREWFILES "${1#*=}"
+      shift
+      ;;
+    --brewfiles)
+      append_csv_to_array BREWFILES "$2"
+      shift 2
+      ;;
+    --brewfiles=*)
+      append_csv_to_array BREWFILES "${1#*=}"
+      shift
+      ;;
+    --dotpkg)
+      append_array_value DOTPKGS "$2"
+      shift 2
+      ;;
+    --dotpkg=*)
+      append_array_value DOTPKGS "${1#*=}"
+      shift
+      ;;
+    --dotpkgs)
+      append_csv_to_array DOTPKGS "$2"
+      shift 2
+      ;;
+    --dotpkgs=*)
+      append_csv_to_array DOTPKGS "${1#*=}"
       shift
       ;;
 
@@ -189,6 +346,142 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+brewfile_is_url() {
+  [[ "$1" =~ ^[[:alpha:]][[:alnum:].+-]*:// ]]
+}
+
+normalize_local_path() {
+  local path="$1"
+  local path_dir="."
+  local path_name="$path"
+  local base_dir
+  local resolved_dir
+
+  if [[ "${path}" == */* ]]; then
+    path_dir="${path%/*}"
+    path_name="${path##*/}"
+  fi
+
+  if [[ "${path}" == /* ]]; then
+    base_dir="${path_dir}"
+  else
+    base_dir="${PWD}/${path_dir}"
+  fi
+
+  if [[ -d "${base_dir}" ]]; then
+    resolved_dir="$(cd "${base_dir}" 2>/dev/null && pwd -P)"
+  else
+    resolved_dir=""
+  fi
+
+  if [[ -n "${resolved_dir}" ]]; then
+    printf "%s/%s" "${resolved_dir}" "${path_name}"
+  elif [[ "${path}" == /* ]]; then
+    printf "%s" "${path}"
+  else
+    printf "%s/%s" "${PWD}" "${path}"
+  fi
+}
+
+normalize_brewfile() {
+  local brewfile="$1"
+
+  if brewfile_is_url "${brewfile}"; then
+    printf "%s" "${brewfile}"
+  else
+    normalize_local_path "${brewfile}"
+  fi
+}
+
+normalize_brewfiles() {
+  local brewfile
+  local normalized
+  local -a normalized_brewfiles=()
+
+  if [[ "${#BREWFILES[@]}" -eq 0 ]]; then
+    return 0
+  fi
+
+  for brewfile in "${BREWFILES[@]}"; do
+    normalized="$(normalize_brewfile "${brewfile}")"
+    normalized_brewfiles+=("${normalized}")
+  done
+
+  BREWFILES=("${normalized_brewfiles[@]}")
+}
+
+validate_brewfiles() {
+  local brewfile
+
+  if [[ "${#BREWFILES[@]}" -eq 0 ]]; then
+    return 0
+  fi
+
+  for brewfile in "${BREWFILES[@]}"; do
+    if brewfile_is_url "${brewfile}"; then
+      continue
+    fi
+
+    if [[ ! -f "${brewfile}" ]]; then
+      abort "brewfile not found: ${brewfile}"
+    fi
+  done
+}
+
+normalize_dotpkg() {
+  local dotpkg="$1"
+
+  if [[ -d "${dotpkg}" ]]; then
+    (
+      cd "${dotpkg}" 2>/dev/null || exit 1
+      pwd -P
+    )
+  elif [[ "${dotpkg}" == /* ]]; then
+    printf "%s" "${dotpkg}"
+  else
+    printf "%s/%s" "${PWD}" "${dotpkg}"
+  fi
+}
+
+normalize_dotpkgs() {
+  local dotpkg
+  local normalized
+  local -a normalized_dotpkgs=()
+
+  if [[ "${#DOTPKGS[@]}" -eq 0 ]]; then
+    return 0
+  fi
+
+  for dotpkg in "${DOTPKGS[@]}"; do
+    normalized="$(normalize_dotpkg "${dotpkg}")"
+    normalized_dotpkgs+=("${normalized}")
+  done
+
+  DOTPKGS=("${normalized_dotpkgs[@]}")
+}
+
+validate_dotpkgs() {
+  local dotpkg
+
+  if [[ "${#DOTPKGS[@]}" -eq 0 ]]; then
+    return 0
+  fi
+
+  for dotpkg in "${DOTPKGS[@]}"; do
+    if [[ ! -d "${dotpkg}" ]]; then
+      abort "dot package not found: ${dotpkg}"
+    fi
+  done
+}
+
+TARGET="$(normalize_local_path "${TARGET}")"
+normalize_brewfiles
+validate_brewfiles
+normalize_dotpkgs
+validate_dotpkgs
+BREWFILES_CSV="$(array_join "," BREWFILES)"
+DOTPKGS_CSV="$(array_join "," DOTPKGS)"
+
 get_abs_dir() {
   local file="$1"
   cd "$(dirname "$file")" || exit 1
@@ -226,10 +519,6 @@ default_homebrew_prefix() {
     echo "/usr/local"
   fi
 }
-
-# @TODO: do we want to allow for this to be a comma separated list that can broken into an arrray?
-# @TODO: also support for "BREWFILES"?
-# @TODO: allow for URL based files?
 
 # @TODO: do we want to also allow for also just dotfile?
 # DOTPKGS="${TANAAB_DOTPKGS-"ai,git,ssh"}"
@@ -353,7 +642,8 @@ debug "raw args piroboot.sh $ORIGOPTS"
 debug raw CI="${CI:-}"
 debug raw NONINTERACTIVE="${NONINTERACTIVE:-}"
 debug raw ARCH="$ARCH"
-debug raw BREWFILE="$BREWFILE"
+debug raw BREWFILES="$(array_join "," BREWFILES)"
+debug raw DOTPKGS="$(array_join "," DOTPKGS)"
 debug raw DEBUG="$DEBUG"
 debug raw FORCE="$FORCE"
 debug raw HOMEBREW_PREFIX="$HOMEBREW_PREFIX"
@@ -369,12 +659,20 @@ debug raw TMPDIR="$TANAAB_TMPDIR"
 unset HAVE_SUDO_ACCESS
 unset BREW
 unset BREW_NEEDS_INSTALL
+unset BREWFILES_NEED_INSTALL
+unset DOTPKGS_NEED_STOW
+unset EFFECTIVE_BREWFILE
+unset DOTPKG_BACKUP_DIR
+unset STOW
 
 declare -a PLANNED_ACTIONS=()
 declare -a CORE_BREW_FORMULAS_TO_INSTALL=()
 declare -a CORE_BREW_CASKS_TO_INSTALL=()
 declare -a CORE_BREW_CASK_DISPLAY_TO_INSTALL=()
 declare -a CORE_BREW_DISPLAY_TO_INSTALL=()
+declare -a RESOLVED_BREWFILES=()
+declare -a DOTPKGS_TO_STOW=()
+declare -a DOTPKG_CONFLICT_TARGETS=()
 
 plan_action() {
   PLANNED_ACTIONS+=("$1")
@@ -403,20 +701,6 @@ finish_noop() {
   exit 0
 }
 
-comma_join() {
-  local item
-  local first="1"
-
-  for item in "$@"; do
-    if [[ "${first}" == "1" ]]; then
-      printf "%s" "${item}"
-      first="0"
-    else
-      printf ", %s" "${item}"
-    fi
-  done
-}
-
 # shellcheck disable=SC2230
 find_tool() {
   if [[ $# -ne 1 ]]; then
@@ -436,6 +720,15 @@ find_tool() {
 
 # shellcheck disable=SC2329
 test_brew() {
+  if [[ ! -x "$1" ]]; then
+    return 1
+  fi
+
+  "$1" --version &>/dev/null
+}
+
+# shellcheck disable=SC2329
+test_stow() {
   if [[ ! -x "$1" ]]; then
     return 1
   fi
@@ -614,19 +907,377 @@ plan_core_homebrew_packages() {
   done
 
   if [[ "${#CORE_BREW_DISPLAY_TO_INSTALL[@]}" -gt 0 ]]; then
-    plan_action "${tty_tp}install${tty_reset} core homebrew packages: $(comma_join "${CORE_BREW_DISPLAY_TO_INSTALL[@]}")"
+    plan_action "${tty_tp}install${tty_reset} core homebrew packages: ${tty_ts}$(array_join ", " CORE_BREW_DISPLAY_TO_INSTALL)${tty_reset}"
   fi
 }
 
 install_core_homebrew_packages() {
   if [[ "${#CORE_BREW_FORMULAS_TO_INSTALL[@]}" -gt 0 ]]; then
-    log "installing core homebrew formulas: $(comma_join "${CORE_BREW_FORMULAS_TO_INSTALL[@]}")"
+    log "installing core homebrew formulas: $(array_join ", " CORE_BREW_FORMULAS_TO_INSTALL)"
     execute "${BREW}" install "${CORE_BREW_FORMULAS_TO_INSTALL[@]}"
   fi
 
   if [[ "${#CORE_BREW_CASKS_TO_INSTALL[@]}" -gt 0 ]]; then
-    log "installing core homebrew casks: $(comma_join "${CORE_BREW_CASK_DISPLAY_TO_INSTALL[@]}")"
+    log "installing core homebrew casks: $(array_join ", " CORE_BREW_CASK_DISPLAY_TO_INSTALL)"
     execute "${BREW}" install --cask "${CORE_BREW_CASKS_TO_INSTALL[@]}"
+  fi
+}
+
+fetch_brewfile_url() {
+  local url="$1"
+  local destination
+
+  destination="$(mktemp "${TANAAB_TMPDIR}/brewfile-url.XXXXXX")"
+  debug "fetching brewfile ${url} to ${destination}"
+
+  if ! "${CURL}" \
+    --fail \
+    --location \
+    --silent \
+    --show-error \
+    --output "${destination}" \
+    "${url}"; then
+    abort "failed to fetch brewfile: ${url}"
+  fi
+
+  printf "%s" "${destination}"
+}
+
+resolve_brewfile_source() {
+  local brewfile="$1"
+
+  if brewfile_is_url "${brewfile}"; then
+    fetch_brewfile_url "${brewfile}"
+  else
+    printf "%s" "${brewfile}"
+  fi
+}
+
+resolve_brewfiles() {
+  local brewfile
+  local resolved_brewfile
+
+  RESOLVED_BREWFILES=()
+
+  if [[ "${#BREWFILES[@]}" -eq 0 ]]; then
+    return 0
+  fi
+
+  for brewfile in "${BREWFILES[@]}"; do
+    resolved_brewfile="$(resolve_brewfile_source "${brewfile}")"
+    RESOLVED_BREWFILES+=("${resolved_brewfile}")
+  done
+}
+
+prepare_effective_brewfile() {
+  local source_brewfile
+  local effective_brewfile
+
+  EFFECTIVE_BREWFILE=""
+
+  if [[ "${#RESOLVED_BREWFILES[@]}" -eq 0 ]]; then
+    return 0
+  fi
+
+  effective_brewfile="$(mktemp "${TANAAB_TMPDIR}/brewfile-effective.XXXXXX")"
+  : > "${effective_brewfile}"
+
+  for source_brewfile in "${RESOLVED_BREWFILES[@]}"; do
+    if [[ ! -f "${source_brewfile}" ]] || [[ ! -s "${source_brewfile}" ]]; then
+      continue
+    fi
+
+    {
+      printf "# source: %s\n" "${source_brewfile}"
+      cat "${source_brewfile}"
+      printf "\n"
+    } >> "${effective_brewfile}"
+  done
+
+  EFFECTIVE_BREWFILE="${effective_brewfile}"
+  debug "prepared effective brewfile at ${EFFECTIVE_BREWFILE}"
+}
+
+brewfile_has_entries() {
+  if [[ -z "${1:-}" ]] || [[ ! -f "$1" ]]; then
+    return 1
+  fi
+
+  grep -Eq '^[[:space:]]*[^#[:space:]]' "$1"
+}
+
+brew_bundle_check() {
+  local brewfile="$1"
+  local status
+
+  "${BREW}" bundle check --file "${brewfile}" --no-upgrade >/dev/null 2>&1
+  status="$?"
+
+  if [[ "${status}" -eq 0 ]]; then
+    return 0
+  fi
+
+  if [[ "${status}" -eq 1 ]]; then
+    return 1
+  fi
+
+  abort "failed to check brew bundle state for ${brewfile}"
+}
+
+plan_brewfiles() {
+  BREWFILES_NEED_INSTALL=""
+
+  if [[ "${#BREWFILES[@]}" -eq 0 ]]; then
+    return 0
+  fi
+
+  resolve_brewfiles
+  prepare_effective_brewfile
+
+  if ! brewfile_has_entries "${EFFECTIVE_BREWFILE:-}"; then
+    debug "skipping brewfile install because there are no brew bundle entries"
+    return 0
+  fi
+
+  if [[ "${BREW_NEEDS_INSTALL:-0}" == "1" ]]; then
+    BREWFILES_NEED_INSTALL="1"
+  elif ! brew_bundle_check "${EFFECTIVE_BREWFILE}"; then
+    BREWFILES_NEED_INSTALL="1"
+  fi
+
+  if [[ -n "${BREWFILES_NEED_INSTALL:-}" ]]; then
+    plan_action "${tty_tp}install${tty_reset} brewfile packages from: ${tty_ts}$(array_join ", " BREWFILES)${tty_reset}"
+  fi
+}
+
+install_brewfiles() {
+  if [[ -z "${BREWFILES_NEED_INSTALL:-}" ]]; then
+    return 0
+  fi
+
+  if ! brewfile_has_entries "${EFFECTIVE_BREWFILE:-}"; then
+    return 0
+  fi
+
+  if brew_bundle_check "${EFFECTIVE_BREWFILE}"; then
+    debug "brewfile packages are already installed"
+    return 0
+  fi
+
+  log "installing brewfile packages from: $(array_join ", " BREWFILES)"
+  execute "${BREW}" bundle install --file "${EFFECTIVE_BREWFILE}" --no-upgrade
+}
+
+ensure_stow() {
+  if [[ -n "${STOW:-}" ]] && test_stow "${STOW}"; then
+    return 0
+  fi
+
+  STOW="$(find_tool stow || true)"
+  [[ -n "${STOW}" ]]
+}
+
+timestamp_now() {
+  /bin/date +"%Y%m%d-%H%M%S"
+}
+
+simulate_dotpkg() {
+  local dotpkg="$1"
+  local dotpkg_parent
+  local dotpkg_name
+
+  dotpkg_parent="$(dirname "${dotpkg}")"
+  dotpkg_name="$(basename "${dotpkg}")"
+
+  "${STOW}" \
+    --simulate \
+    --verbose=1 \
+    --dir "${dotpkg_parent}" \
+    --target "${TARGET}" \
+    "${dotpkg_name}" 2>&1
+}
+
+strip_stow_simulation_noise() {
+  local output="$1"
+  local line
+
+  while IFS= read -r line; do
+    if [[ "${line}" == "WARNING: in simulation mode so not modifying filesystem." ]]; then
+      continue
+    fi
+
+    printf "%s\n" "${line}"
+  done <<< "${output}"
+}
+
+stow_output_has_conflicts() {
+  [[ "$1" == *"would cause conflicts:"* ]] || [[ "$1" == *" existing target "* ]]
+}
+
+collect_dotpkg_conflicts() {
+  local output="$1"
+  local line
+  local conflict_target
+
+  while IFS= read -r line; do
+    if [[ "${line}" == *" existing target "* ]] && [[ "${line}" == *" since "* ]]; then
+      conflict_target="${line#* existing target }"
+      conflict_target="${conflict_target%% since *}"
+      append_unique_array_value DOTPKG_CONFLICT_TARGETS "${conflict_target}"
+    fi
+  done <<< "${output}"
+}
+
+evaluate_dotpkgs() {
+  local dotpkg
+  local simulate_output
+  local cleaned_output
+  local simulate_status
+
+  DOTPKGS_TO_STOW=()
+  DOTPKG_CONFLICT_TARGETS=()
+
+  if [[ "${#DOTPKGS[@]}" -eq 0 ]]; then
+    return 0
+  fi
+
+  if [[ ! -d "${TARGET}" ]]; then
+    DOTPKGS_TO_STOW=("${DOTPKGS[@]}")
+    return 0
+  fi
+
+  if ! ensure_stow; then
+    return 1
+  fi
+
+  for dotpkg in "${DOTPKGS[@]}"; do
+    simulate_output="$(simulate_dotpkg "${dotpkg}")"
+    simulate_status="$?"
+    cleaned_output="$(strip_stow_simulation_noise "${simulate_output}")"
+
+    if [[ -n "${cleaned_output}" ]]; then
+      debug_multi "stow simulate ${dotpkg}:" "${cleaned_output}"
+    fi
+
+    if [[ "${simulate_status}" -eq 0 ]]; then
+      if [[ -n "${cleaned_output}" ]]; then
+        append_unique_array_value DOTPKGS_TO_STOW "${dotpkg}"
+      fi
+      continue
+    fi
+
+    if [[ "${simulate_status}" -eq 1 ]] && stow_output_has_conflicts "${cleaned_output}"; then
+      append_unique_array_value DOTPKGS_TO_STOW "${dotpkg}"
+      collect_dotpkg_conflicts "${cleaned_output}"
+      continue
+    fi
+
+    abort_multi "$(cat <<EOABORT
+failed to simulate stow for dot package: ${dotpkg}
+${cleaned_output:-${simulate_output}}
+EOABORT
+)"
+  done
+}
+
+stow_dotpkg() {
+  local dotpkg="$1"
+  local dotpkg_parent
+  local dotpkg_name
+
+  dotpkg_parent="$(dirname "${dotpkg}")"
+  dotpkg_name="$(basename "${dotpkg}")"
+
+  execute "${STOW}" \
+    --dir "${dotpkg_parent}" \
+    --target "${TARGET}" \
+    "${dotpkg_name}"
+}
+
+backup_dotpkg_conflicts() {
+  local conflict_target
+  local source_path
+  local backup_path
+
+  if [[ "${#DOTPKG_CONFLICT_TARGETS[@]}" -eq 0 ]]; then
+    return 0
+  fi
+
+  if [[ -z "${DOTPKG_BACKUP_DIR:-}" ]]; then
+    DOTPKG_BACKUP_DIR="${TARGET}/.tanaab-backups/stow-$(timestamp_now)"
+  fi
+
+  auto_mkdirp "${DOTPKG_BACKUP_DIR}"
+
+  for conflict_target in "${DOTPKG_CONFLICT_TARGETS[@]}"; do
+    source_path="${TARGET}/${conflict_target}"
+    backup_path="${DOTPKG_BACKUP_DIR}/${conflict_target}"
+
+    if [[ ! -e "${source_path}" ]] && [[ ! -L "${source_path}" ]]; then
+      continue
+    fi
+
+    auto_mkdirp "$(dirname "${backup_path}")"
+    auto_mv "${source_path}" "${backup_path}"
+  done
+}
+
+plan_dotpkgs() {
+  DOTPKGS_NEED_STOW=""
+  DOTPKG_BACKUP_DIR=""
+
+  if [[ "${#DOTPKGS[@]}" -eq 0 ]]; then
+    return 0
+  fi
+
+  if ! evaluate_dotpkgs; then
+    DOTPKGS_TO_STOW=("${DOTPKGS[@]}")
+    DOTPKG_CONFLICT_TARGETS=()
+  fi
+
+  if [[ "${#DOTPKGS_TO_STOW[@]}" -eq 0 ]]; then
+    return 0
+  fi
+
+  DOTPKGS_NEED_STOW="1"
+
+  if [[ "${#DOTPKG_CONFLICT_TARGETS[@]}" -gt 0 ]]; then
+    DOTPKG_BACKUP_DIR="${TARGET}/.tanaab-backups/stow-$(timestamp_now)"
+    plan_action "${tty_tp}backup${tty_reset} conflicting dotfiles to ${tty_ts}${DOTPKG_BACKUP_DIR}${tty_reset}"
+  fi
+
+  plan_action "${tty_tp}stow${tty_reset} dot packages into ${tty_ts}${TARGET}${tty_reset}: ${tty_ts}$(array_join ", " DOTPKGS_TO_STOW)${tty_reset}"
+}
+
+install_dotpkgs() {
+  local dotpkg
+
+  if [[ -z "${DOTPKGS_NEED_STOW:-}" ]]; then
+    return 0
+  fi
+
+  auto_mkdirp "${TARGET}"
+
+  if ! ensure_stow; then
+    abort "stow is required for dot package management but could not be found."
+  fi
+
+  evaluate_dotpkgs
+
+  if [[ "${#DOTPKGS_TO_STOW[@]}" -eq 0 ]]; then
+    debug "dot packages are already stowed"
+    return 0
+  fi
+
+  backup_dotpkg_conflicts
+
+  log "stowing dot packages into ${TARGET}: $(array_join ", " DOTPKGS_TO_STOW)"
+  for dotpkg in "${DOTPKGS_TO_STOW[@]}"; do
+    stow_dotpkg "${dotpkg}"
+  done
+
+  if [[ -n "${DOTPKG_BACKUP_DIR:-}" ]] && [[ "${#DOTPKG_CONFLICT_TARGETS[@]}" -gt 0 ]]; then
+    log "backed up conflicting dotfiles to ${DOTPKG_BACKUP_DIR}"
   fi
 }
 
@@ -743,6 +1394,8 @@ fi
 
 plan_homebrew
 plan_core_homebrew_packages
+plan_brewfiles
+plan_dotpkgs
 
 if ! have_planned_actions; then
   finish_noop
@@ -911,6 +1564,8 @@ if [[ "${BREW_NEEDS_INSTALL:-0}" == "1" ]]; then
 fi
 
 install_core_homebrew_packages
+install_brewfiles
+install_dotpkgs
 
 # FIN!
 exit 0

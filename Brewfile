@@ -1,10 +1,12 @@
-
 tap "oven-sh/bun"
 
+cask "1password-cli"
+
+brew "curl"
 brew "gh"
 brew "git"
 brew "jq"
-brew "poetry"
+brew "node@20"
 brew "stow"
 brew "tailscale"
 brew "zsh"
