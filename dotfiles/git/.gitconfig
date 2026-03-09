@@ -9,5 +9,8 @@
 
 [includeIf "gitdir:~/work/"]
 	path = ~/.gitconfig-lando
+[includeIf "gitdir:~/lando/"]
+	path = ~/.gitconfig-lando
+
 [gpg "ssh"]
 	allowedSignersFile = /Users/pirog/.config/git/allowed_signers

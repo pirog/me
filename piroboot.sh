@@ -673,6 +673,7 @@ declare -a CORE_BREW_DISPLAY_TO_INSTALL=()
 declare -a RESOLVED_BREWFILES=()
 declare -a DOTPKGS_TO_STOW=()
 declare -a DOTPKG_CONFLICT_TARGETS=()
+declare -a CURRENT_DOTPKG_CONFLICT_TARGETS=()
 
 plan_action() {
   PLANNED_ACTIONS+=("$1")
@@ -1114,25 +1115,88 @@ stow_output_has_conflicts() {
   [[ "$1" == *"would cause conflicts:"* ]] || [[ "$1" == *" existing target "* ]]
 }
 
+extract_dotpkg_conflict_target() {
+  local line="$1"
+  local conflict_target=""
+
+  if [[ "${line}" == *" existing target "* ]] && [[ "${line}" == *" since "* ]]; then
+    conflict_target="${line#* existing target }"
+    conflict_target="${conflict_target%% since *}"
+  elif [[ "${line}" == *"existing target is not owned by stow:"* ]]; then
+    conflict_target="${line##*: }"
+  elif [[ "${line}" == *"existing target is stowed to a different package:"* ]]; then
+    conflict_target="${line##*: }"
+    conflict_target="${conflict_target%% => *}"
+  fi
+
+  printf "%s" "${conflict_target}"
+}
+
 collect_dotpkg_conflicts() {
-  local output="$1"
+  local array_name="$1"
+  local output="$2"
   local line
   local conflict_target
+  local found="1"
 
   while IFS= read -r line; do
-    if [[ "${line}" == *" existing target "* ]] && [[ "${line}" == *" since "* ]]; then
-      conflict_target="${line#* existing target }"
-      conflict_target="${conflict_target%% since *}"
-      append_unique_array_value DOTPKG_CONFLICT_TARGETS "${conflict_target}"
+    conflict_target="$(extract_dotpkg_conflict_target "${line}")"
+    if [[ -n "${conflict_target}" ]]; then
+      append_unique_array_value "${array_name}" "${conflict_target}"
+      found="0"
     fi
   done <<< "${output}"
+
+  return "${found}"
+}
+
+evaluate_dotpkg() {
+  local dotpkg="$1"
+  local simulate_output
+  local cleaned_output
+  local simulate_status
+
+  CURRENT_DOTPKG_NEEDS_STOW=""
+  CURRENT_DOTPKG_CONFLICT_TARGETS=()
+
+  simulate_output="$(simulate_dotpkg "${dotpkg}")"
+  simulate_status="$?"
+  cleaned_output="$(strip_stow_simulation_noise "${simulate_output}")"
+
+  if [[ -n "${cleaned_output}" ]]; then
+    debug_multi "stow simulate ${dotpkg}:" "${cleaned_output}"
+  fi
+
+  if [[ "${simulate_status}" -eq 0 ]]; then
+    if [[ -n "${cleaned_output}" ]]; then
+      CURRENT_DOTPKG_NEEDS_STOW="1"
+    fi
+    return 0
+  fi
+
+  if [[ "${simulate_status}" -eq 1 ]] && stow_output_has_conflicts "${cleaned_output}"; then
+    if ! collect_dotpkg_conflicts CURRENT_DOTPKG_CONFLICT_TARGETS "${cleaned_output}"; then
+      abort_multi "$(cat <<EOABORT
+failed to determine which files need backup for dot package: ${dotpkg}
+${cleaned_output:-${simulate_output}}
+EOABORT
+)"
+    fi
+
+    CURRENT_DOTPKG_NEEDS_STOW="1"
+    return 0
+  fi
+
+  abort_multi "$(cat <<EOABORT
+failed to simulate stow for dot package: ${dotpkg}
+${cleaned_output:-${simulate_output}}
+EOABORT
+)"
 }
 
 evaluate_dotpkgs() {
   local dotpkg
-  local simulate_output
-  local cleaned_output
-  local simulate_status
+  local conflict_target
 
   DOTPKGS_TO_STOW=()
   DOTPKG_CONFLICT_TARGETS=()
@@ -1151,32 +1215,14 @@ evaluate_dotpkgs() {
   fi
 
   for dotpkg in "${DOTPKGS[@]}"; do
-    simulate_output="$(simulate_dotpkg "${dotpkg}")"
-    simulate_status="$?"
-    cleaned_output="$(strip_stow_simulation_noise "${simulate_output}")"
+    evaluate_dotpkg "${dotpkg}"
 
-    if [[ -n "${cleaned_output}" ]]; then
-      debug_multi "stow simulate ${dotpkg}:" "${cleaned_output}"
-    fi
-
-    if [[ "${simulate_status}" -eq 0 ]]; then
-      if [[ -n "${cleaned_output}" ]]; then
-        append_unique_array_value DOTPKGS_TO_STOW "${dotpkg}"
-      fi
-      continue
-    fi
-
-    if [[ "${simulate_status}" -eq 1 ]] && stow_output_has_conflicts "${cleaned_output}"; then
+    if [[ -n "${CURRENT_DOTPKG_NEEDS_STOW:-}" ]]; then
       append_unique_array_value DOTPKGS_TO_STOW "${dotpkg}"
-      collect_dotpkg_conflicts "${cleaned_output}"
-      continue
+      for conflict_target in "${CURRENT_DOTPKG_CONFLICT_TARGETS[@]}"; do
+        append_unique_array_value DOTPKG_CONFLICT_TARGETS "${conflict_target}"
+      done
     fi
-
-    abort_multi "$(cat <<EOABORT
-failed to simulate stow for dot package: ${dotpkg}
-${cleaned_output:-${simulate_output}}
-EOABORT
-)"
   done
 }
 
@@ -1198,28 +1244,31 @@ backup_dotpkg_conflicts() {
   local conflict_target
   local source_path
   local backup_path
+  local moved_any="1"
 
-  if [[ "${#DOTPKG_CONFLICT_TARGETS[@]}" -eq 0 ]]; then
+  if [[ "${#CURRENT_DOTPKG_CONFLICT_TARGETS[@]}" -eq 0 ]]; then
     return 0
   fi
 
-  if [[ -z "${DOTPKG_BACKUP_DIR:-}" ]]; then
-    DOTPKG_BACKUP_DIR="${TARGET}/.tanaab-backups/stow-$(timestamp_now)"
-  fi
-
-  auto_mkdirp "${DOTPKG_BACKUP_DIR}"
-
-  for conflict_target in "${DOTPKG_CONFLICT_TARGETS[@]}"; do
+  for conflict_target in "${CURRENT_DOTPKG_CONFLICT_TARGETS[@]}"; do
     source_path="${TARGET}/${conflict_target}"
-    backup_path="${DOTPKG_BACKUP_DIR}/${conflict_target}"
 
     if [[ ! -e "${source_path}" ]] && [[ ! -L "${source_path}" ]]; then
       continue
     fi
 
+    if [[ -z "${DOTPKG_BACKUP_DIR:-}" ]]; then
+      DOTPKG_BACKUP_DIR="${TARGET}/.tanaab-backups/stow-$(timestamp_now)"
+    fi
+
+    backup_path="${DOTPKG_BACKUP_DIR}/${conflict_target}"
+    auto_mkdirp "${DOTPKG_BACKUP_DIR}"
     auto_mkdirp "$(dirname "${backup_path}")"
     auto_mv "${source_path}" "${backup_path}"
+    moved_any="0"
   done
+
+  return "${moved_any}"
 }
 
 plan_dotpkgs() {
@@ -1251,6 +1300,8 @@ plan_dotpkgs() {
 
 install_dotpkgs() {
   local dotpkg
+  local stowed_any="1"
+  local backed_up_conflicts="1"
 
   if [[ -z "${DOTPKGS_NEED_STOW:-}" ]]; then
     return 0
@@ -1262,21 +1313,32 @@ install_dotpkgs() {
     abort "stow is required for dot package management but could not be found."
   fi
 
-  evaluate_dotpkgs
+  for dotpkg in "${DOTPKGS[@]}"; do
+    evaluate_dotpkg "${dotpkg}"
 
-  if [[ "${#DOTPKGS_TO_STOW[@]}" -eq 0 ]]; then
+    if [[ -z "${CURRENT_DOTPKG_NEEDS_STOW:-}" ]]; then
+      continue
+    fi
+
+    log "stowing dot package ${dotpkg} into ${TARGET}"
+
+    if [[ "${#CURRENT_DOTPKG_CONFLICT_TARGETS[@]}" -gt 0 ]]; then
+      if ! backup_dotpkg_conflicts; then
+        abort "failed to back up conflicting dotfiles before stowing ${dotpkg}"
+      fi
+      backed_up_conflicts="0"
+    fi
+
+    stow_dotpkg "${dotpkg}"
+    stowed_any="0"
+  done
+
+  if [[ "${stowed_any}" -eq 1 ]]; then
     debug "dot packages are already stowed"
     return 0
   fi
 
-  backup_dotpkg_conflicts
-
-  log "stowing dot packages into ${TARGET}: $(array_join ", " DOTPKGS_TO_STOW)"
-  for dotpkg in "${DOTPKGS_TO_STOW[@]}"; do
-    stow_dotpkg "${dotpkg}"
-  done
-
-  if [[ -n "${DOTPKG_BACKUP_DIR:-}" ]] && [[ "${#DOTPKG_CONFLICT_TARGETS[@]}" -gt 0 ]]; then
+  if [[ -n "${DOTPKG_BACKUP_DIR:-}" ]] && [[ "${backed_up_conflicts}" -eq 0 ]]; then
     log "backed up conflicting dotfiles to ${DOTPKG_BACKUP_DIR}"
   fi
 }
