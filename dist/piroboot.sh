@@ -1,4 +1,4 @@
-SCRIPT_VERSION="v0.1.1"
+SCRIPT_VERSION="v0.1.2"
 #!/bin/bash
 set -u
 # bootstrap a macOS machine using homebrew, brewfiles, dotfiles, and identity data.

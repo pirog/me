@@ -1,4 +1,4 @@
-SCRIPT_VERSION="v0.1.1"
+SCRIPT_VERSION="v0.1.2"
 #!/bin/bash
 set -u
 # generate a Brewfile from the current homebrew state for selected package types.
