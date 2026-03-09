@@ -1595,9 +1595,11 @@ evaluate_dotpkgs() {
 
     if [[ -n "${CURRENT_DOTPKG_NEEDS_STOW:-}" ]]; then
       append_unique_array_value DOTPKGS_TO_STOW "${dotpkg}"
-      for conflict_target in "${CURRENT_DOTPKG_CONFLICT_TARGETS[@]}"; do
-        append_unique_array_value DOTPKG_CONFLICT_TARGETS "${conflict_target}"
-      done
+      if [[ "${#CURRENT_DOTPKG_CONFLICT_TARGETS[@]}" -gt 0 ]]; then
+        for conflict_target in "${CURRENT_DOTPKG_CONFLICT_TARGETS[@]}"; do
+          append_unique_array_value DOTPKG_CONFLICT_TARGETS "${conflict_target}"
+        done
+      fi
     fi
   done
 }
