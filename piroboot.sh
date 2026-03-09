@@ -697,7 +697,7 @@ show_planned_actions() {
 }
 
 finish_noop() {
-  log "${tty_bold}nothing to do.${tty_reset} no changes are needed right now."
+  log "${tty_bold}nothing to do${tty_reset}. ${tty_green}no changes are needed right now${tty_reset}."
   exit 0
 }
 
@@ -852,13 +852,13 @@ plan_homebrew() {
   fi
 
   BREW_NEEDS_INSTALL="1"
-  plan_action "${tty_tp}install${tty_reset} homebrew using the official installer ${tty_dim}(expected prefix: ${HOMEBREW_PREFIX})${tty_reset}"
+  plan_action "${tty_tp}install${tty_reset} ${tty_ts}homebrew${tty_reset} ${tty_dim}using the official installer (expected prefix: ${tty_ts}${HOMEBREW_PREFIX}${tty_dim})${tty_reset}"
 }
 
 install_homebrew() {
   local installer="${TANAAB_TMPDIR}/homebrew-install.sh"
 
-  log "homebrew is not installed. installing it now..."
+  log "${tty_tp}installing${tty_reset} ${tty_ts}homebrew${tty_reset} ${tty_dim}because it is not installed${tty_reset}"
   execute "${CURL}" \
     --fail \
     --location \
@@ -880,6 +880,7 @@ install_homebrew() {
   fi
 
   load_homebrew_shellenv "${BREW}"
+  log "${tty_bold}installed${tty_reset} ${tty_green}homebrew${tty_reset}"
   debug "using Homebrew at ${BREW}"
 }
 
@@ -913,12 +914,12 @@ plan_core_homebrew_packages() {
 
 install_core_homebrew_packages() {
   if [[ "${#CORE_BREW_FORMULAS_TO_INSTALL[@]}" -gt 0 ]]; then
-    log "installing core homebrew formulas: $(array_join ", " CORE_BREW_FORMULAS_TO_INSTALL)"
+    log "${tty_tp}installing${tty_reset} ${tty_dim}core homebrew formulas:${tty_reset} ${tty_ts}$(array_join ", " CORE_BREW_FORMULAS_TO_INSTALL)${tty_reset}"
     execute "${BREW}" install "${CORE_BREW_FORMULAS_TO_INSTALL[@]}"
   fi
 
   if [[ "${#CORE_BREW_CASKS_TO_INSTALL[@]}" -gt 0 ]]; then
-    log "installing core homebrew casks: $(array_join ", " CORE_BREW_CASK_DISPLAY_TO_INSTALL)"
+    log "${tty_tp}installing${tty_reset} ${tty_dim}core homebrew casks:${tty_reset} ${tty_ts}$(array_join ", " CORE_BREW_CASK_DISPLAY_TO_INSTALL)${tty_reset}"
     execute "${BREW}" install --cask "${CORE_BREW_CASKS_TO_INSTALL[@]}"
   fi
 }
@@ -1064,7 +1065,7 @@ install_brewfiles() {
     return 0
   fi
 
-  log "installing brewfile packages from: $(array_join ", " BREWFILES)"
+  log "${tty_tp}installing${tty_reset} ${tty_dim}brewfile packages from:${tty_reset} ${tty_ts}$(array_join ", " BREWFILES)${tty_reset}"
   execute "${BREW}" bundle install --file "${EFFECTIVE_BREWFILE}" --no-upgrade
 }
 
@@ -1326,7 +1327,7 @@ install_dotpkgs() {
       continue
     fi
 
-    log "stowing dot package ${dotpkg} into ${TARGET}"
+    log "${tty_tp}stowing${tty_reset} ${tty_ts}${dotpkg}${tty_reset} ${tty_dim}into${tty_reset} ${tty_ts}${TARGET}${tty_reset}"
 
     if [[ "${#CURRENT_DOTPKG_CONFLICT_TARGETS[@]}" -gt 0 ]]; then
       if ! backup_dotpkg_conflicts; then
@@ -1345,7 +1346,7 @@ install_dotpkgs() {
   fi
 
   if [[ -n "${DOTPKG_BACKUP_DIR:-}" ]] && [[ "${backed_up_conflicts}" -eq 0 ]]; then
-    log "backed up conflicting dotfiles to ${DOTPKG_BACKUP_DIR}"
+    log "${tty_bold}backed up${tty_reset} conflicting dotfiles to ${tty_green}${DOTPKG_BACKUP_DIR}${tty_reset}"
   fi
 }
 
@@ -1501,7 +1502,7 @@ if [[ -z "${NONINTERACTIVE-}" ]]; then
     fi
   fi
 else
-  log 'Running in non-interactive mode because `$NONINTERACTIVE` is set.'
+  log "${tty_bold}running${tty_reset} in ${tty_yellow}non-interactive mode${tty_reset} ${tty_dim}because \$NONINTERACTIVE is set${tty_reset}"
 fi
 
 ####################################################################### script

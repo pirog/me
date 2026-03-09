@@ -29,6 +29,18 @@ Write normal command output to `stdout` and failures to `stderr`.
 Use non-zero exit codes for failures.
 Use concise, actionable error messages.
 
+### Color Conventions
+
+When a shell CLI already defines terminal style helpers (for example `tty_tp`, `tty_ts`, `tty_dim`, `tty_bold`), apply them consistently to direct user-facing action/status messages without over-coloring the whole script.
+
+- **Planned or in-progress actions**: Wrap the main verb/action in the primary action color (for example `tty_tp`).
+- **Targets of those actions**: Wrap the main object, path, package list, or destination in the secondary target color (for example `tty_ts`).
+- **Helper context**: Use a dim color (for example `tty_dim`) for defaults, explanatory parentheticals, or secondary context.
+- **Already-completed actions**: Wrap the main past-tense verb in `tty_bold`.
+- **Completed result or status**: Use `tty_green` for intended/successful results, `tty_red` for failed/unintended results, and `tty_yellow` when the outcome is uncertain or cautionary.
+
+Keep `debug`, `usage`, and similar non-action message classes comparatively clean. Prefer color on the key verb and target, not on the entire sentence.
+
 ## Safety and Scope Guards
 
 Add explicit guards against destructive or nonsensical self-targeting behavior.
