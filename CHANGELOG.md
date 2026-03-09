@@ -1,5 +1,7 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+- Fixed bug preventing `dist` files from being stored in `git`
+
 ## v0.1.0 - [March 9, 2026](https://github.com/pirog/me/releases/tag/v0.1.0)
 
 - Added Bun-based build, lint, and release packaging that stamps versioned shell artifacts into `dist/`.

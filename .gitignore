@@ -27,7 +27,6 @@ lando.env
 
 # Build dirs
 build
-dist/
 
 # coverage reporting
 .nyc_output
