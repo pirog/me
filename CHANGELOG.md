@@ -1,5 +1,8 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+- Fixed bug preventing `brew shellenv` from `eval`ing correctly
+- Added `sync-verified` to `tanaabot` release flow
+
 ## v0.1.1 - [March 9, 2026](https://github.com/pirog/me/releases/tag/v0.1.1)
 
 - Fixed bug preventing `dist` files from being stored in `git`

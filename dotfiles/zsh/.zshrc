@@ -8,6 +8,18 @@ fi
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
+# Some terminal apps launch interactive non-login shells, which skip ~/.zprofile.
+# Rehydrate Homebrew here only when it is not already configured.
+if [[ -z "${HOMEBREW_PREFIX:-}" ]]; then
+  if [[ "$(/usr/bin/uname -m)" == "arm64" ]] && [[ -x /opt/homebrew/bin/brew ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  elif [[ -x /usr/local/bin/brew ]]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+  elif command -v brew >/dev/null 2>&1; then
+    eval "$(brew shellenv)"
+  fi
+fi
+
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
