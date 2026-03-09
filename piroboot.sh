@@ -1511,33 +1511,6 @@ auto_mv() {
   fi
 }
 
-# shellcheck disable=SC2329
-# @TODO: revisit later whether we need this still
-auto_curl_n_x() {
-  local dest="$1"
-  local url="$2"
-  local perm_dir
-  perm_dir="$(find_first_existing_parent "$dest")"
-
-  if have_sudo_access && [[ ! -w "$perm_dir" ]]; then
-    execute_sudo curl \
-      --fail \
-      --location \
-      --progress-bar \
-      --output "$dest" \
-      "$url"
-    execute_sudo chmod +x "$dest"
-  else
-    execute curl \
-      --fail \
-      --location \
-      --progress-bar \
-      --output "$dest" \
-      "$url"
-    execute chmod +x "$dest"
-  fi
-}
-
 # Invalidate sudo timestamp before exiting (if it wasn't active before).
 if [[ -x /usr/bin/sudo ]] && ! /usr/bin/sudo -n -v 2>/dev/null; then
   trap '/usr/bin/sudo -k' EXIT
