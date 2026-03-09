@@ -1,5 +1,7 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+## v0.1.1 - [March 9, 2026](https://github.com/pirog/me/releases/tag/v0.1.1)
+
 - Fixed bug preventing `dist` files from being stored in `git`
 
 ## v0.1.0 - [March 9, 2026](https://github.com/pirog/me/releases/tag/v0.1.0)
