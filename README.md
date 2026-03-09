@@ -11,14 +11,26 @@ Specifically this means installing, maintaining, updating and managing:
 
 ## Usage
 
-The quickstart is to do the below.
+The quickstart is to do the below. Note that this is the command you would want to run for initial machine setup. To sync an existing machine you may need to modify the command like adding `--force` for instance. Note that you will need to `export` `$OP_TOKEN` or replace it with your token.
 
 ```zsh
 # clone repo
-git clone git@github.com:pirog/me.git && cd me
+git clone git@github.com:pirog/me.git && cd me && chmod +x piroboot.sh
 
 # run script
-./piroboot.sh
+bash piroboot.sh \
+  --op-token "$OP_TOKEN" \
+  --ssh-key vmruk4ny353aly6tbom7z3v2hy/id_pirog \
+  --ssh-key vmruk4ny353aly6tbom7z3v2hy/id_botbox1 \
+  --dotpkg dotfiles/ai \
+  --dotpkg dotfiles/gh \
+  --dotpkg dotfiles/git \
+  --dotpkg dotfiles/hyperdrive \
+  --dotpkg dotfiles/lando \
+  --dotpkg dotfiles/ssh \
+  --dotpkg dotfiles/vim \
+  --dotpkg dotfiles/zsh
+
 ```
 
 If you are looking to customize your install then [advanced usage](#advanced) is for you.
@@ -30,12 +42,6 @@ The installation script has various options but you will need to download the sc
 ```zsh
 # get usage info
 bash piroboot.sh --help
-```
-
-### Usage
-
-```zsh
-TBD
 ```
 
 Some notes on advanced usage:
