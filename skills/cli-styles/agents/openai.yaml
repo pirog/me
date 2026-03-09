@@ -1,0 +1,6 @@
+interface:
+  display_name: "CLI Styles"
+  short_description: "Standardize CLI UX and implementation patterns"
+  icon_small: "./assets/terminal-icon.svg"
+  icon_large: "./assets/terminal-icon.svg"
+  default_prompt: "Use $cli-styles to design or refactor this command-line tool with consistent options, env vars, help text, and error handling."

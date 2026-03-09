@@ -1,0 +1,6 @@
+interface:
+  display_name: "EMSify"
+  short_description: "Migrate CommonJS projects to ESM"
+  icon_small: "./assets/ecmascript.png"
+  icon_large: "./assets/ecmascript.png"
+  default_prompt: "Use $emsify to migrate this repository from CommonJS to ESM while preserving behavior."

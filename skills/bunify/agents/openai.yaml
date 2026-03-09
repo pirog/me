@@ -1,0 +1,6 @@
+interface:
+  display_name: "Bunify"
+  short_description: "Migrate Node.js repositories to Bun"
+  icon_small: "./assets/bun-square.png"
+  icon_large: "./assets/bun-square.png"
+  default_prompt: "Use $bunify to migrate this repository from Node.js/npm to Bun."
