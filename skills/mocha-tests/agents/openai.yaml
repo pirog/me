@@ -1,6 +1,0 @@
-interface:
-  display_name: "Mocha Tests"
-  short_description: "Add Mocha unit tests as release gates"
-  icon_small: "./assets/mocha-logo.png"
-  icon_large: "./assets/mocha-logo.png"
-  default_prompt: "Use $mocha-tests to add Mocha unit tests and gate release/deploy workflows with them."

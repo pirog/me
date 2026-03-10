@@ -1,11 +1,23 @@
 ---
-name: cli-styles
+name: tanaab-cli-styles
 description: Define and enforce consistent command-line UX and implementation patterns for developer CLIs across languages. Use when creating or updating CLI tools, bin scripts, argument parsing, help output, env var overrides, auto-detected defaults, colored logging, error handling, and exit code behavior.
 ---
 
 # CLI Styles
 
-## Build a Stable CLI Contract
+## Overview
+
+Use this skill to define and enforce consistent command-line UX and implementation patterns for developer CLIs across languages.
+
+## When to Use
+
+- Create or refactor a command-line tool.
+- Standardize help output, env var overrides, and logging behavior.
+- Add safety guards and predictable defaults to an existing CLI.
+
+## Workflow
+
+1. Build a stable CLI contract.
 
 Use this order of precedence for user-provided values:
 1. Explicit CLI option (`--flag`)
@@ -14,7 +26,7 @@ Use this order of precedence for user-provided values:
 
 Reject ambiguous input. If a value should be option-only, reject positional arguments with a clear error message.
 
-## Shape Help Output Consistently
+2. Shape help output consistently.
 
 Print help with this section order:
 1. `Usage`
@@ -23,7 +35,7 @@ Print help with this section order:
 
 Show computed defaults in help output whenever possible (for example, a path discovered from repository structure).
 
-## Logging and Exit Behavior
+3. Standardize logging and exit behavior.
 
 Write normal command output to `stdout` and failures to `stderr`.
 Use non-zero exit codes for failures.
@@ -41,13 +53,13 @@ When a shell CLI already defines terminal style helpers (for example `tty_tp`, `
 
 Keep `debug`, `usage`, and similar non-action message classes comparatively clean. Prefer color on the key verb and target, not on the entire sentence.
 
-## Safety and Scope Guards
+4. Add safety and scope guards.
 
 Add explicit guards against destructive or nonsensical self-targeting behavior.
 Fail early when required paths or resources do not exist.
 Return clear remediation instructions in failure messages.
 
-## Language Notes
+5. Apply language-specific implementation notes.
 
 ### .js
 
@@ -79,3 +91,15 @@ Add Go implementation notes as this style guide expands.
 ### .rs
 
 Add Rust implementation notes as this style guide expands.
+
+## Bundled Resources
+
+- [assets/cli-styles-base.svg](./assets/cli-styles-base.svg): current Tanaab base icon source
+- [assets/cli-styles-tanaab.png](./assets/cli-styles-tanaab.png): current UI-facing branded icon
+
+## Validation
+
+- Confirm the CLI uses explicit option > env var > auto-detected default precedence.
+- Confirm help output exposes the right sections and shows computed defaults where useful.
+- Confirm failures are actionable and non-zero.
+- Confirm destructive or nonsensical target combinations are rejected early.

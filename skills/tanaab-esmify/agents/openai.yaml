@@ -1,0 +1,6 @@
+interface:
+  display_name: 'ESMify'
+  short_description: 'Migrate CommonJS projects to ESM'
+  icon_small: './assets/esmify-tanaab.png'
+  icon_large: './assets/esmify-tanaab.png'
+  default_prompt: 'Use $tanaab-esmify to migrate this repository from CommonJS to ESM while preserving behavior.'
