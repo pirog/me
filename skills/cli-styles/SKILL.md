@@ -54,7 +54,7 @@ Return clear remediation instructions in failure messages.
 Use ESM bin scripts with a shebang:
 
 ```js
-#!/usr/bin/env node
+#!/usr/bin/env bun
 ```
 
 Prefer `colorette` for style-consistent terminal output.

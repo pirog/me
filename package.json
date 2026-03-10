@@ -32,6 +32,7 @@
     "build": "bun run build:dist && bun run build:versions",
     "build:dist": "shx rm -rf ./dist && shx mkdir -p ./dist && shx cp -f ./piroboot.sh ./brewgen.sh ./dist/",
     "build:versions": "bun ./versioner.js",
-    "lint": "eslint . && shellcheck piroboot.sh brewgen.sh"
+    "lint": "eslint . && shellcheck piroboot.sh brewgen.sh",
+    "sync:ai": "bun ./skills/skill-sensei/scripts/sync_ai_stow.js"
   }
 }

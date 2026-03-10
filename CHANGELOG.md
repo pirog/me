@@ -1,5 +1,7 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+- Added `skill-sensei` for Pirog and Tanaab based skill generation and standardization
+
 ## v0.1.2 - [March 9, 2026](https://github.com/pirog/me/releases/tag/v0.1.2)
 
 - Fixed bug preventing `brew shellenv` from `eval`ing correctly
