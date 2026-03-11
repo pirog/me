@@ -1,6 +1,6 @@
 interface:
   display_name: "Tanaab Vue"
-  short_description: "Tanaab based guidance for Vue implementation"
+  short_description: "Tanaab based guidance for Vue 3 components and VitePress 1 static sites"
   icon_small: "./assets/tanaab-vue-icon.png"
   icon_large: "./assets/tanaab-vue-icon.png"
-  default_prompt: "Use $tanaab-vue for Vue-specific implementation work, assuming $tanaab-coding-core is already active."
+  default_prompt: "Use $tanaab-vue for Vue 3 component work or VitePress 1 static-site work, assuming $tanaab-coding-core is already active."

@@ -44,7 +44,8 @@ Use this skill to manage reusable template files for the Tanaab coding hierarchy
 ## Templates Directory
 
 - `templates/` stores reusable code patterns and boilerplate for the Tanaab coding skills.
-- Category directories now exist for `javascript/`, `css/`, `vue/`, `shell/`, `github-actions/`, `testing/`, and `release/`.
+- Category directories now exist for `javascript/`, `css/`, `vue/`, `vitepress/`, `shell/`, `github-actions/`, `testing/`, and `release/`.
+- Use `templates/vitepress/` for reusable VitePress starters, subtheme entrypoints, shared config fragments, and page scaffolds once those patterns prove reusable.
 - No concrete templates are scaffolded yet, but these directories are the target for reusable fragments extracted from real tasks.
 
 ## Validation

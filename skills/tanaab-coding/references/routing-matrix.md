@@ -21,7 +21,7 @@
   `tanaab-css`
   Common companions: `tanaab-vue`, `tanaab-templates`
 
-- Vue components, SFCs, composition API, app structure, or Vue tooling:
+- Vue 3 components, SFCs, composition API, app structure, VitePress 1 sites, `.vitepress/` theme work, or Vue tooling:
   `tanaab-vue`
   Common companions: `tanaab-javascript`, `tanaab-css`, `tanaab-testing`, `tanaab-templates`
 
@@ -67,3 +67,7 @@
 - Templates vs source-of-truth behavior:
   `tanaab-templates` stores reusable implementations and fragments.
   Behavioral ownership remains with the specialized skill that defines the policy.
+
+- Static-site framework selection vs site branding:
+  `tanaab-vue` owns the decision to prefer VitePress 1 for static sites and to choose the right subtheme base.
+  `tanaab-css` owns styling and design-token implementation inside that chosen site structure.
