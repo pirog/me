@@ -3,7 +3,15 @@
 import { access, readFile } from 'node:fs/promises';
 import path from 'node:path';
 
-const REQUIRED_HEADINGS = ['## Overview', '## When to Use', '## Workflow', '## Bundled Resources', '## Validation'];
+const REQUIRED_HEADINGS = [
+  '## Overview',
+  '## When to Use',
+  '## When Not to Use',
+  '## Relationship to Other Skills',
+  '## Workflow',
+  '## Bundled Resources',
+  '## Validation',
+];
 
 function usage(code = 0) {
   process.stdout.write('Usage: validate_branded_skill.js --skill-dir <path>\n');

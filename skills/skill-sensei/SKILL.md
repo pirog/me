@@ -23,6 +23,16 @@ Read [references/skill-standard.md](./references/skill-standard.md) for the requ
 - Standardize an existing skill as `tanaab`.
 - Normalize `SKILL.md`, `agents/openai.yaml`, or icon handling across branded skills.
 
+## When Not to Use
+
+- Do not use this skill for one-off repository edits that do not change skill structure, naming, or branding.
+- Do not use this skill to author reusable content templates themselves until the dedicated `tanaab-templates` skill exists.
+
+## Relationship to Other Skills
+
+- Use this skill to define the branded wrapper and structural standard for other skills.
+- Pair it with a future `tanaab-templates` skill when a skill needs reusable prompt, document, or file templates under `templates/`.
+
 ## Workflow
 
 1. Determine the brand, mode, slug, display name, and purpose.
@@ -37,6 +47,7 @@ Read [references/skill-standard.md](./references/skill-standard.md) for the requ
 - Use the prefixed machine id from the selected brand profile.
 - Keep `display_name` unprefixed.
 - Normalize `SKILL.md` to the required section order from [references/skill-standard.md](./references/skill-standard.md).
+- Ensure the scaffold includes `## When Not to Use` and `## Relationship to Other Skills`.
 
 3. Handle icons by default.
 
@@ -51,6 +62,7 @@ Read [references/skill-standard.md](./references/skill-standard.md) for the requ
 
 - For new skills, prefer [scripts/init_branded_skill.js](./scripts/init_branded_skill.js) to create the folder, `SKILL.md`, `agents/openai.yaml`, and a fallback icon.
 - For existing skills, update the folder name, `SKILL.md` frontmatter, display metadata, and icon paths in place.
+- Treat `templates/` as optional. Only create or reference it when the skill actually ships reusable template files.
 
 5. Sync stow-managed skill targets after changes.
 

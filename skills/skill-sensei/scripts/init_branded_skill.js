@@ -131,6 +131,16 @@ ${description}
 - Describe the task boundaries clearly.
 - Call out nearby requests that should not trigger this skill.
 
+## When Not to Use
+
+- Add adjacent tasks or situations where this skill should not be selected.
+- Call out cases that belong to another skill instead.
+
+## Relationship to Other Skills
+
+- List complementary skills, likely handoffs, or overlapping scopes here.
+- Mention a \`templates/\` directory here when the skill ships reusable template files.
+
 ## Workflow
 
 1. Identify the inputs, context, and required resources.
@@ -140,6 +150,7 @@ ${description}
 ## Bundled Resources
 
 - Add scripts, references, and assets here as they are created.
+- Add \`templates/\` here when the skill ships reusable template files.
 
 ## Validation
 

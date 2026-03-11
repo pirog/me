@@ -18,6 +18,16 @@ Prereq: authenticate with the standard GitHub CLI once (for example, run `gh aut
 - Summarize GitHub-hosted CI failures before proposing a fix.
 - Triage CI only after confirming the failing provider is GitHub Actions rather than an external system.
 
+## When Not to Use
+
+- Do not use this skill for Buildkite or other non-GitHub CI providers beyond reporting the details URL.
+- Do not use this skill when the user wants an immediate code change without first inspecting failing checks and approving a plan.
+
+## Relationship to Other Skills
+
+- Pair with implementation-focused skills like `tanaab-bunify` or `tanaab-esmify` after the CI failure points to a concrete repo change.
+- Use this skill before changelog or release-note work when CI health is still blocking the branch.
+
 ## Workflow
 
 1. Verify access and resolve the PR.

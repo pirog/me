@@ -15,6 +15,16 @@ Use this skill to define and enforce consistent command-line UX and implementati
 - Standardize help output, env var overrides, and logging behavior.
 - Add safety guards and predictable defaults to an existing CLI.
 
+## When Not to Use
+
+- Do not use this skill for non-CLI libraries, backend services, or UI-only work.
+- Do not use this skill when the request is primarily about runtime migration, testing, or release notes rather than command-line UX.
+
+## Relationship to Other Skills
+
+- Pair with `tanaab-bunify` when a CLI is also moving from Node.js/npm to Bun.
+- Pair with `tanaab-mocha-tests` when the CLI needs focused test coverage after UX or argument-parsing changes.
+
 ## Workflow
 
 1. Build a stable CLI contract.

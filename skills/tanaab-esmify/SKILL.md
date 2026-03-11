@@ -15,6 +15,16 @@ Use this skill to convert a codebase from CommonJS to ESM in a controlled way wh
 - Normalize import syntax, ordering, and file extensions for ESM output.
 - Update package metadata and build tooling to publish or run ESM artifacts.
 
+## When Not to Use
+
+- Do not use this skill for Bun or package-manager migrations that do not require a module-system change.
+- Do not use this skill when the repository is already ESM and only needs linting, testing, or CI cleanup.
+
+## Relationship to Other Skills
+
+- Pair with `tanaab-bunify` when a repository needs both Bun adoption and ESM conversion.
+- Pair with `tanaab-mocha-tests` when the ESM migration needs focused regression coverage afterward.
+
 ## Workflow
 
 1. Update package and build metadata for ESM outputs.

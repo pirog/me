@@ -20,6 +20,7 @@ skill-id/
 ├── SKILL.md
 ├── agents/
 │   └── openai.yaml
+├── templates/     # optional, for reusable files a future tanaab-templates skill can manage
 ├── assets/        # optional but recommended when an icon exists
 ├── references/    # optional
 └── scripts/       # optional
@@ -33,9 +34,11 @@ Every branded skill should use this section order:
 2. `# <Display Name>`
 3. `## Overview`
 4. `## When to Use`
-5. `## Workflow`
-6. `## Bundled Resources`
-7. `## Validation`
+5. `## When Not to Use`
+6. `## Relationship to Other Skills`
+7. `## Workflow`
+8. `## Bundled Resources`
+9. `## Validation`
 
 ## Standardization Rules
 
@@ -45,6 +48,7 @@ Every branded skill should use this section order:
 - Normalize headings and section order to this standard.
 - Update `agents/openai.yaml` so `display_name` is unprefixed and icon paths still resolve.
 - Preserve existing icons when they are already relevant, then add the correct brand watermark when assets are available.
+- Mention `templates/` under `## Bundled Resources` when the skill ships reusable files or prompts.
 - When standardizing the entire `skills/` folder, always skip `skills/skill-sensei` so the meta-skill is not rewritten as part of its own pass.
 
 ## Prompting Rules

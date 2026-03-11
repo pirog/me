@@ -15,6 +15,16 @@ Use this skill to create clean, reviewable changelog entries from git history wi
 - Rewrite raw commit history into concise user-facing release notes.
 - Add consistent PR or issue links to changelog bullets.
 
+## When Not to Use
+
+- Do not use this skill for full release planning, tagging strategy, or version-selection decisions.
+- Do not use this skill when the user only wants a raw commit log or unedited git summary.
+
+## Relationship to Other Skills
+
+- Pair with `tanaab-gh-fix-ci` or `tanaab-bunify` after substantive repo changes when those changes need release-note coverage.
+- Use this skill after implementation-focused skills have finished, not during the debugging or migration work itself.
+
 ## Workflow
 
 1. Build the change set.

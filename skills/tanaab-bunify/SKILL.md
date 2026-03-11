@@ -15,6 +15,16 @@ Use this skill to perform a phased migration from Node.js/npm to Bun with minima
 - Replace Node-oriented CI, release, or package-manager plumbing with Bun equivalents.
 - Standardize Bun-first scripts, lockfiles, and runtime conventions without rewriting unrelated application logic.
 
+## When Not to Use
+
+- Do not use this skill for CommonJS-to-ESM syntax rewrites unless the Bun migration also requires them.
+- Do not use this skill for generic dependency upgrades that do not change the runtime or package-manager model.
+
+## Relationship to Other Skills
+
+- Pair with `tanaab-esmify` when a Bun migration also needs module-system conversion.
+- Pair with `tanaab-cli-styles` when Bun-based CLI tooling needs UX standardization after the runtime migration.
+
 ## Workflow
 
 1. Update repository plumbing first.

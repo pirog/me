@@ -15,6 +15,16 @@ Use this skill to implement Part III-style unit testing with Mocha while keeping
 - Introduce or tighten release-gating test coverage.
 - Standardize test folder layout and naming conventions.
 
+## When Not to Use
+
+- Do not use this skill for broad integration-test suites, browser E2E work, or non-JavaScript test stacks.
+- Do not use this skill when the request is only to migrate runtime or module format without adding or changing tests.
+
+## Relationship to Other Skills
+
+- Pair with `tanaab-esmify` or `tanaab-bunify` after migrations that need targeted regression coverage.
+- Pair with `tanaab-cli-styles` when CLI changes need dedicated utility or argument-parsing tests.
+
 ## Workflow
 
 1. Add minimal test dependencies.
