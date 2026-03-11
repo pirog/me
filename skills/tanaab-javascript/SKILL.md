@@ -32,7 +32,7 @@ Use this skill for JavaScript and TypeScript implementation work within the Tana
 - Defer workflow YAML and CI job structure to `tanaab-github-actions`.
 - Defer test scope and coverage policy to `tanaab-testing`.
 - Defer changelog and release-note writing to `tanaab-release`.
-- Pair with `tanaab-vue` for Vue codebases using JavaScript or TypeScript.
+- Pair with `tanaab-frontend` for Vue 3, VitePress 1, or other frontend codebases that also need JavaScript or TypeScript runtime work.
 - Pair with `tanaab-testing` when implementation changes need regression coverage.
 - Pair with `tanaab-github-actions` when JavaScript action code and workflow wiring are both in scope.
 - Pair with `tanaab-shell` when JavaScript CLIs also need shell contract or wrapper guidance.

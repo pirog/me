@@ -17,13 +17,9 @@
   `tanaab-javascript`
   Common companions: `tanaab-testing`, `tanaab-github-actions`, `tanaab-shell`, `tanaab-templates`
 
-- SCSS, CSS, selectors, layout, tokens, or stylesheet organization:
-  `tanaab-css`
-  Common companions: `tanaab-vue`, `tanaab-templates`
-
-- Vue 3 components, SFCs, composition API, app structure, VitePress 1 sites, `.vitepress/` theme work, or Vue tooling:
-  `tanaab-vue`
-  Common companions: `tanaab-javascript`, `tanaab-css`, `tanaab-testing`, `tanaab-templates`
+- Vue 3 components, VitePress 1 sites, `.vitepress/` theme work, SCSS, CSS, selectors, layout, tokens, design systems, or frontend tooling:
+  `tanaab-frontend`
+  Common companions: `tanaab-javascript`, `tanaab-testing`, `tanaab-templates`
 
 - Shell scripts, command wrappers, CLI UX, help output, logging, exit behavior, or command-line safety:
   `tanaab-shell`
@@ -35,7 +31,7 @@
 
 - Test implementation, coverage policy, test thresholds, or test-gate recommendations:
   `tanaab-testing`
-  Common companions: `tanaab-javascript`, `tanaab-vue`, `tanaab-shell`, `tanaab-github-actions`, `tanaab-release`, `tanaab-templates`
+  Common companions: `tanaab-javascript`, `tanaab-frontend`, `tanaab-shell`, `tanaab-github-actions`, `tanaab-release`, `tanaab-templates`
 
 - Changelog drafting, release notes, release readiness, or release-facing metadata:
   `tanaab-release`
@@ -68,10 +64,6 @@
   `tanaab-templates` stores reusable implementations and fragments.
   Behavioral ownership remains with the specialized skill that defines the policy.
 
-- Static-site framework selection vs site branding:
-  `tanaab-vue` owns the decision to prefer VitePress 1 for static sites and to choose the right subtheme base.
-  `tanaab-css` owns styling and design-token implementation inside that chosen site structure.
-
-- Stylesheet format defaults vs framework structure:
-  `tanaab-css` owns the decision to prefer SCSS over raw CSS, Less, or Stylus.
-  `tanaab-vue` applies that preference inside Vue SFCs and VitePress theme layers.
+- Frontend structure, static-site defaults, and styling defaults:
+  `tanaab-frontend` owns the decision to prefer Vue 3 for components, VitePress 1 for static sites, and SCSS for frontend styling.
+  `tanaab-javascript` owns general runtime, package, bundling, and non-frontend JavaScript decisions.

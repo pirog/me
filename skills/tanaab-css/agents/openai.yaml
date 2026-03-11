@@ -1,6 +1,0 @@
-interface:
-  display_name: "Tanaab CSS"
-  short_description: "Tanaab based guidance for CSS implementation"
-  icon_small: "./assets/tanaab-css-icon.png"
-  icon_large: "./assets/tanaab-css-icon.png"
-  default_prompt: "Use $tanaab-css for CSS-specific implementation work, assuming $tanaab-coding-core is already active."

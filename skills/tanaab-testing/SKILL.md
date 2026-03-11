@@ -29,6 +29,7 @@ Use this skill for testing strategy, targeted test implementation, coverage poli
 - Defer workflow YAML placement of test gates to `tanaab-github-actions`.
 - Defer release-readiness narrative to `tanaab-release`.
 - Pair with `tanaab-javascript` for JavaScript or TypeScript test implementation.
+- Pair with `tanaab-frontend` for frontend component, theme, or static-site regression coverage.
 - Pair with `tanaab-github-actions` when tests or coverage gates need CI workflow changes.
 - Pair with `tanaab-release` when test results gate release readiness.
 - Use `tanaab-templates` when a reusable test scaffold or fixture pattern should be applied.
