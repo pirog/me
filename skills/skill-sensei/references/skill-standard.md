@@ -9,7 +9,7 @@
 
 ## Display Metadata
 
-- `display_name` stays unprefixed
+- `display_name` is unprefixed by default, unless the user explicitly wants the brand in the human-facing title
 - `short_description` should describe the skill outcome, not the brand
 - `default_prompt` should mention the skill by machine id when helpful
 
@@ -49,7 +49,8 @@ Every branded skill should use this section order:
 - Update `agents/openai.yaml` so `display_name` is unprefixed and icon paths still resolve.
 - Preserve existing icons when they are already relevant, then add the correct brand watermark when assets are available.
 - Mention `templates/` under `## Bundled Resources` when the skill ships reusable files or prompts.
-- When standardizing the entire `skills/` folder, always skip `skills/skill-sensei` so the meta-skill is not rewritten as part of its own pass.
+- When updating the entire `skills/` folder, always skip `skills/skill-sensei` so the meta-skill is not rewritten as part of its own pass.
+- Bulk metadata, description, icon, naming, or branding updates must not modify `skills/skill-sensei` unless the request explicitly targets it.
 
 ## Prompting Rules
 

@@ -39,13 +39,14 @@ Read [references/skill-standard.md](./references/skill-standard.md) for the requ
 
 - Infer the brand when the request says `pirog` or `tanaab`.
 - If standardizing, locate the existing skill folder first.
-- If the request targets the whole `skills/` tree, always exclude `skills/skill-sensei` from the standardization pass.
+- If the request targets the whole `skills/` tree, always exclude `skills/skill-sensei` from the pass.
+- Treat `skills/skill-sensei` as protected during bulk updates. Do not rewrite its metadata, descriptions, icons, or naming as part of broad repo-wide changes.
 - Ask only for missing inputs that change identity or behavior. Do not ask for an icon unless the user explicitly wants to override the default.
 
 2. Apply the shared skill standard.
 
 - Use the prefixed machine id from the selected brand profile.
-- Keep `display_name` unprefixed.
+- Keep `display_name` unprefixed unless the user explicitly wants the brand in the human-facing title.
 - Normalize `SKILL.md` to the required section order from [references/skill-standard.md](./references/skill-standard.md).
 - Ensure the scaffold includes `## When Not to Use` and `## Relationship to Other Skills`.
 

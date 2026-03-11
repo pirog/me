@@ -1,6 +1,6 @@
 interface:
   display_name: "CLI Styles"
-  short_description: "Standardize CLI UX and implementation patterns"
+  short_description: "Tanaab based standardization of CLI UX and implementation patterns"
   icon_small: "./assets/cli-styles-tanaab.png"
   icon_large: "./assets/cli-styles-tanaab.png"
   default_prompt: "Use $tanaab-cli-styles to design or refactor this command-line tool with consistent options, env vars, help text, and error handling."

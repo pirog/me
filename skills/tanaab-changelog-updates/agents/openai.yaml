@@ -1,6 +1,6 @@
 interface:
   display_name: "Changelog Updates"
-  short_description: "Draft concise, linked release changelogs"
+  short_description: "Tanaab based drafting of concise, linked release changelogs"
   icon_small: "./assets/changelog-updates-tanaab.png"
   icon_large: "./assets/changelog-updates-tanaab.png"
   default_prompt: "Use $tanaab-changelog-updates to summarize changes since the last tag into an alphabetized changelog list with issue links."

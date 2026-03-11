@@ -128,10 +128,6 @@ async function main() {
     }
   }
 
-  if (/^(Piro|Tanaab)\b/.test(iface.display_name ?? '')) {
-    failures.push('display_name should not be prefixed with the brand name.');
-  }
-
   for (const key of ['icon_small', 'icon_large']) {
     if (!iface[key]) {
       continue;
