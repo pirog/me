@@ -22,6 +22,10 @@ Use this skill for Vue-specific implementation work within the Tanaab coding hie
 ## Relationship to Other Skills
 
 - Assume `tanaab-coding-core` is active.
+- Primary ownership: Vue components, SFC structure, state flow, Vue app structure, and Vue-specific tooling decisions.
+- Defer general JavaScript or TypeScript runtime and package concerns to `tanaab-javascript`.
+- Defer styling ownership to `tanaab-css`.
+- Defer test scope and regression policy to `tanaab-testing`.
 - Pair with `tanaab-javascript` for Vue codebases using JavaScript or TypeScript.
 - Pair with `tanaab-css` for Vue styling work.
 - Pair with `tanaab-testing` when Vue changes need focused regression coverage.
@@ -43,4 +47,5 @@ Use this skill for Vue-specific implementation work within the Tanaab coding hie
 
 - Confirm `tanaab-coding-core` is active.
 - Confirm the task actually requires Vue-specific handling.
+- Confirm this skill stayed the primary owner only for Vue-specific surfaces.
 - Confirm cross-skill handoffs are explicit when JavaScript, CSS, testing, or templates are involved.

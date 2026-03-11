@@ -23,6 +23,8 @@ Use this skill to manage reusable template files for the Tanaab coding hierarchy
 
 - Support `tanaab-coding`, `tanaab-javascript`, `tanaab-css`, `tanaab-vue`, `tanaab-shell`, `tanaab-github-actions`, `tanaab-testing`, and `tanaab-release`.
 - Assume `tanaab-coding-core` is active when templates are applied to coding work.
+- Primary ownership: reusable scaffolds, boilerplate, and fragments that have already proven reusable.
+- Do not override behavioral ownership held by the specialized skill that defined the pattern.
 
 ## Workflow
 
@@ -41,7 +43,8 @@ Use this skill to manage reusable template files for the Tanaab coding hierarchy
 ## Templates Directory
 
 - `templates/` stores reusable code patterns and boilerplate for the Tanaab coding skills.
-- No templates are scaffolded yet, but this directory is the target for reusable Bun, workflow, test, CLI, and release fragments extracted from retired skills.
+- Category directories now exist for `javascript/`, `css/`, `vue/`, `shell/`, `github-actions/`, `testing/`, and `release/`.
+- No concrete templates are scaffolded yet, but these directories are the target for reusable fragments extracted from real tasks.
 
 ## Validation
 

@@ -23,6 +23,10 @@ Use this skill for release preparation, changelog drafting, and release-facing r
 ## Relationship to Other Skills
 
 - Assume `tanaab-coding-core` is active.
+- Primary ownership: changelog text, release notes, release-readiness summaries, and release-facing repository metadata.
+- Defer implementation changes to the owning implementation skill.
+- Defer release or deploy workflow mechanics to `tanaab-github-actions`.
+- Defer test evidence and coverage policy to `tanaab-testing`.
 - Pair with `tanaab-testing` when test results or coverage gates determine release readiness.
 - Pair with `tanaab-github-actions` when release or deploy workflows need updates.
 - Pair with `tanaab-javascript` or `tanaab-shell` when release automation touches runtime or scripting code.
@@ -62,6 +66,7 @@ Use this skill for release preparation, changelog drafting, and release-facing r
 
 - Confirm `tanaab-coding-core` is active.
 - Confirm release notes or changelog entries are concise and scoped to user-visible changes.
+- Confirm this skill stayed the primary owner only for release-facing narrative and readiness surfaces.
 - Re-read final bullets for tense, clarity, and ordering.
 - Confirm every applicable bullet has a valid link.
 - Confirm any release gates or workflow changes are explicit.

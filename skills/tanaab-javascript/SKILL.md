@@ -26,6 +26,11 @@ Use this skill for JavaScript and TypeScript implementation work within the Tana
 ## Relationship to Other Skills
 
 - Assume `tanaab-coding-core` is active.
+- Primary ownership: JavaScript and TypeScript source code, package metadata, runtime wiring, module system, bundling, and JavaScript-backed automation code.
+- Defer shell-level CLI contract and wrapper behavior to `tanaab-shell`.
+- Defer workflow YAML and CI job structure to `tanaab-github-actions`.
+- Defer test scope and coverage policy to `tanaab-testing`.
+- Defer changelog and release-note writing to `tanaab-release`.
 - Pair with `tanaab-vue` for Vue codebases using JavaScript or TypeScript.
 - Pair with `tanaab-testing` when implementation changes need regression coverage.
 - Pair with `tanaab-github-actions` when JavaScript action code and workflow wiring are both in scope.
@@ -76,6 +81,7 @@ Use this skill for JavaScript and TypeScript implementation work within the Tana
 
 - Confirm `tanaab-coding-core` is active.
 - Confirm the task actually requires JavaScript or TypeScript handling.
+- Confirm this skill stayed the primary owner only for JavaScript or TypeScript surfaces.
 - Run `bun install --frozen-lockfile --ignore-scripts` when Bun plumbing changed.
 - Run `bun run lint`.
 - Run `bun run build` or equivalent artifact generation when build or distribution output changed.

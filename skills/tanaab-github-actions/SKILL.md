@@ -25,6 +25,11 @@ Use this skill for GitHub Actions workflow authoring and GitHub-hosted CI triage
 ## Relationship to Other Skills
 
 - Assume `tanaab-coding-core` is active.
+- Primary ownership: workflow YAML, workflow triggers, permissions, job topology, reusable workflow structure, and GitHub-hosted CI triage.
+- Defer shell-step internals to `tanaab-shell`.
+- Defer JavaScript action code and runtime/package changes to `tanaab-javascript`.
+- Defer test content and coverage policy to `tanaab-testing`.
+- Defer changelog and release-note narrative to `tanaab-release`.
 - Pair with `tanaab-shell` for shell-heavy workflow steps.
 - Pair with `tanaab-javascript` when JavaScript action code, bundling, or Bun runtime changes are involved.
 - Pair with `tanaab-testing` when CI jobs need test or coverage gates.
@@ -68,6 +73,7 @@ Use this skill for GitHub Actions workflow authoring and GitHub-hosted CI triage
 
 - Confirm `tanaab-coding-core` is active.
 - Confirm the task is actually GitHub Actions-led.
+- Confirm this skill stayed the primary owner only for workflow or CI-triage surfaces.
 - Confirm the failing provider is GitHub Actions before attempting deep CI triage.
 - Confirm the summary includes the failing check name, URL, and useful failure snippet when triaging CI.
 - Confirm no code changes are applied before approval when the task started in CI triage mode.

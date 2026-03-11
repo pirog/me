@@ -26,12 +26,12 @@ Read [references/skill-standard.md](./references/skill-standard.md) for the requ
 ## When Not to Use
 
 - Do not use this skill for one-off repository edits that do not change skill structure, naming, or branding.
-- Do not use this skill to author reusable content templates themselves until the dedicated `tanaab-templates` skill exists.
+- Do not use this skill to author reusable content templates themselves when `tanaab-templates` is the more direct fit.
 
 ## Relationship to Other Skills
 
 - Use this skill to define the branded wrapper and structural standard for other skills.
-- Pair it with a future `tanaab-templates` skill when a skill needs reusable prompt, document, or file templates under `templates/`.
+- Pair it with `tanaab-templates` when a skill needs reusable prompt, document, or file templates under `templates/`.
 
 ## Workflow
 
@@ -57,7 +57,6 @@ Read [references/skill-standard.md](./references/skill-standard.md) for the requ
 - For new Tanaab icons, prefer lighter source artwork so the icon remains legible against the dark Tanaab watermark treatment.
 - If no good icon exists, generate a branded fallback icon instead of blocking on user input.
 - Use [scripts/compose_skill_icon.js](./scripts/compose_skill_icon.js) to clip watermark images into circular lower-right badges.
-- Use [scripts/generate_test_watermarks.js](./scripts/generate_test_watermarks.js) when you need a piro/tanaab watermark QA set for every skill in `skills/`.
 
 4. Scaffold or normalize files.
 
@@ -84,7 +83,6 @@ Read [references/skill-standard.md](./references/skill-standard.md) for the requ
 - [references/brand-profiles.md](./references/brand-profiles.md): brand metadata, prefixes, colors, and watermark asset names
 - [references/icon-policy.md](./references/icon-policy.md): default icon selection and watermark input requirements
 - [scripts/init_branded_skill.js](./scripts/init_branded_skill.js): deterministic scaffolder for new branded skills
-- [scripts/generate_test_watermarks.js](./scripts/generate_test_watermarks.js): bulk-generates watermark test comps for every skill icon
 - [scripts/sync_ai_stow.js](./scripts/sync_ai_stow.js): restows the `ai` dot package and prunes dangling skill links in live targets
 - [scripts/validate_branded_skill.js](./scripts/validate_branded_skill.js): lightweight validator for branded skill folders
 - [scripts/compose_skill_icon.js](./scripts/compose_skill_icon.js): SVG compositor for watermark badges

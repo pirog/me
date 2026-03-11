@@ -24,6 +24,10 @@ Use this skill for testing strategy, targeted test implementation, coverage poli
 ## Relationship to Other Skills
 
 - Assume `tanaab-coding-core` is active.
+- Primary ownership: test scope, test conventions, coverage policy, threshold decisions, and recommendations for where tests should gate work.
+- Defer implementation code changes to the owning implementation skill.
+- Defer workflow YAML placement of test gates to `tanaab-github-actions`.
+- Defer release-readiness narrative to `tanaab-release`.
 - Pair with `tanaab-javascript` for JavaScript or TypeScript test implementation.
 - Pair with `tanaab-github-actions` when tests or coverage gates need CI workflow changes.
 - Pair with `tanaab-release` when test results gate release readiness.
@@ -63,6 +67,7 @@ Use this skill for testing strategy, targeted test implementation, coverage poli
 
 - Confirm `tanaab-coding-core` is active.
 - Confirm the test scope matches the request.
+- Confirm this skill stayed the primary owner only for test and coverage surfaces.
 - Confirm any CI or release gate changes are explicit.
 - Run `bun run test`.
 - Run `bun run lint` when linting is part of repo standards.

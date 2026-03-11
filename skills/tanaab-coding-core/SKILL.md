@@ -27,11 +27,21 @@ Use this skill as the universal engineering doctrine for all tasks in the Tanaab
 
 ## Coding Principles
 
-TODO: Define coding principles.
+- Make the smallest change that fully solves the task.
+- Preserve external behavior and public interfaces unless the user explicitly asks for a behavior change.
+- Keep one clear source of truth for configuration, generated artifacts, and workflow decisions.
+- Make operational intent explicit in code, scripts, and workflows instead of relying on hidden assumptions.
+- Validate the changed surface with the narrowest reliable checks first, then broaden validation when risk justifies it.
+- Leave the repository easier to reason about than you found it: less drift, less duplication, and clearer boundaries.
 
 ## Engineering Philosophy
 
-TODO: Define engineering philosophy.
+- Route by primary ownership first, then add companion skills only where the task crosses surfaces.
+- Fix foundations before polish: runtime, build, test, CI, and release plumbing come before stylistic refinement.
+- Treat tests, CI, release notes, and automation as product surfaces, not support work.
+- Prefer deterministic, repo-local tooling and explicit configuration over magical implicit behavior.
+- Promote patterns into `tanaab-templates` only after they prove reusable in real tasks.
+- Make cross-skill handoffs explicit whenever one skill owns the artifact and another owns surrounding policy or integration.
 
 ## Workflow
 
@@ -48,4 +58,4 @@ TODO: Define engineering philosophy.
 
 - Confirm this skill is active whenever a skill in the Tanaab coding stack is used.
 - Confirm specialized skills are layered on top of this skill rather than replacing it.
-- Leave `## Coding Principles` and `## Engineering Philosophy` at TODO until intentionally defined.
+- Confirm stack decisions follow the primary-owner model rather than splitting ownership ambiguously.

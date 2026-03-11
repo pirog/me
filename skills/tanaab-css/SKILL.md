@@ -22,6 +22,10 @@ Use this skill for CSS-specific implementation work within the Tanaab coding hie
 ## Relationship to Other Skills
 
 - Assume `tanaab-coding-core` is active.
+- Primary ownership: selectors, layout, tokens, stylesheet structure, and visual styling decisions.
+- Defer framework structure to `tanaab-vue` when styling is embedded in Vue components.
+- Defer JavaScript-driven behavior to `tanaab-javascript`.
+- Defer visual regression or style-test policy to `tanaab-testing`.
 - Pair with `tanaab-vue` when styling Vue components or app layouts.
 - Use `tanaab-templates` when a reusable stylesheet or component pattern should be applied.
 
@@ -41,4 +45,5 @@ Use this skill for CSS-specific implementation work within the Tanaab coding hie
 
 - Confirm `tanaab-coding-core` is active.
 - Confirm the task is actually CSS-led.
+- Confirm this skill stayed the primary owner only for styling surfaces.
 - Confirm any template use came from `tanaab-templates`.

@@ -20,7 +20,7 @@ skill-id/
 ├── SKILL.md
 ├── agents/
 │   └── openai.yaml
-├── templates/     # optional, for reusable files a future tanaab-templates skill can manage
+├── templates/     # optional, for reusable files managed with tanaab-templates
 ├── assets/        # optional but recommended when an icon exists
 ├── references/    # optional
 └── scripts/       # optional

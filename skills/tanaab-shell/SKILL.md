@@ -23,6 +23,11 @@ Use this skill for shell scripting, command-line automation, and CLI contract wo
 ## Relationship to Other Skills
 
 - Assume `tanaab-coding-core` is active.
+- Primary ownership: shell scripts, direct command execution, wrapper behavior, CLI contract, help output, logging conventions, and shell safety guards.
+- Defer JavaScript or TypeScript implementation details to `tanaab-javascript`.
+- Defer workflow YAML, triggers, permissions, and job structure to `tanaab-github-actions`.
+- Defer test-scope and coverage-policy decisions to `tanaab-testing`.
+- Defer changelog and release-note writing to `tanaab-release`.
 - Pair with `tanaab-github-actions` when workflow steps depend on shell scripts.
 - Pair with `tanaab-javascript` when a CLI is implemented in JavaScript but needs shell-facing UX and wrapper guidance.
 - Pair with `tanaab-testing` when CLI behavior needs focused regression coverage.
@@ -65,6 +70,7 @@ Use this skill for shell scripting, command-line automation, and CLI contract wo
 
 - Confirm `tanaab-coding-core` is active.
 - Confirm the task is actually shell-led.
+- Confirm this skill stayed the primary owner only for shell or CLI-contract surfaces.
 - Confirm the CLI uses explicit option > env var > auto-detected default precedence when that contract exists.
 - Confirm help output exposes the right sections and surfaces computed defaults where useful.
 - Confirm failures are actionable and non-zero.
