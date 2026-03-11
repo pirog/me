@@ -1,13 +1,13 @@
 ---
 name: tanaab-templates
-description: Manage reusable template files for Tanaab coding skills.
+description: Manage reusable template files and extracted reusable fragments for Tanaab coding skills.
 ---
 
 # Tanaab Templates
 
 ## Overview
 
-Use this skill to manage reusable template files for the Tanaab coding hierarchy.
+Use this skill to manage reusable template files for the Tanaab coding hierarchy and to hold reusable fragments extracted from specialized skills.
 
 ## When to Use
 
@@ -21,7 +21,7 @@ Use this skill to manage reusable template files for the Tanaab coding hierarchy
 
 ## Relationship to Other Skills
 
-- Support `tanaab-coding`, `tanaab-typescript`, `tanaab-css`, `tanaab-vue`, `tanaab-shell`, and `tanaab-github-actions`.
+- Support `tanaab-coding`, `tanaab-javascript`, `tanaab-css`, `tanaab-vue`, `tanaab-shell`, `tanaab-github-actions`, `tanaab-testing`, and `tanaab-release`.
 - Assume `tanaab-coding-core` is active when templates are applied to coding work.
 
 ## Workflow
@@ -29,7 +29,8 @@ Use this skill to manage reusable template files for the Tanaab coding hierarchy
 1. Confirm which coding skill requested template support.
 2. Inspect `templates/` for a reusable starting point that matches the request.
 3. Select and adapt the relevant template when one exists.
-4. If no suitable template exists, call out the gap rather than inventing a new template set implicitly.
+4. When consolidating legacy skill guidance, move truly reusable fragments here instead of leaving them buried in retired skill docs.
+5. If no suitable template exists, call out the gap rather than inventing a new template set implicitly.
 
 ## Bundled Resources
 
@@ -40,7 +41,7 @@ Use this skill to manage reusable template files for the Tanaab coding hierarchy
 ## Templates Directory
 
 - `templates/` stores reusable code patterns and boilerplate for the Tanaab coding skills.
-- No templates are scaffolded yet.
+- No templates are scaffolded yet, but this directory is the target for reusable Bun, workflow, test, CLI, and release fragments extracted from retired skills.
 
 ## Validation
 

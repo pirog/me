@@ -14,7 +14,7 @@ function usage(code = 0) {
   process.stdout.write(`Usage: render_tanaab_coding_icon.js --title <title> --label <label> --output-stem <path> [options]
 
 Options:
-  --base-icon <path>   background base icon [default: skills/tanaab-cli-styles/assets/cli-styles-tanaab.png]
+  --base-icon <path>   background base icon [default: skills/tanaab-coding/assets/tanaab-coding-stack-base.png]
   --help               show this message
 `);
   process.exit(code);
@@ -22,7 +22,7 @@ Options:
 
 function parseArgs(argv) {
   const parsed = {
-    baseIcon: path.join(REPO_ROOT, 'skills/tanaab-cli-styles/assets/cli-styles-tanaab.png'),
+    baseIcon: path.join(REPO_ROOT, 'skills/tanaab-coding/assets/tanaab-coding-stack-base.png'),
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -181,7 +181,7 @@ async function main() {
 
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${CANVAS_SIZE}" height="${CANVAS_SIZE}" viewBox="0 0 ${CANVAS_SIZE} ${CANVAS_SIZE}" role="img" aria-labelledby="title desc">
   <title id="title">${options.title}</title>
-  <desc id="desc">Shared Tanaab coding icon for ${options.title}, composited on the CLI Styles Tanaab base icon.</desc>
+  <desc id="desc">Shared Tanaab coding icon for ${options.title}, composited on the shared Tanaab coding stack base icon.</desc>
   <defs>
     <filter id="label-shadow" x="-20%" y="-20%" width="140%" height="160%">
       <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#ffffff" flood-opacity="0.42" />

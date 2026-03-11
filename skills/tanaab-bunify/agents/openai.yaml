@@ -1,6 +1,0 @@
-interface:
-  display_name: "Bunify"
-  short_description: "Tanaab based Bun migration for Node.js repositories"
-  icon_small: "./assets/bunify-tanaab.png"
-  icon_large: "./assets/bunify-tanaab.png"
-  default_prompt: "Use $tanaab-bunify to migrate this repository from Node.js/npm to Bun."

@@ -1,17 +1,17 @@
 ---
 name: tanaab-coding-core
-description: Apply the shared engineering doctrine for all Tanaab coding tasks.
+description: Apply the shared engineering doctrine for all tasks in the Tanaab coding stack.
 ---
 
 # Tanaab Coding Core
 
 ## Overview
 
-Use this skill as the universal engineering doctrine for all Tanaab coding tasks.
+Use this skill as the universal engineering doctrine for all tasks in the Tanaab coding stack.
 
 ## When to Use
 
-- Apply this skill to every coding task in the Tanaab coding hierarchy.
+- Apply this skill to every task in the Tanaab coding hierarchy.
 - Use this skill whenever `tanaab-coding` or a specialized Tanaab coding skill is active.
 
 ## When Not to Use
@@ -22,7 +22,7 @@ Use this skill as the universal engineering doctrine for all Tanaab coding tasks
 ## Relationship to Other Skills
 
 - `tanaab-coding` should always activate this skill.
-- `tanaab-typescript`, `tanaab-css`, `tanaab-vue`, `tanaab-shell`, and `tanaab-github-actions` assume this skill is active.
+- `tanaab-javascript`, `tanaab-css`, `tanaab-vue`, `tanaab-shell`, `tanaab-github-actions`, `tanaab-testing`, and `tanaab-release` assume this skill is active.
 - `tanaab-templates` can supply reusable files that still follow this skill's doctrine.
 
 ## Coding Principles
@@ -35,7 +35,7 @@ TODO: Define engineering philosophy.
 
 ## Workflow
 
-1. Activate this skill for every Tanaab coding task.
+1. Activate this skill for every task in the Tanaab coding stack.
 2. Apply the shared doctrine from `## Coding Principles` and `## Engineering Philosophy` once those sections are defined.
 3. Hand domain-specific implementation details to the relevant specialized skill.
 
@@ -46,6 +46,6 @@ TODO: Define engineering philosophy.
 
 ## Validation
 
-- Confirm this skill is active whenever a Tanaab coding skill is used.
+- Confirm this skill is active whenever a skill in the Tanaab coding stack is used.
 - Confirm specialized skills are layered on top of this skill rather than replacing it.
 - Leave `## Coding Principles` and `## Engineering Philosophy` at TODO until intentionally defined.

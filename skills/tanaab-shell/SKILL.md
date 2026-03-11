@@ -1,36 +1,60 @@
 ---
 name: tanaab-shell
-description: Guide shell scripting and command-line automation under the shared Tanaab coding structure.
+description: Guide shell scripting, command-line automation, and CLI contract work under the shared Tanaab coding structure.
 ---
 
 # Tanaab Shell
 
 ## Overview
 
-Use this skill for shell scripting and command-line automation within the Tanaab coding hierarchy.
+Use this skill for shell scripting, command-line automation, and CLI contract work within the Tanaab coding hierarchy.
 
 ## When to Use
 
 - The request targets shell scripts, command wrappers, terminal automation, or scripting glue.
-- The task is primarily about shell behavior rather than Typescript, CSS, or Vue implementation.
+- The task is primarily about shell behavior, CLI contract, help output, logging, or safety guards rather than JavaScript, CSS, or Vue implementation.
 
 ## When Not to Use
 
 - Do not use this skill for non-shell application logic.
 - Do not use this skill for GitHub Actions workflow structure unless the change is specifically shell-step logic.
+- Do not use this skill when the request is primarily about runtime migration, test policy, or changelog writing rather than shell or CLI behavior.
 
 ## Relationship to Other Skills
 
 - Assume `tanaab-coding-core` is active.
 - Pair with `tanaab-github-actions` when workflow steps depend on shell scripts.
+- Pair with `tanaab-javascript` when a CLI is implemented in JavaScript but needs shell-facing UX and wrapper guidance.
+- Pair with `tanaab-testing` when CLI behavior needs focused regression coverage.
+- Pair with `tanaab-release` when release automation is shell-driven.
 - Use `tanaab-templates` when a reusable script scaffold or shell snippet should be applied.
 
 ## Workflow
 
 1. Confirm `tanaab-coding-core` is active.
-2. Scope the shell surface: script entrypoint, environment, portability, and execution context.
-3. Apply the shell-specific changes required by the task.
-4. Pull from `tanaab-templates` only when a reusable shell scaffold should be used.
+2. Scope the shell surface: script entrypoint, environment, portability, execution context, and whether the task also defines a CLI contract.
+3. Build a stable CLI contract when the task touches a command-line interface.
+- Use this precedence order for user-provided values: explicit CLI option, environment variable override, auto-detected default.
+- Reject ambiguous input.
+- If a value should be option-only, reject positional arguments with a clear error message.
+4. Shape help output consistently when the tool exposes help text.
+- Print help sections in this order: `Usage`, `Options`, `Environment Variables`.
+- Show computed defaults in help output whenever possible.
+5. Standardize logging and exit behavior.
+- Write normal command output to `stdout`.
+- Write failures to `stderr`.
+- Use non-zero exit codes for failures.
+- Keep error messages concise and actionable.
+- When terminal style helpers such as `tty_tp`, `tty_ts`, `tty_dim`, `tty_bold`, `tty_green`, `tty_red`, or `tty_yellow` already exist, use them consistently on the key verb or target instead of coloring whole sentences.
+6. Add safety and scope guards.
+- Add explicit guards against destructive or nonsensical self-targeting behavior.
+- Fail early when required paths or resources do not exist.
+- Return clear remediation instructions in failure messages.
+7. Apply shell-specific implementation details.
+- Keep shell entrypoints explicit about interpreter and execution context.
+- Preserve portability requirements when the repository already targets multiple shells or environments.
+- When a composite action or wrapper script depends on shell execution, pass required environment variables explicitly rather than assuming inheritance.
+8. Pull from `tanaab-javascript`, `tanaab-testing`, `tanaab-github-actions`, `tanaab-release`, or `tanaab-templates` when the task crosses those boundaries.
 
 ## Bundled Resources
 
@@ -41,4 +65,8 @@ Use this skill for shell scripting and command-line automation within the Tanaab
 
 - Confirm `tanaab-coding-core` is active.
 - Confirm the task is actually shell-led.
+- Confirm the CLI uses explicit option > env var > auto-detected default precedence when that contract exists.
+- Confirm help output exposes the right sections and surfaces computed defaults where useful.
+- Confirm failures are actionable and non-zero.
+- Confirm destructive or nonsensical target combinations are rejected early.
 - Confirm any template use came from `tanaab-templates`.

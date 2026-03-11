@@ -16,7 +16,7 @@ Use this skill for CSS-specific implementation work within the Tanaab coding hie
 
 ## When Not to Use
 
-- Do not use this skill for Typescript-only work.
+- Do not use this skill for JavaScript-only work.
 - Do not use this skill for shell automation or GitHub Actions workflow authoring.
 
 ## Relationship to Other Skills
