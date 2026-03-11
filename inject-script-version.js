@@ -1,28 +1,58 @@
-import fs from 'node:fs';
+import { readFile, writeFile } from 'node:fs/promises';
 
-const log = (message) => process.stdout.write(`${message}\n`);
+const SCRIPT_PATHS = ['./dist/piroboot.sh', './dist/brewgen.sh'];
 
-// if script version is not set then do nothing
-if (!process.env.SCRIPT_VERSION) {
-  log('SCRIPT_VERSION not set, doing nothing');
-  process.exit(0);
+function log(message) {
+  process.stdout.write(`${message}\n`);
 }
 
-const VERSION = process.env.SCRIPT_VERSION;
-const SCRIPT_PATHS = ['./dist/piroboot.sh', './dist/brewgen.sh'].map((path) => new URL(path, import.meta.url));
+function getScriptVersion() {
+  return process.env.SCRIPT_VERSION ?? null;
+}
 
-for (const SCRIPT_PATH of SCRIPT_PATHS) {
-  // POSIX SCRIPT
-  const POSIX_PREPENDER = `SCRIPT_VERSION="${VERSION}"`;
-  const opsxScript = fs.readFileSync(SCRIPT_PATH, { encoding: 'utf8' });
-  const vpsxScript = `${POSIX_PREPENDER}\n${opsxScript}`;
-  fs.writeFileSync(SCRIPT_PATH, vpsxScript, { encoding: 'utf8' });
+function getVersionLine(version) {
+  return `SCRIPT_VERSION="${version}"`;
+}
 
-  // POSIX VALIDATE
-  const upsxScript = fs.readFileSync(SCRIPT_PATH, { encoding: 'utf8' });
-  if (!upsxScript.includes(POSIX_PREPENDER)) {
-    throw Error(`${SCRIPT_PATH.pathname} does not seem to have the correct SCRIPT_VERSION=${VERSION}`);
-  } else {
-    log(`updated ${SCRIPT_PATH.pathname} to SCRIPT_VERSION=${VERSION}`);
+function resolveScriptUrls(paths) {
+  return paths.map((scriptPath) => new URL(scriptPath, import.meta.url));
+}
+
+function prependVersion(contents, versionLine) {
+  return `${versionLine}\n${contents}`;
+}
+
+function assertVersionLine(contents, versionLine, scriptUrl) {
+  if (!contents.includes(versionLine)) {
+    throw new Error(`${scriptUrl.pathname} does not seem to have the correct ${versionLine}`);
   }
 }
+
+async function updateScriptVersion(scriptUrl, version) {
+  const versionLine = getVersionLine(version);
+  const sourceContents = await readFile(scriptUrl, { encoding: 'utf8' });
+  const updatedContents = prependVersion(sourceContents, versionLine);
+
+  await writeFile(scriptUrl, updatedContents, { encoding: 'utf8' });
+
+  const writtenContents = await readFile(scriptUrl, { encoding: 'utf8' });
+  assertVersionLine(writtenContents, versionLine, scriptUrl);
+
+  return scriptUrl.pathname;
+}
+
+async function main() {
+  const version = getScriptVersion();
+
+  if (!version) {
+    log('SCRIPT_VERSION not set, doing nothing');
+    return;
+  }
+
+  for (const scriptUrl of resolveScriptUrls(SCRIPT_PATHS)) {
+    const scriptPath = await updateScriptVersion(scriptUrl, version);
+    log(`updated ${scriptPath} to ${getVersionLine(version)}`);
+  }
+}
+
+await main();

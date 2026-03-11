@@ -8,6 +8,10 @@
 - Each `utils/` file should export one main function.
 - A `utils/` function should be reusable across projects with minimal or no rewrite.
 - Do not put repo-specific vocabulary, product names, workflow assumptions, or repository-only behavior into `utils/`.
+- Normalize inputs near the top of `utils/` functions so later code can work against one stable shape.
+- Prefer straight-line data flow with named constants over repeatedly mutating a working variable.
+- Use early returns to clear out trivial edge cases before the main transform or lookup path.
+- Keep side effects out of `utils/` unless the file explicitly owns a load, write, or process boundary and that boundary is the point of the utility.
 - Keep repo-specific logic near the owning purpose folder instead of moving it into `utils/`.
 - Treat `utils/` modules as future extraction candidates for a shared utilities repo or standalone packages.
 - If a Bun or Node file has a hashbang, treat it as a true CLI entrypoint.

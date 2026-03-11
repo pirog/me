@@ -22,6 +22,13 @@ export default defineConfig([
     },
     rules: {
       'import/enforce-node-protocol-usage': ['error', 'always'],
+      'import/order': [
+        'error',
+        {
+          'groups': ['builtin', 'external', ['internal', 'parent', 'sibling', 'index']],
+          'newlines-between': 'always',
+        },
+      ],
       'import/no-commonjs': 'error',
       'no-console': 'warn',
       'no-debugger': 'error',

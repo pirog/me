@@ -36,6 +36,12 @@ Use this skill as the universal engineering doctrine for all tasks in the Tanaab
 - Prefer SCSS over raw CSS, Less, or Stylus for stylesheet authoring when a preprocessor is appropriate.
 - Organize repository code by purpose and behavior rather than by implementation type.
 - Reserve `utils/` for generic, portable helpers that can move across repositories with minimal or no rewrite.
+- Normalize raw inputs and options once at the function boundary so downstream logic can work against one stable shape.
+- Prefer straight-line data flow: derive named constants in order and move toward the return value instead of repeatedly rewriting a working variable.
+- Prefer early returns for empty, invalid, or trivial edge cases when they simplify the main path.
+- Default to `const` and minimize mutable working variables. Introduce mutation only when it is required by the API or clearly improves readability.
+- When mutation is necessary, confine it to a cloned object or local scratch value instead of mutating caller-owned inputs.
+- Keep pure transformation separate from side effects such as filesystem access, environment mutation, process control, network calls, and child-process execution.
 - In small Bun or Node repos with only a few JavaScript files, keeping repo-specific scripts at the root is acceptable.
 - Treat hashbang-bearing Bun or Node files as true CLI entrypoints at the repository package level: they belong in `bin/` and should be declared in `package.json`.
 - Skill-bundled helper scripts under `skills/**/scripts/` are exempt from the repo-level `bin/` convention and should stay local to the owning skill.
@@ -51,6 +57,9 @@ Use this skill as the universal engineering doctrine for all tasks in the Tanaab
 - Prefer deterministic, repo-local tooling and explicit configuration over magical implicit behavior.
 - Treat TypeScript migration as an explicit follow-on decision until the build and release path is standardized well enough to scaffold it confidently.
 - Keep generic utilities small, extraction-ready, and free of repo-specific language so they can later move into a shared utilities repo or standalone packages.
+- Let data enter at the boundary, get normalized once, flow through small named transformations, and return in one direction.
+- Prefer explanation by function shape and naming over comment-heavy code.
+- Prefer returning derived data over mutating ambient global state inside generic code.
 - Promote patterns into `tanaab-templates` only after they prove reusable in real tasks.
 - Make cross-skill handoffs explicit whenever one skill owns the artifact and another owns surrounding policy or integration.
 
@@ -74,4 +83,6 @@ Use this skill as the universal engineering doctrine for all tasks in the Tanaab
 - Confirm JavaScript surfaces default to ESM and Bun unless the user explicitly asked for another runtime or module format.
 - Confirm stylesheet work defaults to SCSS unless the user explicitly required plain CSS or another styling format.
 - Confirm code is organized by purpose, and that any `utils/` entries are genuinely generic and portable rather than repo-specific.
+- Confirm functions normalize input at the boundary, keep data flow mostly one-way, and minimize mutable working variables.
+- Confirm caller-owned inputs are not mutated unless the code explicitly clones or isolates that mutation.
 - Confirm non-CLI Bun or Node scripts do not carry a hashbang and are invoked via `bun ./script.js` or `node ./script.js` instead.
