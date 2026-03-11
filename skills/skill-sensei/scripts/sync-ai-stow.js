@@ -10,7 +10,7 @@ const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(SCRIPT_DIR, '../../..');
 
 function usage(code = 0) {
-  process.stdout.write(`Usage: sync_ai_stow.js [options]
+  process.stdout.write(`Usage: sync-ai-stow.js [options]
 
 Restow the repo's ai dot package into a target home directory and prune dangling skill links.
 

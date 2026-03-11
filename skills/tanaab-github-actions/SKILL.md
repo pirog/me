@@ -46,13 +46,14 @@ Use this skill for GitHub Actions workflow authoring and GitHub-hosted CI triage
 - Replace install commands with `bun install --frozen-lockfile --ignore-scripts` unless lifecycle scripts are explicitly required.
 - Replace `npm run ...` with `bun run ...` in workflow jobs.
 - Keep OS and version test matrices intact unless the runtime manager itself is changing.
+- Preserve fixed workflow filenames and GitHub Actions loader conventions, but use kebab-case for repo-authored helper scripts and local support files.
 - For JavaScript actions or composite wrappers, ensure runtime wiring still emits the expected artifacts and pass required `INPUT_*` values explicitly when the wrapper depends on them.
 - Update Dependabot ecosystem settings from `npm` to `bun` where applicable.
 4. For CI triage, inspect failing checks before proposing a fix.
 - Run `gh auth status` in the target repository.
 - If unauthenticated, ask the user to run `gh auth login` with repo and workflow scopes before proceeding.
 - Prefer resolving the current branch PR with `gh pr view --json number,url` unless the user already provided a PR number or URL.
-- Preferred inspection path: run the bundled script `python "<path-to-skill>/scripts/inspect_pr_checks.py" --repo "." --pr "<number-or-url>"`.
+- Preferred inspection path: run the bundled script `python "<path-to-skill>/scripts/inspect-pr-checks.py" --repo "." --pr "<number-or-url>"`.
 - Add `--json` when machine-readable output is useful.
 - Manual fallback: use `gh pr checks`, `gh run view`, and `gh api` when the bundled script is not enough.
 - If the failing provider is external rather than GitHub Actions, report the details URL and stop there.
@@ -66,8 +67,8 @@ Use this skill for GitHub Actions workflow authoring and GitHub-hosted CI triage
 
 - [agents/openai.yaml](./agents/openai.yaml): UI metadata for the GitHub Actions skill.
 - [assets/tanaab-github-actions-icon.png](./assets/tanaab-github-actions-icon.png): UI icon for the GitHub Actions skill.
-- [scripts/inspect_pr_checks.py](./scripts/inspect_pr_checks.py): fetch failing PR checks, pull GitHub Actions logs, and extract a failure snippet
-- [references/inspect_pr_checks.LICENSE.txt](./references/inspect_pr_checks.LICENSE.txt): license file for the bundled inspection helper
+- [scripts/inspect-pr-checks.py](./scripts/inspect-pr-checks.py): fetch failing PR checks, pull GitHub Actions logs, and extract a failure snippet
+- [references/inspect-pr-checks-license.txt](./references/inspect-pr-checks-license.txt): license file for the bundled inspection helper
 
 ## Validation
 

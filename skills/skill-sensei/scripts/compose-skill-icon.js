@@ -7,7 +7,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 function usage(code = 0) {
-  process.stdout.write(`Usage: compose_skill_icon.js --base-icon <path> --watermark <path> --output <path> [options]
+  process.stdout.write(`Usage: compose-skill-icon.js --base-icon <path> --watermark <path> --output <path> [options]
 
 Options:
   --size <number>          output canvas size [default: 1024]

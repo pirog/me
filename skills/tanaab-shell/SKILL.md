@@ -57,6 +57,7 @@ Use this skill for shell scripting, command-line automation, and CLI contract wo
 - Return clear remediation instructions in failure messages.
 7. Apply shell-specific implementation details.
 - Keep shell entrypoints explicit about interpreter and execution context.
+- Prefer kebab-case for new repo-authored shell and helper filenames unless the surrounding tool expects a fixed conventional name.
 - Preserve portability requirements when the repository already targets multiple shells or environments.
 - When a composite action or wrapper script depends on shell execution, pass required environment variables explicitly rather than assuming inheritance.
 8. Pull from `tanaab-javascript`, `tanaab-testing`, `tanaab-github-actions`, `tanaab-release`, or `tanaab-templates` when the task crosses those boundaries.

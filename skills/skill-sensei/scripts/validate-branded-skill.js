@@ -14,7 +14,7 @@ const REQUIRED_HEADINGS = [
 ];
 
 function usage(code = 0) {
-  process.stdout.write('Usage: validate_branded_skill.js --skill-dir <path>\n');
+  process.stdout.write('Usage: validate-branded-skill.js --skill-dir <path>\n');
   process.exit(code);
 }
 

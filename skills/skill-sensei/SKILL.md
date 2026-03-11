@@ -56,24 +56,24 @@ Read [references/skill-standard.md](./references/skill-standard.md) for the requ
 - If creating a new skill without an icon, first try to reuse a local icon that clearly matches the skill domain.
 - For new Tanaab icons, prefer lighter source artwork so the icon remains legible against the dark Tanaab watermark treatment.
 - If no good icon exists, generate a branded fallback icon instead of blocking on user input.
-- Use [scripts/compose_skill_icon.js](./scripts/compose_skill_icon.js) to clip watermark images into circular lower-right badges.
+- Use [scripts/compose-skill-icon.js](./scripts/compose-skill-icon.js) to clip watermark images into circular lower-right badges.
 
 4. Scaffold or normalize files.
 
-- For new skills, prefer [scripts/init_branded_skill.js](./scripts/init_branded_skill.js) to create the folder, `SKILL.md`, `agents/openai.yaml`, and a fallback icon.
+- For new skills, prefer [scripts/init-branded-skill.js](./scripts/init-branded-skill.js) to create the folder, `SKILL.md`, `agents/openai.yaml`, and a fallback icon.
 - For existing skills, update the folder name, `SKILL.md` frontmatter, display metadata, and icon paths in place.
 - Treat `templates/` as optional. Only create or reference it when the skill actually ships reusable template files.
 
 5. Sync stow-managed skill targets after changes.
 
-- Run [scripts/sync_ai_stow.js](./scripts/sync_ai_stow.js) after creating, renaming, consolidating, or deleting skills when the repo is stowed into `~/.codex` or `~/.openclaw`.
+- Run [scripts/sync-ai-stow.js](./scripts/sync-ai-stow.js) after creating, renaming, consolidating, or deleting skills when the repo is stowed into `~/.codex` or `~/.openclaw`.
 - Use the default target to refresh the live `~/.codex/skills` and `~/.openclaw/skills` pointers.
 - Use `--simulate` first when you only need to inspect what `stow --restow ai` would change.
 - Let the sync step prune dangling skill links left behind by removed or renamed skills.
 
 6. Validate before finishing.
 
-- Run [scripts/validate_branded_skill.js](./scripts/validate_branded_skill.js) against each branded skill you create or modify.
+- Run [scripts/validate-branded-skill.js](./scripts/validate-branded-skill.js) against each branded skill you create or modify.
 - Call out missing watermark assets or any places where a generic fallback icon was used.
 - Confirm the stow sync completed or note that live target updates were intentionally skipped.
 
@@ -82,10 +82,10 @@ Read [references/skill-standard.md](./references/skill-standard.md) for the requ
 - [references/skill-standard.md](./references/skill-standard.md): required file layout, naming rules, and markdown sections
 - [references/brand-profiles.md](./references/brand-profiles.md): brand metadata, prefixes, colors, and watermark asset names
 - [references/icon-policy.md](./references/icon-policy.md): default icon selection and watermark input requirements
-- [scripts/init_branded_skill.js](./scripts/init_branded_skill.js): deterministic scaffolder for new branded skills
-- [scripts/sync_ai_stow.js](./scripts/sync_ai_stow.js): restows the `ai` dot package and prunes dangling skill links in live targets
-- [scripts/validate_branded_skill.js](./scripts/validate_branded_skill.js): lightweight validator for branded skill folders
-- [scripts/compose_skill_icon.js](./scripts/compose_skill_icon.js): SVG compositor for watermark badges
+- [scripts/init-branded-skill.js](./scripts/init-branded-skill.js): deterministic scaffolder for new branded skills
+- [scripts/sync-ai-stow.js](./scripts/sync-ai-stow.js): restows the `ai` dot package and prunes dangling skill links in live targets
+- [scripts/validate-branded-skill.js](./scripts/validate-branded-skill.js): lightweight validator for branded skill folders
+- [scripts/compose-skill-icon.js](./scripts/compose-skill-icon.js): SVG compositor for watermark badges
 
 ## Validation
 

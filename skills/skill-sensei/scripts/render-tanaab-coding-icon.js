@@ -7,36 +7,52 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
-const ASSETS_DIR = path.resolve(SCRIPT_DIR, '../assets');
-
+const REPO_ROOT = path.resolve(SCRIPT_DIR, '../../..');
 const CANVAS_SIZE = 1024;
-const BADGES = [
-  {
-    id: 'pirog',
-    cx: 166,
-    cy: 328,
-    size: 118,
-    ringColor: '#00c88a',
-    bgColor: '#ffffff',
-    watermarkPath: path.join(ASSETS_DIR, 'pirog-watermark.png'),
-  },
-  {
-    id: 'tanaab',
-    cx: 858,
-    cy: 328,
-    size: 118,
-    ringColor: '#ffffff',
-    bgColor: '#ffffff',
-    watermarkPath: path.join(ASSETS_DIR, 'tanaab-watermark.svg'),
-  },
-];
 
 function usage(code = 0) {
-  process.stdout.write(`Usage: render_skill_sensei_icon.js
+  process.stdout.write(`Usage: render-tanaab-coding-icon.js --title <title> --label <label> --output-stem <path> [options]
 
-Generates self-contained SVG and PNG assets for the Skill Sensei icon.
+Options:
+  --base-icon <path>   background base icon [default: skills/tanaab-coding/assets/tanaab-coding-stack-base.png]
+  --help               show this message
 `);
   process.exit(code);
+}
+
+function parseArgs(argv) {
+  const parsed = {
+    baseIcon: path.join(REPO_ROOT, 'skills/tanaab-coding/assets/tanaab-coding-stack-base.png'),
+  };
+
+  for (let index = 0; index < argv.length; index += 1) {
+    const arg = argv[index];
+
+    if (arg === '--help' || arg === '-h') {
+      usage(0);
+    }
+
+    if (!arg.startsWith('--')) {
+      throw new Error(`Positional arguments are not supported: ${arg}`);
+    }
+
+    const key = arg.slice(2).replace(/-([a-z])/g, (_, char) => char.toUpperCase());
+    const value = argv[index + 1];
+    if (!value || value.startsWith('--')) {
+      throw new Error(`Missing value for ${arg}`);
+    }
+
+    parsed[key] = value;
+    index += 1;
+  }
+
+  if (!parsed.title || !parsed.label || !parsed.outputStem) {
+    throw new Error('Missing required arguments.');
+  }
+
+  parsed.baseIcon = path.resolve(parsed.baseIcon);
+  parsed.outputStem = path.resolve(parsed.outputStem);
+  return parsed;
 }
 
 function mediaTypeFor(assetPath) {
@@ -91,7 +107,6 @@ function rasterizePng(svg, outputPath) {
     );
 
     let stderr = '';
-
     child.stderr.on('data', (chunk) => {
       stderr += chunk.toString();
     });
@@ -134,8 +149,8 @@ function runQuickLookThumbnail(inputPath, outputDir) {
 }
 
 async function rasterizeWithQuickLook(svg, outputPath) {
-  const tempDir = await mkdtemp(path.join(os.tmpdir(), 'skill-sensei-icon-'));
-  const tempSvgPath = path.join(tempDir, 'skill-sensei.svg');
+  const tempDir = await mkdtemp(path.join(os.tmpdir(), 'tanaab-coding-icon-'));
+  const tempSvgPath = path.join(tempDir, `${path.basename(outputPath, '.png')}.svg`);
   const tempPngPath = `${tempSvgPath}.png`;
 
   try {
@@ -148,59 +163,32 @@ async function rasterizeWithQuickLook(svg, outputPath) {
   }
 }
 
-function badgeMarkup({ id, cx, cy, size, ringColor, bgColor, watermarkHref }) {
-  const radius = Math.round(size / 2);
-  const imageX = cx - radius;
-  const imageY = cy - radius;
-  const ringRadius = radius + 10;
-  const ringWidth = 10;
+function labelFontSize() {
+  return 273;
+}
 
-  return `  <g filter="url(#badge-shadow)">
-    <circle cx="${cx}" cy="${cy}" r="${ringRadius}" fill="${bgColor}" fill-opacity="0.96" />
-    <image href="${watermarkHref}" xlink:href="${watermarkHref}" x="${imageX}" y="${imageY}" width="${size}" height="${size}" preserveAspectRatio="xMidYMid slice" clip-path="url(#clip-${id})" />
-    <circle cx="${cx}" cy="${cy}" r="${ringRadius}" fill="none" stroke="${ringColor}" stroke-width="${ringWidth}" />
-  </g>`;
+function labelLetterSpacing() {
+  return '0.04em';
 }
 
 async function main() {
-  if (process.argv.includes('--help') || process.argv.includes('-h')) {
-    usage(0);
-  }
-
-  const baseIconPath = path.join(ASSETS_DIR, 'skill-sensei-base.png');
-  const svgOutputPath = path.join(ASSETS_DIR, 'skill-sensei.svg');
-  const pngOutputPath = path.join(ASSETS_DIR, 'skill-sensei.png');
-
-  const baseIconHref = await toDataUri(baseIconPath);
-  const badges = await Promise.all(
-    BADGES.map(async (badge) => ({
-      ...badge,
-      watermarkHref: await toDataUri(badge.watermarkPath),
-    })),
-  );
-
-  const clipPaths = badges
-    .map(({ id, cx, cy, size }) => {
-      const radius = Math.round(size / 2);
-      return `    <clipPath id="clip-${id}">
-      <circle cx="${cx}" cy="${cy}" r="${radius}" />
-    </clipPath>`;
-    })
-    .join('\n');
-
-  const badgeGroups = badges.map((badge) => badgeMarkup(badge)).join('\n');
+  const options = parseArgs(process.argv.slice(2));
+  const svgOutputPath = `${options.outputStem}.svg`;
+  const pngOutputPath = `${options.outputStem}.png`;
+  const baseHref = await toDataUri(options.baseIcon);
+  const labelSize = labelFontSize(options.label);
+  const letterSpacing = labelLetterSpacing(options.label);
 
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${CANVAS_SIZE}" height="${CANVAS_SIZE}" viewBox="0 0 ${CANVAS_SIZE} ${CANVAS_SIZE}" role="img" aria-labelledby="title desc">
-  <title id="title">Skill Sensei</title>
-  <desc id="desc">A sensei holding both the Pirog and Tanaab watermarks in open hands.</desc>
+  <title id="title">${options.title}</title>
+  <desc id="desc">Shared Tanaab coding icon for ${options.title}, composited on the shared Tanaab coding stack base icon.</desc>
   <defs>
-${clipPaths}
-    <filter id="badge-shadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#0f172a" flood-opacity="0.18" />
+    <filter id="label-shadow" x="-20%" y="-20%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#ffffff" flood-opacity="0.42" />
     </filter>
   </defs>
-  <image href="${baseIconHref}" xlink:href="${baseIconHref}" x="0" y="0" width="${CANVAS_SIZE}" height="${CANVAS_SIZE}" preserveAspectRatio="xMidYMid slice" />
-${badgeGroups}
+  <image href="${baseHref}" xlink:href="${baseHref}" x="0" y="0" width="${CANVAS_SIZE}" height="${CANVAS_SIZE}" preserveAspectRatio="xMidYMid slice" />
+  <text x="34" y="946" fill="#db2777" text-anchor="start" font-size="${labelSize}" font-family="Anton, Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif" font-weight="900" letter-spacing="${letterSpacing}" filter="url(#label-shadow)">${options.label}</text>
 </svg>
 `;
 

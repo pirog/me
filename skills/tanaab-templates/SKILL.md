@@ -33,6 +33,7 @@ Use this skill to manage reusable template files for the Tanaab coding hierarchy
 3. Select and adapt the relevant template when one exists.
 4. When consolidating legacy skill guidance, move truly reusable fragments here instead of leaving them buried in retired skill docs.
 5. If no suitable template exists, call out the gap rather than inventing a new template set implicitly.
+6. Name new template files in kebab-case unless the target ecosystem requires a fixed conventional filename.
 
 ## Bundled Resources
 

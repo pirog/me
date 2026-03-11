@@ -57,6 +57,7 @@ Use this skill for JavaScript and TypeScript implementation work within the Tana
 - Group imports in this order: built-ins, third-party packages, local imports.
 - Prefix Node built-ins with `node:`.
 - Sort imports alphabetically within each present group.
+- Prefer kebab-case for new repo-authored JavaScript, TypeScript, and helper filenames unless the toolchain expects a fixed conventional name.
 5. Apply JavaScript implementation notes when the task touches CLIs or automation code.
 - Use ESM bin scripts with `#!/usr/bin/env bun` when authoring JavaScript CLIs in this repo style.
 - Prefer `colorette` for style-consistent terminal output.

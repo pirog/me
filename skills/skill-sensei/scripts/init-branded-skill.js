@@ -22,7 +22,7 @@ const BRAND_PROFILES = {
 
 function usage(code = 0) {
   process.stdout
-    .write(`Usage: init_branded_skill.js --brand <piro|tanaab> --slug <slug> --display-name <name> --description <text> [options]
+    .write(`Usage: init-branded-skill.js --brand <piro|tanaab> --slug <slug> --display-name <name> --description <text> [options]
 
 Options:
   --prompt <text>        default prompt for agents/openai.yaml
