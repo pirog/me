@@ -17,7 +17,7 @@
   `tanaab-javascript`
   Common companions: `tanaab-testing`, `tanaab-github-actions`, `tanaab-shell`, `tanaab-templates`
 
-- CSS, selectors, layout, tokens, or stylesheet organization:
+- SCSS, CSS, selectors, layout, tokens, or stylesheet organization:
   `tanaab-css`
   Common companions: `tanaab-vue`, `tanaab-templates`
 
@@ -71,3 +71,7 @@
 - Static-site framework selection vs site branding:
   `tanaab-vue` owns the decision to prefer VitePress 1 for static sites and to choose the right subtheme base.
   `tanaab-css` owns styling and design-token implementation inside that chosen site structure.
+
+- Stylesheet format defaults vs framework structure:
+  `tanaab-css` owns the decision to prefer SCSS over raw CSS, Less, or Stylus.
+  `tanaab-vue` applies that preference inside Vue SFCs and VitePress theme layers.

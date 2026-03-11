@@ -33,6 +33,7 @@ Use this skill as the universal engineering doctrine for all tasks in the Tanaab
 - Prefer kebab-case for repo-authored filenames unless a tool or ecosystem requires a fixed conventional name such as `package.json`, `openai.yaml`, `SKILL.md`, `README.md`, `CHANGELOG.md`, `LICENSE`, or `Brewfile`.
 - Prefer ESM JavaScript over CommonJS for new and migrated JavaScript surfaces.
 - Prefer Bun as the primary JavaScript runtime and package manager, while still using `node:*` built-in modules where Bun provides Node-compatible support.
+- Prefer SCSS over raw CSS, Less, or Stylus for stylesheet authoring when a preprocessor is appropriate.
 - Make operational intent explicit in code, scripts, and workflows instead of relying on hidden assumptions.
 - Validate the changed surface with the narrowest reliable checks first, then broaden validation when risk justifies it.
 - Leave the repository easier to reason about than you found it: less drift, less duplication, and clearer boundaries.
@@ -65,3 +66,4 @@ Use this skill as the universal engineering doctrine for all tasks in the Tanaab
 - Confirm stack decisions follow the primary-owner model rather than splitting ownership ambiguously.
 - Confirm new repo-authored files use kebab-case unless a fixed conventional filename is required by the tool or ecosystem.
 - Confirm JavaScript surfaces default to ESM and Bun unless the user explicitly asked for another runtime or module format.
+- Confirm stylesheet work defaults to SCSS unless the user explicitly required plain CSS or another styling format.

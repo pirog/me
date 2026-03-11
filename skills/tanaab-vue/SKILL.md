@@ -7,7 +7,7 @@ description: Guide Vue 3 component work and VitePress 1 static-site work under t
 
 ## Overview
 
-Use this skill for Vue-specific implementation work within the Tanaab coding hierarchy. Prefer Vue 3 for front-end components and prefer VitePress 1 for static websites.
+Use this skill for Vue-specific implementation work within the Tanaab coding hierarchy. Prefer Vue 3 for front-end components, prefer VitePress 1 for static websites, and prefer SCSS for Vue component styling.
 
 ## When to Use
 
@@ -44,7 +44,8 @@ Use this skill for Vue-specific implementation work within the Tanaab coding hie
 - For Tanaab-styled static sites, prefer subthemes built on [tanaabased/theme](https://github.com/tanaabased/theme).
 - For non-Tanaab styled static sites, prefer subthemes built on [lando/vitepress-theme-default-plus](https://github.com/lando/vitepress-theme-default-plus).
 - Keep project-specific presentation changes in the local subtheme layer instead of forking the upstream theme package when a subtheme is sufficient.
-5. Pull from `tanaab-javascript`, `tanaab-css`, `tanaab-testing`, or `tanaab-templates` when the task crosses those boundaries.
+5. Prefer `<style lang="scss">` for Vue component styles unless the task explicitly requires plain CSS or the toolchain cannot support SCSS.
+6. Pull from `tanaab-javascript`, `tanaab-css`, `tanaab-testing`, or `tanaab-templates` when the task crosses those boundaries.
 
 ## Bundled Resources
 
@@ -59,4 +60,5 @@ Use this skill for Vue-specific implementation work within the Tanaab coding hie
 - Confirm this skill stayed the primary owner only for Vue-specific surfaces.
 - Confirm Vue 3 was used for front-end components unless the user explicitly required a different framework.
 - Confirm VitePress 1 was used for static sites unless the user explicitly required a different static-site stack.
+- Confirm Vue component styling defaults to `lang="scss"` unless the user explicitly required another format.
 - Confirm cross-skill handoffs are explicit when JavaScript, CSS, testing, or templates are involved.
