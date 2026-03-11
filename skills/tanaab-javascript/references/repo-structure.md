@@ -1,0 +1,17 @@
+# Repo Structure
+
+- Organize repository code by purpose and behavior instead of by implementation type.
+- Prefer folders such as `cli/`, `ux/`, `plugins/`, `build/`, `release/`, or other purpose-driven names that explain why the code exists.
+- In small Bun or Node repos with only a few JavaScript files, keeping repo-specific scripts at the root is acceptable.
+- Avoid broad type-based buckets such as `components/`, `classes/`, or `helpers/` when a purpose-driven structure would be clearer.
+- Reserve `utils/` for generic, portable helpers only.
+- Each `utils/` file should export one main function.
+- A `utils/` function should be reusable across projects with minimal or no rewrite.
+- Do not put repo-specific vocabulary, product names, workflow assumptions, or repository-only behavior into `utils/`.
+- Keep repo-specific logic near the owning purpose folder instead of moving it into `utils/`.
+- Treat `utils/` modules as future extraction candidates for a shared utilities repo or standalone packages.
+- If a Bun or Node file has a hashbang, treat it as a true CLI entrypoint.
+- Put true JavaScript CLIs under `bin/` and declare them in `package.json`.
+- Only treat a file as a CLI when it exposes normal CLI behavior such as help or usage text, options, arguments, or direct user-facing command behavior.
+- Skill-local helper scripts under `skills/**/scripts/` are exempt from the repo-level `bin/` convention and should remain bundled with their skill.
+- If a file does not expose normal CLI behavior, treat it as a script instead: omit the hashbang and invoke it with `bun ./path/to/script.js` or `node ./path/to/script.js`.

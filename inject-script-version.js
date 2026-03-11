@@ -1,5 +1,3 @@
-#!/usr/bin/env bun
-
 import fs from 'node:fs';
 
 const log = (message) => process.stdout.write(`${message}\n`);

@@ -48,6 +48,7 @@ Every branded skill should use this section order:
 - Normalize headings and section order to this standard.
 - Update `agents/openai.yaml` so `display_name` is unprefixed and icon paths still resolve.
 - Use kebab-case for repo-authored helper filenames in `scripts/`, `assets/`, `references/`, and `templates/` unless a tool or ecosystem requires a fixed conventional filename.
+- Keep skill-bundled helpers in the skill's own `scripts/` directory. Do not treat them as repo-level package `bin/` entrypoints.
 - Preserve existing icons when they are already relevant, then add the correct brand watermark when assets are available.
 - Mention `templates/` under `## Bundled Resources` when the skill ships reusable files or prompts.
 - When updating the entire `skills/` folder, always skip `skills/skill-sensei` so the meta-skill is not rewritten as part of its own pass.

@@ -34,6 +34,11 @@ Use this skill as the universal engineering doctrine for all tasks in the Tanaab
 - Prefer ESM JavaScript over CommonJS for new and migrated JavaScript surfaces.
 - Prefer Bun as the primary JavaScript runtime and package manager, while still using `node:*` built-in modules where Bun provides Node-compatible support.
 - Prefer SCSS over raw CSS, Less, or Stylus for stylesheet authoring when a preprocessor is appropriate.
+- Organize repository code by purpose and behavior rather than by implementation type.
+- Reserve `utils/` for generic, portable helpers that can move across repositories with minimal or no rewrite.
+- In small Bun or Node repos with only a few JavaScript files, keeping repo-specific scripts at the root is acceptable.
+- Treat hashbang-bearing Bun or Node files as true CLI entrypoints at the repository package level: they belong in `bin/` and should be declared in `package.json`.
+- Skill-bundled helper scripts under `skills/**/scripts/` are exempt from the repo-level `bin/` convention and should stay local to the owning skill.
 - Make operational intent explicit in code, scripts, and workflows instead of relying on hidden assumptions.
 - Validate the changed surface with the narrowest reliable checks first, then broaden validation when risk justifies it.
 - Leave the repository easier to reason about than you found it: less drift, less duplication, and clearer boundaries.
@@ -45,6 +50,7 @@ Use this skill as the universal engineering doctrine for all tasks in the Tanaab
 - Treat tests, CI, release notes, and automation as product surfaces, not support work.
 - Prefer deterministic, repo-local tooling and explicit configuration over magical implicit behavior.
 - Treat TypeScript migration as an explicit follow-on decision until the build and release path is standardized well enough to scaffold it confidently.
+- Keep generic utilities small, extraction-ready, and free of repo-specific language so they can later move into a shared utilities repo or standalone packages.
 - Promote patterns into `tanaab-templates` only after they prove reusable in real tasks.
 - Make cross-skill handoffs explicit whenever one skill owns the artifact and another owns surrounding policy or integration.
 
@@ -67,3 +73,5 @@ Use this skill as the universal engineering doctrine for all tasks in the Tanaab
 - Confirm new repo-authored files use kebab-case unless a fixed conventional filename is required by the tool or ecosystem.
 - Confirm JavaScript surfaces default to ESM and Bun unless the user explicitly asked for another runtime or module format.
 - Confirm stylesheet work defaults to SCSS unless the user explicitly required plain CSS or another styling format.
+- Confirm code is organized by purpose, and that any `utils/` entries are genuinely generic and portable rather than repo-specific.
+- Confirm non-CLI Bun or Node scripts do not carry a hashbang and are invoked via `bun ./script.js` or `node ./script.js` instead.
