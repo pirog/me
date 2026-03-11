@@ -43,7 +43,7 @@ Use this skill for GitHub Actions workflow authoring and GitHub-hosted CI triage
 3. For workflow authoring or updates, scope the workflow surface: workflow files, jobs, steps, permissions, triggers, reusable workflow boundaries, and release or deploy gates.
 - Replace `actions/setup-node` with `oven-sh/setup-bun` when migrating workflows to Bun.
 - Prefer `bun-version-file: .bun-version` over repeating Bun version literals in multiple workflow jobs.
-- Replace install commands with `bun install --frozen-lockfile --ignore-scripts` unless lifecycle scripts are explicitly required.
+- When a workflow needs Bun, install it with `oven-sh/setup-bun@v2` and then run `bun install --frozen-lockfile --ignore-scripts` unless lifecycle scripts are explicitly required.
 - Replace `npm run ...` with `bun run ...` in workflow jobs.
 - Keep OS and version test matrices intact unless the runtime manager itself is changing.
 - Preserve fixed workflow filenames and GitHub Actions loader conventions, but use kebab-case for repo-authored helper scripts and local support files.
@@ -75,6 +75,7 @@ Use this skill for GitHub Actions workflow authoring and GitHub-hosted CI triage
 - Confirm `tanaab-coding-core` is active.
 - Confirm the task is actually GitHub Actions-led.
 - Confirm this skill stayed the primary owner only for workflow or CI-triage surfaces.
+- Confirm workflows that install Bun use `oven-sh/setup-bun@v2`, `bun-version-file: .bun-version`, and `bun install --frozen-lockfile --ignore-scripts` unless the task explicitly needs different install behavior.
 - Confirm the failing provider is GitHub Actions before attempting deep CI triage.
 - Confirm the summary includes the failing check name, URL, and useful failure snippet when triaging CI.
 - Confirm no code changes are applied before approval when the task started in CI triage mode.

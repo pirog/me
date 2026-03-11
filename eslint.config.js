@@ -21,12 +21,14 @@ export default defineConfig([
       },
     },
     rules: {
+      'import/enforce-node-protocol-usage': ['error', 'always'],
       'import/no-commonjs': 'error',
       'no-console': 'warn',
       'no-debugger': 'error',
       'prettier/prettier': 'error',
     },
     settings: {
+      'import/node-version': '20.0.0',
       'import/resolver': {
         exports: true,
         node: true,
