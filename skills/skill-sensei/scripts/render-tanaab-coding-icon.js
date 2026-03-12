@@ -4,26 +4,61 @@ import { spawn } from 'node:child_process';
 import os from 'node:os';
 import { access, mkdtemp, readFile, rename, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
-const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
-const REPO_ROOT = path.resolve(SCRIPT_DIR, '../../..');
+import {
+  REPO_ROOT,
+  commonTanaabEnvironmentVariables,
+  createCli,
+  extractCommonFlags,
+} from '../../tanaab-coding-core/scripts/bun-cli-support.js';
+
 const CANVAS_SIZE = 1024;
+const DEFAULT_BASE_ICON = path.join(REPO_ROOT, 'skills/tanaab-coding/assets/tanaab-coding-stack-base.png');
+const cli = createCli(import.meta.url);
+
+function buildEnvironment() {
+  return {
+    baseIcon: process.env.TANAAB_CODING_ICON_BASE_ICON?.trim() || DEFAULT_BASE_ICON,
+    label: process.env.TANAAB_CODING_ICON_LABEL?.trim(),
+    outputStem: process.env.TANAAB_CODING_ICON_OUTPUT_STEM?.trim(),
+    title: process.env.TANAAB_CODING_ICON_TITLE?.trim(),
+  };
+}
+
+function buildEnvironmentVariables() {
+  return [
+    ...commonTanaabEnvironmentVariables(),
+    { label: 'TANAAB_CODING_ICON_TITLE', description: 'icon title text' },
+    { label: 'TANAAB_CODING_ICON_LABEL', description: 'large bottom-left label text' },
+    { label: 'TANAAB_CODING_ICON_OUTPUT_STEM', description: 'output stem without the .svg or .png extension' },
+    { label: 'TANAAB_CODING_ICON_BASE_ICON', description: 'background base icon path' },
+  ];
+}
 
 function usage(code = 0) {
-  process.stdout.write(`Usage: render-tanaab-coding-icon.js --title <title> --label <label> --output-stem <path> [options]
+  const environment = buildEnvironment();
 
-Options:
-  --base-icon <path>   background base icon [default: skills/tanaab-coding/assets/tanaab-coding-stack-base.png]
-  --help               show this message
-`);
-  process.exit(code);
+  cli.showHelp(
+    {
+      description: 'Render a stack-specific Tanaab coding icon from the shared coding stack base image.',
+      environmentVariables: buildEnvironmentVariables(),
+      options: [
+        {
+          label: '--base-icon <path>',
+          description: `background base icon ${cli.dim(`[default: ${environment.baseIcon}]`)}`,
+        },
+        { label: '--debug', description: 'show debug diagnostics' },
+        { label: '-h, --help', description: 'show this message' },
+        { label: '-V, --version', description: `show the repo version ${cli.dim(`[default: ${cli.version}]`)}` },
+      ],
+      usage: `${cli.bold(cli.cliName)} --title <title> --label <label> --output-stem <path> [options]`,
+    },
+    code,
+  );
 }
 
 function parseArgs(argv) {
-  const parsed = {
-    baseIcon: path.join(REPO_ROOT, 'skills/tanaab-coding/assets/tanaab-coding-stack-base.png'),
-  };
+  const parsed = { ...buildEnvironment() };
 
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
@@ -172,7 +207,23 @@ function labelLetterSpacing() {
 }
 
 async function main() {
-  const options = parseArgs(process.argv.slice(2));
+  const { argv, flags } = extractCommonFlags(process.argv.slice(2));
+
+  if (flags.debug) {
+    cli.enableDebug();
+  }
+
+  if (flags.help) {
+    usage(0);
+  }
+
+  if (flags.version) {
+    cli.showVersion();
+    return;
+  }
+
+  const options = parseArgs(argv);
+  cli.debug('resolved options %O', options);
   const svgOutputPath = `${options.outputStem}.svg`;
   const pngOutputPath = `${options.outputStem}.png`;
   const baseHref = await toDataUri(options.baseIcon);
@@ -195,16 +246,18 @@ async function main() {
   await writeFile(svgOutputPath, svg, 'utf8');
 
   if (process.platform === 'darwin' && (await commandExists('qlmanage'))) {
+    cli.debug('rasterizing with Quick Look into %s', pngOutputPath);
     await rasterizeWithQuickLook(svg, pngOutputPath);
   } else {
+    cli.debug('rasterizing with ImageMagick into %s', pngOutputPath);
     await rasterizePng(svg, pngOutputPath);
   }
 
-  process.stdout.write(`wrote ${svgOutputPath}\n`);
-  process.stdout.write(`wrote ${pngOutputPath}\n`);
+  cli.success('%s %s', cli.tp('wrote'), cli.ts(svgOutputPath));
+  cli.success('%s %s', cli.tp('wrote'), cli.ts(pngOutputPath));
 }
 
 main().catch((error) => {
-  process.stderr.write(`error: ${error.message}\n`);
+  cli.error(error instanceof Error ? error.message : String(error));
   usage(1);
 });

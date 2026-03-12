@@ -3,6 +3,15 @@
 import { mkdir, rm, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
+import {
+  commonTanaabEnvironmentVariables,
+  createCli,
+  extractCommonFlags,
+  valueEnabled,
+} from '../../tanaab-coding-core/scripts/bun-cli-support.js';
+
+const cli = createCli(import.meta.url);
+
 const BRAND_PROFILES = {
   piro: {
     accent: '#00c88a',
@@ -20,20 +29,60 @@ const BRAND_PROFILES = {
   },
 };
 
-function usage(code = 0) {
-  process.stdout
-    .write(`Usage: init-branded-skill.js --brand <piro|tanaab> --slug <slug> --display-name <name> --description <text> [options]
+function buildEnvironment() {
+  return {
+    brand: process.env.TANAAB_SKILL_BRAND?.trim(),
+    description: process.env.TANAAB_SKILL_DESCRIPTION?.trim(),
+    displayName: process.env.TANAAB_SKILL_DISPLAY_NAME?.trim(),
+    force: valueEnabled(process.env.TANAAB_FORCE),
+    outputDir: process.env.TANAAB_SKILL_OUTPUT_DIR?.trim() || 'skills',
+    prompt: process.env.TANAAB_SKILL_PROMPT?.trim(),
+    slug: process.env.TANAAB_SKILL_SLUG?.trim(),
+  };
+}
 
-Options:
-  --prompt <text>        default prompt for agents/openai.yaml
-  --output-dir <path>    parent directory for generated skills [default: skills]
-  --force                overwrite an existing generated skill directory
-`);
-  process.exit(code);
+function buildEnvironmentVariables() {
+  return [
+    ...commonTanaabEnvironmentVariables(),
+    { label: 'TANAAB_SKILL_BRAND', description: 'skill brand such as piro or tanaab' },
+    { label: 'TANAAB_SKILL_SLUG', description: 'skill slug without the brand prefix' },
+    { label: 'TANAAB_SKILL_DISPLAY_NAME', description: 'human-readable skill display name' },
+    { label: 'TANAAB_SKILL_DESCRIPTION', description: 'skill description text' },
+    { label: 'TANAAB_SKILL_PROMPT', description: 'default prompt for agents/openai.yaml' },
+    { label: 'TANAAB_SKILL_OUTPUT_DIR', description: 'parent directory for generated skills' },
+    { label: 'TANAAB_FORCE', description: 'set to a truthy value to overwrite an existing generated skill directory' },
+  ];
+}
+
+function usage(code = 0) {
+  const environment = buildEnvironment();
+
+  cli.showHelp(
+    {
+      description: 'Scaffold a branded skill directory with default markdown, agent metadata, and a fallback icon.',
+      environmentVariables: buildEnvironmentVariables(),
+      options: [
+        { label: '--prompt <text>', description: 'default prompt for agents/openai.yaml' },
+        {
+          label: '--output-dir <path>',
+          description: `parent directory for generated skills ${cli.dim(`[default: ${environment.outputDir}]`)}`,
+        },
+        {
+          label: '--force',
+          description: `overwrite an existing generated skill directory ${cli.dim(`[default: ${environment.force ? 'on' : 'off'}]`)}`,
+        },
+        { label: '--debug', description: 'show debug diagnostics' },
+        { label: '-h, --help', description: 'show this message' },
+        { label: '-V, --version', description: `show the repo version ${cli.dim(`[default: ${cli.version}]`)}` },
+      ],
+      usage: `${cli.bold(cli.cliName)} --brand <piro|tanaab> --slug <slug> --display-name <name> --description <text> [options]`,
+    },
+    code,
+  );
 }
 
 function parseArgs(argv) {
-  const parsed = { outputDir: 'skills', force: false };
+  const parsed = { ...buildEnvironment() };
 
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
@@ -203,11 +252,23 @@ async function exists(targetPath) {
 }
 
 async function main() {
-  if (process.argv.includes('--help') || process.argv.includes('-h')) {
+  const { argv, flags } = extractCommonFlags(process.argv.slice(2));
+
+  if (flags.debug) {
+    cli.enableDebug();
+  }
+
+  if (flags.help) {
     usage(0);
   }
 
-  const options = parseArgs(process.argv.slice(2));
+  if (flags.version) {
+    cli.showVersion();
+    return;
+  }
+
+  const options = parseArgs(argv);
+  cli.debug('resolved options %O', options);
   const brand = options.brand?.trim().toLowerCase();
   const slug = normalizeSlug(options.slug ?? '');
   const displayName = options.displayName?.trim();
@@ -237,6 +298,8 @@ async function main() {
     throw new Error(`Skill directory already exists: ${skillDir}`);
   }
 
+  cli.debug('creating skill scaffold in %s', skillDir);
+
   if (options.force) {
     await rm(skillDir, { force: true, recursive: true });
   }
@@ -263,16 +326,16 @@ async function main() {
   await writeFile(fallbackIconPath, makeFallbackIconSvg({ brand, displayName, skillId }), 'utf8');
 
   const summary = [
-    `Created ${skillId}`,
+    `${cli.tp('created')} ${cli.ts(skillId)}`,
     `- ${path.join(skillDir, 'SKILL.md')}`,
     `- ${path.join(agentsDir, 'openai.yaml')}`,
     `- ${fallbackIconPath}`,
   ].join('\n');
 
-  process.stdout.write(`${summary}\n`);
+  cli.log(summary);
 }
 
 main().catch((error) => {
-  process.stderr.write(`error: ${error.message}\n`);
+  cli.error(error instanceof Error ? error.message : String(error));
   usage(1);
 });

@@ -6,31 +6,77 @@ import { access, mkdir, mkdtemp, readFile, rename, rm, writeFile } from 'node:fs
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
+import { commonTanaabEnvironmentVariables, createCli, extractCommonFlags } from '../../tanaab-coding-core/scripts/bun-cli-support.js';
+
+const cli = createCli(import.meta.url);
+
+function buildEnvironment() {
+  return {
+    badgeScale: process.env.TANAAB_SKILL_ICON_BADGE_SCALE?.trim() || '0.28',
+    baseIcon: process.env.TANAAB_SKILL_ICON_BASE_ICON?.trim(),
+    bgColor: process.env.TANAAB_SKILL_ICON_BG_COLOR?.trim() || '#ffffff',
+    output: process.env.TANAAB_SKILL_ICON_OUTPUT?.trim(),
+    paddingScale: process.env.TANAAB_SKILL_ICON_PADDING_SCALE?.trim() || '0.05',
+    ringColor: process.env.TANAAB_SKILL_ICON_RING_COLOR?.trim() || '#0f172a',
+    size: process.env.TANAAB_SKILL_ICON_SIZE?.trim() || '1024',
+    watermark: process.env.TANAAB_SKILL_ICON_WATERMARK?.trim(),
+  };
+}
+
+function buildEnvironmentVariables() {
+  return [
+    ...commonTanaabEnvironmentVariables(),
+    { label: 'TANAAB_SKILL_ICON_BASE_ICON', description: 'base icon input path' },
+    { label: 'TANAAB_SKILL_ICON_WATERMARK', description: 'watermark input path' },
+    { label: 'TANAAB_SKILL_ICON_OUTPUT', description: 'output path' },
+    { label: 'TANAAB_SKILL_ICON_SIZE', description: 'output canvas size' },
+    { label: 'TANAAB_SKILL_ICON_BADGE_SCALE', description: 'watermark badge size relative to canvas' },
+    { label: 'TANAAB_SKILL_ICON_PADDING_SCALE', description: 'badge padding relative to canvas' },
+    { label: 'TANAAB_SKILL_ICON_RING_COLOR', description: 'badge ring color' },
+    { label: 'TANAAB_SKILL_ICON_BG_COLOR', description: 'badge backing color' },
+  ];
+}
+
 function usage(code = 0) {
-  process.stdout.write(`Usage: compose-skill-icon.js --base-icon <path> --watermark <path> --output <path> [options]
+  const environment = buildEnvironment();
 
-Options:
-  --size <number>          output canvas size [default: 1024]
-  --badge-scale <number>   watermark badge size relative to canvas [default: 0.28]
-  --padding-scale <number> badge padding relative to canvas [default: 0.05]
-  --ring-color <color>     badge ring color [default: #0f172a]
-  --bg-color <color>       badge backing color [default: #ffffff]
-
-Output formats:
-  .svg                     writes the composed vector icon directly
-  .png                     rasterizes the composed icon with ImageMagick
-`);
-  process.exit(code);
+  cli.showHelp(
+    {
+      description: 'Compose a skill icon from a base icon plus a branded watermark badge.',
+      environmentVariables: buildEnvironmentVariables(),
+      options: [
+        { label: '--size <number>', description: `output canvas size ${cli.dim(`[default: ${environment.size}]`)}` },
+        {
+          label: '--badge-scale <number>',
+          description: `watermark badge size relative to canvas ${cli.dim(`[default: ${environment.badgeScale}]`)}`,
+        },
+        {
+          label: '--padding-scale <number>',
+          description: `badge padding relative to canvas ${cli.dim(`[default: ${environment.paddingScale}]`)}`,
+        },
+        { label: '--ring-color <color>', description: `badge ring color ${cli.dim(`[default: ${environment.ringColor}]`)}` },
+        { label: '--bg-color <color>', description: `badge backing color ${cli.dim(`[default: ${environment.bgColor}]`)}` },
+        { label: '--debug', description: 'show debug diagnostics' },
+        { label: '-h, --help', description: 'show this message' },
+        { label: '-V, --version', description: `show the repo version ${cli.dim(`[default: ${cli.version}]`)}` },
+      ],
+      sections: [
+        {
+          entries: [
+            { label: '.svg', description: 'writes the composed vector icon directly' },
+            { label: '.png', description: 'rasterizes the composed icon with Quick Look on macOS or ImageMagick elsewhere' },
+          ],
+          heading: 'Output Formats',
+        },
+      ],
+      usage: `${cli.bold(cli.cliName)} --base-icon <path> --watermark <path> --output <path> [options]`,
+    },
+    code,
+  );
 }
 
 function parseArgs(argv) {
-  const parsed = {
-    size: 1024,
-    badgeScale: 0.28,
-    paddingScale: 0.05,
-    ringColor: '#0f172a',
-    bgColor: '#ffffff',
-  };
+  const parsed = { ...buildEnvironment() };
 
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
@@ -189,11 +235,23 @@ async function rasterizeWithQuickLook(svg, outputPath, size) {
 }
 
 async function main() {
-  if (process.argv.includes('--help') || process.argv.includes('-h')) {
+  const { argv, flags } = extractCommonFlags(process.argv.slice(2));
+
+  if (flags.debug) {
+    cli.enableDebug();
+  }
+
+  if (flags.help) {
     usage(0);
   }
 
-  const options = parseArgs(process.argv.slice(2));
+  if (flags.version) {
+    cli.showVersion();
+    return;
+  }
+
+  const options = parseArgs(argv);
+  cli.debug('resolved options %O', options);
   const outputPath = path.resolve(options.output);
   const outputFormat = outputFormatFor(outputPath);
   const baseIconPath = path.resolve(options.baseIcon);
@@ -229,19 +287,22 @@ async function main() {
   await mkdir(path.dirname(outputPath), { recursive: true });
 
   if (outputFormat === 'svg') {
+    cli.debug('writing svg output to %s', outputPath);
     await writeFile(outputPath, svg, 'utf8');
   } else {
     if (process.platform === 'darwin' && (await commandExists('qlmanage'))) {
+      cli.debug('rasterizing with Quick Look into %s', outputPath);
       await rasterizeWithQuickLook(svg, outputPath, size);
     } else {
+      cli.debug('rasterizing with ImageMagick into %s', outputPath);
       await rasterizePng(svg, outputPath, size);
     }
   }
 
-  process.stdout.write(`wrote ${outputPath}\n`);
+  cli.success('%s %s', cli.tp('wrote'), cli.ts(outputPath));
 }
 
 main().catch((error) => {
-  process.stderr.write(`error: ${error.message}\n`);
+  cli.error(error instanceof Error ? error.message : String(error));
   usage(1);
 });

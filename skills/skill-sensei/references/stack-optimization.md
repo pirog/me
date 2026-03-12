@@ -7,6 +7,7 @@ Use this rubric when auditing or optimizing a skill stack such as `tanaab-coding
 - Keep the stack lean, concise, and easy to route.
 - Remove duplicated doctrine, duplicated workflow steps, and duplicated validation language.
 - Reduce ownership overlap and routing ambiguity.
+- Surface cross-skill inconsistencies in ownership claims, terminology, examples, validation rules, or shared conventions.
 - Prefer `merge`, `move`, `extract`, or `delete` before introducing a new skill.
 
 ## Classification Pass
@@ -18,6 +19,7 @@ For each skill, identify:
 - routing logic that belongs in the stack router
 - reusable fragments that belong in templates
 - implementation guidance that truly belongs in that skill
+- inconsistencies with neighboring skills, shared core, router docs, templates, or stack-level standards
 
 ## Admission Rules
 
@@ -43,6 +45,7 @@ Every stack audit should produce:
 - current inventory
 - overlap findings
 - routing ambiguity findings
+- cross-skill inconsistency findings
 - `keep`, `merge into`, `move to core`, `move to router`, `extract to templates`, or `delete` for each skill
 - an ordered implementation plan
 
@@ -51,4 +54,5 @@ Every stack audit should produce:
 - Every retained skill should have a distinct primary owned surface.
 - The router should be simpler after optimization, not more complex.
 - Shared doctrine should move upward instead of being restated in multiple skills.
+- Cross-skill inconsistencies should be named directly instead of being buried under generic overlap notes.
 - Empty or placeholder skills should be challenged rather than preserved automatically.

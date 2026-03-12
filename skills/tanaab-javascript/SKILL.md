@@ -42,23 +42,14 @@ Use this skill for JavaScript and TypeScript implementation work within the Tana
 
 1. Confirm `tanaab-coding-core` is active.
 2. Scope the JavaScript or TypeScript surface: source files, config, runtime or package metadata, module system, build integration, CLI code, and generated types.
-3. Organize code by purpose before introducing or expanding folders.
-- Prefer purpose-oriented folders such as `cli/`, `ux/`, `plugins/`, `build/`, `release/`, or other behavior-driven groupings.
-- Avoid organizing code primarily by implementation type with buckets such as `components/`, `classes/`, or `helpers/` when a purpose-driven structure would be clearer.
-- Keep repo-specific logic close to the owning purpose folder instead of drifting into a generic catch-all.
-- In small Bun or Node repos with only a few JavaScript files, keeping repo-specific scripts at the root is acceptable.
-4. Use `utils/` only for truly generic helpers.
-- Each `utils/` file should export one main function.
-- That function should be portable across repositories with minimal or no rewrite.
-- Do not put repo-specific vocabulary, product names, workflow assumptions, or repository-only behavior into `utils/`.
-- Treat `utils/` modules as future extraction candidates for a shared utilities repo or standalone packages.
-5. Distinguish true CLIs from ordinary scripts.
-- If a Bun or Node file has a hashbang, treat it as a CLI entrypoint.
-- Put true JavaScript CLIs under `bin/` and declare them in `package.json`.
-- Only treat a file as a CLI when it behaves like one: help or usage text, options, arguments, or other direct user-facing command behavior.
-- Skill-local helper scripts under `skills/**/scripts/` are different: keep them bundled with the skill instead of moving them into the repo package `bin/`.
-- If a file does not expose normal CLI behavior, treat it as a script instead: omit the hashbang and invoke it with `bun ./path/to/script.js` or `node ./path/to/script.js`.
-6. Update runtime and package plumbing when the task changes the JS runtime.
+3. When repo structure or utility extraction is in scope, apply [references/repo-structure.md](./references/repo-structure.md).
+- Prefer purpose-oriented folders over implementation-type buckets when the layout is changing.
+- Reserve `utils/` for generic, extraction-ready helpers rather than repo-specific code.
+4. Distinguish true CLIs from ordinary scripts.
+- Treat package-level hashbang entrypoints as real CLIs: put them under `bin/` and declare them in `package.json`.
+- Keep skill-local helper scripts under `skills/**/scripts/` instead of promoting them into the repo package `bin/`.
+- If a file does not expose normal CLI behavior, omit the hashbang and invoke it with `bun ./path/to/script.js` or `node ./path/to/script.js`.
+5. Update runtime and package plumbing when the task changes the JS runtime.
 - Set `packageManager` in `package.json` to the repo's pinned Bun release when migrating to Bun.
 - Replace `engines.node` with `engines.bun` when appropriate.
 - Generate and commit `bun.lock`.
@@ -67,43 +58,36 @@ Use this skill for JavaScript and TypeScript implementation work within the Tana
 - Add or update `.tool-versions` to include `bun 1.3` and a Node compatibility entry when the repo tracks local tool versions there.
 - Add or update `"type": "module"`, `main`, and `exports` when the task includes ESM conversion.
 - Keep artifact paths stable when workflows or actions depend on exact filenames such as `dist/index.js`.
-7. Prefer ESM JavaScript on Bun as the current default.
+6. Prefer ESM JavaScript on Bun as the current default.
 - Use `import` and `export` syntax instead of CommonJS forms.
 - Prefer Bun to execute repo-authored JavaScript tooling and automation code instead of invoking `node` directly.
 - Treat TypeScript migration as a separate planned task unless the repository already has an approved TypeScript pipeline.
-8. Shape JavaScript units for readability and one-way data flow.
-- Normalize raw inputs and options near the top of the function or method.
-- Prefer early returns for empty, invalid, or trivial edge cases so the main path stays readable.
-- Derive named constants in order instead of repeatedly rewriting the same variable.
-- Default to `const`; use mutable working variables only when mutation is materially clearer or required.
-- Keep side-effectful work at the boundary. Read files, environment variables, process state, or child-process output near the edge, then hand parsed data to smaller helpers.
-- Clone before mutating arrays or objects that came from outside the current function.
-- For utility modules, prefer one main exported function per file and keep the file centered on one transformation, lookup, parser, loader, or formatter.
-9. Apply JavaScript and TypeScript code and module changes.
+7. When function shape or imports change, apply [references/function-data-flow.md](./references/function-data-flow.md).
+- Normalize inputs at the boundary and prefer early returns and named constants for one-way data flow.
+- Keep side effects at the edge and clone before mutating caller-owned arrays or objects.
+- Group imports into built-in, third-party, and local blocks with `node:`-prefixed built-ins and alphabetized bindings inside each present block.
+- Prefer kebab-case for new repo-authored JavaScript, TypeScript, and helper filenames unless the toolchain expects a fixed conventional name.
+8. Apply JavaScript and TypeScript code and module changes.
 - Replace `require(...)` with `import ... from ...` where ESM is required.
 - Replace `module.exports = ...` with `export default ...`.
 - Replace `exports.foo = ...` with named exports.
 - Add explicit `.js` extensions for local relative ESM imports.
-- Group imports in three blank-line-separated blocks: Node built-ins, third-party packages, then local or repo-provided modules.
-- Prefix Node built-ins with `node:`.
-- Sort each present block alphabetically by imported binding name.
 - Omit empty blocks, but keep a single blank line between the blocks that exist.
-- Prefer kebab-case for new repo-authored JavaScript, TypeScript, and helper filenames unless the toolchain expects a fixed conventional name.
-10. Apply JavaScript implementation notes when the task touches CLIs or automation code.
+9. When the task touches CLIs or automation code, apply the shared CLI contract from [../tanaab-coding-core/references/cli-style-rules.md](../tanaab-coding-core/references/cli-style-rules.md) and then add JavaScript-specific behavior.
 - Use ESM bin scripts with `#!/usr/bin/env bun` when authoring true JavaScript CLIs in this repo style.
-- Prefer one shared terminal styling mechanism for CLI output; use `ansis` when branded colors such as `tp` and `ts` are needed alongside semantic colors.
-- Keep the CLI styling surface small and named, such as `bold`, `dim`, `green`, `red`, `yellow`, `tp`, and `ts`, instead of scattering raw ANSI escapes or one-off color calls.
-- Wrap `Options` and `Environment Variables` help section headers in the `tp` style when the CLI uses Tanaab brand colors.
+- For package-level or user-facing Bun CLIs, prefer the full template pattern with `ansis`, `yargs-parser`, `--help`, `--version`, and shared logging helpers.
+- For skill-local helper scripts under `skills/**/scripts/`, default to Bun plus built-in modules and the shared coding-core helper at `skills/tanaab-coding-core/scripts/bun-cli-support.js` before introducing extra CLI dependencies.
+- Only add external CLI packages to skill-local helper scripts when the option surface, parsing rules, or output requirements are complex enough that the built-in path is no longer clear or maintainable.
 - Prefer a single logging helper built on `node:util` (`format`, `inspect`) instead of scattered direct `console.*` usage.
 - Prefer `node:fs/promises` for async file operations and `realpath()` for robust path comparisons.
 - For repository-aware defaults, discover project root from `.git` or `package.json`, scan for marker directories, ignore large unrelated directories such as `node_modules` and `.git`, error on zero or multiple matches, and surface the resolved default in help output.
-11. Replace npm-specific JavaScript runtime commands when the task includes Bun migration.
+10. Replace npm-specific JavaScript runtime commands when the task includes Bun migration.
 - Replace `npm install -g` helpers with `bunx --bun --package <pkg>@<version> <bin> ...`.
 - Replace `npm pack --json --dry-run` with Bun equivalents such as `bun pm pack --dry-run --ignore-scripts` and adapt parsing.
-12. Update docs and examples when the task changes runtime or module expectations.
+11. Update docs and examples when the task changes runtime or module expectations.
 - Rewrite README or workflow snippets from Node/npm commands to Bun commands when appropriate.
 - Document new Bun-specific inputs, configuration files, or remaining migration phases explicitly.
-13. Pull from `tanaab-testing`, `tanaab-github-actions`, `tanaab-shell`, or `tanaab-templates` when the task crosses those boundaries.
+12. Pull from `tanaab-testing`, `tanaab-github-actions`, `tanaab-shell`, or `tanaab-templates` when the task crosses those boundaries.
 
 ## Bundled Resources
 
@@ -119,16 +103,12 @@ Use this skill for JavaScript and TypeScript implementation work within the Tana
 - Confirm the task actually requires JavaScript or TypeScript handling.
 - Confirm this skill stayed the primary owner only for JavaScript or TypeScript surfaces.
 - Confirm JavaScript module code uses ESM rather than CommonJS unless the user explicitly required CommonJS compatibility.
-- Confirm repo-authored JavaScript CLI entrypoints use `#!/usr/bin/env bun` rather than a Node shebang.
+- Confirm repo-authored JavaScript CLI entrypoints use `#!/usr/bin/env bun` rather than a Node shebang, and that non-CLI scripts omit a hashbang.
+- Confirm any CLI contract or help output touched by the task follows [../tanaab-coding-core/references/cli-style-rules.md](../tanaab-coding-core/references/cli-style-rules.md).
+- Confirm repo-structure and `utils/` decisions follow [references/repo-structure.md](./references/repo-structure.md) when that surface was in scope.
+- Confirm function shape, mutation discipline, and import grouping follow [references/function-data-flow.md](./references/function-data-flow.md) when those surfaces were in scope.
 - Confirm `.bun-version` and `.tool-versions` reflect the repo's Bun-first runtime policy when those files are in scope.
-- Confirm code is organized by purpose rather than by implementation type when the task touches repo structure.
-- Confirm `utils/` modules are single-purpose, single-export, generic helpers without repo-specific language.
-- Confirm functions normalize input at the boundary, keep data flow mostly one-way, and minimize mutable working variables.
-- Confirm arrays or objects from outside the current function are not mutated without cloning or other explicit isolation.
-- Confirm small repos are not forced into unnecessary folder sprawl when only a few JavaScript files exist.
-- Confirm only true CLIs live under `bin/` and carry a hashbang, and that non-CLI scripts are run via `bun ./path/to/script.js` or `node ./path/to/script.js`.
 - Confirm skill-bundled scripts remain under the skill's own `scripts/` directory instead of being promoted into the repo package `bin/`.
-- Confirm imports use present built-in, external, and local blocks separated by single blank lines and ordered alphabetically within each block.
 - Run `bun install --frozen-lockfile --ignore-scripts` when Bun plumbing changed.
 - Run `bun run lint`.
 - Run `bun run build` or equivalent artifact generation when build or distribution output changed.

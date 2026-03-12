@@ -74,6 +74,7 @@ Use this skill as the universal engineering doctrine for all tasks in the Tanaab
 - [agents/openai.yaml](./agents/openai.yaml): UI metadata for the shared coding doctrine skill.
 - [assets/tanaab-coding-core-icon.png](./assets/tanaab-coding-core-icon.png): UI icon for the coding-core skill.
 - [references/cli-style-rules.md](./references/cli-style-rules.md): shared Bash and Bun CLI help, color, and status-line rules for the stack.
+- [scripts/bun-cli-support.js](./scripts/bun-cli-support.js): shared lightweight Bun CLI helper for skill-local helper scripts across the stack.
 
 ## Validation
 

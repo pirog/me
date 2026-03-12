@@ -22,7 +22,7 @@ Read [references/skill-standard.md](./references/skill-standard.md) for the requ
 - Create a new Tanaab skill.
 - Standardize an existing skill as `piro`.
 - Standardize an existing skill as `tanaab`.
-- Audit a stack such as `tanaab-coding` for duplication, overlap, and routing ambiguity.
+- Audit a stack such as `tanaab-coding` for duplication, overlap, routing ambiguity, and cross-skill inconsistencies.
 - Propose or apply mergers, deletions, template extraction, or doctrine consolidation across a stack.
 - Normalize `SKILL.md`, `agents/openai.yaml`, or icon handling across branded skills.
 
@@ -72,11 +72,11 @@ Read [references/skill-standard.md](./references/skill-standard.md) for the requ
 
 5. For `stack-audit` or `stack-optimize`, audit before adding.
 
-- Use [references/stack-optimization.md](./references/stack-optimization.md) to classify each skill's owned surface, duplicated doctrine, routing overlap, and template candidates.
+- Use [references/stack-optimization.md](./references/stack-optimization.md) to classify each skill's owned surface, duplicated doctrine, routing overlap, template candidates, and cross-skill inconsistencies in ownership, terminology, examples, or validation guidance.
 - Default to `keep`, `merge into`, `move to core`, `move to router`, `extract to templates`, or `delete`.
 - Do not propose a new skill if the content can live in `tanaab-coding-core`, the stack router, an existing specialized skill, or `tanaab-templates`.
 - Flag skills that have weak ownership, mostly duplicated policy, mostly cross-references, or no concrete reusable assets.
-- Produce a keep/merge/delete plan before making structural edits.
+- Produce a keep/merge/delete plan and explicit inconsistency findings before making structural edits.
 
 6. For `stack-optimize`, apply the approved consolidation.
 
@@ -117,5 +117,6 @@ Read [references/skill-standard.md](./references/skill-standard.md) for the requ
 - Confirm the icon either preserves a relevant base asset or uses the generated fallback.
 - Confirm the watermark brand matches the chosen profile when watermark assets are available.
 - Confirm stack audits identify `keep`, `merge`, `move`, `extract`, or `delete` outcomes instead of drifting into vague commentary.
+- Confirm stack audits explicitly call out cross-skill inconsistencies when ownership language, doctrine, terminology, examples, or validation rules diverge across the stack.
 - Confirm stack optimizations reduce duplication or ambiguity rather than adding new surface area by default.
 - Confirm `~/.codex/skills` and `~/.openclaw/skills` were resynced when the change was meant to affect live skill availability.

@@ -1,6 +1,7 @@
 # CLI Style Rules
 
 Use these rules when shaping CLI output for shell and Bun or JavaScript tools in the Tanaab coding stack.
+Treat this file as the primary home for shared CLI contract and output rules; language-specific skills should add only runtime- or shell-specific deltas instead of restating the full contract.
 
 ## Goals
 
@@ -21,8 +22,12 @@ Use these rules when shaping CLI output for shell and Bun or JavaScript tools in
 
 ## Help Output
 
-- Print help sections in this order: `Usage`, `Options`, `Environment Variables`.
-- Wrap `Options` and `Environment Variables` section headers in the `tp` style.
+- Print help sections in this order when they are present: `Usage`, `Options`, `Environment Variables`.
+- Include an `Environment Variables` section only when the CLI defines tool-specific or repo-specific environment variables that are part of its documented contract.
+- Wrap `Options` and `Environment Variables` section headers in the `tp` style when those sections are present.
+- Use the same value-precedence order across Bash and Bun CLIs: explicit CLI option, environment variable override, then auto-detected or hardcoded default.
+- For repeatable options, accept repeated CLI flags such as `--item a --item b` and represent environment defaults as comma-separated values such as `TANAAB_ITEM=a,b`.
+- When a repeatable CLI option is provided at least once, it should replace the env-sourced list rather than append to it implicitly.
 - Show computed defaults in `dim` styling when that improves clarity.
 - Keep help text readable without color; color should reinforce structure, not carry it alone.
 
@@ -39,4 +44,7 @@ Use these rules when shaping CLI output for shell and Bun or JavaScript tools in
 
 - In shell, prefer `tty_*` helpers or variables such as `tty_tp`, `tty_ts`, `tty_dim`, `tty_bold`, `tty_green`, `tty_red`, and `tty_yellow`.
 - In Bun or JavaScript CLIs, prefer one shared styling mechanism for both semantic colors and branded colors so the calling code only deals with style names, not raw ANSI escapes.
+- For package-level or user-facing Bun CLIs, the shared template can justify third-party CLI packages such as `ansis` and `yargs-parser`.
+- For skill-local helper scripts under `skills/**/scripts/`, prefer the shared coding-core helper at `skills/tanaab-coding-core/scripts/bun-cli-support.js` plus built-in modules before adding extra CLI dependencies.
+- Do not list generic terminal control or debug env vars such as `NO_COLOR`, `FORCE_COLOR`, `DEBUG`, or `RUNNER_DEBUG` in help text unless the CLI defines a non-obvious contract around them.
 - Respect terminal color controls such as `NO_COLOR` and `FORCE_COLOR` when the chosen library or helper layer supports them.

@@ -6,8 +6,11 @@ import { access, mkdtemp, readFile, rename, rm, writeFile } from 'node:fs/promis
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { commonTanaabEnvironmentVariables, createCli, extractCommonFlags } from '../../tanaab-coding-core/scripts/bun-cli-support.js';
+
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const ASSETS_DIR = path.resolve(SCRIPT_DIR, '../assets');
+const cli = createCli(import.meta.url);
 
 const CANVAS_SIZE = 1024;
 const BADGES = [
@@ -32,11 +35,19 @@ const BADGES = [
 ];
 
 function usage(code = 0) {
-  process.stdout.write(`Usage: render-skill-sensei-icon.js
-
-Generates self-contained SVG and PNG assets for the Skill Sensei icon.
-`);
-  process.exit(code);
+  cli.showHelp(
+    {
+      description: 'Generate the self-contained SVG and PNG assets for the Skill Sensei icon.',
+      environmentVariables: commonTanaabEnvironmentVariables(),
+      options: [
+        { label: '--debug', description: 'show debug diagnostics' },
+        { label: '-h, --help', description: 'show this message' },
+        { label: '-V, --version', description: `show the repo version ${cli.dim(`[default: ${cli.version}]`)}` },
+      ],
+      usage: `${cli.bold(cli.cliName)}`,
+    },
+    code,
+  );
 }
 
 function mediaTypeFor(assetPath) {
@@ -163,13 +174,29 @@ function badgeMarkup({ id, cx, cy, size, ringColor, bgColor, watermarkHref }) {
 }
 
 async function main() {
-  if (process.argv.includes('--help') || process.argv.includes('-h')) {
+  const { argv, flags } = extractCommonFlags(process.argv.slice(2));
+
+  if (flags.debug) {
+    cli.enableDebug();
+  }
+
+  if (flags.help) {
     usage(0);
+  }
+
+  if (flags.version) {
+    cli.showVersion();
+    return;
+  }
+
+  if (argv.length > 0) {
+    throw new Error(`Positional arguments are not supported: ${argv.join(' ')}`);
   }
 
   const baseIconPath = path.join(ASSETS_DIR, 'skill-sensei-base.png');
   const svgOutputPath = path.join(ASSETS_DIR, 'skill-sensei.svg');
   const pngOutputPath = path.join(ASSETS_DIR, 'skill-sensei.png');
+  cli.debug('rendering icon assets %O', { baseIconPath, pngOutputPath, svgOutputPath });
 
   const baseIconHref = await toDataUri(baseIconPath);
   const badges = await Promise.all(
@@ -207,16 +234,18 @@ ${badgeGroups}
   await writeFile(svgOutputPath, svg, 'utf8');
 
   if (process.platform === 'darwin' && (await commandExists('qlmanage'))) {
+    cli.debug('rasterizing with Quick Look into %s', pngOutputPath);
     await rasterizeWithQuickLook(svg, pngOutputPath);
   } else {
+    cli.debug('rasterizing with ImageMagick into %s', pngOutputPath);
     await rasterizePng(svg, pngOutputPath);
   }
 
-  process.stdout.write(`wrote ${svgOutputPath}\n`);
-  process.stdout.write(`wrote ${pngOutputPath}\n`);
+  cli.success('%s %s', cli.tp('wrote'), cli.ts(svgOutputPath));
+  cli.success('%s %s', cli.tp('wrote'), cli.ts(pngOutputPath));
 }
 
 main().catch((error) => {
-  process.stderr.write(`error: ${error.message}\n`);
+  cli.error(error instanceof Error ? error.message : String(error));
   usage(1);
 });

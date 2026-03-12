@@ -1,18 +1,19 @@
 ---
 name: tanaab-release
-description: Guide release preparation, changelog drafting, version readiness, and release workflow coordination under the shared Tanaab coding structure.
+description: Guide release preparation, changelog drafting, version readiness, and release contract work under the shared Tanaab coding structure.
 ---
 
 # Tanaab Release
 
 ## Overview
 
-Use this skill for release preparation, changelog drafting, and release-facing repository updates within the Tanaab coding hierarchy.
+Use this skill for release preparation, changelog drafting, release contract decisions, and release-facing repository updates within the Tanaab coding hierarchy.
 
 ## When to Use
 
 - The request updates `CHANGELOG.md`, release notes, or release-facing repository metadata.
 - The task needs release readiness checks across implementation, testing, and workflow automation.
+- The task decides what a release should version, update, publish, or write back to the repository.
 - The user wants a concise release summary built from repository history.
 
 ## When Not to Use
@@ -23,9 +24,9 @@ Use this skill for release preparation, changelog drafting, and release-facing r
 ## Relationship to Other Skills
 
 - Assume `tanaab-coding-core` is active.
-- Primary ownership: changelog text, release notes, release-readiness summaries, and release-facing repository metadata.
+- Primary ownership: changelog text, release notes, release-readiness summaries, versioning policy, expected release outputs, and release-facing repository metadata.
 - Defer implementation changes to the owning implementation skill.
-- Defer release or deploy workflow mechanics to `tanaab-github-actions`.
+- Defer release or deploy workflow mechanics to `tanaab-github-actions`, even when those workflows carry out the release contract defined here.
 - Defer test evidence and coverage policy to `tanaab-testing`.
 - Pair with `tanaab-testing` when test results or coverage gates determine release readiness.
 - Pair with `tanaab-github-actions` when release or deploy workflows need updates.
@@ -35,14 +36,18 @@ Use this skill for release preparation, changelog drafting, and release-facing r
 ## Workflow
 
 1. Confirm `tanaab-coding-core` is active.
-2. Scope the release surface: changelog, release notes, version context, workflows, and expected gates.
-3. Build the release change set.
+2. Scope the release surface: changelog, release notes, version context, versioning policy, expected release outputs, release-facing metadata, and expected gates.
+3. Decide the release contract before touching automation when release behavior itself is in scope.
+- Identify which files, versions, or metadata should update as part of the release.
+- Identify which artifacts, deploy outputs, or write-backs are expected from the release flow.
+- Hand implementation of workflow mechanics to `tanaab-github-actions`.
+4. Build the release change set.
 - Run `git describe --tags --abbrev=0`.
 - If that fails, inspect tags with `git tag --sort=-creatordate`.
 - Review commits with `git log --oneline <tag>..HEAD`.
 - Review changed files with `git diff --name-status <tag>..HEAD`.
 - Merge low-level commits into meaningful release notes and exclude noise that does not matter to users.
-4. Write the unreleased section.
+5. Write the unreleased section.
 - Target the top unreleased section in `CHANGELOG.md`.
 - Keep existing templated header text intact when present.
 - Format each change as an unordered `-` bullet.
@@ -50,12 +55,12 @@ Use this skill for release preparation, changelog drafting, and release-facing r
 - Keep each bullet concise and user-facing.
 - Mention the outcome and scope in one sentence.
 - Alphabetize the bullet list after drafting.
-5. Add issue or PR links when applicable.
+6. Add issue or PR links when applicable.
 - Append a Markdown link to each bullet when applicable.
 - Prefer PR links when work landed through a PR.
 - Use issue links when no PR applies.
 - Place the link at the end of the bullet and keep syntax consistent.
-6. Pull from `tanaab-testing`, `tanaab-github-actions`, `tanaab-javascript`, `tanaab-shell`, or `tanaab-templates` when the release task crosses those boundaries.
+7. Pull from `tanaab-testing`, `tanaab-github-actions`, `tanaab-javascript`, `tanaab-shell`, or `tanaab-templates` when the release task crosses those boundaries.
 
 ## Bundled Resources
 
@@ -66,7 +71,8 @@ Use this skill for release preparation, changelog drafting, and release-facing r
 
 - Confirm `tanaab-coding-core` is active.
 - Confirm release notes or changelog entries are concise and scoped to user-visible changes.
-- Confirm this skill stayed the primary owner only for release-facing narrative and readiness surfaces.
+- Confirm this skill stayed the primary owner only for release-facing narrative, readiness, or release-contract surfaces.
+- Confirm workflow mechanics remain with `tanaab-github-actions` when release automation changes are involved.
 - Re-read final bullets for tense, clarity, and ordering.
 - Confirm every applicable bullet has a valid link.
 - Confirm any release gates or workflow changes are explicit.

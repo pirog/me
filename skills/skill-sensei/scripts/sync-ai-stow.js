@@ -4,35 +4,72 @@ import { spawn } from 'node:child_process';
 import { access, lstat, readdir, readlink, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
-const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
-const REPO_ROOT = path.resolve(SCRIPT_DIR, '../../..');
+import {
+  REPO_ROOT,
+  booleanFromEnv,
+  commonTanaabEnvironmentVariables,
+  createCli,
+  extractCommonFlags,
+} from '../../tanaab-coding-core/scripts/bun-cli-support.js';
+
+const cli = createCli(import.meta.url);
+
+function buildEnvironment() {
+  return {
+    dotfilesDir: process.env.TANAAB_STOW_DOTFILES_DIR?.trim() || path.join(REPO_ROOT, 'dotfiles'),
+    packageName: process.env.TANAAB_STOW_PACKAGE?.trim() || 'ai',
+    prune: booleanFromEnv(process.env.TANAAB_STOW_PRUNE, true),
+    simulate: booleanFromEnv(process.env.TANAAB_STOW_SIMULATE, false),
+    target: process.env.TANAAB_STOW_TARGET?.trim() || os.homedir(),
+  };
+}
+
+function buildEnvironmentVariables() {
+  return [
+    ...commonTanaabEnvironmentVariables(),
+    { label: 'TANAAB_STOW_TARGET', description: 'target home directory' },
+    { label: 'TANAAB_STOW_DOTFILES_DIR', description: 'stow directory containing the ai package' },
+    { label: 'TANAAB_STOW_PACKAGE', description: 'stow package name' },
+    { label: 'TANAAB_STOW_SIMULATE', description: 'set to a truthy value to simulate the stow run' },
+    { label: 'TANAAB_STOW_PRUNE', description: 'set to a truthy value to prune dangling links after restow' },
+  ];
+}
 
 function usage(code = 0) {
-  process.stdout.write(`Usage: sync-ai-stow.js [options]
+  const environment = buildEnvironment();
 
-Restow the repo's ai dot package into a target home directory and prune dangling skill links.
-
-Options:
-  --target <path>        target home directory [default: ${os.homedir()}]
-  --dotfiles-dir <path>  stow dir containing the ai package [default: ${path.join(REPO_ROOT, 'dotfiles')}]
-  --package <name>       stow package name [default: ai]
-  --simulate             print the stow plan without writing changes
-  --no-prune             skip dangling skill-link cleanup after restow
-  --help                 show this message
-`);
-  process.exit(code);
+  cli.showHelp(
+    {
+      description: "Restow the repo's ai dot package into a target home directory and prune dangling skill links.",
+      environmentVariables: buildEnvironmentVariables(),
+      options: [
+        { label: '--target <path>', description: `target home directory ${cli.dim(`[default: ${environment.target}]`)}` },
+        {
+          label: '--dotfiles-dir <path>',
+          description: `stow dir containing the ai package ${cli.dim(`[default: ${environment.dotfilesDir}]`)}`,
+        },
+        { label: '--package <name>', description: `stow package name ${cli.dim(`[default: ${environment.packageName}]`)}` },
+        {
+          label: '--simulate',
+          description: `print the stow plan without writing changes ${cli.dim(`[default: ${environment.simulate ? 'on' : 'off'}]`)}`,
+        },
+        {
+          label: '--no-prune',
+          description: `skip dangling skill-link cleanup after restow ${cli.dim(`[default: ${environment.prune ? 'off' : 'on'}]`)}`,
+        },
+        { label: '--debug', description: 'show debug diagnostics' },
+        { label: '-h, --help', description: 'show this message' },
+        { label: '-V, --version', description: `show the repo version ${cli.dim(`[default: ${cli.version}]`)}` },
+      ],
+      usage: `${cli.bold(cli.cliName)} [options]`,
+    },
+    code,
+  );
 }
 
 function parseArgs(argv) {
-  const parsed = {
-    dotfilesDir: path.join(REPO_ROOT, 'dotfiles'),
-    packageName: 'ai',
-    prune: true,
-    simulate: false,
-    target: os.homedir(),
-  };
+  const parsed = { ...buildEnvironment() };
 
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
@@ -165,7 +202,23 @@ async function summarizePath(targetPath) {
 }
 
 async function main() {
-  const options = parseArgs(process.argv.slice(2));
+  const { argv, flags } = extractCommonFlags(process.argv.slice(2));
+
+  if (flags.debug) {
+    cli.enableDebug();
+  }
+
+  if (flags.help) {
+    usage(0);
+  }
+
+  if (flags.version) {
+    cli.showVersion();
+    return;
+  }
+
+  const options = parseArgs(argv);
+  cli.debug('resolved options %O', options);
   const stowArgs = ['--dir', options.dotfilesDir, '--target', options.target, '--restow'];
 
   if (options.simulate) {
@@ -174,10 +227,12 @@ async function main() {
 
   stowArgs.push(options.packageName);
 
-  process.stdout.write(`syncing ${options.packageName} via stow into ${options.target}\n`);
+  cli.log('%s %s via stow into %s', cli.tp('syncing'), cli.ts(options.packageName), cli.ts(options.target));
+  cli.debug('running stow with args %O', stowArgs);
   await runStow(stowArgs);
 
   if (options.simulate) {
+    cli.note('completed simulated stow run');
     return;
   }
 
@@ -193,7 +248,12 @@ async function main() {
       removedDirs += counters.removedDirs;
     }
 
-    process.stdout.write(`pruned ${removedLinks} dangling skill links and ${removedDirs} empty directories\n`);
+    cli.success(
+      '%s %s dangling skill links and %s empty directories',
+      cli.tp('pruned'),
+      cli.ts(String(removedLinks)),
+      cli.ts(String(removedDirs)),
+    );
   }
 
   const summaries = await Promise.all([
@@ -201,10 +261,10 @@ async function main() {
     summarizePath(path.join(options.target, '.openclaw', 'skills')),
   ]);
 
-  process.stdout.write(`${summaries.join('\n')}\n`);
+  cli.log(summaries.join('\n'));
 }
 
 main().catch((error) => {
-  process.stderr.write(`error: ${error.message}\n`);
+  cli.error(error instanceof Error ? error.message : String(error));
   usage(1);
 });

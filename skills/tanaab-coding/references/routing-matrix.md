@@ -19,7 +19,7 @@
 
 - Vue 3 components, VitePress 1 sites, `.vitepress/` theme work, SCSS, CSS, selectors, layout, tokens, design systems, or frontend tooling:
   `tanaab-frontend`
-  Common companions: `tanaab-javascript`, `tanaab-testing`, `tanaab-templates`
+  Common companions: `tanaab-documentation`, `tanaab-javascript`, `tanaab-testing`, `tanaab-templates`
 
 - Shell scripts, command wrappers, CLI UX, help output, logging, exit behavior, or command-line safety:
   `tanaab-shell`

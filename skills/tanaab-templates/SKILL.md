@@ -45,14 +45,17 @@ Use this skill to manage reusable template files for the Tanaab coding hierarchy
 ## Templates Directory
 
 - `templates/` stores reusable code patterns and boilerplate for the Tanaab coding skills.
-- Category directories now exist for `javascript/`, `css/`, `scss/`, `vue/`, `vitepress/`, `shell/`, `github-actions/`, `testing/`, and `release/`.
-- Use `templates/javascript/cli/` for Bun-first CLI starters that standardize help output, `--version`, `--debug`, and shared logging helpers.
+- Category directories exist for `javascript/`, `css/`, `scss/`, `vue/`, `vitepress/`, `shell/`, `github-actions/`, `testing/`, and `release/`, but only some currently contain concrete starters.
+- Today the concrete starter content lives in `templates/javascript/cli/`, `templates/javascript/unit/`, and `templates/shell/`.
+- Treat the other category directories as reserved homes for future templates rather than evidence of mature template coverage today.
+- Use `templates/javascript/cli/` for package-level or user-facing Bun CLI starters that standardize help output, `--version`, `--debug`, and shared logging helpers.
 - Use `templates/shell/` for Bash CLI starters that standardize help output, `--version`, `--debug`, `tty_tp` / `tty_ts`, and shared status helpers.
 - Use `templates/javascript/utils/` only for truly generic helper starters that can later move into a shared utilities repo or standalone packages.
 - Use `templates/javascript/unit/` for single-function JavaScript unit starters that demonstrate boundary normalization, straight-line data flow, and minimal mutation.
-- Use `templates/scss/` for shared SCSS partials, mixins, token maps, and stylesheet starters once those patterns prove reusable.
-- Use `templates/javascript/` for Bun-first ESM starters and `templates/github-actions/` for reusable Bun setup/install snippets once those patterns prove reusable.
-- Use `templates/vitepress/` for reusable VitePress starters, subtheme entrypoints, shared config fragments, and page scaffolds once those patterns prove reusable.
+- For skill-local helper scripts under `skills/**/scripts/`, prefer a lighter local helper layer over importing the full Bun CLI template or its third-party dependencies by default.
+- Reserve `templates/scss/` for shared SCSS partials, mixins, token maps, and stylesheet starters once those patterns prove reusable.
+- Reserve `templates/javascript/` and `templates/github-actions/` for Bun-first ESM starters and reusable Bun setup or install snippets once those patterns prove reusable.
+- Reserve `templates/vitepress/` for reusable VitePress starters, subtheme entrypoints, shared config fragments, and page scaffolds once those patterns prove reusable.
 - Keep concrete templates lean and extraction-ready; expand these directories only when the pattern proves reusable across real tasks.
 
 ## Validation

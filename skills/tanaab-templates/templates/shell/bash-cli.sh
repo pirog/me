@@ -6,7 +6,7 @@ set -euo pipefail
 #
 #   $ ./bash-cli.sh
 #   $ ./bash-cli.sh --debug
-#   $ SCRIPT_VERSION=0.1.0 ./bash-cli.sh --version
+#   $ TANAAB_ITEM=a,b ./bash-cli.sh --item c --item d
 #
 # option precedence: cli options override environment variables, which override defaults.
 #
@@ -58,7 +58,9 @@ CLI_NAME="${0##*/}"
 SCRIPT_VERSION="${SCRIPT_VERSION:-0.0.0}"
 DEBUG="${TANAAB_DEBUG:-${DEBUG:-${RUNNER_DEBUG:-}}}"
 FORCE="${TANAAB_FORCE:-}"
+ITEMS_CSV="${TANAAB_ITEM:-}"
 ORIGOPTS="$*"
+declare -a ORIGINAL_ARGS=("$@")
 
 # shellcheck disable=SC2034
 declare -a POSITIONALS=()
@@ -73,6 +75,91 @@ debug_enabled() {
 
 force_enabled() {
   value_enabled "${FORCE:-}"
+}
+
+trim_whitespace() {
+  local value="$1"
+
+  value="${value#"${value%%[![:space:]]*}"}"
+  value="${value%"${value##*[![:space:]]}"}"
+
+  printf "%s" "${value}"
+}
+
+append_array_value() {
+  local array_name="$1"
+  local value
+  local quoted
+
+  value="$(trim_whitespace "$2")"
+  if [[ -n "${value}" ]]; then
+    printf -v quoted '%q' "${value}"
+    eval "${array_name}+=(${quoted})"
+  fi
+}
+
+append_csv_to_array() {
+  local array_name="$1"
+  local old_ifs="${IFS}"
+  local entry
+  local -a values=()
+
+  if [[ -z "${2}" ]]; then
+    return 0
+  fi
+
+  IFS=','
+  read -r -a values <<< "${2}"
+  IFS="${old_ifs}"
+
+  if [[ "${#values[@]}" -eq 0 ]]; then
+    return 0
+  fi
+
+  for entry in "${values[@]}"; do
+    append_array_value "${array_name}" "${entry}"
+  done
+}
+
+array_join() {
+  local delimiter="$1"
+  local array_name="$2"
+  local item
+  local first="1"
+  local value_count="0"
+  local -a values=()
+
+  eval "value_count=\${#${array_name}[@]}"
+  if [[ "${value_count}" -eq 0 ]]; then
+    return 0
+  fi
+
+  eval "values=(\"\${${array_name}[@]}\")"
+
+  for item in "${values[@]}"; do
+    if [[ "${first}" == "1" ]]; then
+      printf "%s" "${item}"
+      first="0"
+    else
+      printf "%s%s" "${delimiter}" "${item}"
+    fi
+  done
+}
+
+cli_overrides_option() {
+  local option_name="$1"
+  shift
+  local arg
+
+  for arg in "$@"; do
+    case "${arg}" in
+      "${option_name}" | "${option_name}"=*)
+        return 0
+        ;;
+    esac
+  done
+
+  return 1
 }
 
 shell_join() {
@@ -90,6 +177,16 @@ shell_join() {
     printf "%s" "${arg// /\ }"
   done
 }
+
+# shellcheck disable=SC2034
+declare -a ITEMS=()
+append_csv_to_array ITEMS "${ITEMS_CSV}"
+
+if cli_overrides_option '--item' "${ORIGINAL_ARGS[@]}"; then
+  # Any CLI-provided repeatable flag replaces the env-seeded list for that option.
+  # shellcheck disable=SC2034
+  ITEMS=()
+fi
 
 show_version() {
   printf "%s\n" "${SCRIPT_VERSION}"
@@ -129,6 +226,7 @@ fail() {
 usage() {
   local debug_display="off"
   local force_display="off"
+  local items_display="none"
 
   if debug_enabled; then
     debug_display="on"
@@ -138,22 +236,23 @@ usage() {
     force_display="on"
   fi
 
+  items_display="$(array_join "," ITEMS)"
+  items_display="${items_display:-none}"
+
   cat <<EOS
 Usage: ${tty_bold}${CLI_NAME}${tty_reset} ${tty_dim}[options] [arguments...]${tty_reset}
 
 ${tty_tp}Options:${tty_reset}
   --force               enables force mode ${tty_dim}[default: ${force_display}]${tty_reset}
+  --item                adds a repeatable item ${tty_dim}[default: ${items_display}]${tty_reset}
   --debug               shows debug messages ${tty_dim}[default: ${debug_display}]${tty_reset}
   --version             shows the CLI version ${tty_dim}[default: ${SCRIPT_VERSION}]${tty_reset}
   -h, --help            displays this help message
 
 ${tty_tp}Environment Variables:${tty_reset}
-  DEBUG                 enables debug output
-  FORCE_COLOR           overrides detected color support
-  NO_COLOR              disables color output
-  RUNNER_DEBUG          enables debug output when set to 1
   TANAAB_DEBUG          enables debug output
   TANAAB_FORCE          enables force mode
+  TANAAB_ITEM           comma-separated repeatable items
 
 EOS
   if [[ "${1:-0}" != "noexit" ]]; then
@@ -170,6 +269,14 @@ parse_args() {
         ;;
       --force=*)
         FORCE="${1#*=}"
+        shift
+        ;;
+      --item)
+        append_array_value ITEMS "$2"
+        shift 2
+        ;;
+      --item=*)
+        append_array_value ITEMS "${1#*=}"
         shift
         ;;
       --debug)
@@ -206,15 +313,27 @@ parse_args() {
 }
 
 run_cli() {
+  local items_display="none"
+  local positionals_display="none"
+
+  items_display="$(array_join "," ITEMS)"
+  items_display="${items_display:-none}"
+
+  if [[ "${#POSITIONALS[@]}" -gt 0 ]]; then
+    positionals_display="$(shell_join "${POSITIONALS[@]}")"
+  fi
+
   debug "raw args ${CLI_NAME} ${ORIGOPTS}"
   debug raw DEBUG="${DEBUG:-}"
   debug raw FORCE="${FORCE:-}"
-  debug raw POSITIONALS="$(shell_join "${POSITIONALS[@]}")"
+  debug raw ITEMS="${items_display}"
+  debug raw POSITIONALS="${positionals_display}"
 
   if [[ "${#POSITIONALS[@]}" -gt 0 ]]; then
     warn "handle or reject positional arguments before shipping this CLI"
   fi
 
+  note "received repeatable items: ${items_display}"
   note "replace run_cli() with project-specific behavior"
   success "wire your command execution flow here"
 }

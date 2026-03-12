@@ -57,13 +57,16 @@ Use this skill for repository documentation strategy and authoring within the Ta
 6. Apply inline code and API documentation standards intentionally.
 - Document public contracts, non-obvious invariants, side effects, error cases, and important integration expectations.
 - Do not add comments that merely restate obvious code or repeat names without adding meaning.
+- In reusable boilerplate or templates, allow a few terse inline comments when they explain a non-obvious template contract, extension point, or shell or runtime edge case.
+- Keep boilerplate comments sparse; prefer a small number of high-value teaching comments over comment-heavy starter files.
 - Keep API docs clear about inputs, outputs, side effects, and failure behavior.
 7. Pull from `tanaab-frontend`, `tanaab-javascript`, `tanaab-release`, `tanaab-github-actions`, or `tanaab-templates` when the documentation task crosses those boundaries.
 
 ## Bundled Resources
 
 - [agents/openai.yaml](./agents/openai.yaml): UI metadata for the documentation skill.
-- [assets/tanaab-documentation-icon.svg](./assets/tanaab-documentation-icon.svg): generated fallback icon for the documentation skill.
+- [assets/tanaab-documentation-icon.png](./assets/tanaab-documentation-icon.png): UI icon for the documentation skill.
+- [assets/tanaab-documentation-icon.svg](./assets/tanaab-documentation-icon.svg): generated source icon for the documentation skill.
 
 ## Validation
 
@@ -72,6 +75,7 @@ Use this skill for repository documentation strategy and authoring within the Ta
 - Confirm this skill stayed the primary owner only for README, docs-policy, or durable documentation surfaces.
 - Confirm README content remains concise and repo-oriented rather than growing into an unstructured manual.
 - Confirm inline code or API docs explain contracts and non-obvious behavior rather than narrating obvious implementation.
+- Confirm boilerplate comments stay sparse and are limited to non-obvious contracts, extension points, or edge cases.
 - Confirm any move from README to fuller docs is justified by documentation complexity rather than aesthetics alone.
 - Confirm VitePress implementation details are handed to `tanaab-frontend` when they become a frontend task.
 - Confirm release-only narrative is handed to `tanaab-release`.

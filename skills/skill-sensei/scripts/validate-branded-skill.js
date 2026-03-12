@@ -3,6 +3,10 @@
 import { access, readFile } from 'node:fs/promises';
 import path from 'node:path';
 
+import { commonTanaabEnvironmentVariables, createCli, extractCommonFlags } from '../../tanaab-coding-core/scripts/bun-cli-support.js';
+
+const cli = createCli(import.meta.url);
+
 const REQUIRED_HEADINGS = [
   '## Overview',
   '## When to Use',
@@ -13,22 +17,43 @@ const REQUIRED_HEADINGS = [
   '## Validation',
 ];
 
+function buildEnvironment() {
+  return {
+    skillDir: process.env.TANAAB_SKILL_DIR?.trim(),
+  };
+}
+
+function buildEnvironmentVariables() {
+  return [...commonTanaabEnvironmentVariables(), { label: 'TANAAB_SKILL_DIR', description: 'skill directory to validate' }];
+}
+
 function usage(code = 0) {
-  process.stdout.write('Usage: validate-branded-skill.js --skill-dir <path>\n');
-  process.exit(code);
+  cli.showHelp(
+    {
+      description: 'Validate branded skill structure, required headings, agent metadata, and icon references.',
+      environmentVariables: buildEnvironmentVariables(),
+      options: [
+        { label: '--skill-dir <path>', description: 'skill directory to validate' },
+        { label: '--debug', description: 'show debug diagnostics' },
+        { label: '-h, --help', description: 'show this message' },
+        { label: '-V, --version', description: `show the repo version ${cli.dim(`[default: ${cli.version}]`)}` },
+      ],
+      usage: `${cli.bold(cli.cliName)} --skill-dir <path>`,
+    },
+    code,
+  );
 }
 
 function parseArgs(argv) {
-  if (argv.includes('--help') || argv.includes('-h')) {
-    usage(0);
-  }
-
+  const environment = buildEnvironment();
   const index = argv.indexOf('--skill-dir');
-  if (index === -1 || !argv[index + 1]) {
+  const skillDir = index === -1 ? environment.skillDir : argv[index + 1];
+
+  if (!skillDir) {
     throw new Error('Missing required --skill-dir argument.');
   }
 
-  return { skillDir: path.resolve(argv[index + 1]) };
+  return { skillDir: path.resolve(skillDir) };
 }
 
 async function fileExists(targetPath) {
@@ -82,7 +107,23 @@ function parseOpenAiInterface(content) {
 }
 
 async function main() {
-  const { skillDir } = parseArgs(process.argv.slice(2));
+  const { argv, flags } = extractCommonFlags(process.argv.slice(2));
+
+  if (flags.debug) {
+    cli.enableDebug();
+  }
+
+  if (flags.help) {
+    usage(0);
+  }
+
+  if (flags.version) {
+    cli.showVersion();
+    return;
+  }
+
+  const { skillDir } = parseArgs(argv);
+  cli.debug('validating skill directory %s', skillDir);
   const failures = [];
   const skillId = path.basename(skillDir);
   const brandMatch = skillId.match(/^(piro|tanaab)-[a-z0-9-]+$/);
@@ -143,10 +184,10 @@ async function main() {
     throw new Error(failures.join('\n'));
   }
 
-  process.stdout.write(`ok: ${skillId}\n`);
+  cli.success('%s %s', cli.tp('validated'), cli.ts(skillId));
 }
 
 main().catch((error) => {
-  process.stderr.write(`error: ${error.message}\n`);
+  cli.error(error instanceof Error ? error.message : String(error));
   usage(1);
 });

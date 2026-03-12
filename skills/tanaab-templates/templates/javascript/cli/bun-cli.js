@@ -8,7 +8,7 @@ import Debug from 'debug';
 import parser from 'yargs-parser';
 
 const CLI_NAME = path.basename(process.argv[1] ?? 'bun-cli');
-const CLI_VERSION = '0.0.0';
+const CLI_VERSION = process.env.SCRIPT_VERSION ?? '0.0.0';
 const DEBUG_NAMESPACE = '@scope/bun-cli';
 const color = ansis.extend({
   tp: '#00c88a',
@@ -18,7 +18,43 @@ const { bold, dim, green, red, tp, ts, yellow } = color;
 
 const debug = Debug(DEBUG_NAMESPACE);
 
-if (process.argv.includes('--debug') || process.env.RUNNER_DEBUG === '1') {
+function valueEnabled(value) {
+  switch (
+    String(value ?? '')
+      .trim()
+      .toLowerCase()
+  ) {
+    case '':
+    case '0':
+    case 'false':
+    case 'no':
+    case 'off':
+      return false;
+    default:
+      return true;
+  }
+}
+
+function enabledDisplay(value) {
+  return valueEnabled(value) ? 'on' : 'off';
+}
+
+function splitCsv(value) {
+  if (!value) {
+    return [];
+  }
+
+  return String(value)
+    .split(',')
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+}
+
+function csvDisplay(values) {
+  return values.length > 0 ? values.join(',') : 'none';
+}
+
+if (process.argv.includes('--debug') || valueEnabled(process.env.TANAAB_DEBUG) || process.env.RUNNER_DEBUG === '1') {
   Debug.enable(process.env.DEBUG ?? '*');
 }
 
@@ -74,12 +110,14 @@ function fail(message = '', exitCode = 1) {
 }
 
 function parseArgs(rawArgv) {
+  const parserOptions = buildParserOptions();
+
   return parser(rawArgv, {
     alias: {
       help: ['h'],
       version: ['V'],
     },
-    boolean: ['debug', 'help', 'version'],
+    boolean: ['debug', 'force', 'help', 'version'],
     configuration: {
       'boolean-negation': true,
       'camel-case-expansion': false,
@@ -87,41 +125,118 @@ function parseArgs(rawArgv) {
       'strip-aliased': true,
       'strip-dashed': true,
     },
+    ...parserOptions,
   });
 }
 
 function buildDefaults() {
-  return Object.freeze({});
+  return Object.freeze({
+    force: false,
+    item: [],
+  });
 }
 
-function resolveInvocation(argv) {
+function buildEnvironment() {
+  return Object.freeze({
+    force: valueEnabled(process.env.TANAAB_FORCE),
+    item: splitCsv(process.env.TANAAB_ITEM),
+  });
+}
+
+function buildParserOptions() {
+  const repeatableOptions = [...buildRepeatableOptions()];
+  if (repeatableOptions.length === 0) {
+    return {};
+  }
+
+  return { array: repeatableOptions };
+}
+
+function buildRepeatableOptions() {
+  return Object.freeze(['item']);
+}
+
+function buildEnvironmentVariables() {
+  return [
+    `  SCRIPT_VERSION  overrides the reported CLI version ${dim(`[default: ${CLI_VERSION}]`)}`,
+    '  TANAAB_DEBUG    set to a truthy value to show debug messages',
+    '  TANAAB_FORCE    set to a truthy value to enable force mode',
+    `  TANAAB_ITEM     comma-separated repeatable items ${dim(`[default: ${csvDisplay(buildEnvironment().item)}]`)}`,
+  ];
+}
+
+function toOptionKey(flag) {
+  return flag.replace(/^--(?:no-)?/, '').replace(/-([a-z])/g, (_, char) => char.toUpperCase());
+}
+
+function collectExplicitOptionKeys(rawArgv) {
+  const explicitKeys = new Set();
+
+  for (const arg of rawArgv) {
+    if (!arg.startsWith('--')) {
+      continue;
+    }
+
+    explicitKeys.add(toOptionKey(arg.split('=')[0]));
+  }
+
+  return explicitKeys;
+}
+
+function resolveInvocation(rawArgv, argv) {
   const defaults = buildDefaults();
+  const environment = buildEnvironment();
+  const repeatableOptions = new Set(buildRepeatableOptions());
+  const explicitOptionKeys = collectExplicitOptionKeys(rawArgv);
   const positionals = [...argv._];
   const flagOptions = { ...argv };
   delete flagOptions._;
+  delete flagOptions.help;
+  delete flagOptions.version;
   const options = {
     ...defaults,
-    ...flagOptions,
+    ...environment,
   };
 
-  return { defaults, options, positionals };
+  for (const [key, value] of Object.entries(flagOptions)) {
+    if (value === undefined) {
+      continue;
+    }
+
+    if (typeof value === 'boolean' && value === false && !explicitOptionKeys.has(key)) {
+      continue;
+    }
+
+    // Any CLI-provided repeatable flag replaces the env-seeded list for that option.
+    if (Array.isArray(value) && value.length === 0 && !explicitOptionKeys.has(key) && repeatableOptions.has(key)) {
+      continue;
+    }
+
+    options[key] = value;
+  }
+
+  return { defaults, environment, explicitOptionKeys, options, positionals, repeatableOptions };
 }
 
 function renderHelp() {
-  return `
-Usage: ${dim('[DEBUG=*]')} ${bold(`${CLI_NAME} [options] [arguments...]`)}
-
-${tp('Options')}:
+  const invocation = resolveInvocation([], parseArgs([]));
+  const environmentVariables = buildEnvironmentVariables();
+  const sections = [
+    `Usage: ${bold(`${CLI_NAME} [options] [arguments...]`)}`,
+    '',
+    `${tp('Options')}:
+  --force            enables force mode ${dim(`[default: ${enabledDisplay(invocation.options.force)}]`)}
+  --item <value>     adds a repeatable item ${dim(`[default: ${csvDisplay(invocation.options.item)}]`)}
   --debug            shows debug messages
   -h, --help         displays this message
-  -V, --version      shows the CLI version ${dim(`[default: ${CLI_VERSION}]`)}
+  -V, --version      shows the CLI version ${dim(`[default: ${CLI_VERSION}]`)}`,
+  ];
 
-${tp('Environment Variables')}:
-  DEBUG              enables debug output for matching namespaces
-  FORCE_COLOR        overrides detected color support
-  NO_COLOR           disables color output
-  RUNNER_DEBUG       enables debug output when set to 1
-`.trim();
+  if (environmentVariables.length > 0) {
+    sections.push('', `${tp('Environment Variables')}:\n${environmentVariables.join('\n')}`);
+  }
+
+  return sections.join('\n').trim();
 }
 
 async function runCli({ options, positionals }) {
@@ -132,6 +247,7 @@ async function runCli({ options, positionals }) {
     warn('handle or reject positional arguments before shipping this CLI');
   }
 
+  note('received repeatable items: %s', csvDisplay(options.item));
   note('replace runCli() with project-specific behavior');
   success('wire your command execution flow here');
 }
@@ -149,7 +265,7 @@ async function main(rawArgv) {
     return;
   }
 
-  const invocation = resolveInvocation(argv);
+  const invocation = resolveInvocation(rawArgv, argv);
   await runCli(invocation);
 }
 
