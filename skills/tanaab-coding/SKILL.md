@@ -13,7 +13,7 @@ Use this skill as the umbrella router for work in the Tanaab coding stack. Selec
 
 - The user asks for a coding, testing, or release task but the right specialization is not yet selected.
 - The request may span multiple coding skills and needs routing.
-- You need to decide whether `tanaab-javascript`, `tanaab-frontend`, `tanaab-shell`, `tanaab-github-actions`, `tanaab-testing`, `tanaab-release`, or `tanaab-templates` should also apply.
+- You need to decide whether `tanaab-javascript`, `tanaab-frontend`, `tanaab-shell`, `tanaab-github-actions`, `tanaab-testing`, `tanaab-release`, `tanaab-documentation`, or `tanaab-templates` should also apply.
 
 ## When Not to Use
 
@@ -23,13 +23,13 @@ Use this skill as the umbrella router for work in the Tanaab coding stack. Selec
 ## Relationship to Other Skills
 
 - Always apply `tanaab-coding-core` alongside this skill.
-- Route into one or more specialized skills: `tanaab-javascript`, `tanaab-frontend`, `tanaab-shell`, `tanaab-github-actions`, `tanaab-testing`, `tanaab-release`.
+- Route into one or more specialized skills: `tanaab-javascript`, `tanaab-frontend`, `tanaab-shell`, `tanaab-github-actions`, `tanaab-testing`, `tanaab-release`, `tanaab-documentation`.
 - Use `tanaab-templates` when reusable scaffolding or boilerplate files are needed.
 - Choose one primary owner for the task before adding companions so skills reinforce one another instead of competing for the same surface.
 
 ## Workflow
 
-1. Identify the implementation or maintenance surface: JavaScript/TypeScript, frontend, shell, GitHub Actions, testing, release, or reusable templates.
+1. Identify the implementation or maintenance surface: JavaScript/TypeScript, frontend, shell, GitHub Actions, testing, release, documentation, or reusable templates.
 2. Activate `tanaab-coding-core`.
 3. Select the primary owning skill using [references/routing-matrix.md](./references/routing-matrix.md).
 4. Add companion skills only when the task crosses into their owned surfaces.

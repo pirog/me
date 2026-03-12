@@ -21,7 +21,7 @@ Use this skill to manage reusable template files for the Tanaab coding hierarchy
 
 ## Relationship to Other Skills
 
-- Support `tanaab-coding`, `tanaab-javascript`, `tanaab-frontend`, `tanaab-shell`, `tanaab-github-actions`, `tanaab-testing`, and `tanaab-release`.
+- Support `tanaab-coding`, `tanaab-javascript`, `tanaab-frontend`, `tanaab-shell`, `tanaab-github-actions`, `tanaab-testing`, `tanaab-release`, and `tanaab-documentation`.
 - Assume `tanaab-coding-core` is active when templates are applied to coding work.
 - Primary ownership: reusable scaffolds, boilerplate, and fragments that have already proven reusable.
 - Do not override behavioral ownership held by the specialized skill that defined the pattern.

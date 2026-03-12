@@ -22,7 +22,7 @@ Use this skill as the universal engineering doctrine for all tasks in the Tanaab
 ## Relationship to Other Skills
 
 - `tanaab-coding` should always activate this skill.
-- `tanaab-javascript`, `tanaab-frontend`, `tanaab-shell`, `tanaab-github-actions`, `tanaab-testing`, and `tanaab-release` assume this skill is active.
+- `tanaab-javascript`, `tanaab-frontend`, `tanaab-shell`, `tanaab-github-actions`, `tanaab-testing`, `tanaab-release`, and `tanaab-documentation` assume this skill is active.
 - `tanaab-templates` can supply reusable files that still follow this skill's doctrine.
 
 ## Coding Principles

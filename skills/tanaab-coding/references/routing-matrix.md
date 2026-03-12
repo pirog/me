@@ -37,6 +37,10 @@
   `tanaab-release`
   Common companions: `tanaab-testing`, `tanaab-github-actions`, `tanaab-javascript`, `tanaab-shell`, `tanaab-templates`
 
+- README structure, repository docs, documentation information architecture, inline code docs, API docs, or deciding when documentation should move beyond README files:
+  `tanaab-documentation`
+  Common companions: `tanaab-frontend`, `tanaab-javascript`, `tanaab-release`, `tanaab-github-actions`, `tanaab-templates`
+
 - Reusable scaffolds, boilerplate, or reusable fragments:
   `tanaab-templates`
   Common companions: whichever primary owner requested reuse
@@ -59,6 +63,18 @@
 - Release narrative vs release mechanics:
   `tanaab-release` owns changelog text, release notes, and release-readiness summaries.
   `tanaab-github-actions` owns release workflow mechanics.
+
+- Durable docs policy vs release-specific narrative:
+  `tanaab-documentation` owns README structure, durable docs surfaces, and docs-site escalation decisions.
+  `tanaab-release` owns version-specific release notes, changelog text, and release-readiness narrative.
+
+- Documentation information architecture vs docs-site implementation:
+  `tanaab-documentation` owns documentation structure, audience fit, README-vs-docs decisions, and docs policy.
+  `tanaab-frontend` owns VitePress theme, layout, styling, and frontend implementation once the docs site exists.
+
+- Documentation expectations vs JavaScript doc tooling:
+  `tanaab-documentation` owns API doc expectations, placement, and durable documentation policy.
+  `tanaab-javascript` owns JSDoc or TSDoc syntax, extraction tooling, and JS or TS build integration when those surfaces are involved.
 
 - Templates vs source-of-truth behavior:
   `tanaab-templates` stores reusable implementations and fragments.
