@@ -1,5 +1,7 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+- Removed hardcoded SSH `HostName` IP mappings from the shared ssh dotfile package so host aliases can resolve through local hosts or DNS
+
 ## v0.2.0 - [March 12, 2026](https://github.com/pirog/me/releases/tag/v0.2.0)
 
 - Added `skill-sensei` for Pirog and Tanaab based skill generation, stack auditing, and branded skill standardization
