@@ -50,6 +50,8 @@ Use this skill for GitHub Actions workflow authoring and GitHub-hosted CI triage
 - Preserve fixed workflow filenames and GitHub Actions loader conventions, but use kebab-case for repo-authored helper scripts and local support files.
 - For JavaScript actions or composite wrappers, ensure runtime wiring still emits the expected artifacts and pass required `INPUT_*` values explicitly when the wrapper depends on them.
 - Update Dependabot ecosystem settings from `npm` to `bun` where applicable.
+- When workflow steps depend on repo-authored shell scripts that are release, deploy, bootstrap, or other maintained operational surfaces, prefer wiring `shellcheck` into CI.
+- For non-trivial inline shell, prefer extracting the logic into a repo-authored script that can be `shellcheck`ed and tested directly.
 
 4. For CI triage, inspect failing checks before proposing a fix.
 
@@ -82,6 +84,7 @@ Use this skill for GitHub Actions workflow authoring and GitHub-hosted CI triage
 - Confirm the task is actually GitHub Actions-led.
 - Confirm this skill stayed the primary owner only for workflow or CI-triage surfaces.
 - Confirm workflows that install Bun use `oven-sh/setup-bun@v2`, `bun-version-file: .bun-version`, and `bun install --frozen-lockfile --ignore-scripts` unless the task explicitly needs different install behavior.
+- Confirm shell-heavy workflows use `shellcheck` intentionally when repo-authored shell scripts are maintained operational surfaces.
 - Confirm the failing provider is GitHub Actions before attempting deep CI triage.
 - Confirm the summary includes the failing check name, URL, and useful failure snippet when triaging CI.
 - Confirm no code changes are applied before approval when the task started in CI triage mode.

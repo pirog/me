@@ -32,7 +32,7 @@ Use this skill as the universal engineering doctrine for all tasks in the Tanaab
 - Keep one clear source of truth for configuration, generated artifacts, and workflow decisions.
 - Prefer kebab-case for repo-authored filenames unless a tool or ecosystem requires a fixed conventional name such as `package.json`, `openai.yaml`, `SKILL.md`, `README.md`, `CHANGELOG.md`, `LICENSE`, or `Brewfile`.
 - Prefer ESM JavaScript over CommonJS for new and migrated JavaScript surfaces.
-- Prefer Bun as the primary JavaScript runtime and package manager, while still using `node:*` built-in modules where Bun provides Node-compatible support.
+- Prefer Bun as the primary JavaScript runtime and package manager in repositories that have meaningful JavaScript or TypeScript tooling, CLI, docs, or automation surfaces, while still using `node:*` built-in modules where Bun provides Node-compatible support.
 - Prefer SCSS over raw CSS, Less, or Stylus for stylesheet authoring when a preprocessor is appropriate.
 - Organize repository code by purpose and behavior rather than by implementation type.
 - Reserve `utils/` for generic, portable helpers that can move across repositories with minimal or no rewrite.
@@ -47,6 +47,7 @@ Use this skill as the universal engineering doctrine for all tasks in the Tanaab
 - Skill-bundled helper scripts under `skills/**/scripts/` are exempt from the repo-level `bin/` convention and should stay local to the owning skill.
 - Make operational intent explicit in code, scripts, and workflows instead of relying on hidden assumptions.
 - Validate the changed surface with the narrowest reliable checks first, then broaden validation when risk justifies it.
+- For touched shell scripts or non-trivial shell logic, that narrow validation often includes targeted `shellcheck`, regardless of whether the repository uses Bun.
 - Leave the repository easier to reason about than you found it: less drift, less duplication, and clearer boundaries.
 
 ## Engineering Philosophy
@@ -55,6 +56,7 @@ Use this skill as the universal engineering doctrine for all tasks in the Tanaab
 - Fix foundations before polish: runtime, build, test, CI, and release plumbing come before stylistic refinement.
 - Treat tests, CI, release notes, and automation as product surfaces, not support work.
 - Prefer deterministic, repo-local tooling and explicit configuration over magical implicit behavior.
+- Do not introduce Bun into a repository that has no meaningful JavaScript or TypeScript surface just to satisfy stack consistency; use it when the repo actually carries JS or TS tooling or automation value.
 - Treat TypeScript migration as an explicit follow-on decision until the build and release path is standardized well enough to scaffold it confidently.
 - Keep generic utilities small, extraction-ready, and free of repo-specific language so they can later move into a shared utilities repo or standalone packages.
 - Let data enter at the boundary, get normalized once, flow through small named transformations, and return in one direction.
@@ -82,9 +84,10 @@ Use this skill as the universal engineering doctrine for all tasks in the Tanaab
 - Confirm specialized skills are layered on top of this skill rather than replacing it.
 - Confirm stack decisions follow the primary-owner model rather than splitting ownership ambiguously.
 - Confirm new repo-authored files use kebab-case unless a fixed conventional filename is required by the tool or ecosystem.
-- Confirm JavaScript surfaces default to ESM and Bun unless the user explicitly asked for another runtime or module format.
+- Confirm JavaScript surfaces default to ESM and Bun when the repository actually has JavaScript or TypeScript tooling or runtime surfaces, unless the user explicitly asked for another runtime or module format.
 - Confirm stylesheet work defaults to SCSS unless the user explicitly required plain CSS or another styling format.
 - Confirm code is organized by purpose, and that any `utils/` entries are genuinely generic and portable rather than repo-specific.
 - Confirm functions normalize input at the boundary, keep data flow mostly one-way, and minimize mutable working variables.
 - Confirm caller-owned inputs are not mutated unless the code explicitly clones or isolates that mutation.
 - Confirm non-CLI Bun or Node scripts do not carry a hashbang and are invoked via `bun ./script.js` or `node ./script.js` instead.
+- Confirm touched shell scripts or reusable shell helpers get `shellcheck` when shell is a real maintained surface in the task.

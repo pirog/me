@@ -57,6 +57,9 @@ Use this skill for shell scripting, command-line automation, and CLI contract wo
 - When shell wrappers invoke repo-authored JavaScript CLI helpers, prefer Bun-backed entrypoints over calling `node` directly.
 - Preserve portability requirements when the repository already targets multiple shells or environments.
 - When a composite action or wrapper script depends on shell execution, pass required environment variables explicitly rather than assuming inheritance.
+- Run targeted `shellcheck` on changed shell scripts or reusable shell helpers before finishing.
+- Treat `shellcheck` as runtime-agnostic: install or invoke it using whatever toolchain the repository naturally uses instead of assuming Bun is present.
+- Use inline `shellcheck` disables only when the warning is understood, the pattern is intentional, and the disable is scoped narrowly with a short reason.
 
 6. Pull from `tanaab-javascript`, `tanaab-testing`, `tanaab-github-actions`, `tanaab-release`, or `tanaab-templates` when the task crosses those boundaries.
 
@@ -73,6 +76,7 @@ Use this skill for shell scripting, command-line automation, and CLI contract wo
 - Confirm this skill stayed the primary owner only for shell or CLI-contract surfaces.
 - Confirm any CLI contract follows the shared rules in [../tanaab-coding-core/references/cli-style-rules.md](../tanaab-coding-core/references/cli-style-rules.md).
 - Confirm shell entrypoints stay explicit about interpreter and execution context.
+- Confirm changed shell scripts or reusable shell helpers were checked with `shellcheck` when shell is a meaningful surface in the task.
 - Confirm failures are actionable and non-zero.
 - Confirm destructive or nonsensical target combinations are rejected early.
 - Confirm any template use came from `tanaab-templates`.

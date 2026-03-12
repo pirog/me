@@ -7,7 +7,7 @@ description: Guide JavaScript and TypeScript implementation work under the share
 
 ## Overview
 
-Use this skill for JavaScript and TypeScript implementation work within the Tanaab coding hierarchy, including Bun adoption, module-system conversion, package metadata, bundling, and JavaScript-backed CLI or action code. Prefer ESM JavaScript on Bun today; do not default to TypeScript migration until the build and release path is defined well enough to standardize.
+Use this skill for JavaScript and TypeScript implementation work within the Tanaab coding hierarchy, including Bun adoption, module-system conversion, package metadata, bundling, and JavaScript-backed CLI or action code. Prefer ESM JavaScript on Bun today when the repository actually has meaningful JavaScript or TypeScript surfaces; do not default to TypeScript migration until the build and release path is defined well enough to standardize.
 
 ## When to Use
 
@@ -64,7 +64,7 @@ Use this skill for JavaScript and TypeScript implementation work within the Tana
 - Add or update `"type": "module"`, `main`, and `exports` when the task includes ESM conversion.
 - Keep artifact paths stable when workflows or actions depend on exact filenames such as `dist/index.js`.
 
-6. Prefer ESM JavaScript on Bun as the current default.
+6. Prefer ESM JavaScript on Bun as the current default for repositories that actually have JavaScript or TypeScript tooling, runtime, or automation surfaces.
 
 - Use `import` and `export` syntax instead of CommonJS forms.
 - Prefer Bun to execute repo-authored JavaScript tooling and automation code instead of invoking `node` directly.
