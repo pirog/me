@@ -45,9 +45,10 @@ Use this skill to manage reusable template files for the Tanaab coding hierarchy
 ## Templates Directory
 
 - `templates/` stores reusable code patterns and boilerplate for the Tanaab coding skills.
-- Category directories exist for `javascript/`, `css/`, `scss/`, `vue/`, `vitepress/`, `shell/`, `github-actions/`, `testing/`, and `release/`, but only some currently contain concrete starters.
-- Today the concrete starter content lives in `templates/javascript/cli/`, `templates/javascript/lint/`, `templates/javascript/unit/`, and `templates/shell/`.
+- Category directories exist for `documentation/`, `javascript/`, `css/`, `scss/`, `vue/`, `vitepress/`, `shell/`, `github-actions/`, `testing/`, and `release/`, but only some currently contain concrete starters.
+- Today the concrete starter content lives in `templates/documentation/`, `templates/javascript/cli/`, `templates/javascript/lint/`, `templates/javascript/unit/`, and `templates/shell/`.
 - Treat the other category directories as reserved homes for future templates rather than evidence of mature template coverage today.
+- Use `templates/documentation/` for README standards, full README starters, and lightweight README wrappers that delegate durable docs to VitePress.
 - Use `templates/javascript/cli/` for package-level or user-facing Bun CLI starters that standardize help output, `--version`, `--debug`, and shared logging helpers.
 - Use `templates/javascript/lint/` for shared flat ESLint and standalone Prettier starters that can be extended with optional TypeScript or Vue layers.
 - Use `templates/shell/` for Bash CLI starters that standardize help output, `--version`, `--debug`, `tty_tp` / `tty_ts`, and shared status helpers.

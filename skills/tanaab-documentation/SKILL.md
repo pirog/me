@@ -47,12 +47,14 @@ Use this skill for repository documentation strategy and authoring within the Ta
 - Prefer a README for repository-level orientation, install or setup instructions, common usage, and concise reference.
 - Prefer inline code or API docs for contracts, error behavior, non-obvious side effects, and behavior that must stay close to code.
 - Escalate to fuller docs when the README becomes overloaded, multiple user journeys or navigation layers are needed, or durable reference material grows beyond one repo entrypoint.
+- Use [references/readme-standards.md](./references/readme-standards.md) to choose intentionally between a full README and a lightweight docs-wrapper README.
 
 4. Decide when a fuller docs site is warranted.
 
 - Move beyond README-only documentation when the repository needs multiple durable pages, repeated cross-linking, long reference sections, or separate guides and reference surfaces.
 - Do not split content into a docs site for polish alone when a focused README still serves the task cleanly.
 - When a static docs site is justified, prefer VitePress 1 and hand implementation details to `tanaab-frontend`.
+- When the repo uses a docs site, keep the README as a strong entrypoint with a quickstart plus key docs-site links instead of duplicating the full reference surface.
 
 5. Shape repository docs for fast comprehension.
 
@@ -75,6 +77,7 @@ Use this skill for repository documentation strategy and authoring within the Ta
 - [agents/openai.yaml](./agents/openai.yaml): UI metadata for the documentation skill.
 - [assets/tanaab-documentation-icon.png](./assets/tanaab-documentation-icon.png): UI icon for the documentation skill.
 - [assets/tanaab-documentation-icon.svg](./assets/tanaab-documentation-icon.svg): generated source icon for the documentation skill.
+- [references/readme-standards.md](./references/readme-standards.md): rules for choosing full README versus docs-wrapper README structure and when to escalate to VitePress docs.
 
 ## Validation
 
@@ -82,9 +85,11 @@ Use this skill for repository documentation strategy and authoring within the Ta
 - Confirm the task is actually documentation-led.
 - Confirm this skill stayed the primary owner only for README, docs-policy, or durable documentation surfaces.
 - Confirm README content remains concise and repo-oriented rather than growing into an unstructured manual.
+- Confirm the repository uses either full README mode or docs-wrapper mode intentionally rather than mixing both styles incoherently.
 - Confirm inline code or API docs explain contracts and non-obvious behavior rather than narrating obvious implementation.
 - Confirm boilerplate comments stay sparse and are limited to non-obvious contracts, extension points, or edge cases.
 - Confirm any move from README to fuller docs is justified by documentation complexity rather than aesthetics alone.
+- Confirm docs-wrapper READMEs still include a basic quickstart and clearly point to the VitePress docs surface.
 - Confirm VitePress implementation details are handed to `tanaab-frontend` when they become a frontend task.
 - Confirm release-only narrative is handed to `tanaab-release`.
 - Confirm any template use came from `tanaab-templates`.
