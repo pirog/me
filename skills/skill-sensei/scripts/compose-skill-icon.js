@@ -6,7 +6,11 @@ import { access, mkdir, mkdtemp, readFile, rename, rm, writeFile } from 'node:fs
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-import { commonTanaabEnvironmentVariables, createCli, extractCommonFlags } from '../../tanaab-coding-core/scripts/bun-cli-support.js';
+import {
+  commonTanaabEnvironmentVariables,
+  createCli,
+  extractCommonFlags,
+} from '../../tanaab-coding-core/scripts/bun-cli-support.js';
 
 const cli = createCli(import.meta.url);
 
@@ -30,7 +34,10 @@ function buildEnvironmentVariables() {
     { label: 'TANAAB_SKILL_ICON_WATERMARK', description: 'watermark input path' },
     { label: 'TANAAB_SKILL_ICON_OUTPUT', description: 'output path' },
     { label: 'TANAAB_SKILL_ICON_SIZE', description: 'output canvas size' },
-    { label: 'TANAAB_SKILL_ICON_BADGE_SCALE', description: 'watermark badge size relative to canvas' },
+    {
+      label: 'TANAAB_SKILL_ICON_BADGE_SCALE',
+      description: 'watermark badge size relative to canvas',
+    },
     { label: 'TANAAB_SKILL_ICON_PADDING_SCALE', description: 'badge padding relative to canvas' },
     { label: 'TANAAB_SKILL_ICON_RING_COLOR', description: 'badge ring color' },
     { label: 'TANAAB_SKILL_ICON_BG_COLOR', description: 'badge backing color' },
@@ -45,7 +52,10 @@ function usage(code = 0) {
       description: 'Compose a skill icon from a base icon plus a branded watermark badge.',
       environmentVariables: buildEnvironmentVariables(),
       options: [
-        { label: '--size <number>', description: `output canvas size ${cli.dim(`[default: ${environment.size}]`)}` },
+        {
+          label: '--size <number>',
+          description: `output canvas size ${cli.dim(`[default: ${environment.size}]`)}`,
+        },
         {
           label: '--badge-scale <number>',
           description: `watermark badge size relative to canvas ${cli.dim(`[default: ${environment.badgeScale}]`)}`,
@@ -54,17 +64,30 @@ function usage(code = 0) {
           label: '--padding-scale <number>',
           description: `badge padding relative to canvas ${cli.dim(`[default: ${environment.paddingScale}]`)}`,
         },
-        { label: '--ring-color <color>', description: `badge ring color ${cli.dim(`[default: ${environment.ringColor}]`)}` },
-        { label: '--bg-color <color>', description: `badge backing color ${cli.dim(`[default: ${environment.bgColor}]`)}` },
+        {
+          label: '--ring-color <color>',
+          description: `badge ring color ${cli.dim(`[default: ${environment.ringColor}]`)}`,
+        },
+        {
+          label: '--bg-color <color>',
+          description: `badge backing color ${cli.dim(`[default: ${environment.bgColor}]`)}`,
+        },
         { label: '--debug', description: 'show debug diagnostics' },
         { label: '-h, --help', description: 'show this message' },
-        { label: '-V, --version', description: `show the repo version ${cli.dim(`[default: ${cli.version}]`)}` },
+        {
+          label: '-V, --version',
+          description: `show the repo version ${cli.dim(`[default: ${cli.version}]`)}`,
+        },
       ],
       sections: [
         {
           entries: [
             { label: '.svg', description: 'writes the composed vector icon directly' },
-            { label: '.png', description: 'rasterizes the composed icon with Quick Look on macOS or ImageMagick elsewhere' },
+            {
+              label: '.png',
+              description:
+                'rasterizes the composed icon with Quick Look on macOS or ImageMagick elsewhere',
+            },
           ],
           heading: 'Output Formats',
         },
@@ -151,7 +174,16 @@ function rasterizePng(svg, outputPath, size) {
   return new Promise((resolve, reject) => {
     const child = spawn(
       'magick',
-      ['-background', 'none', '-density', '384', 'svg:-', '-resize', `${size}x${size}`, `png32:${outputPath}`],
+      [
+        '-background',
+        'none',
+        '-density',
+        '384',
+        'svg:-',
+        '-resize',
+        `${size}x${size}`,
+        `png32:${outputPath}`,
+      ],
       { stdio: ['pipe', 'ignore', 'pipe'] },
     );
 
@@ -200,7 +232,9 @@ async function commandExists(command) {
 
 function runQuickLookThumbnail(inputPath, size, outputDir) {
   return new Promise((resolve, reject) => {
-    const child = spawn('qlmanage', ['-t', '-s', String(size), '-o', outputDir, inputPath], { stdio: ['ignore', 'ignore', 'pipe'] });
+    const child = spawn('qlmanage', ['-t', '-s', String(size), '-o', outputDir, inputPath], {
+      stdio: ['ignore', 'ignore', 'pipe'],
+    });
     let stderr = '';
 
     child.stderr.on('data', (chunk) => {

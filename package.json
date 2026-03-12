@@ -20,9 +20,7 @@
     "@eslint/js": "^10.0.1",
     "eslint": "^10.0.3",
     "eslint-config-prettier": "^10.1.1",
-    "eslint-import-resolver-exports": "^1.0.0-beta.5",
-    "eslint-plugin-import": "^2.31.0",
-    "eslint-plugin-prettier": "^5.2.3",
+    "globals": "^17.4.0",
     "prettier": "^3.5.3",
     "shellcheck": "^4.1.0",
     "shx": "^0.4.0",
@@ -32,7 +30,10 @@
     "build": "bun run build:dist && bun run build:versions",
     "build:dist": "shx rm -rf ./dist && shx mkdir -p ./dist && shx cp -f ./piroboot.sh ./brewgen.sh ./dist/",
     "build:versions": "bun ./inject-script-version.js",
-    "lint": "eslint . && shellcheck piroboot.sh brewgen.sh",
+    "format:check": "prettier . --check --ignore-unknown",
+    "format:write": "prettier . --write --ignore-unknown",
+    "lint": "bun run lint:eslint && bun run format:check && shellcheck piroboot.sh brewgen.sh",
+    "lint:eslint": "eslint .",
     "sync:ai": "bun ./skills/skill-sensei/scripts/sync-ai-stow.js"
   }
 }

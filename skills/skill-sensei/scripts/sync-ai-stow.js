@@ -31,8 +31,14 @@ function buildEnvironmentVariables() {
     { label: 'TANAAB_STOW_TARGET', description: 'target home directory' },
     { label: 'TANAAB_STOW_DOTFILES_DIR', description: 'stow directory containing the ai package' },
     { label: 'TANAAB_STOW_PACKAGE', description: 'stow package name' },
-    { label: 'TANAAB_STOW_SIMULATE', description: 'set to a truthy value to simulate the stow run' },
-    { label: 'TANAAB_STOW_PRUNE', description: 'set to a truthy value to prune dangling links after restow' },
+    {
+      label: 'TANAAB_STOW_SIMULATE',
+      description: 'set to a truthy value to simulate the stow run',
+    },
+    {
+      label: 'TANAAB_STOW_PRUNE',
+      description: 'set to a truthy value to prune dangling links after restow',
+    },
   ];
 }
 
@@ -41,15 +47,22 @@ function usage(code = 0) {
 
   cli.showHelp(
     {
-      description: "Restow the repo's ai dot package into a target home directory and prune dangling skill links.",
+      description:
+        "Restow the repo's ai dot package into a target home directory and prune dangling skill links.",
       environmentVariables: buildEnvironmentVariables(),
       options: [
-        { label: '--target <path>', description: `target home directory ${cli.dim(`[default: ${environment.target}]`)}` },
+        {
+          label: '--target <path>',
+          description: `target home directory ${cli.dim(`[default: ${environment.target}]`)}`,
+        },
         {
           label: '--dotfiles-dir <path>',
           description: `stow dir containing the ai package ${cli.dim(`[default: ${environment.dotfilesDir}]`)}`,
         },
-        { label: '--package <name>', description: `stow package name ${cli.dim(`[default: ${environment.packageName}]`)}` },
+        {
+          label: '--package <name>',
+          description: `stow package name ${cli.dim(`[default: ${environment.packageName}]`)}`,
+        },
         {
           label: '--simulate',
           description: `print the stow plan without writing changes ${cli.dim(`[default: ${environment.simulate ? 'on' : 'off'}]`)}`,
@@ -60,7 +73,10 @@ function usage(code = 0) {
         },
         { label: '--debug', description: 'show debug diagnostics' },
         { label: '-h, --help', description: 'show this message' },
-        { label: '-V, --version', description: `show the repo version ${cli.dim(`[default: ${cli.version}]`)}` },
+        {
+          label: '-V, --version',
+          description: `show the repo version ${cli.dim(`[default: ${cli.version}]`)}`,
+        },
       ],
       usage: `${cli.bold(cli.cliName)} [options]`,
     },
@@ -227,7 +243,12 @@ async function main() {
 
   stowArgs.push(options.packageName);
 
-  cli.log('%s %s via stow into %s', cli.tp('syncing'), cli.ts(options.packageName), cli.ts(options.target));
+  cli.log(
+    '%s %s via stow into %s',
+    cli.tp('syncing'),
+    cli.ts(options.packageName),
+    cli.ts(options.target),
+  );
   cli.debug('running stow with args %O', stowArgs);
   await runStow(stowArgs);
 
@@ -237,7 +258,10 @@ async function main() {
   }
 
   if (options.prune) {
-    const skillRoots = [path.join(options.target, '.codex', 'skills'), path.join(options.target, '.openclaw', 'skills')];
+    const skillRoots = [
+      path.join(options.target, '.codex', 'skills'),
+      path.join(options.target, '.openclaw', 'skills'),
+    ];
 
     let removedLinks = 0;
     let removedDirs = 0;

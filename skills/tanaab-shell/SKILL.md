@@ -39,19 +39,25 @@ Use this skill for shell scripting, command-line automation, and CLI contract wo
 1. Confirm `tanaab-coding-core` is active.
 2. Scope the shell surface: script entrypoint, environment, portability, execution context, and whether the task also defines a CLI contract.
 3. When the task touches a command-line interface, apply the shared CLI contract from [../tanaab-coding-core/references/cli-style-rules.md](../tanaab-coding-core/references/cli-style-rules.md).
+
 - Use the shared rules for help section order, option > env > default precedence, repeatable options, env-var documentation, status coloring, and stdout or stderr behavior.
 - Reject ambiguous input.
 - If a value should be option-only, reject positional arguments with a clear error message.
+
 4. Add safety and scope guards.
+
 - Add explicit guards against destructive or nonsensical self-targeting behavior.
 - Fail early when required paths or resources do not exist.
 - Return clear remediation instructions in failure messages.
+
 5. Apply shell-specific implementation details.
+
 - Keep shell entrypoints explicit about interpreter and execution context.
 - Prefer kebab-case for new repo-authored shell and helper filenames unless the surrounding tool expects a fixed conventional name.
 - When shell wrappers invoke repo-authored JavaScript CLI helpers, prefer Bun-backed entrypoints over calling `node` directly.
 - Preserve portability requirements when the repository already targets multiple shells or environments.
 - When a composite action or wrapper script depends on shell execution, pass required environment variables explicitly rather than assuming inheritance.
+
 6. Pull from `tanaab-javascript`, `tanaab-testing`, `tanaab-github-actions`, `tanaab-release`, or `tanaab-templates` when the task crosses those boundaries.
 
 ## Bundled Resources

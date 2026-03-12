@@ -6,7 +6,11 @@ import { access, mkdtemp, readFile, rename, rm, writeFile } from 'node:fs/promis
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { commonTanaabEnvironmentVariables, createCli, extractCommonFlags } from '../../tanaab-coding-core/scripts/bun-cli-support.js';
+import {
+  commonTanaabEnvironmentVariables,
+  createCli,
+  extractCommonFlags,
+} from '../../tanaab-coding-core/scripts/bun-cli-support.js';
 
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const ASSETS_DIR = path.resolve(SCRIPT_DIR, '../assets');
@@ -42,7 +46,10 @@ function usage(code = 0) {
       options: [
         { label: '--debug', description: 'show debug diagnostics' },
         { label: '-h, --help', description: 'show this message' },
-        { label: '-V, --version', description: `show the repo version ${cli.dim(`[default: ${cli.version}]`)}` },
+        {
+          label: '-V, --version',
+          description: `show the repo version ${cli.dim(`[default: ${cli.version}]`)}`,
+        },
       ],
       usage: `${cli.bold(cli.cliName)}`,
     },
@@ -97,7 +104,16 @@ function rasterizePng(svg, outputPath) {
   return new Promise((resolve, reject) => {
     const child = spawn(
       'magick',
-      ['-background', 'none', '-density', '384', 'svg:-', '-resize', `${CANVAS_SIZE}x${CANVAS_SIZE}`, `png32:${outputPath}`],
+      [
+        '-background',
+        'none',
+        '-density',
+        '384',
+        'svg:-',
+        '-resize',
+        `${CANVAS_SIZE}x${CANVAS_SIZE}`,
+        `png32:${outputPath}`,
+      ],
       { stdio: ['pipe', 'ignore', 'pipe'] },
     );
 

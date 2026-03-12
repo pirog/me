@@ -38,16 +38,21 @@ Use this skill for release preparation, changelog drafting, release contract dec
 1. Confirm `tanaab-coding-core` is active.
 2. Scope the release surface: changelog, release notes, version context, versioning policy, expected release outputs, release-facing metadata, and expected gates.
 3. Decide the release contract before touching automation when release behavior itself is in scope.
+
 - Identify which files, versions, or metadata should update as part of the release.
 - Identify which artifacts, deploy outputs, or write-backs are expected from the release flow.
 - Hand implementation of workflow mechanics to `tanaab-github-actions`.
+
 4. Build the release change set.
+
 - Run `git describe --tags --abbrev=0`.
 - If that fails, inspect tags with `git tag --sort=-creatordate`.
 - Review commits with `git log --oneline <tag>..HEAD`.
 - Review changed files with `git diff --name-status <tag>..HEAD`.
 - Merge low-level commits into meaningful release notes and exclude noise that does not matter to users.
+
 5. Write the unreleased section.
+
 - Target the top unreleased section in `CHANGELOG.md`.
 - Keep existing templated header text intact when present.
 - Format each change as an unordered `-` bullet.
@@ -55,11 +60,14 @@ Use this skill for release preparation, changelog drafting, release contract dec
 - Keep each bullet concise and user-facing.
 - Mention the outcome and scope in one sentence.
 - Alphabetize the bullet list after drafting.
+
 6. Add issue or PR links when applicable.
+
 - Append a Markdown link to each bullet when applicable.
 - Prefer PR links when work landed through a PR.
 - Use issue links when no PR applies.
 - Place the link at the end of the bullet and keep syntax consistent.
+
 7. Pull from `tanaab-testing`, `tanaab-github-actions`, `tanaab-javascript`, `tanaab-shell`, or `tanaab-templates` when the release task crosses those boundaries.
 
 ## Bundled Resources

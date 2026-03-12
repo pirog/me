@@ -41,6 +41,7 @@ Use this skill for GitHub Actions workflow authoring and GitHub-hosted CI triage
 1. Confirm `tanaab-coding-core` is active.
 2. Determine the mode: workflow authoring or CI triage.
 3. For workflow authoring or updates, scope the workflow surface: workflow files, jobs, steps, permissions, triggers, reusable workflow boundaries, and release or deploy gates.
+
 - Replace `actions/setup-node` with `oven-sh/setup-bun` when migrating workflows to Bun.
 - Prefer `bun-version-file: .bun-version` over repeating Bun version literals in multiple workflow jobs.
 - When a workflow needs Bun, install it with `oven-sh/setup-bun@v2` and then run `bun install --frozen-lockfile --ignore-scripts` unless lifecycle scripts are explicitly required.
@@ -49,7 +50,9 @@ Use this skill for GitHub Actions workflow authoring and GitHub-hosted CI triage
 - Preserve fixed workflow filenames and GitHub Actions loader conventions, but use kebab-case for repo-authored helper scripts and local support files.
 - For JavaScript actions or composite wrappers, ensure runtime wiring still emits the expected artifacts and pass required `INPUT_*` values explicitly when the wrapper depends on them.
 - Update Dependabot ecosystem settings from `npm` to `bun` where applicable.
+
 4. For CI triage, inspect failing checks before proposing a fix.
+
 - Run `gh auth status` in the target repository.
 - If unauthenticated, ask the user to run `gh auth login` with repo and workflow scopes before proceeding.
 - Prefer resolving the current branch PR with `gh pr view --json number,url` unless the user already provided a PR number or URL.
@@ -57,10 +60,13 @@ Use this skill for GitHub Actions workflow authoring and GitHub-hosted CI triage
 - Add `--json` when machine-readable output is useful.
 - Manual fallback: use `gh pr checks`, `gh run view`, and `gh api` when the bundled script is not enough.
 - If the failing provider is external rather than GitHub Actions, report the details URL and stop there.
+
 5. Summarize and plan before implementation in CI triage mode.
+
 - Provide the failing check name, run URL, and a concise failure snippet.
 - Call out missing logs explicitly.
 - Draft a focused fix plan and request approval before implementing.
+
 6. Pull from `tanaab-shell`, `tanaab-javascript`, `tanaab-testing`, `tanaab-release`, or `tanaab-templates` when the workflow depends on shared shell logic, runtime wiring, gates, release flow, or reusable scaffolds.
 
 ## Bundled Resources

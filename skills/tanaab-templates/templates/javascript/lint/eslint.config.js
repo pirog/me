@@ -15,11 +15,11 @@ const restrictedBuiltinImports = builtinModules
 export default defineConfig([
   globalIgnores([
     '**/node_modules/**',
+    '**/dist/**',
+    '**/coverage/**',
     '**/temp/**',
     '**/cache/**',
-    '**/dist/**',
     '**/_site/**',
-    '**/coverage/**',
     '**/.vitepress/cache/**',
     '**/.vitepress/dist/**',
   ]),

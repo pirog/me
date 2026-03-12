@@ -13,7 +13,10 @@ import {
 } from '../../tanaab-coding-core/scripts/bun-cli-support.js';
 
 const CANVAS_SIZE = 1024;
-const DEFAULT_BASE_ICON = path.join(REPO_ROOT, 'skills/tanaab-coding/assets/tanaab-coding-stack-base.png');
+const DEFAULT_BASE_ICON = path.join(
+  REPO_ROOT,
+  'skills/tanaab-coding/assets/tanaab-coding-stack-base.png',
+);
 const cli = createCli(import.meta.url);
 
 function buildEnvironment() {
@@ -30,7 +33,10 @@ function buildEnvironmentVariables() {
     ...commonTanaabEnvironmentVariables(),
     { label: 'TANAAB_CODING_ICON_TITLE', description: 'icon title text' },
     { label: 'TANAAB_CODING_ICON_LABEL', description: 'large bottom-left label text' },
-    { label: 'TANAAB_CODING_ICON_OUTPUT_STEM', description: 'output stem without the .svg or .png extension' },
+    {
+      label: 'TANAAB_CODING_ICON_OUTPUT_STEM',
+      description: 'output stem without the .svg or .png extension',
+    },
     { label: 'TANAAB_CODING_ICON_BASE_ICON', description: 'background base icon path' },
   ];
 }
@@ -40,7 +46,8 @@ function usage(code = 0) {
 
   cli.showHelp(
     {
-      description: 'Render a stack-specific Tanaab coding icon from the shared coding stack base image.',
+      description:
+        'Render a stack-specific Tanaab coding icon from the shared coding stack base image.',
       environmentVariables: buildEnvironmentVariables(),
       options: [
         {
@@ -49,7 +56,10 @@ function usage(code = 0) {
         },
         { label: '--debug', description: 'show debug diagnostics' },
         { label: '-h, --help', description: 'show this message' },
-        { label: '-V, --version', description: `show the repo version ${cli.dim(`[default: ${cli.version}]`)}` },
+        {
+          label: '-V, --version',
+          description: `show the repo version ${cli.dim(`[default: ${cli.version}]`)}`,
+        },
       ],
       usage: `${cli.bold(cli.cliName)} --title <title> --label <label> --output-stem <path> [options]`,
     },
@@ -137,7 +147,16 @@ function rasterizePng(svg, outputPath) {
   return new Promise((resolve, reject) => {
     const child = spawn(
       'magick',
-      ['-background', 'none', '-density', '384', 'svg:-', '-resize', `${CANVAS_SIZE}x${CANVAS_SIZE}`, `png32:${outputPath}`],
+      [
+        '-background',
+        'none',
+        '-density',
+        '384',
+        'svg:-',
+        '-resize',
+        `${CANVAS_SIZE}x${CANVAS_SIZE}`,
+        `png32:${outputPath}`,
+      ],
       { stdio: ['pipe', 'ignore', 'pipe'] },
     );
 

@@ -39,24 +39,32 @@ Use this skill for testing strategy, targeted test implementation, coverage poli
 1. Confirm `tanaab-coding-core` is active.
 2. Scope the testing surface: target modules, desired test depth, coverage expectations, and workflow gates.
 3. Add minimal test dependencies.
+
 - Add `mocha` for test execution when the repository uses the Mocha path.
 - Add `c8` only when coverage enforcement or coverage reporting is required.
 - Prefer built-in runtime modules such as `node:assert/strict`, `node:fs`, `node:path`, and `node:os` over extra assertion or stubbing libraries when possible.
+
 4. Add or update focused tests.
+
 - Create a top-level `test/` directory when introducing this style for the first time.
 - For `utils/X.js`, prefer `test/X.spec.js`.
 - Keep scope limited to the requested unit surface instead of expanding into integration tests.
 - Name tests with `it('should ...')`.
 - Keep setup and teardown local to each spec file.
 - Cover normal paths, edge cases, and error paths.
+
 5. Add or update test scripts and coverage policy.
+
 - Add a `test` script that runs Mocha, optionally through `c8`.
 - For per-file thresholds, prefer `c8 --all --include "utils/*.js" --check-coverage --per-file --lines 80 mocha "test/**/*.spec.js"` when that scope matches the repo.
+
 6. Wire CI and release gates intentionally.
+
 - Do not add `bun run test` to every workflow by default.
 - Add `bun run test` to release, deploy, or dedicated PR validation workflows when the repository needs those gates.
 - Place test steps before build, publish, or deploy steps so failures block downstream actions.
 - Add a standalone PR unit-test workflow when one is needed and does not already exist.
+
 7. Pull from `tanaab-javascript`, `tanaab-github-actions`, `tanaab-release`, or `tanaab-templates` when the task crosses those boundaries.
 
 ## Bundled Resources

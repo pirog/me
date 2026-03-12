@@ -43,14 +43,18 @@ Use this skill for frontend implementation work within the Tanaab coding hierarc
 2. Scope the frontend surface: Vue 3 components, app structure, state flow, SCSS or stylesheet layers, design tokens, templates, build integration, or VitePress 1 site structure and theme wiring once the site surface is already chosen.
 3. Prefer Vue 3 when the task needs front-end components.
 4. Prefer VitePress 1 when a static or docs site is already in scope.
+
 - For Tanaab-styled static sites, prefer subthemes built on [tanaabased/theme](https://github.com/tanaabased/theme).
 - For non-Tanaab styled static sites, prefer subthemes built on [lando/vitepress-theme-default-plus](https://github.com/lando/vitepress-theme-default-plus).
 - Keep project-specific presentation changes in the local subtheme layer instead of forking the upstream theme package when a subtheme is sufficient.
+
 5. Prefer SCSS as the default styling format.
+
 - Use `.scss` for standalone frontend stylesheets when a preprocessor is in play.
 - Prefer shared variables, mixins, token maps, and nesting discipline in SCSS instead of reaching for Less or Stylus.
 - Keep plain `.css` only when the task explicitly requires raw CSS or the surrounding toolchain does not support SCSS.
 - In Vue components, prefer `<style lang="scss">` unless the task explicitly requires another format.
+
 6. Pull from `tanaab-documentation`, `tanaab-javascript`, `tanaab-testing`, or `tanaab-templates` when the task crosses those boundaries.
 
 ## Bundled Resources

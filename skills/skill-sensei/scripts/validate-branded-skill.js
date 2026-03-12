@@ -3,7 +3,11 @@
 import { access, readFile } from 'node:fs/promises';
 import path from 'node:path';
 
-import { commonTanaabEnvironmentVariables, createCli, extractCommonFlags } from '../../tanaab-coding-core/scripts/bun-cli-support.js';
+import {
+  commonTanaabEnvironmentVariables,
+  createCli,
+  extractCommonFlags,
+} from '../../tanaab-coding-core/scripts/bun-cli-support.js';
 
 const cli = createCli(import.meta.url);
 
@@ -24,19 +28,26 @@ function buildEnvironment() {
 }
 
 function buildEnvironmentVariables() {
-  return [...commonTanaabEnvironmentVariables(), { label: 'TANAAB_SKILL_DIR', description: 'skill directory to validate' }];
+  return [
+    ...commonTanaabEnvironmentVariables(),
+    { label: 'TANAAB_SKILL_DIR', description: 'skill directory to validate' },
+  ];
 }
 
 function usage(code = 0) {
   cli.showHelp(
     {
-      description: 'Validate branded skill structure, required headings, agent metadata, and icon references.',
+      description:
+        'Validate branded skill structure, required headings, agent metadata, and icon references.',
       environmentVariables: buildEnvironmentVariables(),
       options: [
         { label: '--skill-dir <path>', description: 'skill directory to validate' },
         { label: '--debug', description: 'show debug diagnostics' },
         { label: '-h, --help', description: 'show this message' },
-        { label: '-V, --version', description: `show the repo version ${cli.dim(`[default: ${cli.version}]`)}` },
+        {
+          label: '-V, --version',
+          description: `show the repo version ${cli.dim(`[default: ${cli.version}]`)}`,
+        },
       ],
       usage: `${cli.bold(cli.cliName)} --skill-dir <path>`,
     },
@@ -154,7 +165,9 @@ async function main() {
   const iface = parseOpenAiInterface(openAiContent);
 
   if (name !== skillId) {
-    failures.push(`Frontmatter name must match folder name: expected ${skillId}, got ${name ?? 'missing'}`);
+    failures.push(
+      `Frontmatter name must match folder name: expected ${skillId}, got ${name ?? 'missing'}`,
+    );
   }
 
   if (!description) {

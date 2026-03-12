@@ -228,8 +228,13 @@ function formatEntries(entries) {
     return '';
   }
 
-  const width = normalized.reduce((maxWidth, entry) => Math.max(maxWidth, stripAnsi(entry.label).length), 0);
-  return normalized.map((entry) => `  ${entry.label.padEnd(width)}  ${entry.description}`).join('\n');
+  const width = normalized.reduce(
+    (maxWidth, entry) => Math.max(maxWidth, stripAnsi(entry.label).length),
+    0,
+  );
+  return normalized
+    .map((entry) => `  ${entry.label.padEnd(width)}  ${entry.description}`)
+    .join('\n');
 }
 
 function formatHelpSection({ heading, entries = [], lines = [] }) {
@@ -310,7 +315,13 @@ export function createCli(importMetaUrl, { debugNamespace } = {}) {
       writeStatus(process.stdout, 'note', ts, message, ...args);
     },
     red,
-    renderHelp({ usage, description = '', options = [], environmentVariables = [], sections = [] }) {
+    renderHelp({
+      usage,
+      description = '',
+      options = [],
+      environmentVariables = [],
+      sections = [],
+    }) {
       const parts = [
         `Usage: ${usage}`,
         description,

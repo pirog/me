@@ -43,23 +43,31 @@ Use this skill for repository documentation strategy and authoring within the Ta
 1. Confirm `tanaab-coding-core` is active.
 2. Scope the documentation surface: README, inline docs, API docs, generated docs, durable docs pages, user audience, and whether the task is about standards, authoring, or migration.
 3. Choose the smallest documentation surface that fully serves the need.
+
 - Prefer a README for repository-level orientation, install or setup instructions, common usage, and concise reference.
 - Prefer inline code or API docs for contracts, error behavior, non-obvious side effects, and behavior that must stay close to code.
 - Escalate to fuller docs when the README becomes overloaded, multiple user journeys or navigation layers are needed, or durable reference material grows beyond one repo entrypoint.
+
 4. Decide when a fuller docs site is warranted.
+
 - Move beyond README-only documentation when the repository needs multiple durable pages, repeated cross-linking, long reference sections, or separate guides and reference surfaces.
 - Do not split content into a docs site for polish alone when a focused README still serves the task cleanly.
 - When a static docs site is justified, prefer VitePress 1 and hand implementation details to `tanaab-frontend`.
+
 5. Shape repository docs for fast comprehension.
+
 - Lead README content with what the project is, how to install or run it, and the most important usage path before deeper reference sections.
 - Keep examples concrete, runnable, and close to the surface they explain.
 - Prefer clear section titles and concise prose over dense narrative blocks.
+
 6. Apply inline code and API documentation standards intentionally.
+
 - Document public contracts, non-obvious invariants, side effects, error cases, and important integration expectations.
 - Do not add comments that merely restate obvious code or repeat names without adding meaning.
 - In reusable boilerplate or templates, allow a few terse inline comments when they explain a non-obvious template contract, extension point, or shell or runtime edge case.
 - Keep boilerplate comments sparse; prefer a small number of high-value teaching comments over comment-heavy starter files.
 - Keep API docs clear about inputs, outputs, side effects, and failure behavior.
+
 7. Pull from `tanaab-frontend`, `tanaab-javascript`, `tanaab-release`, `tanaab-github-actions`, or `tanaab-templates` when the documentation task crosses those boundaries.
 
 ## Bundled Resources

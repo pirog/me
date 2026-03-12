@@ -1,0 +1,10 @@
+node_modules
+dist
+coverage
+temp
+cache
+_site
+.vitepress/cache
+.vitepress/dist
+bun.lock
+skills/**/assets/*.svg

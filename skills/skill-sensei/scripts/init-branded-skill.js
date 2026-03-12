@@ -50,7 +50,10 @@ function buildEnvironmentVariables() {
     { label: 'TANAAB_SKILL_DESCRIPTION', description: 'skill description text' },
     { label: 'TANAAB_SKILL_PROMPT', description: 'default prompt for agents/openai.yaml' },
     { label: 'TANAAB_SKILL_OUTPUT_DIR', description: 'parent directory for generated skills' },
-    { label: 'TANAAB_FORCE', description: 'set to a truthy value to overwrite an existing generated skill directory' },
+    {
+      label: 'TANAAB_FORCE',
+      description: 'set to a truthy value to overwrite an existing generated skill directory',
+    },
   ];
 }
 
@@ -59,7 +62,8 @@ function usage(code = 0) {
 
   cli.showHelp(
     {
-      description: 'Scaffold a branded skill directory with default markdown, agent metadata, and a fallback icon.',
+      description:
+        'Scaffold a branded skill directory with default markdown, agent metadata, and a fallback icon.',
       environmentVariables: buildEnvironmentVariables(),
       options: [
         { label: '--prompt <text>', description: 'default prompt for agents/openai.yaml' },
@@ -73,7 +77,10 @@ function usage(code = 0) {
         },
         { label: '--debug', description: 'show debug diagnostics' },
         { label: '-h, --help', description: 'show this message' },
-        { label: '-V, --version', description: `show the repo version ${cli.dim(`[default: ${cli.version}]`)}` },
+        {
+          label: '-V, --version',
+          description: `show the repo version ${cli.dim(`[default: ${cli.version}]`)}`,
+        },
       ],
       usage: `${cli.bold(cli.cliName)} --brand <piro|tanaab> --slug <slug> --display-name <name> --description <text> [options]`,
     },
@@ -312,7 +319,11 @@ async function main() {
   const shortDescription = makeShortDescription(description);
   const defaultPrompt = options.prompt?.trim() || makeDefaultPrompt(skillId, description);
 
-  await writeFile(path.join(skillDir, 'SKILL.md'), makeSkillMarkdown({ skillId, displayName, description }), 'utf8');
+  await writeFile(
+    path.join(skillDir, 'SKILL.md'),
+    makeSkillMarkdown({ skillId, displayName, description }),
+    'utf8',
+  );
   await writeFile(
     path.join(agentsDir, 'openai.yaml'),
     makeOpenAiYaml({

@@ -43,13 +43,18 @@ Use this skill for JavaScript and TypeScript implementation work within the Tana
 1. Confirm `tanaab-coding-core` is active.
 2. Scope the JavaScript or TypeScript surface: source files, config, runtime or package metadata, module system, build integration, CLI code, and generated types.
 3. When repo structure or utility extraction is in scope, apply [references/repo-structure.md](./references/repo-structure.md).
+
 - Prefer purpose-oriented folders over implementation-type buckets when the layout is changing.
 - Reserve `utils/` for generic, extraction-ready helpers rather than repo-specific code.
+
 4. Distinguish true CLIs from ordinary scripts.
+
 - Treat package-level hashbang entrypoints as real CLIs: put them under `bin/` and declare them in `package.json`.
 - Keep skill-local helper scripts under `skills/**/scripts/` instead of promoting them into the repo package `bin/`.
 - If a file does not expose normal CLI behavior, omit the hashbang and invoke it with `bun ./path/to/script.js` or `node ./path/to/script.js`.
+
 5. Update runtime and package plumbing when the task changes the JS runtime.
+
 - Set `packageManager` in `package.json` to the repo's pinned Bun release when migrating to Bun.
 - Replace `engines.node` with `engines.bun` when appropriate.
 - Generate and commit `bun.lock`.
@@ -58,22 +63,30 @@ Use this skill for JavaScript and TypeScript implementation work within the Tana
 - Add or update `.tool-versions` to include `bun 1.3` and a Node compatibility entry when the repo tracks local tool versions there.
 - Add or update `"type": "module"`, `main`, and `exports` when the task includes ESM conversion.
 - Keep artifact paths stable when workflows or actions depend on exact filenames such as `dist/index.js`.
+
 6. Prefer ESM JavaScript on Bun as the current default.
+
 - Use `import` and `export` syntax instead of CommonJS forms.
 - Prefer Bun to execute repo-authored JavaScript tooling and automation code instead of invoking `node` directly.
 - Treat TypeScript migration as a separate planned task unless the repository already has an approved TypeScript pipeline.
+
 7. When function shape or imports change, apply [references/function-data-flow.md](./references/function-data-flow.md).
+
 - Normalize inputs at the boundary and prefer early returns and named constants for one-way data flow.
 - Keep side effects at the edge and clone before mutating caller-owned arrays or objects.
 - Group imports into built-in, third-party, and local blocks with `node:`-prefixed built-ins and alphabetized bindings inside each present block.
 - Prefer kebab-case for new repo-authored JavaScript, TypeScript, and helper filenames unless the toolchain expects a fixed conventional name.
+
 8. Apply JavaScript and TypeScript code and module changes.
+
 - Replace `require(...)` with `import ... from ...` where ESM is required.
 - Replace `module.exports = ...` with `export default ...`.
 - Replace `exports.foo = ...` with named exports.
 - Add explicit `.js` extensions for local relative ESM imports.
 - Omit empty blocks, but keep a single blank line between the blocks that exist.
+
 9. When the task touches CLIs or automation code, apply the shared CLI contract from [../tanaab-coding-core/references/cli-style-rules.md](../tanaab-coding-core/references/cli-style-rules.md) and then add JavaScript-specific behavior.
+
 - Use ESM bin scripts with `#!/usr/bin/env bun` when authoring true JavaScript CLIs in this repo style.
 - For package-level or user-facing Bun CLIs, prefer the full template pattern with `ansis`, `yargs-parser`, `--help`, `--version`, and shared logging helpers.
 - For skill-local helper scripts under `skills/**/scripts/`, default to Bun plus built-in modules and the shared coding-core helper at `skills/tanaab-coding-core/scripts/bun-cli-support.js` before introducing extra CLI dependencies.
@@ -81,13 +94,26 @@ Use this skill for JavaScript and TypeScript implementation work within the Tana
 - Prefer a single logging helper built on `node:util` (`format`, `inspect`) instead of scattered direct `console.*` usage.
 - Prefer `node:fs/promises` for async file operations and `realpath()` for robust path comparisons.
 - For repository-aware defaults, discover project root from `.git` or `package.json`, scan for marker directories, ignore large unrelated directories such as `node_modules` and `.git`, error on zero or multiple matches, and surface the resolved default in help output.
-10. Replace npm-specific JavaScript runtime commands when the task includes Bun migration.
+
+10. When standardizing lint or format config, prefer flat ESLint plus standalone Prettier.
+
+- Keep one root ESLint config with a shared JS or Bun base and add narrow overrides for CJS, tests, templates, and optional TypeScript or Vue layers only when the repo actually uses them.
+- In ESM-first repos, prefer `eslint.config.js` and `prettier.config.js` over `.mjs`.
+- Prefer `eslint-config-prettier` plus `prettier --check` or `prettier --write` over `eslint-plugin-prettier` for shared repo defaults.
+- Do not assume import-order plugins belong in the shared baseline; add them only when the chosen package stack explicitly supports the repo's ESLint major version.
+- Use `templates/javascript/lint/` when scaffolding or normalizing this config shape across repositories.
+
+11. Replace npm-specific JavaScript runtime commands when the task includes Bun migration.
+
 - Replace `npm install -g` helpers with `bunx --bun --package <pkg>@<version> <bin> ...`.
 - Replace `npm pack --json --dry-run` with Bun equivalents such as `bun pm pack --dry-run --ignore-scripts` and adapt parsing.
-11. Update docs and examples when the task changes runtime or module expectations.
+
+12. Update docs and examples when the task changes runtime or module expectations.
+
 - Rewrite README or workflow snippets from Node/npm commands to Bun commands when appropriate.
 - Document new Bun-specific inputs, configuration files, or remaining migration phases explicitly.
-12. Pull from `tanaab-testing`, `tanaab-github-actions`, `tanaab-shell`, or `tanaab-templates` when the task crosses those boundaries.
+
+13. Pull from `tanaab-testing`, `tanaab-github-actions`, `tanaab-shell`, or `tanaab-templates` when the task crosses those boundaries.
 
 ## Bundled Resources
 
@@ -105,6 +131,7 @@ Use this skill for JavaScript and TypeScript implementation work within the Tana
 - Confirm JavaScript module code uses ESM rather than CommonJS unless the user explicitly required CommonJS compatibility.
 - Confirm repo-authored JavaScript CLI entrypoints use `#!/usr/bin/env bun` rather than a Node shebang, and that non-CLI scripts omit a hashbang.
 - Confirm any CLI contract or help output touched by the task follows [../tanaab-coding-core/references/cli-style-rules.md](../tanaab-coding-core/references/cli-style-rules.md).
+- Confirm lint or format standardization uses a root flat ESLint config and standalone Prettier rather than embedding formatting checks into ESLint by default.
 - Confirm repo-structure and `utils/` decisions follow [references/repo-structure.md](./references/repo-structure.md) when that surface was in scope.
 - Confirm function shape, mutation discipline, and import grouping follow [references/function-data-flow.md](./references/function-data-flow.md) when those surfaces were in scope.
 - Confirm `.bun-version` and `.tool-versions` reflect the repo's Bun-first runtime policy when those files are in scope.

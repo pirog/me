@@ -54,7 +54,11 @@ function csvDisplay(values) {
   return values.length > 0 ? values.join(',') : 'none';
 }
 
-if (process.argv.includes('--debug') || valueEnabled(process.env.TANAAB_DEBUG) || process.env.RUNNER_DEBUG === '1') {
+if (
+  process.argv.includes('--debug') ||
+  valueEnabled(process.env.TANAAB_DEBUG) ||
+  process.env.RUNNER_DEBUG === '1'
+) {
   Debug.enable(process.env.DEBUG ?? '*');
 }
 
@@ -208,7 +212,12 @@ function resolveInvocation(rawArgv, argv) {
     }
 
     // Any CLI-provided repeatable flag replaces the env-seeded list for that option.
-    if (Array.isArray(value) && value.length === 0 && !explicitOptionKeys.has(key) && repeatableOptions.has(key)) {
+    if (
+      Array.isArray(value) &&
+      value.length === 0 &&
+      !explicitOptionKeys.has(key) &&
+      repeatableOptions.has(key)
+    ) {
       continue;
     }
 
