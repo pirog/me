@@ -1,5 +1,7 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+## v0.2.0 - [March 12, 2026](https://github.com/pirog/me/releases/tag/v0.2.0)
+
 - Added `skill-sensei` for Pirog and Tanaab based skill generation, stack auditing, and branded skill standardization
 - Added `tanaab-coding` as the umbrella router for coding, testing, release, documentation, and template work
 - Added `tanaab-coding-core` as the shared engineering doctrine layer for the Tanaab coding stack
