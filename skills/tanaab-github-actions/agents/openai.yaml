@@ -1,0 +1,6 @@
+interface:
+  display_name: 'Tanaab GitHub Actions'
+  short_description: 'Tanaab based guidance for GitHub Actions authoring and CI debugging'
+  icon_small: './assets/tanaab-github-actions-icon.png'
+  icon_large: './assets/tanaab-github-actions-icon.png'
+  default_prompt: 'Use $tanaab-github-actions for GitHub Actions workflow authoring or GitHub-hosted CI triage, assuming $tanaab-coding-core is already active.'

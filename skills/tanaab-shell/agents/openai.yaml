@@ -1,0 +1,6 @@
+interface:
+  display_name: 'Tanaab Shell'
+  short_description: 'Tanaab based guidance for shell scripting and CLI automation'
+  icon_small: './assets/tanaab-shell-icon.png'
+  icon_large: './assets/tanaab-shell-icon.png'
+  default_prompt: 'Use $tanaab-shell for shell scripting, CLI contract work, and command-line automation, assuming $tanaab-coding-core is already active.'

@@ -1,0 +1,6 @@
+interface:
+  display_name: 'Tanaab Coding'
+  short_description: 'Tanaab based routing for coding, testing, and release work across the coding stack'
+  icon_small: './assets/tanaab-coding-icon.png'
+  icon_large: './assets/tanaab-coding-icon.png'
+  default_prompt: 'Use $tanaab-coding to route this coding, testing, or release request and also apply $tanaab-coding-core.'

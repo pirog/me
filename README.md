@@ -81,6 +81,8 @@ bash piroboot.sh --brewfile Brewfile.base --brewfile Brewfile.two --dotpkg dotfi
 
 This repo uses Bun for local tooling.
 
+Preferred local runtime versions are tracked in [`.bun-version`](./.bun-version) and [`.tool-versions`](./.tool-versions). Bun is the primary JavaScript runtime for repo tooling; Node is only kept as a compatibility reference entry for tool managers that expect it.
+
 ```zsh
 bun install
 bun run lint

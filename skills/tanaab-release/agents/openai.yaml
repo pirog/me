@@ -1,0 +1,6 @@
+interface:
+  display_name: 'Tanaab Release'
+  short_description: 'Tanaab based guidance for release preparation and changelog work'
+  icon_small: './assets/tanaab-release-icon.png'
+  icon_large: './assets/tanaab-release-icon.png'
+  default_prompt: 'Use $tanaab-release for changelog updates, release-note drafting, and release readiness work, assuming $tanaab-coding-core is already active.'

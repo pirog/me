@@ -1,0 +1,6 @@
+interface:
+  display_name: 'Tanaab JavaScript'
+  short_description: 'Tanaab based guidance for JavaScript, TypeScript, Bun, and ESM implementation'
+  icon_small: './assets/tanaab-javascript-icon.png'
+  icon_large: './assets/tanaab-javascript-icon.png'
+  default_prompt: 'Use $tanaab-javascript for JavaScript and TypeScript implementation, Bun migration, or ESM conversion work, assuming $tanaab-coding-core is already active.'

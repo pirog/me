@@ -1,5 +1,5 @@
 #!/bin/bash
-set -u
+set -euo pipefail
 # generate a Brewfile from the current homebrew state for selected package types.
 #
 # examples:
@@ -45,6 +45,7 @@ tty_red="$(tty_mkbold 31)"
 tty_reset="$(tty_escape 0)"
 tty_yellow="$(tty_escape 33)"
 tty_tp="$(tty_escape '38;2;0;200;138')"
+tty_ts="$(tty_escape '38;2;219;39;119')"
 
 if [[ -n "${POSIXLY_CORRECT+1}" ]]; then
   abort "bash must not run in POSIX mode. please unset ${tty_bold}POSIXLY_CORRECT${tty_reset} and try again."
@@ -512,7 +513,7 @@ generate_brewfile() {
   local output=""
 
   tmpfile="$(mktemp -t brewgen.brewfile.XXXXXX)"
-  log "${tty_tp}writing${tty_reset} brewfile to ${tty_green}${BREWFILE}${tty_reset}"
+  log "${tty_tp}writing${tty_reset} brewfile to ${tty_ts}${BREWFILE}${tty_reset}"
   debug "package types: $(array_join "," PACKAGE_TYPES)"
 
   for package_type in "${PACKAGE_TYPES[@]}"; do
@@ -649,4 +650,4 @@ debug raw EXCLUDES="$(array_join "," EXCLUDES)"
 ensure_brew_bundle_available
 generate_brewfile
 
-log "brewfile generation ${tty_green}complete${tty_reset}"
+log "${tty_bold}brewfile generation${tty_reset} ${tty_green}complete${tty_reset}"

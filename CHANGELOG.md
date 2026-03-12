@@ -1,5 +1,19 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+- Added `skill-sensei` for Pirog and Tanaab based skill generation, stack auditing, and branded skill standardization
+- Added `tanaab-coding` as the umbrella router for coding, testing, release, documentation, and template work
+- Added `tanaab-coding-core` as the shared engineering doctrine layer for the Tanaab coding stack
+- Added `tanaab-documentation` for README structure, durable docs policy, and README-to-VitePress escalation decisions
+- Added `tanaab-frontend` for Vue 3, VitePress 1, and SCSS frontend implementation guidance
+- Added `tanaab-github-actions` for workflow authoring, release automation mechanics, and GitHub-hosted CI triage
+- Added `tanaab-javascript` for Bun-first JavaScript and TypeScript implementation, runtime, and linting guidance
+- Added `tanaab-release` for changelog, release-note, release-contract, and release-readiness guidance
+- Added `tanaab-shell` for shell scripting, CLI contract, logging, and shellcheck-oriented shell guidance
+- Added `tanaab-templates` for reusable README, CLI, linting, and shell scaffolds across the coding stack
+- Added `tanaab-testing` for test strategy, focused coverage, and CI or release gate recommendations
+- Consolidated prior one-off coding skills such as `bunify`, `changelog-updates`, `cli-styles`, `esmify`, `gh-fix-ci`, and `mocha-tests` into the `tanaab-coding` stack
+- Introduced shared stack doctrine and reusable templates for CLI structure, lint and format config, README structure, and cross-skill routing
+
 ## v0.1.2 - [March 9, 2026](https://github.com/pirog/me/releases/tag/v0.1.2)
 
 - Fixed bug preventing `brew shellenv` from `eval`ing correctly

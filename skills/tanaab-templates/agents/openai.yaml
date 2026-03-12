@@ -1,0 +1,6 @@
+interface:
+  display_name: 'Tanaab Templates'
+  short_description: 'Tanaab based management of reusable coding templates'
+  icon_small: './assets/tanaab-templates-icon.png'
+  icon_large: './assets/tanaab-templates-icon.png'
+  default_prompt: 'Use $tanaab-templates when a Tanaab coding skill needs a reusable template or scaffold from templates/.'

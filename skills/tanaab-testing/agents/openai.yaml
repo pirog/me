@@ -1,0 +1,6 @@
+interface:
+  display_name: 'Tanaab Testing'
+  short_description: 'Tanaab based guidance for testing strategy, Mocha tests, and test gating'
+  icon_small: './assets/tanaab-testing-icon.png'
+  icon_large: './assets/tanaab-testing-icon.png'
+  default_prompt: 'Use $tanaab-testing for test strategy, focused Mocha-style test implementation, coverage policy, and release-gate wiring, assuming $tanaab-coding-core is already active.'

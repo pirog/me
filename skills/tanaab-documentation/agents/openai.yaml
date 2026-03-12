@@ -1,0 +1,6 @@
+interface:
+  display_name: 'Tanaab Documentation'
+  short_description: 'Tanaab based guidance for README structure, durable docs, and API doc policy'
+  icon_small: './assets/tanaab-documentation-icon.png'
+  icon_large: './assets/tanaab-documentation-icon.png'
+  default_prompt: 'Use $tanaab-documentation for README structure, durable documentation surfaces, inline code or API docs, and deciding when a repository needs fuller documentation beyond README files, assuming $tanaab-coding-core is already active.'
