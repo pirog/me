@@ -91,7 +91,9 @@ Use this skill for JavaScript and TypeScript implementation work within the Tana
 - Prefer kebab-case for new repo-authored JavaScript, TypeScript, and helper filenames unless the toolchain expects a fixed conventional name.
 10. Apply JavaScript implementation notes when the task touches CLIs or automation code.
 - Use ESM bin scripts with `#!/usr/bin/env bun` when authoring true JavaScript CLIs in this repo style.
-- Prefer `colorette` for style-consistent terminal output.
+- Prefer one shared terminal styling mechanism for CLI output; use `ansis` when branded colors such as `tp` and `ts` are needed alongside semantic colors.
+- Keep the CLI styling surface small and named, such as `bold`, `dim`, `green`, `red`, `yellow`, `tp`, and `ts`, instead of scattering raw ANSI escapes or one-off color calls.
+- Wrap `Options` and `Environment Variables` help section headers in the `tp` style when the CLI uses Tanaab brand colors.
 - Prefer a single logging helper built on `node:util` (`format`, `inspect`) instead of scattered direct `console.*` usage.
 - Prefer `node:fs/promises` for async file operations and `realpath()` for robust path comparisons.
 - For repository-aware defaults, discover project root from `.git` or `package.json`, scan for marker directories, ignore large unrelated directories such as `node_modules` and `.git`, error on zero or multiple matches, and surface the resolved default in help output.
@@ -109,6 +111,7 @@ Use this skill for JavaScript and TypeScript implementation work within the Tana
 - [assets/tanaab-javascript-icon.png](./assets/tanaab-javascript-icon.png): UI icon for the JavaScript skill.
 - [references/repo-structure.md](./references/repo-structure.md): preferred purpose-driven repo structure and `utils/` boundaries for JavaScript projects.
 - [references/function-data-flow.md](./references/function-data-flow.md): preferred JavaScript unit shape for one-way data flow, minimal mutation, and grouped imports.
+- [../tanaab-coding-core/references/cli-style-rules.md](../tanaab-coding-core/references/cli-style-rules.md): shared CLI help, color, and status-line rules used across shell and Bun CLIs.
 
 ## Validation
 

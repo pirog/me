@@ -42,4 +42,10 @@ export default defineConfig([
       },
     },
   },
+  {
+    files: ['skills/**/templates/**/*.js'],
+    rules: {
+      'import/no-unresolved': 'off',
+    },
+  },
 ]);

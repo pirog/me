@@ -40,17 +40,20 @@ Use this skill to manage reusable template files for the Tanaab coding hierarchy
 - [agents/openai.yaml](./agents/openai.yaml): UI metadata for the templates skill.
 - [assets/tanaab-templates-icon.png](./assets/tanaab-templates-icon.png): UI icon for the templates skill.
 - [templates/](./templates/): reserved location for reusable coding templates.
+- [../tanaab-coding-core/references/cli-style-rules.md](../tanaab-coding-core/references/cli-style-rules.md): shared CLI style reference for keeping shell and Bun templates aligned.
 
 ## Templates Directory
 
 - `templates/` stores reusable code patterns and boilerplate for the Tanaab coding skills.
 - Category directories now exist for `javascript/`, `css/`, `scss/`, `vue/`, `vitepress/`, `shell/`, `github-actions/`, `testing/`, and `release/`.
+- Use `templates/javascript/cli/` for Bun-first CLI starters that standardize help output, `--version`, `--debug`, and shared logging helpers.
+- Use `templates/shell/` for Bash CLI starters that standardize help output, `--version`, `--debug`, `tty_tp` / `tty_ts`, and shared status helpers.
 - Use `templates/javascript/utils/` only for truly generic helper starters that can later move into a shared utilities repo or standalone packages.
 - Use `templates/javascript/unit/` for single-function JavaScript unit starters that demonstrate boundary normalization, straight-line data flow, and minimal mutation.
 - Use `templates/scss/` for shared SCSS partials, mixins, token maps, and stylesheet starters once those patterns prove reusable.
 - Use `templates/javascript/` for Bun-first ESM starters and `templates/github-actions/` for reusable Bun setup/install snippets once those patterns prove reusable.
 - Use `templates/vitepress/` for reusable VitePress starters, subtheme entrypoints, shared config fragments, and page scaffolds once those patterns prove reusable.
-- No concrete templates are scaffolded yet, but these directories are the target for reusable fragments extracted from real tasks.
+- Keep concrete templates lean and extraction-ready; expand these directories only when the pattern proves reusable across real tasks.
 
 ## Validation
 

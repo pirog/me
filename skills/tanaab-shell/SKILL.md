@@ -44,6 +44,7 @@ Use this skill for shell scripting, command-line automation, and CLI contract wo
 - If a value should be option-only, reject positional arguments with a clear error message.
 4. Shape help output consistently when the tool exposes help text.
 - Print help sections in this order: `Usage`, `Options`, `Environment Variables`.
+- Wrap `Options` and `Environment Variables` section headers in the `tp` style when Tanaab terminal color helpers exist.
 - Show computed defaults in help output whenever possible.
 5. Standardize logging and exit behavior.
 - Write normal command output to `stdout`.
@@ -67,6 +68,7 @@ Use this skill for shell scripting, command-line automation, and CLI contract wo
 
 - [agents/openai.yaml](./agents/openai.yaml): UI metadata for the shell skill.
 - [assets/tanaab-shell-icon.png](./assets/tanaab-shell-icon.png): UI icon for the shell skill.
+- [../tanaab-coding-core/references/cli-style-rules.md](../tanaab-coding-core/references/cli-style-rules.md): shared CLI help, color, and status-line rules used across shell and Bun CLIs.
 
 ## Validation
 

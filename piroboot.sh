@@ -1,5 +1,5 @@
 #!/bin/bash
-set -u
+set -euo pipefail
 # bootstrap a macOS machine using homebrew, brewfiles, dotfiles, and identity data.
 #
 # examples:
