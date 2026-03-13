@@ -25,6 +25,7 @@ Treat this file as the primary home for shared CLI contract and output rules; la
 - Print help sections in this order when they are present: `Usage`, `Options`, `Environment Variables`.
 - Include an `Environment Variables` section only when the CLI defines tool-specific or repo-specific environment variables that are part of its documented contract.
 - Wrap `Options` and `Environment Variables` section headers in the `tp` style when those sections are present.
+- Back `--version` with a single `SCRIPT_VERSION` variable or an explicitly aligned equivalent rather than duplicating the reported version across helpers and help text.
 - Use the same value-precedence order across Bash and Bun CLIs: explicit CLI option, environment variable override, then auto-detected or hardcoded default.
 - For repeatable options, accept repeated CLI flags such as `--item a --item b` and represent environment defaults as comma-separated values such as `TANAAB_ITEM=a,b`.
 - When a repeatable CLI option is provided at least once, it should replace the env-sourced list rather than append to it implicitly.
@@ -46,5 +47,9 @@ Treat this file as the primary home for shared CLI contract and output rules; la
 - In Bun or JavaScript CLIs, prefer one shared styling mechanism for both semantic colors and branded colors so the calling code only deals with style names, not raw ANSI escapes.
 - For package-level or user-facing Bun CLIs, the shared template can justify third-party CLI packages such as `ansis` and `yargs-parser`.
 - For skill-local helper scripts under `skills/**/scripts/`, prefer the shared coding-core helper at `skills/tanaab-coding-core/scripts/bun-cli-support.js` plus built-in modules before adding extra CLI dependencies.
+- For releasable or user-facing CLIs that may be stamped by `prepare-release-action`, keep one injection-friendly `SCRIPT_VERSION` assignment at the top of the entrypoint so `version-injector` can update it in place.
+- Treat `SCRIPT_VERSION` as internal release metadata rather than a documented environment contract unless a specific repo explicitly opts into that behavior.
+- In Bun or JavaScript CLIs, prefer `let SCRIPT_VERSION;` plus a fallback initializer that resolves from git metadata or a hardcoded default when the unstamped source still needs a usable `--version` value.
+- In shell CLIs, prefer a single top-level `SCRIPT_VERSION=...` assignment plus a fallback block that derives from git metadata or a hardcoded default when the source script is not yet stamped.
 - Do not list generic terminal control or debug env vars such as `NO_COLOR`, `FORCE_COLOR`, `DEBUG`, or `RUNNER_DEBUG` in help text unless the CLI defines a non-obvious contract around them.
 - Respect terminal color controls such as `NO_COLOR` and `FORCE_COLOR` when the chosen library or helper layer supports them.

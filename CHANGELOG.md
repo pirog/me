@@ -2,6 +2,7 @@
 
 - Added `python@3` as a needed `Brewfile` package
 - Standardized `tanaab-coding` lint and format guidance around the shared Prettier template and `.prettierignore` baseline
+- Updated the Bun and Bash CLI templates plus shared stack guidance so releasable entrypoints expose `SCRIPT_VERSION` in a `prepare-release-action`-friendly stamping pattern
 
 ## v0.2.1 - [March 13, 2026](https://github.com/pirog/me/releases/tag/v0.2.1)
 

@@ -55,7 +55,13 @@ tty_tp="$(tty_escape '38;2;0;200;138')"   # #00c88a
 tty_ts="$(tty_escape '38;2;219;39;119')"  # #db2777
 
 CLI_NAME="${0##*/}"
-SCRIPT_VERSION="${SCRIPT_VERSION:-0.0.0}"
+# Keep a single top-level assignment so release automation can stamp the entrypoint in place.
+SCRIPT_VERSION=""
+if [[ -z "${SCRIPT_VERSION-}" ]]; then
+  if ! SCRIPT_VERSION="$(git describe --tags --always --abbrev=1 2>/dev/null)"; then
+    SCRIPT_VERSION="0.0.0"
+  fi
+fi
 DEBUG="${TANAAB_DEBUG:-${DEBUG:-${RUNNER_DEBUG:-}}}"
 FORCE="${TANAAB_FORCE:-}"
 ITEMS_CSV="${TANAAB_ITEM:-}"

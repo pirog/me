@@ -1,5 +1,6 @@
 #!/usr/bin/env bun
 
+import { execFileSync } from 'node:child_process';
 import path from 'node:path';
 import { format, inspect } from 'node:util';
 
@@ -8,13 +9,32 @@ import Debug from 'debug';
 import parser from 'yargs-parser';
 
 const CLI_NAME = path.basename(process.argv[1] ?? 'bun-cli');
-const CLI_VERSION = process.env.SCRIPT_VERSION ?? '0.0.0';
 const DEBUG_NAMESPACE = '@scope/bun-cli';
 const color = ansis.extend({
   tp: '#00c88a',
   ts: '#db2777',
 });
 const { bold, dim, green, red, tp, ts, yellow } = color;
+
+function getScriptVersion() {
+  try {
+    return execFileSync('git', ['describe', '--tags', '--always', '--abbrev=1'], {
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim();
+  } catch {
+    return '0.0.0';
+  }
+}
+
+let SCRIPT_VERSION;
+
+// Keep a single top-level placeholder so release automation can stamp the entrypoint in place.
+if (!SCRIPT_VERSION) {
+  SCRIPT_VERSION = getScriptVersion();
+}
+
+const CLI_VERSION = SCRIPT_VERSION;
 
 const debug = Debug(DEBUG_NAMESPACE);
 
@@ -162,7 +182,6 @@ function buildRepeatableOptions() {
 
 function buildEnvironmentVariables() {
   return [
-    `  SCRIPT_VERSION  overrides the reported CLI version ${dim(`[default: ${CLI_VERSION}]`)}`,
     '  TANAAB_DEBUG    set to a truthy value to show debug messages',
     '  TANAAB_FORCE    set to a truthy value to enable force mode',
     `  TANAAB_ITEM     comma-separated repeatable items ${dim(`[default: ${csvDisplay(buildEnvironment().item)}]`)}`,
@@ -249,6 +268,7 @@ function renderHelp() {
 }
 
 async function runCli({ options, positionals }) {
+  trace('running %s script version: %s', CLI_NAME, SCRIPT_VERSION);
   trace('resolved options %O', options);
   trace('received positionals %O', positionals);
 

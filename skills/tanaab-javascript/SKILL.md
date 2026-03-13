@@ -91,6 +91,7 @@ Use this skill for JavaScript and TypeScript implementation work within the Tana
 
 - Use ESM bin scripts with `#!/usr/bin/env bun` when authoring true JavaScript CLIs in this repo style.
 - For package-level or user-facing Bun CLIs, prefer the full template pattern with `ansis`, `yargs-parser`, `--help`, `--version`, and shared logging helpers.
+- For releasable Bun CLIs that may be stamped by `prepare-release-action`, keep a single top-level `let SCRIPT_VERSION;` placeholder with fallback initialization from `git describe` or a hardcoded default so `version-injector --style js` can update the entrypoint in place.
 - For skill-local helper scripts under `skills/**/scripts/`, default to Bun plus built-in modules and the shared coding-core helper at `skills/tanaab-coding-core/scripts/bun-cli-support.js` before introducing extra CLI dependencies.
 - Only add external CLI packages to skill-local helper scripts when the option surface, parsing rules, or output requirements are complex enough that the built-in path is no longer clear or maintainable.
 - Prefer a single logging helper built on `node:util` (`format`, `inspect`) instead of scattered direct `console.*` usage.
@@ -139,6 +140,7 @@ Use this skill for JavaScript and TypeScript implementation work within the Tana
 - Confirm JavaScript module code uses ESM rather than CommonJS unless the user explicitly required CommonJS compatibility.
 - Confirm repo-authored JavaScript CLI entrypoints use `#!/usr/bin/env bun` rather than a Node shebang, and that non-CLI scripts omit a hashbang.
 - Confirm any CLI contract or help output touched by the task follows [../tanaab-coding-core/references/cli-style-rules.md](../tanaab-coding-core/references/cli-style-rules.md).
+- Confirm releasable Bun CLI entrypoints expose a single injection-friendly `SCRIPT_VERSION` placeholder plus fallback logic, or an explicitly aligned equivalent, when `prepare-release-action` style version stamping is in scope.
 - Confirm lint or format standardization uses a root flat ESLint config and standalone Prettier rather than embedding formatting checks into ESLint by default.
 - Confirm standalone Prettier uses the shared `templates/javascript/lint/prettier.config.js` and `.prettierignore` baseline, or an explicitly aligned equivalent, instead of ad hoc local style.
 - Confirm repo scripts align with the shared `lint:eslint`, `format:check`, `format:write`, and `lint` shape when lint or format standardization was in scope.

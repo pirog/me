@@ -55,6 +55,7 @@ Use this skill for shell scripting, command-line automation, and CLI contract wo
 - Keep shell entrypoints explicit about interpreter and execution context.
 - Prefer kebab-case for new repo-authored shell and helper filenames unless the surrounding tool expects a fixed conventional name.
 - When shell wrappers invoke repo-authored JavaScript CLI helpers, prefer Bun-backed entrypoints over calling `node` directly.
+- For releasable shell CLIs that may be stamped by `prepare-release-action`, keep one top-level `SCRIPT_VERSION=...` assignment with fallback logic so `version-injector --style sh` can update the entrypoint in place.
 - Preserve portability requirements when the repository already targets multiple shells or environments.
 - When a composite action or wrapper script depends on shell execution, pass required environment variables explicitly rather than assuming inheritance.
 - Run targeted `shellcheck` on changed shell scripts or reusable shell helpers before finishing.
@@ -76,6 +77,7 @@ Use this skill for shell scripting, command-line automation, and CLI contract wo
 - Confirm this skill stayed the primary owner only for shell or CLI-contract surfaces.
 - Confirm any CLI contract follows the shared rules in [../tanaab-coding-core/references/cli-style-rules.md](../tanaab-coding-core/references/cli-style-rules.md).
 - Confirm shell entrypoints stay explicit about interpreter and execution context.
+- Confirm releasable shell CLI entrypoints expose a single injection-friendly `SCRIPT_VERSION` assignment plus fallback logic, or an explicitly aligned equivalent, when `prepare-release-action` style version stamping is in scope.
 - Confirm changed shell scripts or reusable shell helpers were checked with `shellcheck` when shell is a meaningful surface in the task.
 - Confirm failures are actionable and non-zero.
 - Confirm destructive or nonsensical target combinations are rejected early.
