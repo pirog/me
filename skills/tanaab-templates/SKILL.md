@@ -51,7 +51,7 @@ Use this skill to manage reusable template files for the Tanaab coding hierarchy
 - Use `templates/documentation/` for README standards, full README starters, GitHub Action README starters, and lightweight README wrappers that delegate durable docs to VitePress.
 - Use `templates/github-actions/` for Bun-backed JavaScript action workflow smoke-test starters and reusable assertion-step patterns that exercise `uses: ./`.
 - Use `templates/javascript/cli/` for package-level or user-facing Bun CLI starters that standardize help output, `--version`, `--debug`, and shared logging helpers.
-- Use `templates/javascript/lint/` for shared flat ESLint and standalone Prettier starters that can be extended with optional TypeScript or Vue layers.
+- Use `templates/javascript/lint/` for the shared flat ESLint baseline plus the canonical `prettier.config.js`, `.prettierignore`, and `lint:eslint` / `format:check` / `format:write` / `lint` script shape that can be extended with optional TypeScript or Vue layers.
 - Use `templates/shell/` for Bash CLI starters that standardize help output, `--version`, `--debug`, `tty_tp` / `tty_ts`, and shared status helpers.
 - Use `templates/testing/` for focused test starters such as GitHub Action input parsing specs that stub `@actions/core` cleanly.
 - Use `templates/javascript/utils/` only for truly generic helper starters that can later move into a shared utilities repo or standalone packages.

@@ -1,5 +1,7 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+- Standardized `tanaab-coding` lint and format guidance around the shared Prettier template and `.prettierignore` baseline
+
 ## v0.2.1 - [March 13, 2026](https://github.com/pirog/me/releases/tag/v0.2.1)
 
 - Added a `theme` dotfiles package with importable Tanaab theme JSON files and documented the available stow packages in the README

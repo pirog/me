@@ -30,6 +30,7 @@ Use this skill as the universal engineering doctrine for all tasks in the Tanaab
 - Make the smallest change that fully solves the task.
 - Preserve external behavior and public interfaces unless the user explicitly asks for a behavior change.
 - Keep one clear source of truth for configuration, generated artifacts, and workflow decisions.
+- Keep one clear source of truth for linting and formatting: ESLint owns code-quality rules and Prettier owns formatting.
 - Prefer kebab-case for repo-authored filenames unless a tool or ecosystem requires a fixed conventional name such as `package.json`, `openai.yaml`, `SKILL.md`, `README.md`, `CHANGELOG.md`, `LICENSE`, or `Brewfile`.
 - Prefer ESM JavaScript over CommonJS for new and migrated JavaScript surfaces.
 - Prefer Bun as the primary JavaScript runtime and package manager in repositories that have meaningful JavaScript or TypeScript tooling, CLI, docs, or automation surfaces, while still using `node:*` built-in modules where Bun provides Node-compatible support.
@@ -56,6 +57,7 @@ Use this skill as the universal engineering doctrine for all tasks in the Tanaab
 - Fix foundations before polish: runtime, build, test, CI, and release plumbing come before stylistic refinement.
 - Treat tests, CI, release notes, and automation as product surfaces, not support work.
 - Prefer deterministic, repo-local tooling and explicit configuration over magical implicit behavior.
+- When a JS or Bun repo introduces standalone Prettier, copy or align with `templates/javascript/lint/prettier.config.js` and `.prettierignore` instead of inventing local style defaults.
 - Do not introduce Bun into a repository that has no meaningful JavaScript or TypeScript surface just to satisfy stack consistency; use it when the repo actually carries JS or TS tooling or automation value.
 - Treat TypeScript migration as an explicit follow-on decision until the build and release path is standardized well enough to scaffold it confidently.
 - Keep generic utilities small, extraction-ready, and low-coupling so they can later move into a shared utilities repo or standalone packages.
@@ -87,6 +89,8 @@ Use this skill as the universal engineering doctrine for all tasks in the Tanaab
 - Confirm stack decisions follow the primary-owner model rather than splitting ownership ambiguously.
 - Confirm new repo-authored files use kebab-case unless a fixed conventional filename is required by the tool or ecosystem.
 - Confirm JavaScript surfaces default to ESM and Bun when the repository actually has JavaScript or TypeScript tooling or runtime surfaces, unless the user explicitly asked for another runtime or module format.
+- Confirm JS or Bun lint and format work keeps ownership clear: ESLint for code-quality rules, Prettier for formatting.
+- Confirm JS or Bun repos standardized on lint or format use the shared `prettier.config.js` and `.prettierignore` template files, or an explicitly aligned equivalent, rather than ad hoc local Prettier style.
 - Confirm stylesheet work defaults to SCSS unless the user explicitly required plain CSS or another styling format.
 - Confirm code is organized by purpose, and that any `utils/` entries are intentionally placed: ideally generic and portable, or explicitly justified as narrow repo-shaped helpers.
 - Confirm repo-shaped `utils/` files were reviewed as a warning case and either accepted intentionally or moved closer to the owning purpose surface.

@@ -6,22 +6,26 @@ It assumes the repo uses ESM by default, so the config files use `.js` and expec
 ## Files
 
 - `eslint.config.js`: shared Bun/ESM ESLint baseline for `.js`, `.mjs`, `.cjs`, and Mocha-style tests
-- `prettier.config.js`: standalone Prettier config used by editor, CI, and CLI formatting
-- `.prettierignore`: generated-file ignore list for `prettier . --check` or `--write`
+- `prettier.config.js`: canonical standalone Prettier config used by editor, CI, and CLI formatting
+- `.prettierignore`: canonical generated-file ignore list for `prettier . --check` or `--write`
 - `snippets/typescript-eslint-layer.js`: optional TypeScript ESLint layer
 - `snippets/vue-eslint-layer.js`: optional Vue ESLint layer
+
+Copy these files together when standardizing a repo. If a repo already has lint or format config, align it to these files rather than inventing a separate local formatting baseline.
 
 ## Baseline Rules
 
 - Use flat ESLint config at the repo root.
-- Keep Prettier separate from ESLint and run it with `prettier --check` or `prettier --write`.
+- Keep ESLint and Prettier ownership separate: ESLint handles code-quality and static-analysis rules, while Prettier handles formatting.
+- Run Prettier with `prettier --check` or `prettier --write` instead of routing formatting through ESLint.
 - Use one shared JS/Bun base, then add narrow overrides for CJS, tests, templates, TS, or Vue only when the repo actually needs them.
 - Prefer `eslint-config-prettier` over `eslint-plugin-prettier` for shared repo defaults.
 - Prefer `.js` config filenames in ESM repos; only fall back to `.mjs` when the repo cannot mark itself as ESM.
 - Keep `node:` protocol usage and ESM defaults consistent across Bun repos.
+- Treat `prettier.config.js` in this template as the formatting authority for shared repo defaults, including quote style. Do not start from generic Prettier defaults or invent a repo-local quote convention when standardizing.
 - The shared ESLint 10 base intentionally avoids `eslint-plugin-import` until that package declares ESLint 10 support.
 
-## Recommended Scripts
+## Expected Scripts
 
 ```json
 {
@@ -33,6 +37,8 @@ It assumes the repo uses ESM by default, so the config files use `.js` and expec
   }
 }
 ```
+
+Use this shape by default when standardizing a repo. If an existing repo already exposes equivalent scripts, keep the names aligned unless there is a strong repo-specific reason not to.
 
 ## Optional Layers
 

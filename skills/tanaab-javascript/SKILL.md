@@ -101,9 +101,12 @@ Use this skill for JavaScript and TypeScript implementation work within the Tana
 
 - Keep one root ESLint config with a shared JS or Bun base and add narrow overrides for CJS, tests, templates, and optional TypeScript or Vue layers only when the repo actually uses them.
 - In ESM-first repos, prefer `eslint.config.js` and `prettier.config.js` over `.mjs`.
+- Keep ownership explicit: ESLint handles code-quality and static-analysis rules, while Prettier handles formatting.
 - Prefer `eslint-config-prettier` plus `prettier --check` or `prettier --write` over `eslint-plugin-prettier` for shared repo defaults.
+- When introducing standalone Prettier, copy or align with `templates/javascript/lint/prettier.config.js` and `templates/javascript/lint/.prettierignore` instead of inventing a repo-local style baseline.
+- Treat the shared Prettier template as the formatting authority for repo defaults, including quote style, rather than falling back to generic Prettier defaults.
 - Do not assume import-order plugins belong in the shared baseline; add them only when the chosen package stack explicitly supports the repo's ESLint major version.
-- Use `templates/javascript/lint/` when scaffolding or normalizing this config shape across repositories.
+- Use `templates/javascript/lint/` when scaffolding or normalizing this config shape across repositories, including `eslint.config.js`, `prettier.config.js`, `.prettierignore`, and the standard `lint:eslint`, `format:check`, `format:write`, and `lint` scripts.
 
 11. Replace npm-specific JavaScript runtime commands when the task includes Bun migration.
 
@@ -126,6 +129,7 @@ Use this skill for JavaScript and TypeScript implementation work within the Tana
 - [references/function-data-flow.md](./references/function-data-flow.md): preferred JavaScript unit shape for one-way data flow, minimal mutation, and grouped imports.
 - [../tanaab-coding-core/references/cli-style-rules.md](../tanaab-coding-core/references/cli-style-rules.md): shared CLI help, color, and status-line rules used across shell and Bun CLIs.
 - [../tanaab-github-actions/references/javascript-action-conventions.md](../tanaab-github-actions/references/javascript-action-conventions.md): preferred runtime, bundling, and artifact rules for Bun-backed JavaScript GitHub Actions.
+- [../tanaab-templates/templates/javascript/lint/README.md](../tanaab-templates/templates/javascript/lint/README.md): shared ESLint, Prettier, `.prettierignore`, and script baseline for JS, Bun, TS, and Vue repos.
 
 ## Validation
 
@@ -136,6 +140,8 @@ Use this skill for JavaScript and TypeScript implementation work within the Tana
 - Confirm repo-authored JavaScript CLI entrypoints use `#!/usr/bin/env bun` rather than a Node shebang, and that non-CLI scripts omit a hashbang.
 - Confirm any CLI contract or help output touched by the task follows [../tanaab-coding-core/references/cli-style-rules.md](../tanaab-coding-core/references/cli-style-rules.md).
 - Confirm lint or format standardization uses a root flat ESLint config and standalone Prettier rather than embedding formatting checks into ESLint by default.
+- Confirm standalone Prettier uses the shared `templates/javascript/lint/prettier.config.js` and `.prettierignore` baseline, or an explicitly aligned equivalent, instead of ad hoc local style.
+- Confirm repo scripts align with the shared `lint:eslint`, `format:check`, `format:write`, and `lint` shape when lint or format standardization was in scope.
 - Confirm repo-structure and `utils/` decisions follow [references/repo-structure.md](./references/repo-structure.md) when that surface was in scope.
 - Confirm function shape, mutation discipline, and import grouping follow [references/function-data-flow.md](./references/function-data-flow.md) when those surfaces were in scope.
 - Confirm `.bun-version` and `.tool-versions` reflect the repo's Bun-first runtime policy when those files are in scope.
