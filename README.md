@@ -28,12 +28,25 @@ bash piroboot.sh \
   --dotpkg dotfiles/hyperdrive \
   --dotpkg dotfiles/lando \
   --dotpkg dotfiles/ssh \
+  --dotpkg dotfiles/theme \
   --dotpkg dotfiles/vim \
   --dotpkg dotfiles/zsh
 
 ```
 
 If you are looking to customize your install then [advanced usage](#advanced) is for you.
+
+#### Dotfile Packages
+
+- **dotfiles/ai** - AI assistant configuration, including Codex agent instructions.
+- **dotfiles/gh** - GitHub CLI configuration.
+- **dotfiles/git** - Git configuration and local include rules.
+- **dotfiles/hyperdrive** - Hyperdrive configuration.
+- **dotfiles/lando** - Lando configuration.
+- **dotfiles/ssh** - SSH configuration and public keys.
+- **dotfiles/theme** - Importable Tanaab theme JSON files.
+- **dotfiles/vim** - Vim configuration.
+- **dotfiles/zsh** - Zsh shell and prompt configuration.
 
 ## Advanced
 
@@ -56,7 +69,7 @@ If you do not wish to download the script you can set options with environment v
 
 ```zsh
 TANAAB_BREWFILE=Brewfile.base,Brewfile.two
-TANAAB_DOTPKG=dotfiles/git,dotfiles/zsh
+TANAAB_DOTPKG=dotfiles/git,dotfiles/theme,dotfiles/zsh
 TANAAB_DEBUG=0
 TANAAB_TARGET="/somewhere-else"
 
@@ -69,12 +82,12 @@ These are equivalent commands and meant to demostrate environment variable usage
 ```zsh
 # use envvars
 TANAAB_BREWFILE=Brewfile.base,Brewfile.two \
-TANAAB_DOTPKG=dotfiles/git,dotfiles/zsh \
+TANAAB_DOTPKG=dotfiles/git,dotfiles/theme,dotfiles/zsh \
 TANAAB_DEBUG=1 \
   /bin/bash -c "$(curl -fsSL https://boot.pirog.me)"
 
 # invoke directly
-bash piroboot.sh --brewfile Brewfile.base --brewfile Brewfile.two --dotpkg dotfiles/git --dotpkg dotfiles/zsh --debug
+bash piroboot.sh --brewfile Brewfile.base --brewfile Brewfile.two --dotpkg dotfiles/git --dotpkg dotfiles/theme --dotpkg dotfiles/zsh --debug
 ```
 
 ## Development

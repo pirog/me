@@ -1,5 +1,6 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+- Added a `theme` dotfiles package with importable Tanaab theme JSON files and documented the available stow packages in the README
 - Removed hardcoded SSH `HostName` IP mappings from the shared ssh dotfile package so host aliases can resolve through local hosts or DNS
 
 ## v0.2.0 - [March 12, 2026](https://github.com/pirog/me/releases/tag/v0.2.0)
