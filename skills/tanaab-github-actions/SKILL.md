@@ -25,7 +25,7 @@ Use this skill for GitHub Actions workflow authoring and GitHub-hosted CI triage
 ## Relationship to Other Skills
 
 - Assume `tanaab-coding-core` is active.
-- Primary ownership: workflow YAML, workflow triggers, permissions, job topology, reusable workflow structure, and GitHub-hosted CI triage.
+- Primary ownership: workflow YAML, workflow triggers, permissions, job topology, reusable workflow structure, composite action wiring, and GitHub-hosted CI triage.
 - Defer shell-step internals to `tanaab-shell`.
 - Defer JavaScript action code and runtime/package changes to `tanaab-javascript`.
 - Defer test content and coverage policy to `tanaab-testing`.
@@ -48,10 +48,17 @@ Use this skill for GitHub Actions workflow authoring and GitHub-hosted CI triage
 - Replace `npm run ...` with `bun run ...` in workflow jobs.
 - Keep OS and version test matrices intact unless the runtime manager itself is changing.
 - Preserve fixed workflow filenames and GitHub Actions loader conventions, but use kebab-case for repo-authored helper scripts and local support files.
+- For JavaScript actions in this stack, prefer `runs.using: "composite"` wrappers that install Bun and then execute the built `dist/index.js` artifact explicitly.
 - For JavaScript actions or composite wrappers, ensure runtime wiring still emits the expected artifacts and pass required `INPUT_*` values explicitly when the wrapper depends on them.
+- Keep the runtime artifact path stable, usually `dist/index.js`, and commit the built action output when repository consumers load the action directly from Git refs.
+- Use `uses: ./` in repo workflows when the action itself needs end-to-end smoke coverage.
+- Split PR workflows by concern when the action benefits from separate lint, unit, options, sync, or permissions validation.
+- Use `fetch-depth: 0` only in workflows that actually need tags, full history, or sync validation.
+- For workflow-level action assertions, prefer small postcondition steps that inspect files, tags, or git state after `uses: ./`, use `if: always()` when later assertions should still execute, and emit readable `::notice` or `::error` messages.
 - Update Dependabot ecosystem settings from `npm` to `bun` where applicable.
 - When workflow steps depend on repo-authored shell scripts that are release, deploy, bootstrap, or other maintained operational surfaces, prefer wiring `shellcheck` into CI.
 - For non-trivial inline shell, prefer extracting the logic into a repo-authored script that can be `shellcheck`ed and tested directly.
+- Apply [references/javascript-action-conventions.md](./references/javascript-action-conventions.md) when the repo is a Bun-backed JavaScript GitHub Action.
 
 4. For CI triage, inspect failing checks before proposing a fix.
 
@@ -77,6 +84,7 @@ Use this skill for GitHub Actions workflow authoring and GitHub-hosted CI triage
 - [assets/tanaab-github-actions-icon.png](./assets/tanaab-github-actions-icon.png): UI icon for the GitHub Actions skill.
 - [scripts/inspect-pr-checks.py](./scripts/inspect-pr-checks.py): fetch failing PR checks, pull GitHub Actions logs, and extract a failure snippet
 - [references/inspect-pr-checks-license.txt](./references/inspect-pr-checks-license.txt): license file for the bundled inspection helper
+- [references/javascript-action-conventions.md](./references/javascript-action-conventions.md): preferred runtime, build, workflow, and README shape for Bun-backed JavaScript GitHub Action repos
 
 ## Validation
 
@@ -84,6 +92,8 @@ Use this skill for GitHub Actions workflow authoring and GitHub-hosted CI triage
 - Confirm the task is actually GitHub Actions-led.
 - Confirm this skill stayed the primary owner only for workflow or CI-triage surfaces.
 - Confirm workflows that install Bun use `oven-sh/setup-bun@v2`, `bun-version-file: .bun-version`, and `bun install --frozen-lockfile --ignore-scripts` unless the task explicitly needs different install behavior.
+- Confirm Bun-backed JavaScript actions use composite wrappers intentionally, pass `INPUT_*` values explicitly where needed, and keep the built artifact path stable.
+- Confirm workflow-level action smoke tests assert postconditions cleanly and do not hide failures behind large opaque shell blocks.
 - Confirm shell-heavy workflows use `shellcheck` intentionally when repo-authored shell scripts are maintained operational surfaces.
 - Confirm the failing provider is GitHub Actions before attempting deep CI triage.
 - Confirm the summary includes the failing check name, URL, and useful failure snippet when triaging CI.

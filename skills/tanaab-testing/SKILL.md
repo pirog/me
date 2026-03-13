@@ -15,6 +15,7 @@ Use this skill for testing strategy, targeted test implementation, coverage poli
 - The task needs unit-test structure, coverage policy, or test-gate wiring in CI or release workflows.
 - The user wants focused regression protection after implementation changes.
 - The request specifically calls for Mocha-based unit tests or per-file coverage enforcement for JavaScript or TypeScript utility modules.
+- The task needs JavaScript GitHub Action input parsing tests or workflow-driven action smoke coverage.
 
 ## When Not to Use
 
@@ -52,6 +53,11 @@ Use this skill for testing strategy, targeted test implementation, coverage poli
 - Name tests with `it('should ...')`.
 - Keep setup and teardown local to each spec file.
 - Cover normal paths, edge cases, and error paths.
+- For JavaScript GitHub Actions, isolate input parsing in a helper such as `utils/get-inputs.js` and unit test it by stubbing `@actions/core` getters plus `process.env.GITHUB_ACTIONS` or fallback env vars.
+- Restore the original `@actions/core` methods and relevant env vars in `afterEach` so GitHub Action input specs do not leak state across tests.
+- Keep action unit tests pure and reserve `uses: ./` workflow runs for smoke tests that need real runner, checkout, permissions, or matrix behavior.
+- Use `templates/testing/github-action-input/` when scaffolding the focused GitHub Action input helper pattern.
+- Use `templates/github-actions/` with `tanaab-github-actions` when scaffolding workflow-driven action smoke tests and assertion steps.
 
 5. Add or update test scripts and coverage policy.
 
@@ -81,4 +87,6 @@ Use this skill for testing strategy, targeted test implementation, coverage poli
 - Run `bun run test`.
 - Run `bun run lint` when linting is part of repo standards.
 - Confirm coverage output meets the requested threshold when coverage was part of the task.
+- Confirm GitHub Action input parsing tests cover both local-default and GitHub Actions-runtime cases when that surface changed.
+- Confirm workflow-driven action smoke coverage exists when real runner behavior, permissions, or matrix behavior changed.
 - Confirm any template use came from `tanaab-templates`.

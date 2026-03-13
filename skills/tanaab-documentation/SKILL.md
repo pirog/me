@@ -47,7 +47,7 @@ Use this skill for repository documentation strategy and authoring within the Ta
 - Prefer a README for repository-level orientation, install or setup instructions, common usage, and concise reference.
 - Prefer inline code or API docs for contracts, error behavior, non-obvious side effects, and behavior that must stay close to code.
 - Escalate to fuller docs when the README becomes overloaded, multiple user journeys or navigation layers are needed, or durable reference material grows beyond one repo entrypoint.
-- Use [references/readme-standards.md](./references/readme-standards.md) to choose intentionally between a full README and a lightweight docs-wrapper README.
+- Use [references/readme-standards.md](./references/readme-standards.md) to choose intentionally between a full README, a GitHub Action README, and a lightweight docs-wrapper README.
 
 4. Decide when a fuller docs site is warranted.
 
@@ -55,12 +55,14 @@ Use this skill for repository documentation strategy and authoring within the Ta
 - Do not split content into a docs site for polish alone when a focused README still serves the task cleanly.
 - When a static docs site is justified, prefer VitePress 1 and hand implementation details to `tanaab-frontend`.
 - When the repo uses a docs site, keep the README as a strong entrypoint with a quickstart plus key docs-site links instead of duplicating the full reference surface.
+- For GitHub Action repositories, keep the action contract in `README.md` even when deeper docs exist elsewhere because the README is the Marketplace and repository entrypoint users see first.
 
 5. Shape repository docs for fast comprehension.
 
 - Lead README content with what the project is, how to install or run it, and the most important usage path before deeper reference sections.
 - Keep examples concrete, runnable, and close to the surface they explain.
 - Prefer clear section titles and concise prose over dense narrative blocks.
+- When a README includes a `Contributors` section, use the standard `contrib.rocks` embed with the repository slug instead of ad hoc text lists.
 
 6. Apply inline code and API documentation standards intentionally.
 
@@ -77,7 +79,7 @@ Use this skill for repository documentation strategy and authoring within the Ta
 - [agents/openai.yaml](./agents/openai.yaml): UI metadata for the documentation skill.
 - [assets/tanaab-documentation-icon.png](./assets/tanaab-documentation-icon.png): UI icon for the documentation skill.
 - [assets/tanaab-documentation-icon.svg](./assets/tanaab-documentation-icon.svg): generated source icon for the documentation skill.
-- [references/readme-standards.md](./references/readme-standards.md): rules for choosing full README versus docs-wrapper README structure and when to escalate to VitePress docs.
+- [references/readme-standards.md](./references/readme-standards.md): rules for choosing full README, GitHub Action README, or docs-wrapper README structure and when to escalate to VitePress docs.
 
 ## Validation
 
@@ -85,7 +87,8 @@ Use this skill for repository documentation strategy and authoring within the Ta
 - Confirm the task is actually documentation-led.
 - Confirm this skill stayed the primary owner only for README, docs-policy, or durable documentation surfaces.
 - Confirm README content remains concise and repo-oriented rather than growing into an unstructured manual.
-- Confirm the repository uses either full README mode or docs-wrapper mode intentionally rather than mixing both styles incoherently.
+- Confirm the repository uses full README mode, GitHub Action README mode, or docs-wrapper mode intentionally rather than mixing those styles incoherently.
+- Confirm GitHub Action repositories use the GitHub Action README mode and keep inputs, outputs, caveats, and basic usage in `README.md`.
 - Confirm inline code or API docs explain contracts and non-obvious behavior rather than narrating obvious implementation.
 - Confirm boilerplate comments stay sparse and are limited to non-obvious contracts, extension points, or edge cases.
 - Confirm any move from README to fuller docs is justified by documentation complexity rather than aesthetics alone.

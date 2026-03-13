@@ -63,6 +63,8 @@ Use this skill for JavaScript and TypeScript implementation work within the Tana
 - Add or update `.tool-versions` to include `bun 1.3` and a Node compatibility entry when the repo tracks local tool versions there.
 - Add or update `"type": "module"`, `main`, and `exports` when the task includes ESM conversion.
 - Keep artifact paths stable when workflows or actions depend on exact filenames such as `dist/index.js`.
+- For Bun-backed GitHub Actions, compile the runtime to `dist/index.js` with `bun build`, commit the built artifact, and keep `main` and `exports` aligned with that runtime path when package metadata is in scope.
+- Prefer an explicit `build` script plus `prepare` or equivalent release plumbing so the committed action artifact does not drift from source.
 
 6. Prefer ESM JavaScript on Bun as the current default for repositories that actually have JavaScript or TypeScript tooling, runtime, or automation surfaces.
 
@@ -112,6 +114,7 @@ Use this skill for JavaScript and TypeScript implementation work within the Tana
 
 - Rewrite README or workflow snippets from Node/npm commands to Bun commands when appropriate.
 - Document new Bun-specific inputs, configuration files, or remaining migration phases explicitly.
+- For GitHub Action repos, pair this with [../tanaab-github-actions/references/javascript-action-conventions.md](../tanaab-github-actions/references/javascript-action-conventions.md) so runtime code, composite wrapper wiring, and committed artifacts stay aligned.
 
 13. Pull from `tanaab-testing`, `tanaab-github-actions`, `tanaab-shell`, or `tanaab-templates` when the task crosses those boundaries.
 
@@ -122,6 +125,7 @@ Use this skill for JavaScript and TypeScript implementation work within the Tana
 - [references/repo-structure.md](./references/repo-structure.md): preferred purpose-driven repo structure and `utils/` boundaries for JavaScript projects.
 - [references/function-data-flow.md](./references/function-data-flow.md): preferred JavaScript unit shape for one-way data flow, minimal mutation, and grouped imports.
 - [../tanaab-coding-core/references/cli-style-rules.md](../tanaab-coding-core/references/cli-style-rules.md): shared CLI help, color, and status-line rules used across shell and Bun CLIs.
+- [../tanaab-github-actions/references/javascript-action-conventions.md](../tanaab-github-actions/references/javascript-action-conventions.md): preferred runtime, bundling, and artifact rules for Bun-backed JavaScript GitHub Actions.
 
 ## Validation
 
@@ -142,4 +146,5 @@ Use this skill for JavaScript and TypeScript implementation work within the Tana
 - Re-run the relevant test or CI commands used by the repository when runtime or module behavior changed.
 - Confirm no stale Node/npm or CommonJS references remain when the task explicitly migrated away from them.
 - Confirm generated outputs remain executable and artifact paths stayed stable where workflows depend on them.
+- Confirm Bun-backed GitHub Actions use `bun build` to emit a stable `dist/index.js` artifact when that runtime surface changed.
 - Confirm cross-skill handoffs are explicit when testing, workflow wiring, shell behavior, or templates are involved.
