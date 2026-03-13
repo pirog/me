@@ -1,5 +1,6 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+- Added `python@3` as a needed `Brewfile` package
 - Standardized `tanaab-coding` lint and format guidance around the shared Prettier template and `.prettierignore` baseline
 
 ## v0.2.1 - [March 13, 2026](https://github.com/pirog/me/releases/tag/v0.2.1)
