@@ -35,7 +35,7 @@ Use this skill as the universal engineering doctrine for all tasks in the Tanaab
 - Prefer Bun as the primary JavaScript runtime and package manager in repositories that have meaningful JavaScript or TypeScript tooling, CLI, docs, or automation surfaces, while still using `node:*` built-in modules where Bun provides Node-compatible support.
 - Prefer SCSS over raw CSS, Less, or Stylus for stylesheet authoring when a preprocessor is appropriate.
 - Organize repository code by purpose and behavior rather than by implementation type.
-- Reserve `utils/` for generic, portable helpers that can move across repositories with minimal or no rewrite.
+- Prefer `utils/` for helpers that are generic, portable, and plausible extraction candidates across repositories.
 - Normalize raw inputs and options once at the function boundary so downstream logic can work against one stable shape.
 - Prefer straight-line data flow: derive named constants in order and move toward the return value instead of repeatedly rewriting a working variable.
 - Prefer early returns for empty, invalid, or trivial edge cases when they simplify the main path.
@@ -58,7 +58,9 @@ Use this skill as the universal engineering doctrine for all tasks in the Tanaab
 - Prefer deterministic, repo-local tooling and explicit configuration over magical implicit behavior.
 - Do not introduce Bun into a repository that has no meaningful JavaScript or TypeScript surface just to satisfy stack consistency; use it when the repo actually carries JS or TS tooling or automation value.
 - Treat TypeScript migration as an explicit follow-on decision until the build and release path is standardized well enough to scaffold it confidently.
-- Keep generic utilities small, extraction-ready, and free of repo-specific language so they can later move into a shared utilities repo or standalone packages.
+- Keep generic utilities small, extraction-ready, and low-coupling so they can later move into a shared utilities repo or standalone packages.
+- Treat tightly coupled `utils/` files as a warning to review, not an automatic failure. Some repos naturally have repo-shaped helpers, especially around GitHub Actions, release automation, or CLI plumbing.
+- When a `utils/` file is repo-shaped, make an explicit call: either it is probably okay because the coupling is narrow and inherent to the repo surface, or the logic should move back toward the owning purpose folder.
 - Let data enter at the boundary, get normalized once, flow through small named transformations, and return in one direction.
 - Prefer explanation by function shape and naming over comment-heavy code.
 - Prefer returning derived data over mutating ambient global state inside generic code.
@@ -86,7 +88,8 @@ Use this skill as the universal engineering doctrine for all tasks in the Tanaab
 - Confirm new repo-authored files use kebab-case unless a fixed conventional filename is required by the tool or ecosystem.
 - Confirm JavaScript surfaces default to ESM and Bun when the repository actually has JavaScript or TypeScript tooling or runtime surfaces, unless the user explicitly asked for another runtime or module format.
 - Confirm stylesheet work defaults to SCSS unless the user explicitly required plain CSS or another styling format.
-- Confirm code is organized by purpose, and that any `utils/` entries are genuinely generic and portable rather than repo-specific.
+- Confirm code is organized by purpose, and that any `utils/` entries are intentionally placed: ideally generic and portable, or explicitly justified as narrow repo-shaped helpers.
+- Confirm repo-shaped `utils/` files were reviewed as a warning case and either accepted intentionally or moved closer to the owning purpose surface.
 - Confirm functions normalize input at the boundary, keep data flow mostly one-way, and minimize mutable working variables.
 - Confirm caller-owned inputs are not mutated unless the code explicitly clones or isolates that mutation.
 - Confirm non-CLI Bun or Node scripts do not carry a hashbang and are invoked via `bun ./script.js` or `node ./script.js` instead.

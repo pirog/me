@@ -2,6 +2,7 @@
 
 - Added a `theme` dotfiles package with importable Tanaab theme JSON files and documented the available stow packages in the README
 - Expanded `tanaab-coding` guidance for Bun-backed JavaScript GitHub Actions with a dedicated action README template, composite-action runtime conventions, focused input-test scaffolds, and workflow smoke-test assertion patterns
+- Relaxed `tanaab-coding` `utils/` guidance so repo-shaped helpers are reviewed case-by-case instead of being treated as automatic violations
 - Removed hardcoded SSH `HostName` IP mappings from the shared ssh dotfile package so host aliases can resolve through local hosts or DNS
 
 ## v0.2.0 - [March 12, 2026](https://github.com/pirog/me/releases/tag/v0.2.0)

@@ -45,7 +45,7 @@ Use this skill for JavaScript and TypeScript implementation work within the Tana
 3. When repo structure or utility extraction is in scope, apply [references/repo-structure.md](./references/repo-structure.md).
 
 - Prefer purpose-oriented folders over implementation-type buckets when the layout is changing.
-- Reserve `utils/` for generic, extraction-ready helpers rather than repo-specific code.
+- Prefer `utils/` for extraction-ready helpers, but treat repo-shaped utilities as an explicit review point rather than an automatic violation.
 
 4. Distinguish true CLIs from ordinary scripts.
 
