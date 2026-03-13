@@ -1,4 +1,4 @@
-SCRIPT_VERSION="v0.2.0"
+SCRIPT_VERSION="v0.2.1"
 #!/bin/bash
 set -euo pipefail
 # generate a Brewfile from the current homebrew state for selected package types.

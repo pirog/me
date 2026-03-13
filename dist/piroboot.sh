@@ -1,4 +1,4 @@
-SCRIPT_VERSION="v0.2.0"
+SCRIPT_VERSION="v0.2.1"
 #!/bin/bash
 set -euo pipefail
 # bootstrap a macOS machine using homebrew, brewfiles, dotfiles, and identity data.
