@@ -1,0 +1,54 @@
+name: Action Smoke Tests
+
+on:
+  pull_request:
+
+jobs:
+  smoke-tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-24.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Install bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: .bun-version
+
+      - name: Install deps and prep
+        run: |
+          bun install --frozen-lockfile --ignore-scripts
+          bun run build
+
+      - name: Run action
+        uses: ./
+        with:
+          example-input: example-value
+
+      - name: 'TEST: should update the expected file'
+        if: always()
+        run: |
+          if grep "expected value" "${{ github.workspace }}/path/to/file"; then
+            echo "::notice title=TEST PASSED::Expected file was updated"
+          else
+            echo "::error title=TEST FAILED::Expected file was not updated"
+            exit 1
+          fi
+        shell: bash
+
+      - name: 'TEST: should create the expected tag'
+        if: always()
+        run: |
+          if git --no-pager tag --points-at HEAD | grep "v1.2.3"; then
+            echo "::notice title=TEST PASSED::Expected tag was created"
+          else
+            echo "::error title=TEST FAILED::Expected tag was not created"
+            exit 1
+          fi
+        shell: bash

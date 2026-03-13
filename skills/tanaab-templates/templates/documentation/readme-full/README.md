@@ -69,4 +69,8 @@ Link to `CHANGELOG.md` and releases when the repo maintains them.
 
 ## Contributors
 
-Optional when the repo wants to surface contributors directly in the README.
+<a href="https://github.com/REPO_SLUG/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=REPO_SLUG" />
+</a>
+
+Made with [contrib.rocks](https://contrib.rocks).
