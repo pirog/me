@@ -41,6 +41,7 @@ Use this skill for release preparation, changelog drafting, release contract dec
 
 - Identify which files, versions, or metadata should update as part of the release.
 - Identify which artifacts, deploy outputs, or write-backs are expected from the release flow.
+- For hosted shell or CLI repos, decide which generated `dist/` files are part of the release contract, which entrypoints get stamped, and whether public metadata such as sitemap lastmod must update at release time.
 - Hand implementation of workflow mechanics to `tanaab-github-actions`.
 
 4. Build the release change set.
@@ -81,6 +82,7 @@ Use this skill for release preparation, changelog drafting, release contract dec
 - Confirm release notes or changelog entries are concise and scoped to user-visible changes.
 - Confirm this skill stayed the primary owner only for release-facing narrative, readiness, or release-contract surfaces.
 - Confirm workflow mechanics remain with `tanaab-github-actions` when release automation changes are involved.
+- Confirm hosted or generated release artifacts are named explicitly when the repo publishes a `dist/` surface or URL-served script.
 - Re-read final bullets for tense, clarity, and ordering.
 - Confirm every applicable bullet has a valid link.
 - Confirm any release gates or workflow changes are explicit.

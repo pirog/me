@@ -9,6 +9,8 @@ description: Route coding, testing, and release requests to the right Tanaab cod
 
 Use this skill as the umbrella router for work in the Tanaab coding stack. Select one primary owning skill, add companion skills only where the task crosses surfaces, and always apply `tanaab-coding-core`.
 
+Treat user-facing distributed artifacts, hosted script URLs, executable example suites, and other non-source surfaces as real routing inputs instead of routing only by implementation language.
+
 ## When to Use
 
 - The user asks for a coding, testing, or release task but the right specialization is not yet selected.
@@ -52,3 +54,4 @@ Use this skill as the umbrella router for work in the Tanaab coding stack. Selec
 - Confirm the selected specialized skills match the request.
 - Confirm companion skills support the primary owner instead of overlapping it.
 - Confirm `tanaab-templates` is only pulled in for real scaffolding, standardization, or reusable-extraction work.
+- Confirm routing accounted for any distinct user-facing surface such as a hosted `dist/` artifact or executable example suite when that surface drove the task.

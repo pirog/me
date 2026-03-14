@@ -13,6 +13,7 @@ Use this skill for shell scripting, command-line automation, and CLI contract wo
 
 - The request targets shell scripts, command wrappers, terminal automation, or scripting glue.
 - The task is primarily about shell behavior, CLI contract, help output, logging, or safety guards rather than JavaScript, CSS, or Vue implementation.
+- The repository serves or distributes a shell entrypoint from a hosted URL and the generated `dist/` artifact is part of the product surface.
 
 ## When Not to Use
 
@@ -43,6 +44,7 @@ Use this skill for shell scripting, command-line automation, and CLI contract wo
 - Use the shared rules for help section order, option > env > default precedence, repeatable options, env-var documentation, status coloring, and stdout or stderr behavior.
 - Reject ambiguous input.
 - If a value should be option-only, reject positional arguments with a clear error message.
+- For hosted shell repos, also apply [references/hosted-script-conventions.md](./references/hosted-script-conventions.md) so the generated `dist/` entrypoint, hosted URL, and docs remain aligned.
 
 4. Add safety and scope guards.
 
@@ -56,6 +58,7 @@ Use this skill for shell scripting, command-line automation, and CLI contract wo
 - Prefer kebab-case for new repo-authored shell and helper filenames unless the surrounding tool expects a fixed conventional name.
 - When shell wrappers invoke repo-authored JavaScript CLI helpers, prefer Bun-backed entrypoints over calling `node` directly.
 - For releasable shell CLIs that may be stamped by `prepare-release-action`, keep one top-level `SCRIPT_VERSION=...` assignment with fallback logic so `version-injector --style sh` can update the entrypoint in place.
+- For URL-served shell repos, let [references/hosted-script-conventions.md](./references/hosted-script-conventions.md) define the `dist/`, hosting, and docs contract instead of restating it inline here.
 - Preserve portability requirements when the repository already targets multiple shells or environments.
 - When a composite action or wrapper script depends on shell execution, pass required environment variables explicitly rather than assuming inheritance.
 - Run targeted `shellcheck` on changed shell scripts or reusable shell helpers before finishing.
@@ -69,6 +72,7 @@ Use this skill for shell scripting, command-line automation, and CLI contract wo
 - [agents/openai.yaml](./agents/openai.yaml): UI metadata for the shell skill.
 - [assets/tanaab-shell-icon.png](./assets/tanaab-shell-icon.png): UI icon for the shell skill.
 - [../tanaab-coding-core/references/cli-style-rules.md](../tanaab-coding-core/references/cli-style-rules.md): shared CLI help, color, and status-line rules used across shell and Bun CLIs.
+- [references/hosted-script-conventions.md](./references/hosted-script-conventions.md): conventions for URL-served shell entrypoints, generated `dist/` surfaces, and static hosting defaults.
 
 ## Validation
 
@@ -78,6 +82,7 @@ Use this skill for shell scripting, command-line automation, and CLI contract wo
 - Confirm any CLI contract follows the shared rules in [../tanaab-coding-core/references/cli-style-rules.md](../tanaab-coding-core/references/cli-style-rules.md).
 - Confirm shell entrypoints stay explicit about interpreter and execution context.
 - Confirm releasable shell CLI entrypoints expose a single injection-friendly `SCRIPT_VERSION` assignment plus fallback logic, or an explicitly aligned equivalent, when `prepare-release-action` style version stamping is in scope.
+- Confirm hosted shell repos follow [references/hosted-script-conventions.md](./references/hosted-script-conventions.md) when that surface changed.
 - Confirm changed shell scripts or reusable shell helpers were checked with `shellcheck` when shell is a meaningful surface in the task.
 - Confirm failures are actionable and non-zero.
 - Confirm destructive or nonsensical target combinations are rejected early.

@@ -53,6 +53,9 @@ Use this skill for GitHub Actions workflow authoring and GitHub-hosted CI triage
 - Keep the runtime artifact path stable, usually `dist/index.js`, and commit the built action output when repository consumers load the action directly from Git refs.
 - Use `uses: ./` in repo workflows when the action itself needs end-to-end smoke coverage.
 - Split PR workflows by concern when the action benefits from separate lint, unit, options, sync, or permissions validation.
+- For repo-authored scenario suites such as Leia-backed example directories, prefer dedicated PR workflows with one matrix entry per example when runner state, secrets, or cleanup matter.
+- When a repo distributes a shell script from `dist/`, prepare a release-shaped build, stamp the distributed entrypoint, and put `dist/` on `PATH` before running smoke coverage so tests hit the real shipped surface.
+- For Leia or other temp-heavy runners in CI, prefer a repo-local `TMPDIR` when default temp behavior is unreliable.
 - Use `fetch-depth: 0` only in workflows that actually need tags, full history, or sync validation.
 - For workflow-level action assertions, prefer small postcondition steps that inspect files, tags, or git state after `uses: ./`, use `if: always()` when later assertions should still execute, and emit readable `::notice` or `::error` messages.
 - Update Dependabot ecosystem settings from `npm` to `bun` where applicable.
@@ -94,6 +97,8 @@ Use this skill for GitHub Actions workflow authoring and GitHub-hosted CI triage
 - Confirm workflows that install Bun use `oven-sh/setup-bun@v2`, `bun-version-file: .bun-version`, and `bun install --frozen-lockfile --ignore-scripts` unless the task explicitly needs different install behavior.
 - Confirm Bun-backed JavaScript actions use composite wrappers intentionally, pass `INPUT_*` values explicitly where needed, and keep the built artifact path stable.
 - Confirm workflow-level action smoke tests assert postconditions cleanly and do not hide failures behind large opaque shell blocks.
+- Confirm Leia or other scenario-matrix workflows keep one example per job when that pattern is in scope and that fresh-runner or secret needs are explicit.
+- Confirm hosted-shell smoke coverage, when present, runs against the prepared `dist/` surface rather than raw source files.
 - Confirm shell-heavy workflows use `shellcheck` intentionally when repo-authored shell scripts are maintained operational surfaces.
 - Confirm the failing provider is GitHub Actions before attempting deep CI triage.
 - Confirm the summary includes the failing check name, URL, and useful failure snippet when triaging CI.

@@ -22,15 +22,15 @@
   `tanaab-frontend`
   Common companions: `tanaab-documentation`, `tanaab-javascript`, `tanaab-testing`
 
-- Shell scripts, command wrappers, CLI UX, help output, logging, exit behavior, or command-line safety:
+- Shell scripts, command wrappers, CLI UX, help output, logging, exit behavior, command-line safety, hosted raw shell script distribution, or generated `dist/` shell entrypoints served from a public URL:
   `tanaab-shell`
   Common companions: `tanaab-javascript`, `tanaab-testing`, `tanaab-github-actions`, `tanaab-release`
 
-- GitHub Actions workflow YAML, reusable workflows, workflow permissions, workflow triggers, or GitHub-hosted CI triage:
+- GitHub Actions workflow YAML, reusable workflows, workflow permissions, workflow triggers, GitHub-hosted CI triage, fresh-runner example matrices, or release-shaped artifact smoke workflows:
   `tanaab-github-actions`
   Common companions: `tanaab-shell`, `tanaab-javascript`, `tanaab-testing`, `tanaab-release`
 
-- Test implementation, coverage policy, test thresholds, or test-gate recommendations:
+- Test implementation, coverage policy, test thresholds, test-gate recommendations, Leia-backed markdown scenarios, or CI-only destructive example suites:
   `tanaab-testing`
   Common companions: `tanaab-javascript`, `tanaab-frontend`, `tanaab-shell`, `tanaab-github-actions`, `tanaab-release`
 
@@ -38,7 +38,7 @@
   `tanaab-release`
   Common companions: `tanaab-testing`, `tanaab-github-actions`, `tanaab-javascript`, `tanaab-shell`
 
-- README structure, repository docs, documentation information architecture, inline code docs, API docs, or deciding when documentation should move beyond README files:
+- README structure, repository docs, documentation information architecture, inline code docs, API docs, deciding when documentation should move beyond README files, or example READMEs that intentionally double as executable scenario docs:
   `tanaab-documentation`
   Common companions: `tanaab-frontend`, `tanaab-javascript`, `tanaab-release`, `tanaab-github-actions`
 
@@ -62,6 +62,12 @@
 - Test content vs workflow placement:
   `tanaab-testing` owns tests, coverage policy, and test-threshold decisions.
   `tanaab-github-actions` owns workflow wiring for those gates.
+
+- Leia scenarios vs workflow matrices vs example-doc shape:
+  `tanaab-testing` owns Leia scenario content, assertions, and when executable examples are the right test surface.
+  `tanaab-github-actions` owns fresh-runner example matrices, tempdir handling, and release-shaped smoke workflow wiring.
+  `tanaab-documentation` owns when example READMEs intentionally double as durable scenario docs.
+  `tanaab-shell` owns the hosted script contract and generated `dist/` entrypoint behavior those scenarios exercise.
 
 - Release narrative vs release mechanics:
   `tanaab-release` owns changelog text, release notes, and release-readiness summaries.

@@ -13,6 +13,7 @@ Use these rules when deciding how much user-facing documentation should live in 
 
 - Lead with the project name and a one- or two-sentence description before support, changelog, or contributor sections.
 - Put the primary install or usage path above deeper reference material.
+- If the repo is primarily consumed through a hosted script URL, put that quickstart above local development or build steps.
 - Keep section titles concrete and user-facing.
 - Keep examples runnable and close to the surface they explain.
 - Do not mirror an entire docs-site sidebar into the README. Link only the key destinations users actually need.
@@ -39,6 +40,7 @@ Typical fit:
 
 - internal tooling repos
 - bootstrap or automation repos
+- hosted bootstrap or raw-script repos
 - small CLIs
 - libraries with a narrow API surface
 
@@ -158,10 +160,21 @@ When the docs wrapper mode is used:
 - Keep repo-contributor concerns such as local development, lint, test, and release notes in the README if they are repo-specific and do not belong in end-user docs.
 - Do not use the docs-wrapper mode as the primary README shape for GitHub Action repos. Those repos still need inputs, outputs, caveats, and usage in the README even if they also have a docs site.
 
+## Hosted Script README Guidance
+
+When the repo is primarily consumed through a URL-served shell script:
+
+- Lead with the hosted quickstart such as `curl -fsSL ... | bash` when that is the main user path.
+- Explain how the hosted URL maps to the generated `dist/` entrypoint so the public surface is not mysterious.
+- Keep local installation or reusable `PATH` setup as a secondary path after the hosted quickstart.
+- Keep development, build, and deploy details separate from the user-facing install and usage flow.
+- Document automation env vars or guardrails only when they are part of the actual user contract.
+
 ## Anti-Patterns
 
 - Starting with support, legal, or contributor sections before explaining the project.
 - Using a thin docs-wrapper README for a GitHub Action and forcing users to leave the Marketplace or repo page before they can see inputs and usage.
+- Leading with local `bun install` or build steps in a repo whose real user entrypoint is a hosted script URL.
 - Keeping a README-only structure after the docs have clearly outgrown one file.
 - Creating a docs wrapper that is so thin it omits the basic install or quickstart path.
 - Dumping every docs-site page into the README as a long navigation list.

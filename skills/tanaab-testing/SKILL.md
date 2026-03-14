@@ -16,6 +16,7 @@ Use this skill for testing strategy, targeted test implementation, coverage poli
 - The user wants focused regression protection after implementation changes.
 - The request specifically calls for Mocha-based unit tests or per-file coverage enforcement for JavaScript or TypeScript utility modules.
 - The task needs JavaScript GitHub Action input parsing tests or workflow-driven action smoke coverage.
+- The task needs Leia-backed markdown scenarios, CI-only destructive example coverage, or release-shaped artifact smoke tests for shell or bootstrap flows.
 
 ## When Not to Use
 
@@ -58,10 +59,13 @@ Use this skill for testing strategy, targeted test implementation, coverage poli
 - Keep action unit tests pure and reserve `uses: ./` workflow runs for smoke tests that need real runner, checkout, permissions, or matrix behavior.
 - Use `templates/testing/github-action-input/` when scaffolding the focused GitHub Action input helper pattern.
 - Use `templates/github-actions/` with `tanaab-github-actions` when scaffolding workflow-driven action smoke tests and assertion steps.
+- For shell or hosted-script repos with executable example READMEs, apply [references/leia-markdown-scenarios.md](./references/leia-markdown-scenarios.md) instead of inventing a repo-specific scenario shape.
+- Use `templates/testing/leia-markdown-example/` and `templates/github-actions/` with `tanaab-github-actions` when standardizing the Leia pattern.
 
 5. Add or update test scripts and coverage policy.
 
 - Add a `test` script that runs Mocha, optionally through `c8`.
+- Do not invent a local `test` script for Leia-only scenario suites when the examples are intentionally CI-only because they mutate machine state, install packages, or rely on secrets.
 - For per-file thresholds, prefer `c8 --all --include "utils/*.js" --check-coverage --per-file --lines 80 mocha "test/**/*.spec.js"` when that scope matches the repo.
 
 6. Wire CI and release gates intentionally.
@@ -77,6 +81,7 @@ Use this skill for testing strategy, targeted test implementation, coverage poli
 
 - [agents/openai.yaml](./agents/openai.yaml): UI metadata for the testing skill.
 - [assets/tanaab-testing-icon.png](./assets/tanaab-testing-icon.png): UI icon for the testing skill.
+- [references/leia-markdown-scenarios.md](./references/leia-markdown-scenarios.md): scenario rules for Leia-backed example README testing in shell and bootstrap repos.
 
 ## Validation
 
@@ -84,9 +89,10 @@ Use this skill for testing strategy, targeted test implementation, coverage poli
 - Confirm the test scope matches the request.
 - Confirm this skill stayed the primary owner only for test and coverage surfaces.
 - Confirm any CI or release gate changes are explicit.
-- Run `bun run test`.
+- Run `bun run test` when the repository has a local test script for the changed surface; otherwise run the relevant focused test command or CI-equivalent workflow path.
 - Run `bun run lint` when linting is part of repo standards.
 - Confirm coverage output meets the requested threshold when coverage was part of the task.
 - Confirm GitHub Action input parsing tests cover both local-default and GitHub Actions-runtime cases when that surface changed.
 - Confirm workflow-driven action smoke coverage exists when real runner behavior, permissions, or matrix behavior changed.
+- Confirm Leia-backed scenarios follow [references/leia-markdown-scenarios.md](./references/leia-markdown-scenarios.md) when that surface changed.
 - Confirm any template use came from `tanaab-templates`.

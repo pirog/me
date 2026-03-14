@@ -2,6 +2,7 @@
 
 - Added `python@3` as a needed `Brewfile` package
 - Expanded Codex AGENTS guidance to enforce stronger technical pushback plus explicit skill-routing and template-selection commentary
+- Refined `tanaab-coding` guidance for Leia scenarios, hosted shell distribution, and executable example docs while consolidating the new doctrine into shared references and templates
 - Standardized `tanaab-coding` lint and format guidance around the shared Prettier template and `.prettierignore` baseline
 - Tightened Codex and `tanaab-coding` routing guidance to favor obvious local solutions over default template or abstraction detours
 - Updated the Bun and Bash CLI templates plus shared stack guidance so releasable entrypoints expose `SCRIPT_VERSION` in a `prepare-release-action`-friendly stamping pattern

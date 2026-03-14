@@ -89,6 +89,7 @@ Use this skill for repository documentation strategy and authoring within the Ta
 - Confirm README content remains concise and repo-oriented rather than growing into an unstructured manual.
 - Confirm the repository uses full README mode, GitHub Action README mode, or docs-wrapper mode intentionally rather than mixing those styles incoherently.
 - Confirm GitHub Action repositories use the GitHub Action README mode and keep inputs, outputs, caveats, and basic usage in `README.md`.
+- Confirm hosted script and executable-example README surfaces follow [references/readme-standards.md](./references/readme-standards.md) when those surfaces changed.
 - Confirm inline code or API docs explain contracts and non-obvious behavior rather than narrating obvious implementation.
 - Confirm boilerplate comments stay sparse and are limited to non-obvious contracts, extension points, or edge cases.
 - Confirm any move from README to fuller docs is justified by documentation complexity rather than aesthetics alone.

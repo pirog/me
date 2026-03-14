@@ -1,0 +1,44 @@
+name: Example Tests
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  examples:
+    name: ${{ matrix.example }}
+    runs-on: macos-26
+    strategy:
+      fail-fast: false
+      matrix:
+        example:
+          - example-name
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Install repo tooling
+        run: |
+          # Replace this with the repo's install step if Leia or other tooling is not already available.
+          bun install --frozen-lockfile --ignore-scripts
+
+      - name: Prepare distributed entrypoint
+        shell: bash
+        run: |
+          # Replace this with the repo's dist build or copy step.
+          bun run build
+          # Optional: stamp the shipped script here when the repo tests a release-shaped artifact.
+          version-injector dist/script-name.sh --style sh --version "dev"
+
+      - name: Put prepared script on PATH
+        shell: bash
+        run: echo "$PWD/dist" >> "$GITHUB_PATH"
+
+      - name: Run Leia-backed example
+        shell: bash
+        run: |
+          mkdir -p examples/.tmp
+          # Replace the Leia command if the repo installs or invokes it differently.
+          TMPDIR="$PWD/examples/.tmp" ./node_modules/.bin/leia "examples/${{ matrix.example }}/README.md" -c "Destroy tests" --stdin
