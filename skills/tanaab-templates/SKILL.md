@@ -17,6 +17,7 @@ Use this skill to manage reusable template files for the Tanaab coding hierarchy
 ## When Not to Use
 
 - Do not use this skill for one-off implementation work that does not benefit from reuse.
+- Do not treat this skill as required preflight for ordinary local edits or narrow bug fixes.
 - Do not create template content until the task explicitly calls for it.
 
 ## Relationship to Other Skills
@@ -29,7 +30,7 @@ Use this skill to manage reusable template files for the Tanaab coding hierarchy
 ## Workflow
 
 1. Confirm which coding skill requested template support.
-2. Inspect `templates/` for a reusable starting point that matches the request.
+2. Inspect `templates/` for a reusable starting point only when the task actually calls for reusable structure, a new file shape, or explicit standardization.
 3. Select and adapt the relevant template when one exists.
 4. When consolidating legacy skill guidance, move truly reusable fragments here instead of leaving them buried in retired skill docs.
 5. If no suitable template exists, call out the gap rather than inventing a new template set implicitly.
@@ -66,4 +67,5 @@ Use this skill to manage reusable template files for the Tanaab coding hierarchy
 
 - Confirm the request actually benefits from reuse.
 - Confirm any selected template matches the calling skill and task.
+- Confirm ordinary local edits were not routed through templates by default.
 - Confirm missing templates are reported as gaps rather than invented on the fly.

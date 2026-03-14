@@ -57,6 +57,7 @@ Use this skill as the universal engineering doctrine for all tasks in the Tanaab
 - Fix foundations before polish: runtime, build, test, CI, and release plumbing come before stylistic refinement.
 - Treat tests, CI, release notes, and automation as product surfaces, not support work.
 - Prefer deterministic, repo-local tooling and explicit configuration over magical implicit behavior.
+- Prefer the obvious local solution over a more abstract reusable one unless reuse is already proven, a matching template already exists, or the user explicitly asks for standardization.
 - When a JS or Bun repo introduces standalone Prettier, copy or align with `templates/javascript/lint/prettier.config.js` and `.prettierignore` instead of inventing local style defaults.
 - When a releasable CLI needs stamped version output, prefer one injection-friendly `SCRIPT_VERSION` in the entrypoint rather than scattering hardcoded version literals across helpers or docs.
 - Do not introduce Bun into a repository that has no meaningful JavaScript or TypeScript surface just to satisfy stack consistency; use it when the repo actually carries JS or TS tooling or automation value.
@@ -92,6 +93,7 @@ Use this skill as the universal engineering doctrine for all tasks in the Tanaab
 - Confirm JavaScript surfaces default to ESM and Bun when the repository actually has JavaScript or TypeScript tooling or runtime surfaces, unless the user explicitly asked for another runtime or module format.
 - Confirm JS or Bun lint and format work keeps ownership clear: ESLint for code-quality rules, Prettier for formatting.
 - Confirm JS or Bun repos standardized on lint or format use the shared `prettier.config.js` and `.prettierignore` template files, or an explicitly aligned equivalent, rather than ad hoc local Prettier style.
+- Confirm the task did not widen into reusable-template or shared-doctrine work unless the user asked for it or the existing duplication was already causing the current problem.
 - Confirm stylesheet work defaults to SCSS unless the user explicitly required plain CSS or another styling format.
 - Confirm code is organized by purpose, and that any `utils/` entries are intentionally placed: ideally generic and portable, or explicitly justified as narrow repo-shaped helpers.
 - Confirm repo-shaped `utils/` files were reviewed as a warning case and either accepted intentionally or moved closer to the owning purpose surface.

@@ -9,41 +9,44 @@
 - Pick one primary owning skill first.
 - The primary owner controls the main artifact type and the main decision surface.
 - Add companion skills only when the request clearly crosses into their surfaces.
+- Do not add `tanaab-templates` by default; add it only when the task is explicitly about scaffolding, standardization, or extracting something clearly reusable.
 - `tanaab-templates` is usually a companion, not a primary owner, unless the request is specifically about managing or creating reusable templates.
 
 ## Common Routes
 
 - JavaScript, TypeScript, Bun, ESM, package metadata, bundling, JavaScript-backed CLI code, or JavaScript action code:
   `tanaab-javascript`
-  Common companions: `tanaab-testing`, `tanaab-github-actions`, `tanaab-shell`, `tanaab-templates`
+  Common companions: `tanaab-testing`, `tanaab-github-actions`, `tanaab-shell`
 
 - Vue 3 components, VitePress 1 sites, `.vitepress/` theme work, SCSS, CSS, selectors, layout, tokens, design systems, or frontend tooling:
   `tanaab-frontend`
-  Common companions: `tanaab-documentation`, `tanaab-javascript`, `tanaab-testing`, `tanaab-templates`
+  Common companions: `tanaab-documentation`, `tanaab-javascript`, `tanaab-testing`
 
 - Shell scripts, command wrappers, CLI UX, help output, logging, exit behavior, or command-line safety:
   `tanaab-shell`
-  Common companions: `tanaab-javascript`, `tanaab-testing`, `tanaab-github-actions`, `tanaab-release`, `tanaab-templates`
+  Common companions: `tanaab-javascript`, `tanaab-testing`, `tanaab-github-actions`, `tanaab-release`
 
 - GitHub Actions workflow YAML, reusable workflows, workflow permissions, workflow triggers, or GitHub-hosted CI triage:
   `tanaab-github-actions`
-  Common companions: `tanaab-shell`, `tanaab-javascript`, `tanaab-testing`, `tanaab-release`, `tanaab-templates`
+  Common companions: `tanaab-shell`, `tanaab-javascript`, `tanaab-testing`, `tanaab-release`
 
 - Test implementation, coverage policy, test thresholds, or test-gate recommendations:
   `tanaab-testing`
-  Common companions: `tanaab-javascript`, `tanaab-frontend`, `tanaab-shell`, `tanaab-github-actions`, `tanaab-release`, `tanaab-templates`
+  Common companions: `tanaab-javascript`, `tanaab-frontend`, `tanaab-shell`, `tanaab-github-actions`, `tanaab-release`
 
 - Changelog drafting, release notes, release readiness, or release-facing metadata:
   `tanaab-release`
-  Common companions: `tanaab-testing`, `tanaab-github-actions`, `tanaab-javascript`, `tanaab-shell`, `tanaab-templates`
+  Common companions: `tanaab-testing`, `tanaab-github-actions`, `tanaab-javascript`, `tanaab-shell`
 
 - README structure, repository docs, documentation information architecture, inline code docs, API docs, or deciding when documentation should move beyond README files:
   `tanaab-documentation`
-  Common companions: `tanaab-frontend`, `tanaab-javascript`, `tanaab-release`, `tanaab-github-actions`, `tanaab-templates`
+  Common companions: `tanaab-frontend`, `tanaab-javascript`, `tanaab-release`, `tanaab-github-actions`
 
 - Reusable scaffolds, boilerplate, or reusable fragments:
   `tanaab-templates`
   Common companions: whichever primary owner requested reuse
+
+- Template support can accompany any primary owner when the task is explicitly about reusable structure, but it should not be treated as a default companion for ordinary implementation work.
 
 ## Collision Rules
 

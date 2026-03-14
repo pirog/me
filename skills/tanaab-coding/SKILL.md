@@ -24,7 +24,7 @@ Use this skill as the umbrella router for work in the Tanaab coding stack. Selec
 
 - Always apply `tanaab-coding-core` alongside this skill.
 - Route into one or more specialized skills: `tanaab-javascript`, `tanaab-frontend`, `tanaab-shell`, `tanaab-github-actions`, `tanaab-testing`, `tanaab-release`, `tanaab-documentation`.
-- Use `tanaab-templates` when reusable scaffolding or boilerplate files are needed.
+- Use `tanaab-templates` only when the task is creating a new scaffold, standardizing a repeated shape, or extracting something clearly reusable.
 - Choose one primary owner for the task before adding companions so skills reinforce one another instead of competing for the same surface.
 
 ## Workflow
@@ -33,7 +33,7 @@ Use this skill as the umbrella router for work in the Tanaab coding stack. Selec
 2. Activate `tanaab-coding-core`.
 3. Select the primary owning skill using [references/routing-matrix.md](./references/routing-matrix.md).
 4. Add companion skills only when the task crosses into their owned surfaces.
-5. Activate `tanaab-templates` if reusable template files are needed.
+5. Activate `tanaab-templates` only when the task clearly needs reusable structure rather than an obvious local implementation.
 6. If no specialized skill fits, keep work scoped to routing plus `tanaab-coding-core` and call out the gap.
 
 ## Bundled Resources
@@ -51,4 +51,4 @@ Use this skill as the umbrella router for work in the Tanaab coding stack. Selec
 - Confirm one primary owning skill was selected for the task.
 - Confirm the selected specialized skills match the request.
 - Confirm companion skills support the primary owner instead of overlapping it.
-- Confirm `tanaab-templates` is only pulled in when templates are actually needed.
+- Confirm `tanaab-templates` is only pulled in for real scaffolding, standardization, or reusable-extraction work.
