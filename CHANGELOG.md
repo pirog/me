@@ -1,13 +1,12 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
 - Added `python@3` as a needed `Brewfile` package
-- Added a PowerShell CLI starter template plus matching `tanaab-coding` guidance for Tanaab-styled, release-stamped `.ps1` entrypoints
-- Expanded Codex AGENTS guidance to enforce stronger technical pushback plus explicit skill-routing and template-selection commentary
-- Refined `tanaab-coding` guidance for Leia scenarios, hosted shell distribution, and executable example docs while consolidating the new doctrine into shared references and templates
-- Standardized `tanaab-coding` lint and format guidance around the shared Prettier template and `.prettierignore` baseline
-- Tightened Codex and `tanaab-coding` routing guidance to favor obvious local solutions over default template or abstraction detours
-- Updated the Bash, PowerShell, and Bun CLI templates to use `0.0.0-unreleased` as the unstamped version fallback
-- Updated the Bun and Bash CLI templates plus shared stack guidance so releasable entrypoints expose `SCRIPT_VERSION` in a `prepare-release-action`-friendly stamping pattern
+- Expanded `tanaab-coding` documentation guidance with README standards and README-to-VitePress escalation rules
+- Expanded `tanaab-coding` GitHub Actions and testing guidance for Bun-backed actions, Leia scenarios, hosted shell workflows, and executable example docs
+- Expanded `tanaab-coding` template coverage with new README, workflow, and CLI starters across Bun, Bash, and PowerShell surfaces
+- Standardized shared linting and formatting around the Tanaab ESLint and Prettier baseline
+- Standardized shared CLI release-stamping and unstamped version fallback patterns across Bun, Bash, and PowerShell tooling
+- Tightened Codex and Tanaab coding guidance around routing, template usage, local-solution bias, and clearer ownership boundaries between the stack skills
 
 ## v0.2.1 - [March 13, 2026](https://github.com/pirog/me/releases/tag/v0.2.1)
 
