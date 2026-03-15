@@ -276,25 +276,8 @@ function Expand-Message {
   return $normalized
 }
 
-function Write-StreamLine {
+function Write-Status {
   param(
-    [ValidateSet('stdout', 'stderr')]
-    [string]$Stream = 'stdout',
-    [string]$Message = ''
-  )
-
-  if ($Stream -eq 'stderr') {
-    [Console]::Error.WriteLine($Message)
-    return
-  }
-
-  [Console]::Out.WriteLine($Message)
-}
-
-function Write-StatusLine {
-  param(
-    [ValidateSet('stdout', 'stderr')]
-    [string]$Stream,
     [string]$Label,
     [scriptblock]$Colorizer,
     [AllowNull()][object]$Message = '',
@@ -302,7 +285,7 @@ function Write-StatusLine {
   )
 
   $text = Expand-Message -Message $Message -MessageArgs $MessageArgs
-  Write-StreamLine -Stream $Stream -Message ('{0}: {1}' -f (& $Colorizer $Label), $text)
+  Write-Host ('{0}: {1}' -f (& $Colorizer $Label), $text)
 }
 
 function debug {
@@ -324,7 +307,7 @@ function log {
     [object[]]$MessageArgs = @()
   )
 
-  Write-StreamLine -Stream 'stdout' -Message (Expand-Message -Message $Message -MessageArgs $MessageArgs)
+  Write-Output (Expand-Message -Message $Message -MessageArgs $MessageArgs)
 }
 
 function note {
@@ -333,7 +316,7 @@ function note {
     [object[]]$MessageArgs = @()
   )
 
-  Write-StatusLine -Stream 'stdout' -Label 'note' -Colorizer ${function:ts} -Message $Message -MessageArgs $MessageArgs
+  Write-Status -Label 'note' -Colorizer ${function:ts} -Message $Message -MessageArgs $MessageArgs
 }
 
 function success {
@@ -342,7 +325,7 @@ function success {
     [object[]]$MessageArgs = @()
   )
 
-  Write-StatusLine -Stream 'stdout' -Label 'done' -Colorizer ${function:green} -Message $Message -MessageArgs $MessageArgs
+  Write-Status -Label 'done' -Colorizer ${function:green} -Message $Message -MessageArgs $MessageArgs
 }
 
 function warn {
@@ -351,7 +334,7 @@ function warn {
     [object[]]$MessageArgs = @()
   )
 
-  Write-StatusLine -Stream 'stderr' -Label 'warn' -Colorizer ${function:yellow} -Message $Message -MessageArgs $MessageArgs
+  Write-Warning (Expand-Message -Message $Message -MessageArgs $MessageArgs)
 }
 
 function fail {
@@ -360,7 +343,7 @@ function fail {
     [int]$ExitCode = 1
   )
 
-  Write-StatusLine -Stream 'stderr' -Label 'error' -Colorizer ${function:red} -Message $Message
+  Write-Error -Message (Expand-Message -Message $Message) -ErrorAction Continue
   exit $ExitCode
 }
 
@@ -426,7 +409,7 @@ function Resolve-Invocation {
 }
 
 function Show-Version {
-  Write-StreamLine -Stream 'stdout' -Message $script:SCRIPT_VERSION
+  Write-Output $script:SCRIPT_VERSION
   exit 0
 }
 
@@ -455,7 +438,7 @@ function Show-Usage {
     $lines += $environmentVariables
   }
 
-  Write-StreamLine -Stream 'stdout' -Message ($lines -join [Environment]::NewLine)
+  Write-Output ($lines -join [Environment]::NewLine)
   if (-not $NoExit) {
     exit 0
   }

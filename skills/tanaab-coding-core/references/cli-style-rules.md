@@ -34,8 +34,9 @@ Treat this file as the primary home for shared CLI contract and output rules; la
 
 ## Logging Rules
 
-- Write normal command output to `stdout`.
-- Write warnings, debug output, and failures to `stderr` when they are diagnostic rather than primary tool output.
+- In Bash and Bun CLIs, write normal command output to `stdout`.
+- In Bash and Bun CLIs, write warnings, debug output, and failures to `stderr` when they are diagnostic rather than primary tool output.
+- In PowerShell CLIs, prefer native PowerShell streams: `Write-Output` for primary output, `Write-Host` or `Write-Information` for display-only status text, `Write-Warning` for warnings, `Write-Debug` for debug output, and `Write-Error` plus `exit` or `throw` for failures.
 - Use semantic colors for status labels such as `warn`, `error`, or `done`.
 - Use `tp` on the key verb in an action message and `ts` on the key target or destination.
 - Avoid coloring entire sentences unless the message is itself a compact status label.
@@ -46,6 +47,7 @@ Treat this file as the primary home for shared CLI contract and output rules; la
 - In shell, prefer `tty_*` helpers or variables such as `tty_tp`, `tty_ts`, `tty_dim`, `tty_bold`, `tty_green`, `tty_red`, and `tty_yellow`.
 - In PowerShell CLIs, prefer one small local helper layer that exposes the shared style names `bold`, `dim`, `green`, `red`, `yellow`, `tp`, and `ts` while still using conventional PowerShell parameters such as `-Force` and `-Help`.
 - In PowerShell CLIs, prefer normalizing `-Debug`, repo-specific debug env vars, and an already-enabled `$DebugPreference` into native `Write-Debug` output rather than inventing a second debug channel.
+- In PowerShell CLIs, prefer native PowerShell output, warning, debug, and error streams over raw console stdout or stderr writes unless the script is intentionally emulating an external non-PowerShell CLI.
 - In Bun or JavaScript CLIs, prefer one shared styling mechanism for both semantic colors and branded colors so the calling code only deals with style names, not raw ANSI escapes.
 - For package-level or user-facing Bun CLIs, the shared template can justify third-party CLI packages such as `ansis` and `yargs-parser`.
 - For skill-local helper scripts under `skills/**/scripts/`, prefer the shared coding-core helper at `skills/tanaab-coding-core/scripts/bun-cli-support.js` plus built-in modules before adding extra CLI dependencies.
