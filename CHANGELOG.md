@@ -4,6 +4,8 @@
 - Expanded `tanaab-coding` documentation guidance with README standards and README-to-VitePress escalation rules
 - Expanded `tanaab-coding` GitHub Actions and testing guidance for Bun-backed actions, Leia scenarios, hosted shell workflows, and executable example docs
 - Expanded `tanaab-coding` template coverage with new README, workflow, and CLI starters across Bun, Bash, and PowerShell surfaces
+- Expanded `tanaab-coding` template guidance for GitHub repository templates, including root-level `TEMPLATE-SETUP.md` adoption specs for human and AI setup
+- Expanded `tanaab-coding` template guidance to recognize `tanaabased/template-netscript` as the upstream starter for Netlify-hosted script repos
 - Standardized shared linting and formatting around the Tanaab ESLint and Prettier baseline
 - Standardized shared CLI release-stamping and unstamped version fallback patterns across Bun, Bash, and PowerShell tooling
 - Tightened Codex and Tanaab coding guidance around routing, template usage, local-solution bias, and clearer ownership boundaries between the stack skills
