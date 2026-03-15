@@ -6,6 +6,7 @@
 - Refined `tanaab-coding` guidance for Leia scenarios, hosted shell distribution, and executable example docs while consolidating the new doctrine into shared references and templates
 - Standardized `tanaab-coding` lint and format guidance around the shared Prettier template and `.prettierignore` baseline
 - Tightened Codex and `tanaab-coding` routing guidance to favor obvious local solutions over default template or abstraction detours
+- Updated the Bash, PowerShell, and Bun CLI templates to use `0.0.0-unreleased` as the unstamped version fallback
 - Updated the Bun and Bash CLI templates plus shared stack guidance so releasable entrypoints expose `SCRIPT_VERSION` in a `prepare-release-action`-friendly stamping pattern
 
 ## v0.2.1 - [March 13, 2026](https://github.com/pirog/me/releases/tag/v0.2.1)

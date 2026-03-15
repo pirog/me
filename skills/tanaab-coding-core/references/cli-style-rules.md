@@ -48,10 +48,11 @@ Treat this file as the primary home for shared CLI contract and output rules; la
 - In Bun or JavaScript CLIs, prefer one shared styling mechanism for both semantic colors and branded colors so the calling code only deals with style names, not raw ANSI escapes.
 - For package-level or user-facing Bun CLIs, the shared template can justify third-party CLI packages such as `ansis` and `yargs-parser`.
 - For skill-local helper scripts under `skills/**/scripts/`, prefer the shared coding-core helper at `skills/tanaab-coding-core/scripts/bun-cli-support.js` plus built-in modules before adding extra CLI dependencies.
-- For releasable or user-facing CLIs that may be stamped by `prepare-release-action`, keep one injection-friendly `SCRIPT_VERSION` assignment at the top of the entrypoint so `version-injector` can update it in place.
+- For releasable or user-facing CLIs that may be stamped by `prepare-release-action`, keep one injection-friendly top-level `SCRIPT_VERSION` declaration or assignment line in the entrypoint so `version-injector` can update it in place.
 - Treat `SCRIPT_VERSION` as internal release metadata rather than a documented environment contract unless a specific repo explicitly opts into that behavior.
 - In Bun or JavaScript CLIs, prefer `let SCRIPT_VERSION;` plus a fallback initializer that resolves from git metadata or a hardcoded default when the unstamped source still needs a usable `--version` value.
-- In shell CLIs, prefer a single top-level `SCRIPT_VERSION=...` assignment plus a fallback block that derives from git metadata or a hardcoded default when the source script is not yet stamped.
-- In PowerShell CLIs, prefer a single top-level `$SCRIPT_VERSION = $null` assignment plus a fallback block that derives from git metadata or a hardcoded default when the source script is not yet stamped.
+- In shell CLIs, prefer a single top-level `SCRIPT_VERSION=...` assignment line that resolves environment override first, then git metadata, then a hardcoded unreleased fallback such as `0.0.0-unreleased` when the source script is not yet stamped.
+- In PowerShell CLIs, prefer a single top-level `$SCRIPT_VERSION = ...` assignment line that resolves environment override first, then git metadata, then a hardcoded unreleased fallback such as `0.0.0-unreleased` when the source script is not yet stamped.
+- Do not reassign `SCRIPT_VERSION` later in Bash or PowerShell entrypoints when release stamping is in scope.
 - Do not list generic terminal control or debug env vars such as `NO_COLOR`, `FORCE_COLOR`, `DEBUG`, or `RUNNER_DEBUG` in help text unless the CLI defines a non-obvious contract around them.
 - Respect terminal color controls such as `NO_COLOR` and `FORCE_COLOR` when the chosen library or helper layer supports them.

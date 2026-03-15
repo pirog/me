@@ -36,7 +36,7 @@ $ErrorActionPreference = 'Stop'
 
 $CLI_NAME = if ($PSCommandPath) { Split-Path -Leaf $PSCommandPath } else { $MyInvocation.MyCommand.Name }
 # Keep a single top-level assignment so release automation can stamp the entrypoint in place.
-$SCRIPT_VERSION = $null
+$SCRIPT_VERSION = if (-not [string]::IsNullOrWhiteSpace($env:SCRIPT_VERSION)) { $env:SCRIPT_VERSION } else { Get-DefaultScriptVersion }
 $ESCAPE = [char]27
 $USE_COLOR = $false
 
@@ -76,21 +76,21 @@ function Get-FirstNonEmpty {
   return ''
 }
 
-function Get-ScriptVersion {
+function Get-DefaultScriptVersion {
   try {
     $output = & git describe --tags --always --abbrev=1 2>$null
     if ($LASTEXITCODE -ne 0) {
-      return '0.0.0'
+      return '0.0.0-unreleased'
     }
 
     $resolved = ($output | Out-String).Trim()
     if ([string]::IsNullOrWhiteSpace($resolved)) {
-      return '0.0.0'
+      return '0.0.0-unreleased'
     }
 
     return $resolved
   } catch {
-    return '0.0.0'
+    return '0.0.0-unreleased'
   }
 }
 
@@ -475,10 +475,6 @@ function Invoke-RunCli {
 
 $script:USE_COLOR = Test-ColorEnabled
 $script:OriginalArgs = @($args)
-
-if (-not $SCRIPT_VERSION) {
-  $SCRIPT_VERSION = Get-ScriptVersion
-}
 
 $script:Resolved = Resolve-Invocation
 

@@ -61,7 +61,7 @@ Use this skill as the universal engineering doctrine for all tasks in the Tanaab
 - Prefer the obvious local solution over a more abstract reusable one unless reuse is already proven, a matching template already exists, or the user explicitly asks for standardization.
 - When a build or release step materially reshapes the user-facing artifact, prefer validating that prepared artifact instead of only validating source-tree files.
 - When a JS or Bun repo introduces standalone Prettier, copy or align with `templates/javascript/lint/prettier.config.js` and `.prettierignore` instead of inventing local style defaults.
-- When a releasable CLI needs stamped version output, prefer one injection-friendly `SCRIPT_VERSION` in the entrypoint rather than scattering hardcoded version literals across helpers or docs.
+- When a releasable CLI needs stamped version output, prefer one injection-friendly top-level `SCRIPT_VERSION` declaration or assignment line in the entrypoint rather than scattering hardcoded version literals across helpers or docs.
 - Do not introduce Bun into a repository that has no meaningful JavaScript or TypeScript surface just to satisfy stack consistency; use it when the repo actually carries JS or TS tooling or automation value.
 - Treat TypeScript migration as an explicit follow-on decision until the build and release path is standardized well enough to scaffold it confidently.
 - Keep generic utilities small, extraction-ready, and low-coupling so they can later move into a shared utilities repo or standalone packages.
@@ -104,4 +104,4 @@ Use this skill as the universal engineering doctrine for all tasks in the Tanaab
 - Confirm caller-owned inputs are not mutated unless the code explicitly clones or isolates that mutation.
 - Confirm non-CLI Bun or Node scripts do not carry a hashbang and are invoked via `bun ./script.js` or `node ./script.js` instead.
 - Confirm touched shell scripts or reusable shell helpers get `shellcheck` when shell is a real maintained surface in the task.
-- Confirm releasable CLI entrypoints expose one injection-friendly `SCRIPT_VERSION` placeholder or assignment, or an explicitly aligned equivalent, when release stamping is part of the task.
+- Confirm releasable CLI entrypoints expose one injection-friendly top-level `SCRIPT_VERSION` declaration or assignment line, or an explicitly aligned equivalent, when release stamping is part of the task.

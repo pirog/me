@@ -23,7 +23,7 @@ function getScriptVersion() {
       stdio: ['ignore', 'pipe', 'ignore'],
     }).trim();
   } catch {
-    return '0.0.0';
+    return '0.0.0-unreleased';
   }
 }
 

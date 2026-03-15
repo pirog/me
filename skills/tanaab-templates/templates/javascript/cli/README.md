@@ -6,7 +6,7 @@
 - The starter now follows the same precedence model as the Bash CLI template: explicit CLI option, then environment variable, then hardcoded default.
 - The starter also includes a repeatable `--item` example backed by `TANAAB_ITEM=a,b` so multi-value option handling is scaffolded from the start.
 - The starter keeps a top-level `let SCRIPT_VERSION;` placeholder plus fallback logic so `prepare-release-action` can stamp the built entrypoint with `version-injector --style js --version "<tag>"`.
-- The default fallback chain now mirrors the Bash starter: `git describe --tags --always --abbrev=1`, then `0.0.0`.
+- The default fallback chain now mirrors the shell starters: `git describe --tags --always --abbrev=1`, then `0.0.0-unreleased`.
 - Copy the starter into a repository `bin/` directory and declare it in `package.json` as a real CLI entrypoint.
 - Install the expected helper dependencies with `bun add ansis debug yargs-parser`.
 - Replace `CLI_NAME`, `DEBUG_NAMESPACE`, `getScriptVersion()`, `buildDefaults()`, `buildEnvironment()`, `buildRepeatableOptions()`, `buildEnvironmentVariables()`, and `runCli()` with project-specific behavior.
