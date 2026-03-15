@@ -1,11 +1,11 @@
 # CLI Style Rules
 
-Use these rules when shaping CLI output for shell and Bun or JavaScript tools in the Tanaab coding stack.
+Use these rules when shaping CLI output for shell, PowerShell, and Bun or JavaScript tools in the Tanaab coding stack.
 Treat this file as the primary home for shared CLI contract and output rules; language-specific skills should add only runtime- or shell-specific deltas instead of restating the full contract.
 
 ## Goals
 
-- Keep Bash and Bun CLIs visually consistent.
+- Keep Bash, PowerShell, and Bun CLIs visually consistent where the surrounding runtime conventions allow it.
 - Color only the key action, target, or status word rather than whole sentences.
 - Keep semantic status colors separate from brand accent colors.
 - Preserve readable output when color is unavailable or disabled.
@@ -44,6 +44,7 @@ Treat this file as the primary home for shared CLI contract and output rules; la
 ## Implementation Notes
 
 - In shell, prefer `tty_*` helpers or variables such as `tty_tp`, `tty_ts`, `tty_dim`, `tty_bold`, `tty_green`, `tty_red`, and `tty_yellow`.
+- In PowerShell CLIs, prefer one small local helper layer that exposes the shared style names `bold`, `dim`, `green`, `red`, `yellow`, `tp`, and `ts` while still using conventional PowerShell parameters such as `-Force` and `-Help`.
 - In Bun or JavaScript CLIs, prefer one shared styling mechanism for both semantic colors and branded colors so the calling code only deals with style names, not raw ANSI escapes.
 - For package-level or user-facing Bun CLIs, the shared template can justify third-party CLI packages such as `ansis` and `yargs-parser`.
 - For skill-local helper scripts under `skills/**/scripts/`, prefer the shared coding-core helper at `skills/tanaab-coding-core/scripts/bun-cli-support.js` plus built-in modules before adding extra CLI dependencies.
@@ -51,5 +52,6 @@ Treat this file as the primary home for shared CLI contract and output rules; la
 - Treat `SCRIPT_VERSION` as internal release metadata rather than a documented environment contract unless a specific repo explicitly opts into that behavior.
 - In Bun or JavaScript CLIs, prefer `let SCRIPT_VERSION;` plus a fallback initializer that resolves from git metadata or a hardcoded default when the unstamped source still needs a usable `--version` value.
 - In shell CLIs, prefer a single top-level `SCRIPT_VERSION=...` assignment plus a fallback block that derives from git metadata or a hardcoded default when the source script is not yet stamped.
+- In PowerShell CLIs, prefer a single top-level `$SCRIPT_VERSION = $null` assignment plus a fallback block that derives from git metadata or a hardcoded default when the source script is not yet stamped.
 - Do not list generic terminal control or debug env vars such as `NO_COLOR`, `FORCE_COLOR`, `DEBUG`, or `RUNNER_DEBUG` in help text unless the CLI defines a non-obvious contract around them.
 - Respect terminal color controls such as `NO_COLOR` and `FORCE_COLOR` when the chosen library or helper layer supports them.

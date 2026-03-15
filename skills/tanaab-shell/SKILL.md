@@ -55,9 +55,10 @@ Use this skill for shell scripting, command-line automation, and CLI contract wo
 5. Apply shell-specific implementation details.
 
 - Keep shell entrypoints explicit about interpreter and execution context.
+- For PowerShell CLIs, prefer conventional PowerShell parameters such as `-Force`, `-Item`, `-Debug`, `-Version`, and `-Help` while still following the shared CLI precedence, logging, and color rules.
 - Prefer kebab-case for new repo-authored shell and helper filenames unless the surrounding tool expects a fixed conventional name.
 - When shell wrappers invoke repo-authored JavaScript CLI helpers, prefer Bun-backed entrypoints over calling `node` directly.
-- For releasable shell CLIs that may be stamped by `prepare-release-action`, keep one top-level `SCRIPT_VERSION=...` assignment with fallback logic so `version-injector --style sh` can update the entrypoint in place.
+- For releasable shell CLIs that may be stamped by `prepare-release-action`, keep one top-level `SCRIPT_VERSION=...` assignment with fallback logic in Bash or one top-level `$SCRIPT_VERSION = $null` assignment with fallback logic in PowerShell so `version-injector --style sh` or `version-injector --style ps1` can update the entrypoint in place.
 - For URL-served shell repos, let [references/hosted-script-conventions.md](./references/hosted-script-conventions.md) define the `dist/`, hosting, and docs contract instead of restating it inline here.
 - Preserve portability requirements when the repository already targets multiple shells or environments.
 - When a composite action or wrapper script depends on shell execution, pass required environment variables explicitly rather than assuming inheritance.
@@ -82,6 +83,7 @@ Use this skill for shell scripting, command-line automation, and CLI contract wo
 - Confirm any CLI contract follows the shared rules in [../tanaab-coding-core/references/cli-style-rules.md](../tanaab-coding-core/references/cli-style-rules.md).
 - Confirm shell entrypoints stay explicit about interpreter and execution context.
 - Confirm releasable shell CLI entrypoints expose a single injection-friendly `SCRIPT_VERSION` assignment plus fallback logic, or an explicitly aligned equivalent, when `prepare-release-action` style version stamping is in scope.
+- Confirm PowerShell CLIs use conventional PowerShell parameters rather than POSIX-style `--flag` parsing unless the repo has a strong reason to do otherwise.
 - Confirm hosted shell repos follow [references/hosted-script-conventions.md](./references/hosted-script-conventions.md) when that surface changed.
 - Confirm changed shell scripts or reusable shell helpers were checked with `shellcheck` when shell is a meaningful surface in the task.
 - Confirm failures are actionable and non-zero.
