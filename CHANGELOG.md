@@ -1,6 +1,7 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
 - Added `python@3` as a needed `Brewfile` package
+- Added a PowerShell CLI starter template plus matching `tanaab-coding` guidance for Tanaab-styled, release-stamped `.ps1` entrypoints
 - Expanded Codex AGENTS guidance to enforce stronger technical pushback plus explicit skill-routing and template-selection commentary
 - Refined `tanaab-coding` guidance for Leia scenarios, hosted shell distribution, and executable example docs while consolidating the new doctrine into shared references and templates
 - Standardized `tanaab-coding` lint and format guidance around the shared Prettier template and `.prettierignore` baseline
