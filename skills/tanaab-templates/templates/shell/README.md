@@ -2,6 +2,7 @@
 
 - `bash-cli.sh` is the starter for Bash CLI entrypoints that need consistent `--help`, `--version`, `--debug`, and `--force` handling plus shared stdout, stderr, and debug logging helpers.
 - `powershell-cli.ps1` is the starter for PowerShell CLI entrypoints that need the same Tanaab color palette, `SCRIPT_VERSION` stamping contract, env-backed defaults, logging helpers, and help output shape while using conventional PowerShell parameters such as `-Force`, `-Item`, `-Debug`, `-Version`, and `-Help`.
+- The PowerShell starter normalizes `-Debug`, `TANAAB_DEBUG`, `RUNNER_DEBUG`, and an already-enabled `$DebugPreference` into native `Write-Debug` behavior instead of inventing a separate debug stream contract.
 - Both starters follow the shared CLI style rules: `Options` and any documented `Environment Variables` section use `tp` or `tty_tp`, semantic status labels use `green` or `tty_green`, `yellow` or `tty_yellow`, and `red` or `tty_red`, and important targets can use `ts` or `tty_ts`.
 - Both starters include a repeatable `item` example backed by `TANAAB_ITEM=a,b`, using the same precedence model as the Bun template.
 - `bash-cli.sh` keeps a single top-level `SCRIPT_VERSION=` assignment line that resolves `SCRIPT_VERSION` from the environment first, then `git describe --tags --always --abbrev=1`, then `0.0.0-unreleased`, so `prepare-release-action` can stamp it with `version-injector --style sh --version "<tag>"`.

@@ -56,6 +56,7 @@ Use this skill for shell scripting, command-line automation, and CLI contract wo
 
 - Keep shell entrypoints explicit about interpreter and execution context.
 - For PowerShell CLIs, prefer conventional PowerShell parameters such as `-Force`, `-Item`, `-Debug`, `-Version`, and `-Help` while still following the shared CLI precedence, logging, and color rules.
+- For PowerShell CLIs, prefer normalizing `-Debug`, repo-specific debug env vars, and an already-enabled `$DebugPreference` into `Write-Debug` output instead of inventing a second debug stream contract.
 - Prefer kebab-case for new repo-authored shell and helper filenames unless the surrounding tool expects a fixed conventional name.
 - When shell wrappers invoke repo-authored JavaScript CLI helpers, prefer Bun-backed entrypoints over calling `node` directly.
 - For releasable shell CLIs that may be stamped by `prepare-release-action`, keep exactly one top-level `SCRIPT_VERSION` assignment line in Bash or PowerShell so `version-injector --style sh` or `version-injector --style ps1` can update the entrypoint in place without encountering multiple placeholders or later reassignments.

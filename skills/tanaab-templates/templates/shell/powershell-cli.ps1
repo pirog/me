@@ -23,7 +23,7 @@ Run `./powershell-cli.ps1 -Help` for more advanced usage.
 param(
   [switch]$Force,
   [string[]]$Item,
-  [switch]$Debug,
+  [switch]$Debug = $false,
   [switch]$Help,
   [switch]$Version,
 
@@ -39,6 +39,7 @@ $CLI_NAME = if ($PSCommandPath) { Split-Path -Leaf $PSCommandPath } else { $MyIn
 $SCRIPT_VERSION = if (-not [string]::IsNullOrWhiteSpace($env:SCRIPT_VERSION)) { $env:SCRIPT_VERSION } else { Get-DefaultScriptVersion }
 $ESCAPE = [char]27
 $USE_COLOR = $false
+$DEBUG_ENABLED = $false
 
 function Test-Truthy {
   param([AllowNull()][object]$Value)
@@ -74,6 +75,25 @@ function Get-FirstNonEmpty {
   }
 
   return ''
+}
+
+$script:DEBUG_ENABLED =
+  $Debug.IsPresent -or
+  (Test-Truthy $env:TANAAB_DEBUG) -or
+  (Test-Truthy $env:RUNNER_DEBUG)
+
+$DebugPreference = if ($script:DEBUG_ENABLED) { 'Continue' } else { $DebugPreference }
+if ($DebugPreference -eq 'Inquire' -or $DebugPreference -eq 'Continue') {
+  $script:DEBUG_ENABLED = $true
+  $Debug = $true
+}
+
+try {
+  if ($null -ne $Host.PrivateData) {
+    $Host.PrivateData.DebugForegroundColor = 'DarkGray'
+    $Host.PrivateData.DebugBackgroundColor = $Host.UI.RawUI.BackgroundColor
+  }
+} catch {
 }
 
 function Get-DefaultScriptVersion {
@@ -291,12 +311,11 @@ function debug {
     [object[]]$MessageArgs = @()
   )
 
-  if (-not $script:Resolved.Options.Debug) {
+  if (-not $script:DEBUG_ENABLED) {
     return
   }
 
-  $text = Expand-Message -Message $Message -MessageArgs $MessageArgs
-  Write-StreamLine -Stream 'stderr' -Message ('{0} {1}' -f (dim 'debug'), $text)
+  Write-Debug (Expand-Message -Message $Message -MessageArgs $MessageArgs)
 }
 
 function log {
@@ -376,7 +395,7 @@ function Resolve-Invocation {
   $environment = Build-Environment
   $items = New-Object 'System.Collections.Generic.List[string]'
   $resolvedForce = [bool]$environment.Force
-  $resolvedDebug = [bool]$environment.Debug
+  $resolvedDebug = [bool]$script:DEBUG_ENABLED
 
   foreach ($entry in @($environment.Item)) {
     Add-TrimmedValue -List $items -Value $entry
@@ -392,10 +411,6 @@ function Resolve-Invocation {
 
   if ($PSBoundParameters.ContainsKey('Force')) {
     $resolvedForce = [bool]$Force
-  }
-
-  if ($PSBoundParameters.ContainsKey('Debug')) {
-    $resolvedDebug = [bool]$Debug
   }
 
   return [pscustomobject]@{

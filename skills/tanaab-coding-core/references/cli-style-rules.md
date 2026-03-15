@@ -45,6 +45,7 @@ Treat this file as the primary home for shared CLI contract and output rules; la
 
 - In shell, prefer `tty_*` helpers or variables such as `tty_tp`, `tty_ts`, `tty_dim`, `tty_bold`, `tty_green`, `tty_red`, and `tty_yellow`.
 - In PowerShell CLIs, prefer one small local helper layer that exposes the shared style names `bold`, `dim`, `green`, `red`, `yellow`, `tp`, and `ts` while still using conventional PowerShell parameters such as `-Force` and `-Help`.
+- In PowerShell CLIs, prefer normalizing `-Debug`, repo-specific debug env vars, and an already-enabled `$DebugPreference` into native `Write-Debug` output rather than inventing a second debug channel.
 - In Bun or JavaScript CLIs, prefer one shared styling mechanism for both semantic colors and branded colors so the calling code only deals with style names, not raw ANSI escapes.
 - For package-level or user-facing Bun CLIs, the shared template can justify third-party CLI packages such as `ansis` and `yargs-parser`.
 - For skill-local helper scripts under `skills/**/scripts/`, prefer the shared coding-core helper at `skills/tanaab-coding-core/scripts/bun-cli-support.js` plus built-in modules before adding extra CLI dependencies.
