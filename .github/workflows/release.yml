@@ -5,17 +5,17 @@ on:
     types:
       - published
 
+permissions:
+  contents: write
+
 jobs:
   release:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - ubuntu-24.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
       - name: Install Bun
         uses: oven-sh/setup-bun@v2
         with:
@@ -24,14 +24,16 @@ jobs:
         run: bun install --frozen-lockfile --ignore-scripts
       - name: Lint
         run: bun run lint
-      - name: Export formatted release date
-        run: echo "RELEASE_DATE=$(date -d "${{ github.event.release.published_at }}" "+%B %e, %Y" | tr -s ' ')" >> $GITHUB_ENV
+      - name: Export release metadata
+        run: |
+          echo "RELEASE_DATE=$(date -d "${{ github.event.release.published_at }}" "+%B %e, %Y" | tr -s ' ')" >> "${GITHUB_ENV}"
+          echo "SITEMAP_LASTMOD=${{ github.event.release.published_at }}" >> "${GITHUB_ENV}"
       - name: Prepare release
         uses: tanaabased/prepare-release-action@v1
-        env:
-          SCRIPT_VERSION: ${{ github.event.release.tag_name }}
         with:
-          commands: bun run build
+          commands: |
+            bun run build
+            version-injector dist/piroboot.sh --style sh --version "${{ github.event.release.tag_name }}"
           sync-token: ${{ secrets.TANAAB_COAXIUM_INJECTOR }}
           sync-email: tanaabot@tanaab.dev
           sync-username: tanaabot

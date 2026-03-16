@@ -1,4 +1,4 @@
-name: Release Tests
+name: Examples Tests
 
 on:
   pull_request:
@@ -10,13 +10,17 @@ env:
   STAMPED_VERSION: v9.9.9-ci.${{ github.event.pull_request.head.sha }}
 
 jobs:
-  release:
-    runs-on: ubuntu-24.04
+  examples:
+    name: ${{ matrix.example }}
+    runs-on: macos-26
+    strategy:
+      fail-fast: false
+      matrix:
+        example:
+          - cli-contract
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
       - name: Install Bun
         uses: oven-sh/setup-bun@v2
         with:
@@ -29,12 +33,15 @@ jobs:
           version: dev
           sync: false
           commands: |
-            bun run lint
             bun run build
             version-injector dist/piroboot.sh --style sh --version "${{ env.STAMPED_VERSION }}"
-      - name: Verify stamped release entrypoint
+      - name: Put prepared scripts on PATH
         shell: bash
+        run: echo "$PWD/dist" >> "$GITHUB_PATH"
+      - name: Run Leia-backed example
+        shell: bash
+        env:
+          TMPDIR: ${{ github.workspace }}/examples/${{ matrix.example }}/.tmp
         run: |
-          piroboot_version="$(bash ./dist/piroboot.sh --version)"
-          printf 'piroboot=%s\n' "$piroboot_version"
-          test "$piroboot_version" = "${{ env.STAMPED_VERSION }}"
+          mkdir -p "$TMPDIR"
+          bun run leia "examples/${{ matrix.example }}/README.md" -c "Destroy tests" --stdin

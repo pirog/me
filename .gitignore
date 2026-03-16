@@ -41,8 +41,11 @@ coverage/
 _site
 cache
 temp
+.tmp
+.netlify
 config.*.timestamp-*-*.*
 docs/.vitepress/dist
+examples/**/.tmp
 
 # YARN
 yarn.lock
