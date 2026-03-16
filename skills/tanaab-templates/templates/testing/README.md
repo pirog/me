@@ -15,3 +15,4 @@ Use these templates when a Tanaab coding task needs a reusable test starter.
 - Pair it with workflow-driven `uses: ./` smoke tests when the action needs real runner, checkout, permissions, or matrix coverage.
 - Use the Leia markdown example template when the repo needs end-to-end shell, bootstrap, or hosted-script scenarios that are easier to express as executable README steps than as unit tests.
 - Keep Leia scenarios scoped to one observable flow, use example-local `.tmp/` scratch paths, and pair them with a dedicated workflow when the suite mutates machine state or needs secrets.
+- Format Leia steps as fenced code blocks with one `# should ...` header per test, commands directly below the header, and blank lines only between tests.

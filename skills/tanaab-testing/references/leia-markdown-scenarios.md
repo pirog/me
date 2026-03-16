@@ -30,7 +30,12 @@ Recommended sections:
 - Use example-local scratch paths such as `.tmp/` so setup and cleanup stay scoped.
 - Prefer shell-native assertions against observable behavior such as files, symlinks, permissions, logs, exit status, and installed tools.
 - Assert the user-facing contract, not internal implementation details.
-- Use comments like `# should ...` so the scenario still reads like documentation.
+- Use fenced code blocks for executable Leia steps. The language tag is optional, but unfenced shell snippets are not valid Leia scenario input.
+- Start each Leia test with a single `# should ...` line so the scenario still reads like documentation.
+- Put the commands for that test immediately below its `# should ...` line with no blank lines inside the test body.
+- Separate one `# should ...` test from the next with a blank line.
+- Do not place another `# should ...` line directly after commands without a separating blank line; Leia will treat it as an inline shell comment for the current test instead of a new test boundary.
+- Do not leave stray commands after a blank line without a new `# should ...` header; that shape is ambiguous and should be rewritten as a new named test.
 - Always include cleanup in `Destroy tests`, even when CI runners are ephemeral.
 
 ## CI Guidance

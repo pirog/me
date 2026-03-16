@@ -95,4 +95,5 @@ Use this skill for testing strategy, targeted test implementation, coverage poli
 - Confirm GitHub Action input parsing tests cover both local-default and GitHub Actions-runtime cases when that surface changed.
 - Confirm workflow-driven action smoke coverage exists when real runner behavior, permissions, or matrix behavior changed.
 - Confirm Leia-backed scenarios follow [references/leia-markdown-scenarios.md](./references/leia-markdown-scenarios.md) when that surface changed.
+- Confirm Leia-backed scenarios use fenced code blocks, blank-line-separated `# should ...` test headers, and no blank lines inside a single test body.
 - Confirm any template use came from `tanaab-templates`.

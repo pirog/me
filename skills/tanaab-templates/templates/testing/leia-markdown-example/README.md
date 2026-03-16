@@ -38,6 +38,7 @@ rm -rf .tmp
 
 - Keep assertions shell-native and focused on observable behavior, not internals.
 - Use example-local `.tmp/` paths so cleanup is deterministic.
+- Keep Leia tests inside fenced code blocks, start each test with `# should ...`, and use blank lines only between tests rather than inside a single test body.
 - Add fixtures in this example directory when the scenario needs Brewfiles, dotpackages, keys, or other support files.
 - If the real product surface is a generated `dist/` entrypoint, make the workflow put `dist/` on `PATH` before Leia runs.
 - If the scenario mutates machine state, installs packages, or uses secrets, prefer CI-only execution on fresh runners.
