@@ -1,5 +1,8 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+- Realigned `me` build and release scaffolding around a repo-local `scripts/build-dist.js`, static hosting metadata, and release-shaped `dist/` validation
+- Replaced the old raw-script PR smoke with a basic Leia-backed `piroboot` CLI contract example that runs against the prepared artifact in CI
+- Removed the bundled Brewfile-generation surface now that it lives in its own repository
 - Added `python@3` as a needed `Brewfile` package
 - Expanded `tanaab-coding` documentation guidance with README standards and README-to-VitePress escalation rules
 - Expanded `tanaab-coding` GitHub Actions and testing guidance for Bun-backed actions, Leia scenarios, hosted shell workflows, and executable example docs
@@ -46,7 +49,6 @@
 
 - Added Bun-based build, lint, and release packaging that stamps versioned shell artifacts into `dist/`.
 - Added CI workflows for linting, release artifact validation, and a macOS smoke test of the bootstrap script.
-- Added companion `brewgen.sh` tooling to generate filtered Brewfiles from an existing Homebrew installation.
 - Added conflict-aware dotfile installation with GNU Stow, including simulation and automatic backups before overwriting files.
 - Added reusable AI and Codex skill bundles alongside personal dotfiles for git, ssh, vim, zsh, and related tools.
 - Added the `piroboot.sh` bootstrap script for supported macOS machines with Homebrew, Brewfiles, dotfile packages, and optional 1Password-managed SSH keys.

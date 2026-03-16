@@ -102,9 +102,14 @@ bun run lint
 bun run build
 ```
 
-`bun run build` stages the release artifacts in `dist/` and prepends `SCRIPT_VERSION` when that environment variable is set.
+`bun run build` prepares the tracked `dist/` publish surface, including `piroboot.sh`, the
+landing-page redirect, and the hosting metadata files used by deployment.
 
-The repo also includes `./brewgen.sh`, which generates a Brewfile from the current Homebrew state for selected package types such as `tap`, `cask`, and `brew`, and can exclude specific packages with `--exclude`.
+The repo also carries a minimal Leia-backed example at
+[`examples/cli-contract/README.md`](./examples/cli-contract/README.md). That
+scenario is intentionally basic and currently exercised in CI against the prepared `dist/`
+entrypoint rather than as a local `bun run test` flow, because the real bootstrap behavior will be
+rewired in the next phase.
 
 ## Issues, Questions and Support
 

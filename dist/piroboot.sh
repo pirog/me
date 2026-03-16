@@ -1,4 +1,3 @@
-SCRIPT_VERSION="v0.2.1"
 #!/bin/bash
 set -euo pipefail
 # bootstrap a macOS machine using homebrew, brewfiles, dotfiles, and identity data.
@@ -78,6 +77,9 @@ tty_yellow="$(tty_escape 33)"
 # Tanaab based colors
 tty_tp="$(tty_escape '38;2;0;200;138')"    # #00c88a
 tty_ts="$(tty_escape '38;2;219;39;119')"   # #db2777
+
+# Keep a single top-level assignment so release automation can stamp the entrypoint in place.
+SCRIPT_VERSION="${SCRIPT_VERSION:-$(git describe --tags --always --abbrev=1 2>/dev/null || printf '%s' '0.0.0')}"
 
 mask_secret_for_display() {
   local value="$1"
@@ -318,12 +320,7 @@ EOS
 }
 
 show_version() {
-  # @TODO: consolidate this with similar usage further down
-  if [[ -z "${SCRIPT_VERSION-}" ]]; then
-    SCRIPT_VERSION="$(git describe --tags --always --abbrev=1)"
-  fi
-
-  printf "%s\n" "$SCRIPT_VERSION"
+  printf "%s\n" "${SCRIPT_VERSION}"
   exit 0
 }
 
@@ -813,11 +810,6 @@ warn_multi() {
     warn "${line}"
   done <<< "$@"
 }
-
-# if we dont have a SCRIPT_VERSION then try to get it from git
-if [[ -z "${SCRIPT_VERSION-}" ]]; then
-  SCRIPT_VERSION="$(git describe --tags --always --abbrev=1)"
-fi
 
 # print version of script
 debug "running piroboot.sh script version: ${SCRIPT_VERSION}"

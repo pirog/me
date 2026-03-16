@@ -18,22 +18,20 @@
   "dependencies": {},
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@lando/leia": "^1.0.0-beta.4",
     "eslint": "^10.0.3",
     "eslint-config-prettier": "^10.1.1",
     "globals": "^17.4.0",
     "prettier": "^3.5.3",
-    "shellcheck": "^4.1.0",
-    "shx": "^0.4.0",
-    "ua-parser-js": "^2.0.9"
+    "shellcheck": "^4.1.0"
   },
   "scripts": {
-    "build": "bun run build:dist && bun run build:versions",
-    "build:dist": "shx rm -rf ./dist && shx mkdir -p ./dist && shx cp -f ./piroboot.sh ./brewgen.sh ./dist/",
-    "build:versions": "bun ./inject-script-version.js",
+    "build": "bun ./scripts/build-dist.js",
     "format:check": "prettier . --check --ignore-unknown",
     "format:write": "prettier . --write --ignore-unknown",
-    "lint": "bun run lint:eslint && bun run format:check && shellcheck piroboot.sh brewgen.sh",
+    "lint": "bun run lint:eslint && bun run format:check && bun run lint:shellcheck",
     "lint:eslint": "eslint .",
+    "lint:shellcheck": "shellcheck piroboot.sh",
     "sync:ai": "bun ./skills/skill-sensei/scripts/sync-ai-stow.js"
   }
 }
