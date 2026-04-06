@@ -1,6 +1,0 @@
-interface:
-  display_name: 'Tanaab Frontend'
-  short_description: 'Tanaab based guidance for Vue 3, VitePress 1, and SCSS front-end work'
-  icon_small: './assets/tanaab-frontend-icon.png'
-  icon_large: './assets/tanaab-frontend-icon.png'
-  default_prompt: 'Use $tanaab-frontend for Vue 3, VitePress 1, or SCSS front-end implementation, assuming $tanaab-coding-core is already active.'

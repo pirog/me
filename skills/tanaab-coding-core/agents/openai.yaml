@@ -1,6 +1,0 @@
-interface:
-  display_name: 'Tanaab Coding Core'
-  short_description: 'Tanaab based shared doctrine for all work in the coding stack'
-  icon_small: './assets/tanaab-coding-core-icon.png'
-  icon_large: './assets/tanaab-coding-core-icon.png'
-  default_prompt: 'Use $tanaab-coding-core as the shared doctrine layer for every task in the Tanaab coding stack.'

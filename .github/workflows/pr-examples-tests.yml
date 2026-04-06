@@ -1,4 +1,4 @@
-name: Examples Tests
+name: Example Tests
 
 on:
   pull_request:
@@ -34,7 +34,7 @@ jobs:
           sync: false
           commands: |
             bun run build
-            version-injector dist/piroboot.sh --style sh --version "${{ env.STAMPED_VERSION }}"
+            version-injector dist/boot.sh --style sh --version "${{ env.STAMPED_VERSION }}"
       - name: Put prepared scripts on PATH
         shell: bash
         run: echo "$PWD/dist" >> "$GITHUB_PATH"

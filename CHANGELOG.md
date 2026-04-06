@@ -1,7 +1,8 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+- Introduced a template-based `boot.sh` wrapper as the new served and tested entrypoint while keeping legacy `piroboot.sh` in-tree as reference
 - Realigned `me` build and release scaffolding around a repo-local `scripts/build-dist.js`, static hosting metadata, and release-shaped `dist/` validation
-- Replaced the old raw-script PR smoke with a basic Leia-backed `piroboot` CLI contract example that runs against the prepared artifact in CI
+- Replaced the old raw-script PR smoke with a basic Leia-backed CLI contract example that runs against the prepared artifact in CI
 - Removed the bundled Brewfile-generation surface now that it lives in its own repository
 - Added `python@3` as a needed `Brewfile` package
 - Expanded `tanaab-coding` documentation guidance with README standards and README-to-VitePress escalation rules
