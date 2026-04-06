@@ -31,7 +31,7 @@
     "format:write": "prettier . --write --ignore-unknown",
     "lint": "bun run lint:eslint && bun run format:check && bun run lint:shellcheck",
     "lint:eslint": "eslint .",
-    "lint:shellcheck": "shellcheck piroboot.sh",
-    "sync:ai": "bun ./skills/skill-sensei/scripts/sync-ai-stow.js"
+    "lint:shellcheck": "shellcheck boot.sh piroboot.sh",
+    "sync:ai": "bun scripts/sync-ai-stow.js"
   }
 }

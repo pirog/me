@@ -31,10 +31,10 @@ jobs:
           commands: |
             bun run lint
             bun run build
-            version-injector dist/piroboot.sh --style sh --version "${{ env.STAMPED_VERSION }}"
+            version-injector dist/boot.sh --style sh --version "${{ env.STAMPED_VERSION }}"
       - name: Verify stamped release entrypoint
         shell: bash
         run: |
-          piroboot_version="$(bash ./dist/piroboot.sh --version)"
-          printf 'piroboot=%s\n' "$piroboot_version"
-          test "$piroboot_version" = "${{ env.STAMPED_VERSION }}"
+          boot_version="$(bash ./dist/boot.sh --version)"
+          printf 'boot=%s\n' "$boot_version"
+          test "$boot_version" = "${{ env.STAMPED_VERSION }}"

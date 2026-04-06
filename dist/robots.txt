@@ -2,5 +2,5 @@ User-agent: *
 Disallow: /
 Sitemap: https://boot.pirog.me/sitemap.xml
 Host: https://boot.pirog.me
-Allow: /piroboot.sh
+Allow: /boot.sh
 Allow: /sitemap.xml

@@ -2,6 +2,10 @@
 
 The purpose of `me` is to be able to seed a machine running `macos` version `26` or above with a base set of packages, access, id and skills so as to approximate me.
 
+The repo is currently transitioning from the legacy `piroboot.sh` script to a thinner hosted
+`boot.sh` wrapper around bootbox. `boot.sh` is the served and tested entrypoint; `piroboot.sh`
+remains in the repository as reference material while the wrapper-specific behavior is rebuilt.
+
 Specifically this means installing, maintaining, updating and managing:
 
 - A consistent set of base `packages` with `brew`
@@ -11,68 +15,46 @@ Specifically this means installing, maintaining, updating and managing:
 
 ## Usage
 
-The quickstart is to do the below. Note that this is the command you would want to run for initial machine setup. To sync an existing machine you may need to modify the command like adding `--force` for instance. Note that you will need to `export` `$OP_TOKEN` or replace it with your token.
+The current wrapper only owns the thin bootbox delegation layer: fetch the hosted script, apply the
+wrapper-specific guards and planning flow, then invoke bootbox with the required 1Password token,
+the default or requested SSH key, and any supported wrapper flags.
 
 ```zsh
 # clone repo
-git clone git@github.com:pirog/me.git && cd me && chmod +x piroboot.sh
+git clone git@github.com:pirog/me.git && cd me && chmod +x boot.sh
 
 # run script
-bash piroboot.sh \
-  --op-token "$OP_TOKEN" \
-  --ssh-key vmruk4ny353aly6tbom7z3v2hy/id_pirog \
-  --ssh-key vmruk4ny353aly6tbom7z3v2hy/id_botbox1 \
-  --dotpkg dotfiles/ai \
-  --dotpkg dotfiles/gh \
-  --dotpkg dotfiles/git \
-  --dotpkg dotfiles/hyperdrive \
-  --dotpkg dotfiles/lando \
-  --dotpkg dotfiles/ssh \
-  --dotpkg dotfiles/theme \
-  --dotpkg dotfiles/vim \
-  --dotpkg dotfiles/zsh
-
+bash boot.sh --op-token "$OP_TOKEN"
 ```
+
+The wrapper currently supports `--op-token`, `--ssh-key`, `--yes`, `--force`, `--debug`,
+`--version`, and `--help`. The me-specific execution plan that will sit on top of bootbox comes
+next.
 
 If you are looking to customize your install then [advanced usage](#advanced) is for you.
 
-#### Dotfile Packages
-
-- **dotfiles/ai** - AI assistant configuration, including Codex agent instructions.
-- **dotfiles/gh** - GitHub CLI configuration.
-- **dotfiles/git** - Git configuration and local include rules.
-- **dotfiles/hyperdrive** - Hyperdrive configuration.
-- **dotfiles/lando** - Lando configuration.
-- **dotfiles/ssh** - SSH configuration and public keys.
-- **dotfiles/theme** - Importable Tanaab theme JSON files.
-- **dotfiles/vim** - Vim configuration.
-- **dotfiles/zsh** - Zsh shell and prompt configuration.
-
 ## Advanced
 
-The installation script has various options but you will need to download the script and invoke it directly.
+The installation script currently exposes only the wrapper-layer options, so the main advanced usage
+surface is how you provide the token, SSH keys, and interactivity mode.
 
 ```zsh
 # get usage info
-bash piroboot.sh --help
+bash boot.sh --help
 ```
 
 Some notes on advanced usage:
 
 #### Environment Variables
 
-If you do not wish to download the script you can set options with environment variables and `curl` the script.
-
-`TANAAB_BREWFILE` accepts a comma-separated list. `--brewfile` can be passed more than once. brewfiles may be local file paths or urls, and relative file paths are resolved from the current working directory.
-
-`TANAAB_DOTPKG` accepts a comma-separated list of stow package paths. `--dotpkg` can be passed more than once. dot package paths are resolved from the current working directory, installed relative to `TANAAB_TARGET` or `--target`, and conflicting target files are backed up under `$TARGET/.tanaab-backups/` before stowing. `stow --dotfiles` is not currently implemented.
+If you do not wish to download the script you can set options with environment variables and `curl`
+the script.
 
 ```zsh
-TANAAB_BREWFILE=Brewfile.base,Brewfile.two
-TANAAB_DOTPKG=dotfiles/git,dotfiles/theme,dotfiles/zsh
+TANAAB_OP_TOKEN="$OP_TOKEN"
+TANAAB_SSH_KEY="vmruk4ny353aly6tbom7z3v2hy/id_pirog"
 TANAAB_DEBUG=0
-TANAAB_TARGET="/somewhere-else"
-
+TANAAB_FORCE=0
 ```
 
 #### Examples
@@ -81,13 +63,13 @@ These are equivalent commands and meant to demostrate environment variable usage
 
 ```zsh
 # use envvars
-TANAAB_BREWFILE=Brewfile.base,Brewfile.two \
-TANAAB_DOTPKG=dotfiles/git,dotfiles/theme,dotfiles/zsh \
+TANAAB_OP_TOKEN="$OP_TOKEN" \
+TANAAB_SSH_KEY="vmruk4ny353aly6tbom7z3v2hy/id_pirog" \
 TANAAB_DEBUG=1 \
-  /bin/bash -c "$(curl -fsSL https://boot.pirog.me)"
+  /bin/bash -c "$(curl -fsSL https://boot.pirog.me/boot.sh)"
 
 # invoke directly
-bash piroboot.sh --brewfile Brewfile.base --brewfile Brewfile.two --dotpkg dotfiles/git --dotpkg dotfiles/theme --dotpkg dotfiles/zsh --debug
+bash boot.sh --op-token "$OP_TOKEN" --ssh-key vmruk4ny353aly6tbom7z3v2hy/id_pirog --debug
 ```
 
 ## Development
@@ -102,14 +84,14 @@ bun run lint
 bun run build
 ```
 
-`bun run build` prepares the tracked `dist/` publish surface, including `piroboot.sh`, the
+`bun run build` prepares the tracked `dist/` publish surface, including `boot.sh`, the
 landing-page redirect, and the hosting metadata files used by deployment.
 
 The repo also carries a minimal Leia-backed example at
 [`examples/cli-contract/README.md`](./examples/cli-contract/README.md). That
-scenario is intentionally basic and currently exercised in CI against the prepared `dist/`
-entrypoint rather than as a local `bun run test` flow, because the real bootstrap behavior will be
-rewired in the next phase.
+scenario is intentionally basic and CI-owned: do not run Leia locally unless you explicitly need a
+local Leia run for the task at hand. Normal local validation here is `bun run lint`, `bun run
+build`, and static review, while CI exercises the prepared `dist/` entrypoint.
 
 ## Issues, Questions and Support
 

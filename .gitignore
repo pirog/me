@@ -13,6 +13,9 @@
 *.jxp
 *.sublime-*
 
+# tanaab based
+dotfiles/ai/.codex/plugins/tanaab
+
 # Logs
 *.log
 logs
@@ -46,13 +49,3 @@ temp
 config.*.timestamp-*-*.*
 docs/.vitepress/dist
 examples/**/.tmp
-
-# YARN
-yarn.lock
-
-
-# Syncthing
-.stfolder/
-.stversions/
-.stignore
-*.sync-conflict-*

@@ -10,8 +10,8 @@ const REPO_ROOT = fileURLToPath(REPO_URL);
 const PUBLIC_ORIGIN = 'https://boot.pirog.me';
 const PUBLISHED_SCRIPTS = [
   {
-    sourcePath: 'piroboot.sh',
-    destinationPath: 'piroboot.sh',
+    sourcePath: 'boot.sh',
+    destinationPath: 'boot.sh',
     executable: true,
   },
 ];

@@ -33,7 +33,7 @@ jobs:
         with:
           commands: |
             bun run build
-            version-injector dist/piroboot.sh --style sh --version "${{ github.event.release.tag_name }}"
+            version-injector dist/boot.sh --style sh --version "${{ github.event.release.tag_name }}"
           sync-token: ${{ secrets.TANAAB_COAXIUM_INJECTOR }}
           sync-email: tanaabot@tanaab.dev
           sync-username: tanaabot
