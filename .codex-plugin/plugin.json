@@ -22,10 +22,11 @@
     "capabilities": ["Interactive", "Write"],
     "defaultPrompt": [
       "Rework this content as though it were written by @pirog.",
-      "Create a new $piroskill that mimics how @pirog writes javscript functions."
+      "Create a new $piroskill that mimics how @pirog writes javascript functions."
     ],
     "brandColor": "#db2777",
     "composerIcon": "./assets/composer-icon.svg",
-    "logo": "./assets/icon-large.png"
+    "logo": "./assets/icon-large.png",
+    "websiteURL": "https://github.com/pirog/me"
   }
 }

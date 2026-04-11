@@ -1,18 +1,11 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
-- Introduced a template-based `boot.sh` wrapper as the new served and tested entrypoint while keeping legacy `piroboot.sh` in-tree as reference
-- Realigned `me` build and release scaffolding around a repo-local `scripts/build-dist.js`, static hosting metadata, and release-shaped `dist/` validation
-- Replaced the old raw-script PR smoke with a basic Leia-backed CLI contract example that runs against the prepared artifact in CI
-- Removed the bundled Brewfile-generation surface now that it lives in its own repository
-- Added `python@3` as a needed `Brewfile` package
-- Expanded `tanaab-coding` documentation guidance with README standards and README-to-VitePress escalation rules
-- Expanded `tanaab-coding` GitHub Actions and testing guidance for Bun-backed actions, Leia scenarios, hosted shell workflows, and executable example docs
-- Expanded `tanaab-coding` template coverage with new README, workflow, and CLI starters across Bun, Bash, and PowerShell surfaces
-- Expanded `tanaab-coding` template guidance for GitHub repository templates, including root-level `TEMPLATE-SETUP.md` adoption specs for human and AI setup
-- Expanded `tanaab-coding` template guidance to recognize `tanaabased/template-netscript` as the upstream starter for Netlify-hosted script repos
-- Standardized shared linting and formatting around the Tanaab ESLint and Prettier baseline
-- Standardized shared CLI release-stamping and unstamped version fallback patterns across Bun, Bash, and PowerShell tooling
-- Tightened Codex and Tanaab coding guidance around routing, template usage, local-solution bias, and clearer ownership boundaries between the stack skills
+- Added `piroplugin` Codex plugin packaging, version stamping, and GitHub Release archive uploads alongside the hosted `dist/` surface.
+- Added repo-local `AGENTS.md` guidance for CI-owned `Leia` and `bun run build` validation plus `boot.sh` and plugin invariants.
+- Added the initial `piro-skill-author` surface, shared `references/skill-standard.md`, and local `piro` or `pirog` skill canon for repo-contained skills.
+- Moved most reusable Tanaab coding, template, and canon skill work into `tanaabased/canon`, narrowing this repo to Piro-specific skills and plugin assets.
+- Removed the bundled Brewfile-generation surface after splitting that workflow into its own repository.
+- Updated the hosted bootstrap surface to use a thin `boot.sh` wrapper around bootbox while keeping legacy `piroboot.sh` in-tree as reference.
 
 ## v0.2.1 - [March 13, 2026](https://github.com/pirog/me/releases/tag/v0.2.1)
 

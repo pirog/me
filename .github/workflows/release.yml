@@ -34,6 +34,7 @@ jobs:
           commands: |
             bun run build
             version-injector dist/boot.sh --style sh --version "${{ github.event.release.tag_name }}"
+            version-injector .codex-plugin/plugin.json --style json --version "${{ github.event.release.tag_name }}"
           sync-token: ${{ secrets.TANAAB_COAXIUM_INJECTOR }}
           sync-email: tanaabot@tanaab.dev
           sync-username: tanaabot
@@ -45,3 +46,21 @@ jobs:
             UNRELEASED_DATE=${{ env.RELEASE_DATE }}
             UNRELEASED_LINK=${{ github.event.release.html_url }}
             UNRELEASED_VERSION=${{ github.event.release.tag_name }}
+      - name: Package release archive
+        env:
+          RELEASE_ARCHIVE: piroplugin-${{ github.event.release.tag_name }}.tar.gz
+        run: |
+          tar \
+            --exclude-vcs \
+            -czf "${RUNNER_TEMP}/${RELEASE_ARCHIVE}" \
+            -C "${GITHUB_WORKSPACE}" \
+            .
+      - name: Upload release archive
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_ARCHIVE: piroplugin-${{ github.event.release.tag_name }}.tar.gz
+        run: |
+          gh release upload \
+            "${{ github.event.release.tag_name }}" \
+            "${RUNNER_TEMP}/${RELEASE_ARCHIVE}" \
+            --clobber
