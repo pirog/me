@@ -195,7 +195,7 @@ tty_ts="$(tty_escape '38;2;219;39;119')"   # #db2777
 
 SCRIPT_NAME="${0##*/}"
 # Keep a single top-level assignment so release automation can stamp the entrypoint in place.
-SCRIPT_VERSION="v0.3.0"
+SCRIPT_VERSION="v0.3.1"
 
 DEBUG="${TANAAB_DEBUG:-${DEBUG:-${RUNNER_DEBUG:-}}}"
 FORCE="${TANAAB_FORCE:-}"

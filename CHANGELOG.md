@@ -1,5 +1,7 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+## v0.3.1 - [April 11, 2026](https://github.com/pirog/me/releases/tag/v0.3.1)
+
 - Fixed bug causing `prepare-release-action` to export an incorrectly formated `plugin.json`
 
 ## v0.3.0 - [April 11, 2026](https://github.com/pirog/me/releases/tag/v0.3.0)
