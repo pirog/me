@@ -35,6 +35,7 @@ jobs:
             bun run build
             version-injector dist/boot.sh --style sh --version "${{ github.event.release.tag_name }}"
             version-injector .codex-plugin/plugin.json --style json --version "${{ github.event.release.tag_name }}"
+            bun run format:write
           sync-token: ${{ secrets.TANAAB_COAXIUM_INJECTOR }}
           sync-email: tanaabot@tanaab.dev
           sync-username: tanaabot
