@@ -1,6 +1,6 @@
 {
   "name": "piroplugin",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Piroproximate AI replicators.",
   "author": {
     "name": "@pirog",
@@ -10,7 +10,12 @@
   "homepage": "https://boot.pirog.me",
   "repository": "https://github.com/pirog/me",
   "license": "MIT",
-  "keywords": ["pirog", "ai", "skills", "codex"],
+  "keywords": [
+    "pirog",
+    "ai",
+    "skills",
+    "codex"
+  ],
   "skills": "./skills/",
   "mcpServers": "./.mcp.json",
   "interface": {
@@ -19,7 +24,10 @@
     "longDescription": "Codex AI things designed to approximate various degrees of @pirog.",
     "developerName": "@pirog",
     "category": "pirobased",
-    "capabilities": ["Interactive", "Write"],
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
     "defaultPrompt": [
       "Rework this content as though it were written by @pirog.",
       "Create a new $piroskill that mimics how @pirog writes javascript functions."

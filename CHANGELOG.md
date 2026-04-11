@@ -1,5 +1,7 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+## v0.3.0 - [April 11, 2026](https://github.com/pirog/me/releases/tag/v0.3.0)
+
 - Added `piroplugin` Codex plugin packaging, version stamping, and GitHub Release archive uploads alongside the hosted `dist/` surface.
 - Added repo-local `AGENTS.md` guidance for CI-owned `Leia` and `bun run build` validation plus `boot.sh` and plugin invariants.
 - Added the initial `piro-skill-author` surface, shared `references/skill-standard.md`, and local `piro` or `pirog` skill canon for repo-contained skills.

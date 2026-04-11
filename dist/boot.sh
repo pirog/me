@@ -190,17 +190,17 @@ tty_reset="$(tty_escape 0)"
 tty_underline="$(tty_escape "4;39")"
 tty_yellow="$(tty_escape 33)"
 tty_tp="$(tty_escape '38;2;0;200;138')"    # #00c88a
+# shellcheck disable=SC2034 # reserved for future plan/action styling
 tty_ts="$(tty_escape '38;2;219;39;119')"   # #db2777
 
 SCRIPT_NAME="${0##*/}"
 # Keep a single top-level assignment so release automation can stamp the entrypoint in place.
-SCRIPT_VERSION="${SCRIPT_VERSION:-$(git describe --tags --always --abbrev=1 2>/dev/null || printf '%s' '0.0.0-unreleased')}"
+SCRIPT_VERSION="v0.3.0"
 
 DEBUG="${TANAAB_DEBUG:-${DEBUG:-${RUNNER_DEBUG:-}}}"
 FORCE="${TANAAB_FORCE:-}"
 OP_TOKEN="${TANAAB_OP_TOKEN:-${OP_SERVICE_ACCOUNT_TOKEN:-}}"
 SSH_KEYS_CSV="${TANAAB_SSH_KEY:-${DEFAULT_SSH_KEY}}"
-ORIGOPTS="$*"
 declare -a ORIGINAL_ARGS=("$@")
 declare -a SSH_KEYS=()
 declare -a PLANNED_ACTIONS=()
@@ -279,8 +279,8 @@ usage() {
 Usage: ${tty_dim}[NONINTERACTIVE=1] [CI=1]${tty_reset} ${tty_bold}${SCRIPT_NAME}${tty_reset} ${tty_dim}[options]${tty_reset}
 
 ${tty_tp}Options:${tty_reset}
-  --ssh-key        installs 1password ssh keys via bootbox ${tty_dim}[default: ${ssh_keys_display}]${tty_reset}
-  --op-token       1password service account token ${tty_dim}[default: ${op_token_display}]${tty_reset}
+  --ssh-key        installs 1password ssh keys as vault/item[:filename] ${tty_dim}[default: ${ssh_keys_display}]${tty_reset}
+  --op-token       auths with 1password service account token ${tty_dim}[default: ${op_token_display}]${tty_reset}
   --version        shows version of this script
   --debug          shows debug messages ${tty_dim}[default: ${debug_display}]${tty_reset}
   --force          forces supported bootbox operations ${tty_dim}[default: ${force_display}]${tty_reset}
@@ -499,7 +499,7 @@ validate_inputs() {
   if [[ -z "${OP_TOKEN:-}" ]]; then
     abort_multi "$(cat <<EOABORT
 You must provide a 1Password service account token before using this wrapper.
-Set TANAAB_OP_TOKEN or OP_SERVICE_ACCOUNT_TOKEN, or pass --op-token.
+Set ${tty_bold}TANAAB_OP_TOKEN${tty_reset} or ${tty_bold}OP_SERVICE_ACCOUNT_TOKEN${tty_reset}, or pass ${tty_bold}--op-token${tty_reset}.
 EOABORT
 )"
   fi
@@ -596,27 +596,7 @@ sync_bootbox_env() {
 }
 
 plan_wrapper_execution() {
-  local ssh_keys_display
-  local op_token_display
-
-  ssh_keys_display="$(array_join ", " SSH_KEYS)"
-  op_token_display="$(mask_secret_for_display "${OP_TOKEN}")"
-
-  plan_action "${tty_tp}fetch${tty_reset} ${tty_ts}bootbox.sh${tty_reset} from ${tty_underline}${tty_magenta}${BOOTBOX_URL}${tty_reset} into a temporary directory"
-  plan_action "${tty_tp}delegate${tty_reset} bootstrap to bootbox with ${tty_ts}--op-token${tty_reset} ${tty_dim}[${op_token_display}]${tty_reset}"
-  plan_action "${tty_tp}install${tty_reset} SSH keys via bootbox: ${tty_ts}${ssh_keys_display}${tty_reset}"
-
-  if force_enabled; then
-    plan_action "${tty_tp}enable${tty_reset} force mode"
-  fi
-
-  if debug_enabled; then
-    plan_action "${tty_tp}enable${tty_reset} debug logging"
-  fi
-
-  if [[ -n "${NONINTERACTIVE-}" ]]; then
-    plan_action "${tty_tp}run${tty_reset} in ${tty_yellow}non-interactive mode${tty_reset}"
-  fi
+  :
 }
 
 prepare_bootbox_script() {
@@ -629,14 +609,18 @@ prepare_bootbox_script() {
 
 run_bootbox() {
   local -a bootbox_command=("/bin/bash" "${BOOTBOX_SCRIPT_PATH}" "--op-token" "${OP_TOKEN}")
+  local -a bootbox_display_command=("/bin/bash" "${BOOTBOX_SCRIPT_PATH}" "--op-token" "$(mask_secret_for_display "${OP_TOKEN}")")
   local ssh_key
 
   for ssh_key in "${SSH_KEYS[@]}"; do
     bootbox_command+=("--ssh-key" "${ssh_key}")
+    bootbox_display_command+=("--ssh-key" "${ssh_key}")
   done
 
-  debug "delegating to bootbox with $(shell_join "${bootbox_command[@]}")"
-  execute "${bootbox_command[@]}"
+  debug "delegating to bootbox with $(shell_join "${bootbox_display_command[@]}")"
+  if ! "${bootbox_command[@]}"; then
+    abort "bootbox failed while running delegated bootstrap."
+  fi
 }
 
 main() {
@@ -647,15 +631,14 @@ main() {
   apply_noninteractive_mode
   sync_bootbox_env
 
-  debug "running ${SCRIPT_NAME} script version: ${SCRIPT_VERSION}"
-  debug "raw args ${SCRIPT_NAME} ${ORIGOPTS}"
-  debug raw CI="${CI:-}"
+  debug "${tty_tp}running${tty_reset}" "${SCRIPT_NAME}" script version: "${SCRIPT_VERSION}"
+  debug raw2 CI="${CI:-}"
   debug raw NONINTERACTIVE="${NONINTERACTIVE:-}"
   debug raw DEBUG="${DEBUG:-}"
   debug raw FORCE="${FORCE:-}"
   debug raw OP_TOKEN="$(mask_secret_for_display "${OP_TOKEN}")"
   debug raw SSH_KEYS="$(array_join "," SSH_KEYS)"
-  debug raw bootbox_url="${BOOTBOX_URL}"
+  debug raw BOOTBOX_URL="${BOOTBOX_URL}"
   debug raw CURL="${CURL}"
   debug raw ARCH="${ARCH}"
   debug raw OS="${OS}"
