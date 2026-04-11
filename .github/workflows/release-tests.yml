@@ -32,9 +32,31 @@ jobs:
             bun run lint
             bun run build
             version-injector dist/boot.sh --style sh --version "${{ env.STAMPED_VERSION }}"
+            version-injector .codex-plugin/plugin.json --style json --version "${{ env.STAMPED_VERSION }}"
       - name: Verify stamped release entrypoint
         shell: bash
         run: |
           boot_version="$(bash ./dist/boot.sh --version)"
           printf 'boot=%s\n' "$boot_version"
           test "$boot_version" = "${{ env.STAMPED_VERSION }}"
+      - name: Verify stamped plugin manifest
+        shell: bash
+        run: |
+          plugin_version="$(bun --eval 'const plugin = JSON.parse(await Bun.file(".codex-plugin/plugin.json").text()); console.log(plugin.version)')"
+          printf 'plugin=%s\n' "$plugin_version"
+          test "$plugin_version" = "${{ env.STAMPED_VERSION }}"
+      - name: Package release archive
+        env:
+          RELEASE_ARCHIVE: piroplugin-${{ env.STAMPED_VERSION }}.tar.gz
+        run: |
+          tar \
+            --exclude-vcs \
+            -czf "${RUNNER_TEMP}/${RELEASE_ARCHIVE}" \
+            -C "${GITHUB_WORKSPACE}" \
+            .
+      - name: Verify release archive contents
+        env:
+          RELEASE_ARCHIVE: piroplugin-${{ env.STAMPED_VERSION }}.tar.gz
+        run: |
+          tar -tzf "${RUNNER_TEMP}/${RELEASE_ARCHIVE}" | grep -F '.codex-plugin/plugin.json'
+          tar -tzf "${RUNNER_TEMP}/${RELEASE_ARCHIVE}" | grep -F 'dist/boot.sh'
