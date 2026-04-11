@@ -42,7 +42,7 @@ jobs:
       - name: Verify stamped plugin manifest
         shell: bash
         run: |
-          plugin_version="$(bun --eval 'const plugin = JSON.parse(await Bun.file(".codex-plugin/plugin.json").text()); console.log(plugin.version)')"
+          plugin_version="v$(bun --eval 'const plugin = JSON.parse(await Bun.file(".codex-plugin/plugin.json").text()); console.log(plugin.version)')"
           printf 'plugin=%s\n' "$plugin_version"
           test "$plugin_version" = "${{ env.STAMPED_VERSION }}"
       - name: Package release archive

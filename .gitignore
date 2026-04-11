@@ -35,9 +35,6 @@ build
 .nyc_output
 coverage/
 
-# lando
-.lando/id
-
 # docs
 .temp
 .cache
@@ -48,4 +45,7 @@ temp
 .netlify
 config.*.timestamp-*-*.*
 docs/.vitepress/dist
+
+# tmp
 examples/**/.tmp
+
