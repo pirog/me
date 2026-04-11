@@ -9,8 +9,8 @@ calls for a local Leia run.
 ## Setup
 
 ```bash
-# should reset the example scratch directory
-rm -rf .tmp && mkdir -p .tmp
+# should prepare a temp directory for precedence checks
+mkdir -p .tmp
 ```
 
 ## Testing

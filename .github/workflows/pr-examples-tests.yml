@@ -35,6 +35,9 @@ jobs:
           commands: |
             bun run build
             version-injector dist/boot.sh --style sh --version "${{ env.STAMPED_VERSION }}"
+      - name: Create boot alias for Leia examples
+        shell: bash
+        run: ln -sf dist/boot.sh dist/boot
       - name: Put prepared scripts on PATH
         shell: bash
         run: echo "$PWD/dist" >> "$GITHUB_PATH"
