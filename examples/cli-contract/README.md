@@ -25,17 +25,32 @@ boot.sh --help | grep -- '--ssh-key'
 # should show the default ssh key in help output
 boot.sh --help | grep -F 'vmruk4ny353aly6tbom7z3v2hy/id_pirog,vmruk4ny353aly6tbom7z3v2hy/id_bootbox'
 
-# should let TANAAB_SSH_KEY override the displayed ssh key default
-TANAAB_SSH_KEY='example-vault/example-item:id_example' boot.sh --help | grep -F 'example-vault/example-item:id_example'
+# should show the PIROME_OP_TOKEN envvar in help output
+boot.sh --help | grep -F 'PIROME_OP_TOKEN'
 
-# should append TANAAB_SSH_KEYS to the displayed ssh key default
-TANAAB_SSH_KEYS='example-vault/example-item:id_extra' boot.sh --help | grep -F 'vmruk4ny353aly6tbom7z3v2hy/id_pirog,vmruk4ny353aly6tbom7z3v2hy/id_bootbox,example-vault/example-item:id_extra'
+# should show the PIROME_SSH_KEY envvar in help output
+boot.sh --help | grep -F 'PIROME_SSH_KEY'
 
-# should append TANAAB_SSH_KEYS after TANAAB_SSH_KEY when both are set
-TANAAB_SSH_KEY='example-vault/example-item:id_primary' TANAAB_SSH_KEYS='example-vault/example-item:id_secondary' boot.sh --help | grep -F 'example-vault/example-item:id_primary,example-vault/example-item:id_secondary'
+# should show the PIROME_FORCE envvar in help output
+boot.sh --help | grep -F 'PIROME_FORCE'
 
-# should keep TANAAB_SSH_KEYS hidden from help output
-! boot.sh --help | grep -F 'TANAAB_SSH_KEYS'
+# should show the PIROME_DEBUG envvar in help output
+boot.sh --help | grep -F 'PIROME_DEBUG'
+
+# should let PIROME_SSH_KEY override the displayed ssh key default
+PIROME_SSH_KEY='example-vault/example-item:id_example' boot.sh --help | grep -F 'example-vault/example-item:id_example'
+
+# should append PIROME_SSH_KEYS to the displayed ssh key default
+PIROME_SSH_KEYS='example-vault/example-item:id_extra' boot.sh --help | grep -F 'vmruk4ny353aly6tbom7z3v2hy/id_pirog,vmruk4ny353aly6tbom7z3v2hy/id_bootbox,example-vault/example-item:id_extra'
+
+# should append PIROME_SSH_KEYS after PIROME_SSH_KEY when both are set
+PIROME_SSH_KEY='example-vault/example-item:id_primary' PIROME_SSH_KEYS='example-vault/example-item:id_secondary' boot.sh --help | grep -F 'example-vault/example-item:id_primary,example-vault/example-item:id_secondary'
+
+# should keep PIROME_SSH_KEYS hidden from help output
+! boot.sh --help | grep -F 'PIROME_SSH_KEYS'
+
+# should not mention the TANAAB_ envvar namespace in help output
+! boot.sh --help | grep -F 'TANAAB_'
 
 # should print a version string
 test -n "$(boot.sh --version)"

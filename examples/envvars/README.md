@@ -23,10 +23,10 @@ test -n "$OPTOKEN"
 # should run boot.sh successfully using envvars and force-overwrite a conflicting key
 printf '%s\n' 'not-a-private-key' > "$HOME/.ssh/id_test_envvars"
 chmod 600 "$HOME/.ssh/id_test_envvars"
-TANAAB_OP_TOKEN="$OPTOKEN" \
-TANAAB_FORCE=1 \
-TANAAB_SSH_KEY='omfsw2uztmi2xqpid5g3kiv6ba/id_test' \
-TANAAB_SSH_KEYS='omfsw2uztmi2xqpid5g3kiv6ba/id_test:id_test_envvars' \
+PIROME_OP_TOKEN="$OPTOKEN" \
+PIROME_FORCE=1 \
+PIROME_SSH_KEY='omfsw2uztmi2xqpid5g3kiv6ba/id_test' \
+PIROME_SSH_KEYS='omfsw2uztmi2xqpid5g3kiv6ba/id_test:id_test_envvars' \
 boot.sh
 ```
 

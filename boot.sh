@@ -198,10 +198,10 @@ SCRIPT_NAME="${0##*/}"
 # Keep a single top-level assignment so release automation can stamp the entrypoint in place.
 SCRIPT_VERSION="${SCRIPT_VERSION:-$(git describe --tags --always --abbrev=1 2>/dev/null || printf '%s' '0.0.0-unreleased')}"
 
-DEBUG="${TANAAB_DEBUG:-${DEBUG:-${RUNNER_DEBUG:-}}}"
-FORCE="${TANAAB_FORCE:-}"
-OP_TOKEN="${TANAAB_OP_TOKEN:-${OP_SERVICE_ACCOUNT_TOKEN:-}}"
-SSH_KEYS_CSV="${TANAAB_SSH_KEY:-${DEFAULT_SSH_KEY}}"
+DEBUG="${PIROME_DEBUG:-${DEBUG:-${RUNNER_DEBUG:-}}}"
+FORCE="${PIROME_FORCE:-}"
+OP_TOKEN="${PIROME_OP_TOKEN:-${OP_SERVICE_ACCOUNT_TOKEN:-}}"
+SSH_KEYS_CSV="${PIROME_SSH_KEY:-${DEFAULT_SSH_KEY}}"
 declare -a ORIGINAL_ARGS=("$@")
 declare -a SSH_KEYS=()
 declare -a SSH_KEYS_TO_INSTALL=()
@@ -217,8 +217,8 @@ DETECTED_OS=""
 ARCH=""
 OS=""
 
-if [[ -n "${TANAAB_SSH_KEYS:-}" ]]; then
-  SSH_KEYS_CSV="${SSH_KEYS_CSV}${SSH_KEYS_CSV:+,}${TANAAB_SSH_KEYS}"
+if [[ -n "${PIROME_SSH_KEYS:-}" ]]; then
+  SSH_KEYS_CSV="${SSH_KEYS_CSV}${SSH_KEYS_CSV:+,}${PIROME_SSH_KEYS}"
 fi
 
 append_csv_to_array SSH_KEYS "${SSH_KEYS_CSV}"
@@ -295,10 +295,10 @@ ${tty_tp}Options:${tty_reset}
   -y, --yes        runs with all defaults and no prompts, sets NONINTERACTIVE=1
 
 ${tty_tp}Environment Variables:${tty_reset}
-  TANAAB_SSH_KEY      comma-separated list of 1password ssh keys as vault/item[:filename]
-  TANAAB_OP_TOKEN     1password service account token; falls back to OP_SERVICE_ACCOUNT_TOKEN
-  TANAAB_FORCE        set to a truthy value to force supported operations
-  TANAAB_DEBUG        set to a truthy value to show debug messages
+  PIROME_SSH_KEY      comma-separated list of 1password ssh keys as vault/item[:filename]
+  PIROME_OP_TOKEN     1password service account token; falls back to OP_SERVICE_ACCOUNT_TOKEN
+  PIROME_FORCE        set to a truthy value to force supported operations
+  PIROME_DEBUG        set to a truthy value to show debug messages
   NONINTERACTIVE      installs without prompting for user input
   CI                  installs in CI mode (e.g. does not prompt for user input)
 EOS
@@ -485,7 +485,7 @@ ssh_key_filename() {
 }
 
 ssh_key_target_root() {
-  printf "%s" "${TANAAB_TARGET:-${HOME}}"
+  printf "%s" "${PIROME_TARGET:-${HOME}}"
 }
 
 ssh_key_destination_path() {
@@ -594,13 +594,13 @@ validate_inputs() {
   if [[ -z "${OP_TOKEN:-}" ]]; then
     abort_multi "$(cat <<EOABORT
 you must provide a 1Password service account token before using this wrapper.
-set ${tty_bold}TANAAB_OP_TOKEN${tty_reset} or ${tty_bold}OP_SERVICE_ACCOUNT_TOKEN${tty_reset}, or pass ${tty_bold}--op-token${tty_reset}.
+set ${tty_bold}PIROME_OP_TOKEN${tty_reset} or ${tty_bold}OP_SERVICE_ACCOUNT_TOKEN${tty_reset}, or pass ${tty_bold}--op-token${tty_reset}.
 EOABORT
 )"
   fi
 
   if [[ "${#SSH_KEYS[@]}" -eq 0 ]]; then
-    abort "at least one ssh key is required. pass --ssh-key or set TANAAB_SSH_KEY."
+    abort "at least one ssh key is required. pass --ssh-key or set PIROME_SSH_KEY."
   fi
 
 }
@@ -609,8 +609,8 @@ validate_platform() {
   detect_arch
   detect_os
 
-  ARCH="${TANAAB_ARCH:-${DETECTED_ARCH}}"
-  OS="${TANAAB_OS:-${DETECTED_OS}}"
+  ARCH="${PIROME_ARCH:-${DETECTED_ARCH}}"
+  OS="${PIROME_OS:-${DETECTED_OS}}"
 
   if [[ "${EUID:-${UID}}" == "0" ]]; then
     abort "cannot run this script as root."
@@ -671,18 +671,6 @@ apply_noninteractive_mode() {
 }
 
 sync_bootbox_env() {
-  if [[ -n "${DEBUG-}" ]]; then
-    export TANAAB_DEBUG="${DEBUG}"
-  else
-    unset TANAAB_DEBUG || true
-  fi
-
-  if [[ -n "${FORCE-}" ]]; then
-    export TANAAB_FORCE="${FORCE}"
-  else
-    unset TANAAB_FORCE || true
-  fi
-
   if [[ -n "${NONINTERACTIVE-}" ]]; then
     export NONINTERACTIVE="${NONINTERACTIVE}"
   else
@@ -715,15 +703,20 @@ bootbox_run() {
     TANAAB_SSH_KEYS
     TANAAB_OP_TOKEN
     OP_SERVICE_ACCOUNT_TOKEN
+    TANAAB_FORCE
+    TANAAB_DEBUG
+    TANAAB_ARCH
+    TANAAB_OS
   )
   local -a bootbox_command=(env)
-  local -a bootbox_display_command=(env)
+  local -a bootbox_display_command=()
 
   case "${mode}" in
     core)
       unset_env_names+=("TANAAB_TARGET")
       ;;
     ssh)
+      unset_env_names+=("TANAAB_TARGET")
       ;;
     *)
       abort "unsupported internal bootbox mode ${tty_bold}${mode}${tty_reset}."
@@ -732,8 +725,27 @@ bootbox_run() {
 
   for env_name in "${unset_env_names[@]}"; do
     bootbox_command+=(-u "${env_name}")
-    bootbox_display_command+=(-u "${env_name}")
   done
+
+  if [[ -n "${DEBUG-}" ]]; then
+    bootbox_command+=("TANAAB_DEBUG=${DEBUG}")
+    bootbox_display_command+=("PIROME_DEBUG=${DEBUG}")
+  fi
+
+  if [[ -n "${FORCE-}" ]]; then
+    bootbox_command+=("TANAAB_FORCE=${FORCE}")
+    bootbox_display_command+=("PIROME_FORCE=${FORCE}")
+  fi
+
+  if [[ -n "${NONINTERACTIVE-}" ]]; then
+    bootbox_command+=("NONINTERACTIVE=${NONINTERACTIVE}")
+    bootbox_display_command+=("NONINTERACTIVE=${NONINTERACTIVE}")
+  fi
+
+  if [[ "${mode}" == "ssh" && -n "${PIROME_TARGET-}" ]]; then
+    bootbox_command+=("TANAAB_TARGET=${PIROME_TARGET}")
+    bootbox_display_command+=("PIROME_TARGET=${PIROME_TARGET}")
+  fi
 
   bootbox_command+=(/bin/bash "${BOOTBOX_SCRIPT_PATH}")
   bootbox_display_command+=(/bin/bash "${BOOTBOX_SCRIPT_PATH}")

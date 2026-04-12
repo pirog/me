@@ -51,10 +51,10 @@ If you do not wish to download the script you can set options with environment v
 the script.
 
 ```zsh
-TANAAB_OP_TOKEN="$OP_TOKEN"
-TANAAB_SSH_KEY="vmruk4ny353aly6tbom7z3v2hy/id_pirog"
-TANAAB_DEBUG=0
-TANAAB_FORCE=0
+PIROME_OP_TOKEN="$OP_TOKEN"
+PIROME_SSH_KEY="vmruk4ny353aly6tbom7z3v2hy/id_pirog"
+PIROME_DEBUG=0
+PIROME_FORCE=0
 ```
 
 #### Examples
@@ -63,9 +63,9 @@ These are equivalent commands and meant to demostrate environment variable usage
 
 ```zsh
 # use envvars
-TANAAB_OP_TOKEN="$OP_TOKEN" \
-TANAAB_SSH_KEY="vmruk4ny353aly6tbom7z3v2hy/id_pirog" \
-TANAAB_DEBUG=1 \
+PIROME_OP_TOKEN="$OP_TOKEN" \
+PIROME_SSH_KEY="vmruk4ny353aly6tbom7z3v2hy/id_pirog" \
+PIROME_DEBUG=1 \
   /bin/bash -c "$(curl -fsSL https://boot.pirog.me/boot.sh)"
 
 # invoke directly
