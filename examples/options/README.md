@@ -11,7 +11,7 @@ calls for a local Leia run.
 ## Setup
 
 ```bash
-# should remove a core formula first when Homebrew is already present
+# should remove a core formula first
 brew uninstall --formula --force stow || true
 
 # should prepare the default ssh target directory
@@ -23,11 +23,12 @@ test -n "$OPTOKEN"
 # should run boot.sh successfully using options while skipping an existing key and continuing
 boot.sh \
   --op-token "$OPTOKEN" \
-  --ssh-key 'omfsw2uztmi2xqpid5g3kiv6ba/id_test'
+  --ssh-key 'omfsw2uztmi2xqpid5g3kiv6ba/id_test' \
+  --debug && fail
 boot.sh \
   --op-token "$OPTOKEN" \
   --ssh-key 'omfsw2uztmi2xqpid5g3kiv6ba/id_test' \
-  --ssh-key 'omfsw2uztmi2xqpid5g3kiv6ba/id_test:id_test_options'
+  --ssh-key 'omfsw2uztmi2xqpid5g3kiv6ba/id_test:id_test_options' \
 ```
 
 ## Testing

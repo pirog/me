@@ -11,7 +11,7 @@ calls for a local Leia run.
 ## Setup
 
 ```bash
-# should remove a core formula first when Homebrew is already present
+# should remove a core formula first
 brew uninstall --formula --force stow || true
 
 # should prepare the default ssh target directory
