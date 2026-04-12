@@ -26,6 +26,7 @@ This root `AGENTS.md` is the repo-local override for Codex work in this reposito
 - Never run Leia locally. Leia scenarios in this repo are CI-only unless the user explicitly asks for a local Leia run.
 - Treat `bun run build` as CI-owned by default. Only run it locally when the task explicitly requires release or `dist/` verification.
 - Prefer narrow local validation such as static review and `bun run lint`.
+- New `boot.sh` features and bug fixes should add the smallest practical amount of coverage to all relevant Leia examples instead of relying on one catch-all scenario.
 - When Leia or `bun run build` is skipped because of repo policy, say so explicitly.
 - `README.md` may lag this agent policy. If there is tension, follow `AGENTS.md` and optionally flag the doc drift.
 

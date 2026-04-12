@@ -15,16 +15,16 @@ set -euo pipefail
 MACOS_OLDEST_SUPPORTED="26.0"
 REQUIRED_CURL_VERSION="7.41.0"
 BOOTBOX_URL="https://bootbox.tanaab.sh/bootbox.sh"
-DEFAULT_SSH_KEY="vmruk4ny353aly6tbom7z3v2hy/id_pirog"
+DEFAULT_SSH_KEY="vmruk4ny353aly6tbom7z3v2hy/id_pirog,vmruk4ny353aly6tbom7z3v2hy/id_bootbox"
 
 abort() {
-  printf "%s\n" "$@" >&2
+  printf "%serror%s: %s\n" "${tty_red-}" "${tty_reset-}" "$@" >&2
   exit 1
 }
 
 abort_multi() {
   while read -r line; do
-    printf "%s\n" "${line}" >&2
+    printf "%serror%s: %s\n" "${tty_red-}" "${tty_reset-}" "${line}" >&2
   done <<< "$@"
   exit 1
 }
@@ -157,20 +157,20 @@ shell_join() {
 
 # shellcheck disable=SC2292
 if [ -z "${BASH_VERSION:-}" ]; then
-  abort "Bash is required to interpret this script."
+  abort "bash is required to interpret this script."
 fi
 
 if [[ -n "${CI-}" && -n "${INTERACTIVE-}" ]]; then
-  abort "Cannot run force-interactive mode in CI."
+  abort "cannot run force-interactive mode in CI."
 fi
 
 # shellcheck disable=SC2016
 if [[ -n "${INTERACTIVE-}" && -n "${NONINTERACTIVE-}" ]]; then
-  abort 'Both `$INTERACTIVE` and `$NONINTERACTIVE` are set. Please unset at least one variable and try again.'
+  abort 'both `$INTERACTIVE` and `$NONINTERACTIVE` are set. please unset at least one variable and try again.'
 fi
 
 if [[ -n "${POSIXLY_CORRECT+1}" ]]; then
-  abort 'Bash must not run in POSIX mode. Please unset POSIXLY_CORRECT and try again.'
+  abort 'bash must not run in POSIX mode. please unset POSIXLY_CORRECT and try again.'
 fi
 
 if [[ -t 1 ]]; then
@@ -183,6 +183,7 @@ tty_mkbold() { tty_escape "1;$1"; }
 tty_mkdim() { tty_escape "2;$1"; }
 tty_bold="$(tty_mkbold 39)"
 tty_dim="$(tty_mkdim 39)"
+# shellcheck disable=SC2034 # keep the shared palette available even when a given change doesn't use green directly
 tty_green="$(tty_escape 32)"
 tty_magenta="$(tty_escape 35)"
 tty_red="$(tty_mkbold 31)"
@@ -203,9 +204,13 @@ OP_TOKEN="${TANAAB_OP_TOKEN:-${OP_SERVICE_ACCOUNT_TOKEN:-}}"
 SSH_KEYS_CSV="${TANAAB_SSH_KEY:-${DEFAULT_SSH_KEY}}"
 declare -a ORIGINAL_ARGS=("$@")
 declare -a SSH_KEYS=()
+declare -a SSH_KEYS_TO_INSTALL=()
+declare -a SSH_KEYS_TO_OVERWRITE=()
+declare -a SSH_KEYS_TO_SKIP=()
 declare -a PLANNED_ACTIONS=()
 BOOT_TMPDIR=""
 BOOTBOX_SCRIPT_PATH=""
+CORE_NEEDS_REMEDIATION="0"
 CURL=""
 DETECTED_ARCH=""
 DETECTED_OS=""
@@ -246,7 +251,7 @@ log() {
 }
 
 warn() {
-  printf "${tty_yellow}warning${tty_reset}: %s\n" "$(chomp "$@")" >&2
+  printf "${tty_yellow}warn${tty_reset}: %s\n" "$(chomp "$@")" >&2
 }
 
 show_version() {
@@ -306,7 +311,7 @@ parse_args() {
       --ssh-key)
         if [[ $# -lt 2 ]]; then
           usage "noexit"
-          abort "Option ${tty_bold}--ssh-key${tty_reset} requires a value."
+          abort "option ${tty_bold}--ssh-key${tty_reset} requires a value."
         fi
         append_array_value SSH_KEYS "$2"
         shift 2
@@ -314,7 +319,7 @@ parse_args() {
       --ssh-key=*)
         if [[ -z "${1#*=}" ]]; then
           usage "noexit"
-          abort "Option ${tty_bold}--ssh-key${tty_reset} must not be empty."
+          abort "option ${tty_bold}--ssh-key${tty_reset} must not be empty."
         fi
         append_array_value SSH_KEYS "${1#*=}"
         shift
@@ -322,7 +327,7 @@ parse_args() {
       --ssh-keys)
         if [[ $# -lt 2 ]]; then
           usage "noexit"
-          abort "Option ${tty_bold}--ssh-keys${tty_reset} requires a value."
+          abort "option ${tty_bold}--ssh-keys${tty_reset} requires a value."
         fi
         append_csv_to_array SSH_KEYS "$2"
         shift 2
@@ -330,7 +335,7 @@ parse_args() {
       --ssh-keys=*)
         if [[ -z "${1#*=}" ]]; then
           usage "noexit"
-          abort "Option ${tty_bold}--ssh-keys${tty_reset} must not be empty."
+          abort "option ${tty_bold}--ssh-keys${tty_reset} must not be empty."
         fi
         append_csv_to_array SSH_KEYS "${1#*=}"
         shift
@@ -338,7 +343,7 @@ parse_args() {
       --op-token)
         if [[ $# -lt 2 ]]; then
           usage "noexit"
-          abort "Option ${tty_bold}--op-token${tty_reset} requires a value."
+          abort "option ${tty_bold}--op-token${tty_reset} requires a value."
         fi
         OP_TOKEN="$2"
         shift 2
@@ -346,7 +351,7 @@ parse_args() {
       --op-token=*)
         if [[ -z "${1#*=}" ]]; then
           usage "noexit"
-          abort "Option ${tty_bold}--op-token${tty_reset} must not be empty."
+          abort "option ${tty_bold}--op-token${tty_reset} must not be empty."
         fi
         OP_TOKEN="${1#*=}"
         shift
@@ -371,7 +376,7 @@ parse_args() {
         ;;
       *)
         usage "noexit"
-        abort "${tty_red}Unrecognized option${tty_reset} ${tty_bold}$1${tty_reset}! See available options in usage above."
+        abort "unrecognized option ${tty_bold}$1${tty_reset}; see usage above."
         ;;
     esac
   done
@@ -443,6 +448,87 @@ plan_action() {
   PLANNED_ACTIONS+=("$1")
 }
 
+ssh_key_spec_base() {
+  printf "%s" "${1%%:*}"
+}
+
+ssh_key_spec_filename_override() {
+  if [[ "$1" == *:* ]]; then
+    printf "%s" "${1#*:}"
+  fi
+}
+
+ssh_key_spec_item() {
+  local spec_base
+
+  spec_base="$(ssh_key_spec_base "$1")"
+  printf "%s" "${spec_base##*/}"
+}
+
+ssh_key_filename() {
+  local filename_override
+
+  filename_override="$(ssh_key_spec_filename_override "$1")"
+  if [[ -n "${filename_override}" ]]; then
+    printf "%s" "${filename_override}"
+    return 0
+  fi
+
+  ssh_key_spec_item "$1"
+}
+
+ssh_key_target_root() {
+  printf "%s" "${TANAAB_TARGET:-${HOME}}"
+}
+
+ssh_key_destination_path() {
+  printf "%s/.ssh/%s" "$(ssh_key_target_root)" "$(ssh_key_filename "$1")"
+}
+
+describe_ssh_key_specs() {
+  local first="1"
+  local ssh_key
+  local destination_path
+
+  if [[ $# -eq 0 ]]; then
+    return 0
+  fi
+
+  for ssh_key in "$@"; do
+    if [[ "${first}" == "1" ]]; then
+      first="0"
+    else
+      printf ", "
+    fi
+
+    destination_path="$(ssh_key_destination_path "${ssh_key}")"
+    printf "%s ${tty_dim}->${tty_reset} ${tty_ts}%s${tty_reset}" "${ssh_key}" "${destination_path}"
+  done
+}
+
+collect_ssh_key_actions() {
+  local ssh_key
+  local destination_path
+
+  SSH_KEYS_TO_INSTALL=()
+  SSH_KEYS_TO_OVERWRITE=()
+  SSH_KEYS_TO_SKIP=()
+
+  for ssh_key in "${SSH_KEYS[@]}"; do
+    destination_path="$(ssh_key_destination_path "${ssh_key}")"
+
+    if [[ -e "${destination_path}" ]]; then
+      if force_enabled; then
+        SSH_KEYS_TO_OVERWRITE+=("${ssh_key}")
+      else
+        SSH_KEYS_TO_SKIP+=("${ssh_key}")
+      fi
+    else
+      SSH_KEYS_TO_INSTALL+=("${ssh_key}")
+    fi
+  done
+}
+
 have_planned_actions() {
   [[ "${#PLANNED_ACTIONS[@]}" -gt 0 ]]
 }
@@ -485,7 +571,7 @@ wait_for_user() {
 execute() {
   debug "${tty_tp}running${tty_reset}" "$@"
   if ! "$@"; then
-    abort "$(printf "Failed during: %s" "$(shell_join "$@")")"
+    abort "$(printf "failed during: %s" "$(shell_join "$@")")"
   fi
 }
 
@@ -498,14 +584,14 @@ cleanup() {
 validate_inputs() {
   if [[ -z "${OP_TOKEN:-}" ]]; then
     abort_multi "$(cat <<EOABORT
-You must provide a 1Password service account token before using this wrapper.
-Set ${tty_bold}TANAAB_OP_TOKEN${tty_reset} or ${tty_bold}OP_SERVICE_ACCOUNT_TOKEN${tty_reset}, or pass ${tty_bold}--op-token${tty_reset}.
+you must provide a 1Password service account token before using this wrapper.
+set ${tty_bold}TANAAB_OP_TOKEN${tty_reset} or ${tty_bold}OP_SERVICE_ACCOUNT_TOKEN${tty_reset}, or pass ${tty_bold}--op-token${tty_reset}.
 EOABORT
 )"
   fi
 
   if [[ "${#SSH_KEYS[@]}" -eq 0 ]]; then
-    abort "At least one SSH key is required. Pass --ssh-key or set TANAAB_SSH_KEY."
+    abort "at least one ssh key is required. pass --ssh-key or set TANAAB_SSH_KEY."
   fi
 
 }
@@ -518,29 +604,29 @@ validate_platform() {
   OS="${TANAAB_OS:-${DETECTED_OS}}"
 
   if [[ "${EUID:-${UID}}" == "0" ]]; then
-    abort "Cannot run this script as root"
+    abort "cannot run this script as root."
   fi
 
   CURL="$(command -v curl || true)"
   if [[ -z "${CURL}" ]] || ! test_curl "${CURL}"; then
     abort_multi "$(cat <<EOABORT
-You must install cURL ${REQUIRED_CURL_VERSION} or higher before using this wrapper.
+you must install cURL ${REQUIRED_CURL_VERSION} or higher before using this wrapper.
 EOABORT
 )"
   fi
 
   if [[ "${OS}" != "macos" ]]; then
     abort_multi "$(cat <<EOABORT
-This script is only for ${tty_green}macOS${tty_reset}. ${tty_red}${OS}${tty_reset} is not supported!
-Check the project README for current support details: ${tty_underline}${tty_magenta}https://github.com/pirog/me${tty_reset}
+this script only supports ${tty_ts}macOS${tty_reset}; ${tty_red}${OS}${tty_reset} is not supported.
+check the project README for current support details: ${tty_underline}${tty_magenta}https://github.com/pirog/me${tty_reset}
 EOABORT
 )"
   fi
 
   if [[ "${ARCH}" != "x64" ]] && [[ "${ARCH}" != "arm64" ]]; then
     abort_multi "$(cat <<EOABORT
-This script currently only supports ${tty_green}x64${tty_reset} and ${tty_green}arm64${tty_reset} systems.
-Check the project README for current support details: ${tty_underline}${tty_magenta}https://github.com/pirog/me${tty_reset}
+this script currently only supports ${tty_ts}x64${tty_reset} and ${tty_ts}arm64${tty_reset} systems.
+check the project README for current support details: ${tty_underline}${tty_magenta}https://github.com/pirog/me${tty_reset}
 EOABORT
 )"
   fi
@@ -549,8 +635,8 @@ EOABORT
   macos_version="$(major_minor "$(/usr/bin/sw_vers -productVersion)")"
   if ! version_compare "${macos_version}" "${MACOS_OLDEST_SUPPORTED}"; then
     abort_multi "$(cat <<EOABORT
-Your macOS version ${tty_red}${macos_version}${tty_reset} is ${tty_bold}too old${tty_reset}! Min required version is ${tty_green}${MACOS_OLDEST_SUPPORTED}${tty_reset}
-Check the project README for current support details: ${tty_underline}${tty_magenta}https://github.com/pirog/me${tty_reset}
+your macOS version ${tty_red}${macos_version}${tty_reset} is ${tty_bold}too old${tty_reset}; minimum supported version is ${tty_ts}${MACOS_OLDEST_SUPPORTED}${tty_reset}.
+check the project README for current support details: ${tty_underline}${tty_magenta}https://github.com/pirog/me${tty_reset}
 EOABORT
 )"
   fi
@@ -560,18 +646,18 @@ apply_noninteractive_mode() {
   # shellcheck disable=SC2016
   if [[ -z "${NONINTERACTIVE-}" ]]; then
     if [[ -n "${CI-}" ]]; then
-      warn 'Running in non-interactive mode because `$CI` is set.'
+      warn "${tty_tp}running${tty_reset} in ${tty_ts}non-interactive mode${tty_reset} because \`\$CI\` is set."
       NONINTERACTIVE=1
     elif [[ ! -t 0 ]]; then
       if [[ -z "${INTERACTIVE-}" ]]; then
-        warn 'Running in non-interactive mode because `stdin` is not a TTY.'
+        warn "${tty_tp}running${tty_reset} in ${tty_ts}non-interactive mode${tty_reset} because \`stdin\` is not a TTY."
         NONINTERACTIVE=1
       else
-        warn 'Running in interactive mode despite `stdin` not being a TTY because `$INTERACTIVE` is set.'
+        warn "${tty_tp}running${tty_reset} in ${tty_ts}interactive mode${tty_reset} despite \`stdin\` not being a TTY because \`\$INTERACTIVE\` is set."
       fi
     fi
   else
-    log "${tty_bold}running${tty_reset} in ${tty_yellow}non-interactive mode${tty_reset} ${tty_dim}because \$NONINTERACTIVE is set${tty_reset}"
+    log "${tty_tp}running${tty_reset} in ${tty_ts}non-interactive mode${tty_reset} ${tty_dim}because \$NONINTERACTIVE is set${tty_reset}"
   fi
 }
 
@@ -595,8 +681,34 @@ sync_bootbox_env() {
   fi
 }
 
+core_remediation_needed() {
+  [[ "${CORE_NEEDS_REMEDIATION:-0}" == "1" ]]
+}
+
+run_bootbox_from_tmpdir() (
+  cd "${BOOT_TMPDIR}" || exit 1
+  "$@"
+)
+
 plan_wrapper_execution() {
-  :
+  if core_remediation_needed; then
+    plan_action "${tty_tp}ensure${tty_reset} ${tty_ts}homebrew${tty_reset} is installed"
+    plan_action "${tty_tp}install${tty_reset} ${tty_ts}core homebrew packages${tty_reset}"
+  fi
+
+  collect_ssh_key_actions
+
+  if [[ "${#SSH_KEYS_TO_INSTALL[@]}" -gt 0 ]]; then
+    plan_action "${tty_tp}install${tty_reset} ssh keys: $(describe_ssh_key_specs "${SSH_KEYS_TO_INSTALL[@]}")"
+  fi
+
+  if [[ "${#SSH_KEYS_TO_OVERWRITE[@]}" -gt 0 ]]; then
+    plan_action "${tty_tp}overwrite${tty_reset} existing ssh keys because ${tty_bold}--force${tty_reset} is set: $(describe_ssh_key_specs "${SSH_KEYS_TO_OVERWRITE[@]}")"
+  fi
+
+  if [[ "${#SSH_KEYS_TO_SKIP[@]}" -gt 0 ]]; then
+    plan_action "${tty_tp}skip${tty_reset} existing ssh keys because ${tty_bold}--force${tty_reset} is not set: $(describe_ssh_key_specs "${SSH_KEYS_TO_SKIP[@]}")"
+  fi
 }
 
 prepare_bootbox_script() {
@@ -607,20 +719,145 @@ prepare_bootbox_script() {
   execute chmod 700 "${BOOTBOX_SCRIPT_PATH}"
 }
 
-run_bootbox() {
-  local -a bootbox_command=("/bin/bash" "${BOOTBOX_SCRIPT_PATH}" "--op-token" "${OP_TOKEN}")
-  local -a bootbox_display_command=("/bin/bash" "${BOOTBOX_SCRIPT_PATH}" "--op-token" "$(mask_secret_for_display "${OP_TOKEN}")")
-  local ssh_key
+run_bootbox_check_core() {
+  local -a bootbox_command=(
+    env
+    -u TANAAB_BREWFILE
+    -u TANAAB_BREWFILES
+    -u TANAAB_DOTPKG
+    -u TANAAB_DOTPKGS
+    -u TANAAB_SSH_KEY
+    -u TANAAB_SSH_KEYS
+    -u TANAAB_OP_TOKEN
+    -u OP_SERVICE_ACCOUNT_TOKEN
+    -u TANAAB_TARGET
+    /bin/bash
+    "${BOOTBOX_SCRIPT_PATH}"
+    --check-core
+  )
 
-  for ssh_key in "${SSH_KEYS[@]}"; do
-    bootbox_command+=("--ssh-key" "${ssh_key}")
-    bootbox_display_command+=("--ssh-key" "${ssh_key}")
+  debug "${tty_tp}checking${tty_reset} ${tty_ts}bootbox core requirements${tty_reset} from ${tty_ts}${BOOT_TMPDIR}${tty_reset}"
+  if run_bootbox_from_tmpdir "${bootbox_command[@]}"; then
+    CORE_NEEDS_REMEDIATION="0"
+    debug "bootbox core requirements are satisfied"
+    return 0
+  fi
+
+  CORE_NEEDS_REMEDIATION="1"
+  debug "bootbox core requirements need remediation"
+  return 1
+}
+
+ensure_bootbox_core_requirements() {
+  local -a bootbox_command=(
+    env
+    -u TANAAB_BREWFILE
+    -u TANAAB_BREWFILES
+    -u TANAAB_DOTPKG
+    -u TANAAB_DOTPKGS
+    -u TANAAB_SSH_KEY
+    -u TANAAB_SSH_KEYS
+    -u TANAAB_OP_TOKEN
+    -u OP_SERVICE_ACCOUNT_TOKEN
+    -u TANAAB_TARGET
+    /bin/bash
+    "${BOOTBOX_SCRIPT_PATH}"
+  )
+  local -a bootbox_display_command=(
+    env
+    -u TANAAB_BREWFILE
+    -u TANAAB_BREWFILES
+    -u TANAAB_DOTPKG
+    -u TANAAB_DOTPKGS
+    -u TANAAB_SSH_KEY
+    -u TANAAB_SSH_KEYS
+    -u TANAAB_OP_TOKEN
+    -u OP_SERVICE_ACCOUNT_TOKEN
+    -u TANAAB_TARGET
+    /bin/bash
+    "${BOOTBOX_SCRIPT_PATH}"
+  )
+
+  if ! core_remediation_needed; then
+    return 0
+  fi
+
+  debug "${tty_tp}delegating${tty_reset} to ${tty_ts}bootbox${tty_reset} from ${tty_ts}${BOOT_TMPDIR}${tty_reset} with $(shell_join "${bootbox_display_command[@]}")"
+  if ! run_bootbox_from_tmpdir "${bootbox_command[@]}"; then
+    abort "bootbox failed while ensuring core requirements."
+  fi
+
+  if ! run_bootbox_check_core; then
+    abort "bootbox core requirements are still not satisfied after remediation."
+  fi
+}
+
+run_bootbox_for_ssh_key() {
+  local ssh_key="$1"
+  local -a bootbox_command=(
+    env
+    -u TANAAB_BREWFILE
+    -u TANAAB_BREWFILES
+    -u TANAAB_DOTPKG
+    -u TANAAB_DOTPKGS
+    -u TANAAB_SSH_KEY
+    -u TANAAB_SSH_KEYS
+    -u TANAAB_OP_TOKEN
+    -u OP_SERVICE_ACCOUNT_TOKEN
+    /bin/bash
+    "${BOOTBOX_SCRIPT_PATH}"
+    --op-token
+    "${OP_TOKEN}"
+    --ssh-key
+    "${ssh_key}"
+  )
+  local -a bootbox_display_command=(
+    env
+    -u TANAAB_BREWFILE
+    -u TANAAB_BREWFILES
+    -u TANAAB_DOTPKG
+    -u TANAAB_DOTPKGS
+    -u TANAAB_SSH_KEY
+    -u TANAAB_SSH_KEYS
+    -u TANAAB_OP_TOKEN
+    -u OP_SERVICE_ACCOUNT_TOKEN
+    /bin/bash
+    "${BOOTBOX_SCRIPT_PATH}"
+    --op-token
+    "$(mask_secret_for_display "${OP_TOKEN}")"
+    --ssh-key
+    "${ssh_key}"
+  )
+
+  debug "${tty_tp}delegating${tty_reset} to ${tty_ts}bootbox${tty_reset} from ${tty_ts}${BOOT_TMPDIR}${tty_reset} with $(shell_join "${bootbox_display_command[@]}")"
+  if ! run_bootbox_from_tmpdir "${bootbox_command[@]}"; then
+    abort "bootbox failed while installing ssh key ${tty_ts}$(ssh_key_filename "${ssh_key}")${tty_reset}."
+  fi
+}
+
+run_bootbox() {
+  local ssh_key
+  local destination_path
+
+  collect_ssh_key_actions
+
+  for ssh_key in "${SSH_KEYS_TO_SKIP[@]}"; do
+    destination_path="$(ssh_key_destination_path "${ssh_key}")"
+    warn "${tty_tp}skipping${tty_reset} ssh key ${tty_ts}${ssh_key}${tty_reset} because ${tty_ts}${destination_path}${tty_reset} already exists and ${tty_bold}--force${tty_reset} is not set."
   done
 
-  debug "delegating to bootbox with $(shell_join "${bootbox_display_command[@]}")"
-  if ! "${bootbox_command[@]}"; then
-    abort "bootbox failed while running delegated bootstrap."
+  if [[ "${#SSH_KEYS_TO_INSTALL[@]}" -eq 0 && "${#SSH_KEYS_TO_OVERWRITE[@]}" -eq 0 ]]; then
+    debug "no SSH keys require installation after wrapper-side filtering"
+    return 0
   fi
+
+  for ssh_key in "${SSH_KEYS_TO_INSTALL[@]}"; do
+    run_bootbox_for_ssh_key "${ssh_key}"
+  done
+
+  for ssh_key in "${SSH_KEYS_TO_OVERWRITE[@]}"; do
+    run_bootbox_for_ssh_key "${ssh_key}"
+  done
 }
 
 main() {
@@ -632,7 +869,7 @@ main() {
   sync_bootbox_env
 
   debug "${tty_tp}running${tty_reset}" "${SCRIPT_NAME}" script version: "${SCRIPT_VERSION}"
-  debug raw2 CI="${CI:-}"
+  debug raw CI="${CI:-}"
   debug raw NONINTERACTIVE="${NONINTERACTIVE:-}"
   debug raw DEBUG="${DEBUG:-}"
   debug raw FORCE="${FORCE:-}"
@@ -643,6 +880,9 @@ main() {
   debug raw ARCH="${ARCH}"
   debug raw OS="${OS}"
 
+  prepare_bootbox_script
+  run_bootbox_check_core || true
+  debug raw CORE_NEEDS_REMEDIATION="${CORE_NEEDS_REMEDIATION}"
   plan_wrapper_execution
 
   if [[ -z "${NONINTERACTIVE-}" ]] && have_planned_actions; then
@@ -650,7 +890,7 @@ main() {
     wait_for_user
   fi
 
-  prepare_bootbox_script
+  ensure_bootbox_core_requirements
   run_bootbox
 }
 
