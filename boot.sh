@@ -6,6 +6,7 @@ set -euo pipefail
 #
 #   $ ./boot.sh --op-token "$OP_TOKEN"
 #   $ ./boot.sh --op-token "$OP_TOKEN" --ssh-key vmruk4ny353aly6tbom7z3v2hy/id_botbox1
+#   $ ./boot.sh --op-token "$OP_TOKEN" --me v0.3.1
 #   $ DEBUG=1 ./boot.sh --op-token "$OP_TOKEN" --yes
 #
 # option precedence: cli options override environment variables, which override defaults.
@@ -16,6 +17,10 @@ MACOS_OLDEST_SUPPORTED="26.0"
 REQUIRED_CURL_VERSION="7.41.0"
 BOOTBOX_URL="https://bootbox.tanaab.sh/bootbox.sh"
 DEFAULT_SSH_KEY="vmruk4ny353aly6tbom7z3v2hy/id_pirog,vmruk4ny353aly6tbom7z3v2hy/id_bootbox"
+DEFAULT_ME_SOURCE="ssh"
+ME_REPO_SSH_URL="git@github.com:pirog/me.git"
+ME_REPO_RELEASE_BASE_URL="https://github.com/pirog/me/releases/download"
+ME_REPO_RELEASE_ARCHIVE_PREFIX="piroplugin"
 
 abort() {
   printf "%serror%s: %s\n" "${tty_red-}" "${tty_reset-}" "$@" >&2
@@ -202,6 +207,7 @@ DEBUG="${PIROME_DEBUG:-${DEBUG:-${RUNNER_DEBUG:-}}}"
 FORCE="${PIROME_FORCE:-}"
 OP_TOKEN="${PIROME_OP_TOKEN:-${OP_SERVICE_ACCOUNT_TOKEN:-}}"
 SSH_KEYS_CSV="${PIROME_SSH_KEY:-${DEFAULT_SSH_KEY}}"
+ME_SOURCE="${PIROME_ME:-${DEFAULT_ME_SOURCE}}"
 declare -a ORIGINAL_ARGS=("$@")
 declare -a SSH_KEYS=()
 declare -a SSH_KEYS_TO_INSTALL=()
@@ -216,6 +222,10 @@ DETECTED_ARCH=""
 DETECTED_OS=""
 ARCH=""
 OS=""
+ME_SOURCE_KIND=""
+ME_SOURCE_LOCAL_PATH=""
+ME_SOURCE_VERSION_TAG=""
+ME_TARGET_PATH=""
 
 if [[ -n "${PIROME_SSH_KEYS:-}" ]]; then
   SSH_KEYS_CSV="${SSH_KEYS_CSV}${SSH_KEYS_CSV:+,}${PIROME_SSH_KEYS}"
@@ -261,11 +271,32 @@ show_version() {
   exit 0
 }
 
+is_semver_value() {
+  [[ "${1:-}" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+$ ]]
+}
+
+normalize_release_tag() {
+  if [[ "${1}" == v* ]]; then
+    printf "%s" "${1}"
+  else
+    printf "v%s" "${1}"
+  fi
+}
+
+normalize_me_source_value() {
+  if is_semver_value "${1}"; then
+    normalize_release_tag "${1}"
+  else
+    printf "%s" "${1}"
+  fi
+}
+
 usage() {
   local debug_display="off"
   local force_display="off"
   local ssh_keys_display="none"
   local op_token_display="none"
+  local me_display="none"
 
   if debug_enabled; then
     debug_display="on"
@@ -282,12 +313,15 @@ usage() {
     op_token_display="$(mask_secret_for_display "${OP_TOKEN}")"
   fi
 
+  me_display="$(normalize_me_source_value "${ME_SOURCE}")"
+
   cat <<EOS
 Usage: ${tty_dim}[NONINTERACTIVE=1] [CI=1]${tty_reset} ${tty_bold}${SCRIPT_NAME}${tty_reset} ${tty_dim}[options]${tty_reset}
 
 ${tty_tp}Options:${tty_reset}
   --ssh-key        installs 1password ssh keys as vault/item[:filename] ${tty_dim}[default: ${ssh_keys_display}]${tty_reset}
   --op-token       auths with 1password service account token ${tty_dim}[default: ${op_token_display}]${tty_reset}
+  --me             fetches me from ssh, a local git repo path, or a release version ${tty_dim}[default: ${me_display}]${tty_reset}
   --version        shows version of this script
   --debug          shows debug messages ${tty_dim}[default: ${debug_display}]${tty_reset}
   --force          forces supported bootbox operations ${tty_dim}[default: ${force_display}]${tty_reset}
@@ -297,6 +331,7 @@ ${tty_tp}Options:${tty_reset}
 ${tty_tp}Environment Variables:${tty_reset}
   PIROME_SSH_KEY      comma-separated list of 1password ssh keys as vault/item[:filename]
   PIROME_OP_TOKEN     1password service account token; falls back to OP_SERVICE_ACCOUNT_TOKEN
+  PIROME_ME           source for ~/tanaab/me; supports ssh, local repo paths, or release versions
   PIROME_FORCE        set to a truthy value to force supported operations
   PIROME_DEBUG        set to a truthy value to show debug messages
   NONINTERACTIVE      installs without prompting for user input
@@ -361,6 +396,16 @@ parse_args() {
       --op-token=*)
         require_inline_option_value "--op-token" "${1#*=}"
         OP_TOKEN="${1#*=}"
+        shift
+        ;;
+      --me)
+        require_next_option_value "--me" "$#"
+        ME_SOURCE="$2"
+        shift 2
+        ;;
+      --me=*)
+        require_inline_option_value "--me" "${1#*=}"
+        ME_SOURCE="${1#*=}"
         shift
         ;;
       --debug)
@@ -449,6 +494,239 @@ test_curl() {
   curl_version_output="$("$1" --version 2>/dev/null)"
   curl_name_and_version="${curl_version_output%% (*}"
   version_compare "$(major_minor "${curl_name_and_version##* }")" "$(major_minor "${REQUIRED_CURL_VERSION}")"
+}
+
+display_home_path() {
+  local path="$1"
+
+  if [[ "${path}" == "${HOME}" ]]; then
+    printf "~"
+    return 0
+  fi
+
+  if [[ "${path}" == "${HOME}/"* ]]; then
+    printf "%s/%s" "~" "${path#"${HOME}"/}"
+    return 0
+  fi
+
+  printf "%s" "${path}"
+}
+
+find_git_repo_root() {
+  local path="$1"
+  local parent
+
+  while :; do
+    if [[ -d "${path}/.git" ]]; then
+      printf "%s" "${path}"
+      return 0
+    fi
+
+    if [[ -f "${path}/HEAD" && -d "${path}/objects" && -d "${path}/refs" ]]; then
+      printf "%s" "${path}"
+      return 0
+    fi
+
+    parent="$(dirname "${path}")"
+    if [[ "${parent}" == "${path}" ]]; then
+      return 1
+    fi
+
+    path="${parent}"
+  done
+}
+
+resolve_local_repo_source_path() {
+  local source_path="$1"
+  local absolute_path
+  local repo_root
+
+  if ! absolute_path="$(cd "${source_path}" 2>/dev/null && pwd -P)"; then
+    return 1
+  fi
+
+  if ! repo_root="$(find_git_repo_root "${absolute_path}")"; then
+    return 1
+  fi
+
+  printf "%s" "${repo_root}"
+}
+
+resolve_me_source_kind() {
+  if [[ "${ME_SOURCE}" == "ssh" ]]; then
+    printf "ssh"
+  elif is_semver_value "${ME_SOURCE}"; then
+    printf "version"
+  else
+    printf "local"
+  fi
+}
+
+me_target_display() {
+  display_home_path "${ME_TARGET_PATH}"
+}
+
+prepare_me_source() {
+  ME_SOURCE_KIND="$(resolve_me_source_kind)"
+  ME_SOURCE_LOCAL_PATH=""
+  ME_SOURCE_VERSION_TAG=""
+  ME_TARGET_PATH="${HOME}/tanaab/me"
+
+  case "${ME_SOURCE_KIND}" in
+    ssh)
+      ;;
+    version)
+      ME_SOURCE_VERSION_TAG="$(normalize_release_tag "${ME_SOURCE}")"
+      ;;
+    local)
+      if ! ME_SOURCE_LOCAL_PATH="$(resolve_local_repo_source_path "${ME_SOURCE}")"; then
+        abort "local me source ${tty_ts}${ME_SOURCE}${tty_reset} must resolve to a local git repo."
+      fi
+
+      if [[ "${ME_SOURCE_LOCAL_PATH}" == "${ME_TARGET_PATH}" ]]; then
+        abort "local me source ${tty_ts}${ME_SOURCE_LOCAL_PATH}${tty_reset} cannot be the same as target ${tty_ts}$(me_target_display)${tty_reset}."
+      fi
+      ;;
+    *)
+      abort "unsupported internal me source kind ${tty_bold}${ME_SOURCE_KIND}${tty_reset}."
+      ;;
+  esac
+}
+
+build_git_ssh_command_from_ssh_keys() {
+  local ssh_key
+  local key_path
+  local arg
+  local command_string=""
+  local -a ssh_command=(ssh)
+  local -a existing_key_paths=()
+
+  for ssh_key in "${SSH_KEYS[@]}"; do
+    key_path="$(ssh_key_destination_path "${ssh_key}")"
+    if [[ -f "${key_path}" ]]; then
+      existing_key_paths+=("${key_path}")
+    fi
+  done
+
+  if [[ "${#existing_key_paths[@]}" -eq 0 ]]; then
+    abort "cannot clone ${tty_ts}me${tty_reset} via ssh because no installed ssh key paths were found."
+  fi
+
+  for key_path in "${existing_key_paths[@]}"; do
+    ssh_command+=(-i "${key_path}")
+  done
+
+  ssh_command+=(-o IdentitiesOnly=yes)
+
+  for arg in "${ssh_command[@]}"; do
+    printf -v command_string '%s%q ' "${command_string}" "${arg}"
+  done
+
+  printf "%s" "${command_string% }"
+}
+
+repo_release_archive_url() {
+  local release_base_url="$1"
+  local archive_prefix="$2"
+  local tag="$3"
+
+  printf "%s/%s/%s-%s.tar.gz" "${release_base_url}" "${tag}" "${archive_prefix}" "${tag}"
+}
+
+repo_prepare_target() {
+  local target="$1"
+
+  if [[ -e "${target}" ]]; then
+    if ! force_enabled; then
+      return 1
+    fi
+
+    execute rm -rf "${target}"
+  fi
+
+  execute mkdir -p "$(dirname "${target}")"
+  return 0
+}
+
+fetch_repo_source_to_target() {
+  local repo_name="$1"
+  local source_value="$2"
+  local target="$3"
+  local ssh_url="$4"
+  local release_base_url="$5"
+  local archive_prefix="$6"
+  local source_kind="$7"
+  local git_ssh_command
+  local archive_tag
+  local archive_url
+  local archive_path
+
+  if ! repo_prepare_target "${target}"; then
+    warn "${tty_tp}skipping${tty_reset} ${tty_ts}${repo_name}${tty_reset} because ${tty_ts}$(display_home_path "${target}")${tty_reset} already exists and ${tty_bold}--force${tty_reset} is not set."
+    return 0
+  fi
+
+  case "${source_kind}" in
+    ssh)
+      git_ssh_command="$(build_git_ssh_command_from_ssh_keys)"
+      log "${tty_tp}cloning${tty_reset} ${tty_ts}${repo_name}${tty_reset} via ssh to ${tty_ts}$(display_home_path "${target}")${tty_reset}"
+      execute env GIT_SSH_COMMAND="${git_ssh_command}" git clone "${ssh_url}" "${target}"
+      ;;
+    local)
+      log "${tty_tp}cloning${tty_reset} ${tty_ts}${repo_name}${tty_reset} from local repo ${tty_ts}${source_value}${tty_reset} to ${tty_ts}$(display_home_path "${target}")${tty_reset}"
+      execute git clone "${source_value}" "${target}"
+      ;;
+    version)
+      archive_tag="$(normalize_release_tag "${source_value}")"
+      archive_url="$(repo_release_archive_url "${release_base_url}" "${archive_prefix}" "${archive_tag}")"
+      archive_path="${BOOT_TMPDIR}/${repo_name}-${archive_tag}.tar.gz"
+      log "${tty_tp}extracting${tty_reset} ${tty_ts}${repo_name}${tty_reset} release ${tty_ts}${archive_tag}${tty_reset} to ${tty_ts}$(display_home_path "${target}")${tty_reset}"
+      execute mkdir -p "${target}"
+      execute "${CURL}" -fsSL "${archive_url}" -o "${archive_path}"
+      execute tar -xzf "${archive_path}" -C "${target}"
+      ;;
+    *)
+      abort "unsupported internal repo source kind ${tty_bold}${source_kind}${tty_reset}."
+      ;;
+  esac
+}
+
+plan_me_fetch() {
+  local target_display
+
+  target_display="$(me_target_display)"
+
+  if [[ -e "${ME_TARGET_PATH}" ]]; then
+    if force_enabled; then
+      plan_action "${tty_tp}replace${tty_reset} existing ${tty_ts}me${tty_reset} checkout at ${tty_ts}${target_display}${tty_reset} because ${tty_bold}--force${tty_reset} is set"
+    else
+      plan_action "${tty_tp}skip${tty_reset} fetching ${tty_ts}me${tty_reset} because ${tty_ts}${target_display}${tty_reset} already exists and ${tty_bold}--force${tty_reset} is not set"
+      return 0
+    fi
+  fi
+
+  case "${ME_SOURCE_KIND}" in
+    ssh)
+      plan_action "${tty_tp}clone${tty_reset} ${tty_ts}me${tty_reset} via ssh to ${tty_ts}${target_display}${tty_reset}"
+      ;;
+    local)
+      plan_action "${tty_tp}clone${tty_reset} ${tty_ts}me${tty_reset} from local repo ${tty_ts}${ME_SOURCE_LOCAL_PATH}${tty_reset} to ${tty_ts}${target_display}${tty_reset}"
+      ;;
+    version)
+      plan_action "${tty_tp}extract${tty_reset} ${tty_ts}me${tty_reset} release ${tty_ts}${ME_SOURCE_VERSION_TAG}${tty_reset} to ${tty_ts}${target_display}${tty_reset}"
+      ;;
+  esac
+}
+
+run_me_fetch() {
+  fetch_repo_source_to_target \
+    "me" \
+    "${ME_SOURCE_LOCAL_PATH:-${ME_SOURCE_VERSION_TAG:-${ME_SOURCE}}}" \
+    "${ME_TARGET_PATH}" \
+    "${ME_REPO_SSH_URL}" \
+    "${ME_REPO_RELEASE_BASE_URL}" \
+    "${ME_REPO_RELEASE_ARCHIVE_PREFIX}" \
+    "${ME_SOURCE_KIND}"
 }
 
 plan_action() {
@@ -804,6 +1082,8 @@ plan_wrapper_execution() {
   if [[ "${#SSH_KEYS_TO_SKIP[@]}" -gt 0 ]]; then
     plan_action "${tty_tp}skip${tty_reset} existing ssh keys because ${tty_bold}--force${tty_reset} is not set: $(describe_ssh_key_specs "${SSH_KEYS_TO_SKIP[@]}")"
   fi
+
+  plan_me_fetch
 }
 
 prepare_bootbox_script() {
@@ -891,10 +1171,14 @@ main() {
   debug raw FORCE="${FORCE:-}"
   debug raw OP_TOKEN="$(mask_secret_for_display "${OP_TOKEN}")"
   debug raw SSH_KEYS="$(array_join "," SSH_KEYS)"
+  debug raw ME="$(normalize_me_source_value "${ME_SOURCE}")"
   debug raw BOOTBOX_URL="${BOOTBOX_URL}"
   debug raw CURL="${CURL}"
   debug raw ARCH="${ARCH}"
   debug raw OS="${OS}"
+  prepare_me_source
+  debug raw ME_SOURCE_KIND="${ME_SOURCE_KIND}"
+  debug raw ME_TARGET="$(me_target_display)"
 
   prepare_bootbox_script
   run_bootbox_check_core || true
@@ -908,6 +1192,7 @@ main() {
 
   ensure_bootbox_core_requirements
   run_bootbox
+  run_me_fetch
 }
 
 main "$@"

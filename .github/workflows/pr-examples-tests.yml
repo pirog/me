@@ -20,6 +20,7 @@ jobs:
           - cli-contract
           - options
           - envvars
+          - version
     steps:
       - name: Checkout code
         uses: actions/checkout@v6

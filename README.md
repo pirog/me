@@ -15,9 +15,9 @@ Specifically this means installing, maintaining, updating and managing:
 
 ## Usage
 
-The current wrapper only owns the thin bootbox delegation layer: fetch the hosted script, apply the
-wrapper-specific guards and planning flow, then invoke bootbox with the required 1Password token,
-the default or requested SSH key, and any supported wrapper flags.
+The current wrapper fetches hosted bootbox, applies the wrapper-specific guards and planning flow,
+installs the required core dependencies and SSH keys, and then materializes `me` into
+`~/tanaab/me`.
 
 ```zsh
 # clone repo
@@ -27,9 +27,9 @@ git clone git@github.com:pirog/me.git && cd me && chmod +x boot.sh
 bash boot.sh --op-token "$OP_TOKEN"
 ```
 
-The wrapper currently supports `--op-token`, `--ssh-key`, `--yes`, `--force`, `--debug`,
-`--version`, and `--help`. The me-specific execution plan that will sit on top of bootbox comes
-next.
+The wrapper currently supports `--op-token`, `--ssh-key`, `--me`, `--yes`, `--force`, `--debug`,
+`--version`, and `--help`. `--me` accepts `ssh`, a local git repo path, or a release version such
+as `v0.3.1`, and defaults to `ssh`.
 
 If you are looking to customize your install then [advanced usage](#advanced) is for you.
 
@@ -53,6 +53,7 @@ the script.
 ```zsh
 PIROME_OP_TOKEN="$OP_TOKEN"
 PIROME_SSH_KEY="vmruk4ny353aly6tbom7z3v2hy/id_pirog"
+PIROME_ME=ssh
 PIROME_DEBUG=0
 PIROME_FORCE=0
 ```
@@ -65,11 +66,12 @@ These are equivalent commands and meant to demostrate environment variable usage
 # use envvars
 PIROME_OP_TOKEN="$OP_TOKEN" \
 PIROME_SSH_KEY="vmruk4ny353aly6tbom7z3v2hy/id_pirog" \
+PIROME_ME="$HOME/src/me" \
 PIROME_DEBUG=1 \
   /bin/bash -c "$(curl -fsSL https://boot.pirog.me/boot.sh)"
 
 # invoke directly
-bash boot.sh --op-token "$OP_TOKEN" --ssh-key vmruk4ny353aly6tbom7z3v2hy/id_pirog --debug
+bash boot.sh --op-token "$OP_TOKEN" --ssh-key vmruk4ny353aly6tbom7z3v2hy/id_pirog --me v0.3.1 --debug
 ```
 
 ## Development

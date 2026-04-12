@@ -17,6 +17,12 @@ brew uninstall --formula --force stow || true
 # should prepare the default ssh target directory
 mkdir -p "$HOME/.ssh"
 
+# should remove an existing me checkout target
+rm -rf "$HOME/tanaab/me"
+
+# should have the local me source repo available
+test -d "$GITHUB_WORKSPACE/.git"
+
 # should have the op token test secret available
 test -n "$OPTOKEN"
 
@@ -27,6 +33,7 @@ PIROME_OP_TOKEN="$OPTOKEN" \
 PIROME_FORCE=1 \
 PIROME_SSH_KEY='omfsw2uztmi2xqpid5g3kiv6ba/id_test' \
 PIROME_SSH_KEYS='omfsw2uztmi2xqpid5g3kiv6ba/id_test:id_test_envvars' \
+PIROME_ME="$GITHUB_WORKSPACE" \
 boot.sh
 ```
 
@@ -62,6 +69,15 @@ test "$(ssh-keygen -y -f "$HOME/.ssh/id_test" | awk '{print $1 \" \" $2}')" = "$
 
 # should install the overridden ssh key material that matches the expected public key
 test "$(ssh-keygen -y -f "$HOME/.ssh/id_test_envvars" | awk '{print $1 \" \" $2}')" = "$(awk '{print $1 \" \" $2}' id_test.pub)"
+
+# should clone me from the local workspace path
+test -d "$HOME/tanaab/me/.git"
+
+# should preserve the me wrapper entrypoint in the cloned repo
+test -f "$HOME/tanaab/me/boot.sh"
+
+# should point the me clone origin at the local workspace source
+test "$(git -C "$HOME/tanaab/me" config --get remote.origin.url)" = "$GITHUB_WORKSPACE"
 ```
 
 ## Destroy tests
@@ -69,4 +85,7 @@ test "$(ssh-keygen -y -f "$HOME/.ssh/id_test_envvars" | awk '{print $1 \" \" $2}
 ```bash
 # should remove the installed example ssh keys
 rm -f "$HOME/.ssh/id_test" "$HOME/.ssh/id_test_envvars"
+
+# should remove the cloned me checkout
+rm -rf "$HOME/tanaab/me"
 ```

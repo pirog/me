@@ -22,14 +22,23 @@ boot.sh --help | grep -- '--op-token'
 # should show the ssh key flag in help output
 boot.sh --help | grep -- '--ssh-key'
 
+# should show the me flag in help output
+boot.sh --help | grep -- '--me'
+
 # should show the default ssh key in help output
 boot.sh --help | grep -F 'vmruk4ny353aly6tbom7z3v2hy/id_pirog,vmruk4ny353aly6tbom7z3v2hy/id_bootbox'
+
+# should show the default me source in help output
+boot.sh --help | grep -F '[default: ssh]'
 
 # should show the PIROME_OP_TOKEN envvar in help output
 boot.sh --help | grep -F 'PIROME_OP_TOKEN'
 
 # should show the PIROME_SSH_KEY envvar in help output
 boot.sh --help | grep -F 'PIROME_SSH_KEY'
+
+# should show the PIROME_ME envvar in help output
+boot.sh --help | grep -F 'PIROME_ME'
 
 # should show the PIROME_FORCE envvar in help output
 boot.sh --help | grep -F 'PIROME_FORCE'
@@ -48,6 +57,15 @@ PIROME_SSH_KEY='example-vault/example-item:id_primary' PIROME_SSH_KEYS='example-
 
 # should keep PIROME_SSH_KEYS hidden from help output
 ! boot.sh --help | grep -F 'PIROME_SSH_KEYS'
+
+# should let PIROME_ME override the displayed me default
+PIROME_ME='/tmp/example-me-source' boot.sh --help | grep -F '/tmp/example-me-source'
+
+# should normalize semantic version me defaults for display
+boot.sh --me 0.3.1 --help | grep -F 'v0.3.1'
+
+# should let --me override PIROME_ME
+PIROME_ME='/tmp/example-me-source' boot.sh --me 0.3.1 --help | grep -F 'v0.3.1'
 
 # should not mention the TANAAB_ envvar namespace in help output
 ! boot.sh --help | grep -F 'TANAAB_'
