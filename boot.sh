@@ -307,54 +307,59 @@ EOS
   fi
 }
 
+abort_option_usage() {
+  usage "noexit"
+  abort "$1"
+}
+
+require_next_option_value() {
+  local option="$1"
+  local argc="$2"
+
+  if [[ "${argc}" -lt 2 ]]; then
+    abort_option_usage "option ${tty_bold}${option}${tty_reset} requires a value."
+  fi
+}
+
+require_inline_option_value() {
+  local option="$1"
+  local value="$2"
+
+  if [[ -z "${value}" ]]; then
+    abort_option_usage "option ${tty_bold}${option}${tty_reset} must not be empty."
+  fi
+}
+
 parse_args() {
   while [[ $# -gt 0 ]]; do
     case "$1" in
       --ssh-key)
-        if [[ $# -lt 2 ]]; then
-          usage "noexit"
-          abort "option ${tty_bold}--ssh-key${tty_reset} requires a value."
-        fi
+        require_next_option_value "--ssh-key" "$#"
         append_array_value SSH_KEYS "$2"
         shift 2
         ;;
       --ssh-key=*)
-        if [[ -z "${1#*=}" ]]; then
-          usage "noexit"
-          abort "option ${tty_bold}--ssh-key${tty_reset} must not be empty."
-        fi
+        require_inline_option_value "--ssh-key" "${1#*=}"
         append_array_value SSH_KEYS "${1#*=}"
         shift
         ;;
       --ssh-keys)
-        if [[ $# -lt 2 ]]; then
-          usage "noexit"
-          abort "option ${tty_bold}--ssh-keys${tty_reset} requires a value."
-        fi
+        require_next_option_value "--ssh-keys" "$#"
         append_csv_to_array SSH_KEYS "$2"
         shift 2
         ;;
       --ssh-keys=*)
-        if [[ -z "${1#*=}" ]]; then
-          usage "noexit"
-          abort "option ${tty_bold}--ssh-keys${tty_reset} must not be empty."
-        fi
+        require_inline_option_value "--ssh-keys" "${1#*=}"
         append_csv_to_array SSH_KEYS "${1#*=}"
         shift
         ;;
       --op-token)
-        if [[ $# -lt 2 ]]; then
-          usage "noexit"
-          abort "option ${tty_bold}--op-token${tty_reset} requires a value."
-        fi
+        require_next_option_value "--op-token" "$#"
         OP_TOKEN="$2"
         shift 2
         ;;
       --op-token=*)
-        if [[ -z "${1#*=}" ]]; then
-          usage "noexit"
-          abort "option ${tty_bold}--op-token${tty_reset} must not be empty."
-        fi
+        require_inline_option_value "--op-token" "${1#*=}"
         OP_TOKEN="${1#*=}"
         shift
         ;;
@@ -694,6 +699,80 @@ run_bootbox_from_tmpdir() (
   "$@"
 )
 
+bootbox_run() {
+  local mode="$1"
+  shift
+
+  local env_name
+  local arg
+  local mask_next="0"
+  local -a unset_env_names=(
+    TANAAB_BREWFILE
+    TANAAB_BREWFILES
+    TANAAB_DOTPKG
+    TANAAB_DOTPKGS
+    TANAAB_SSH_KEY
+    TANAAB_SSH_KEYS
+    TANAAB_OP_TOKEN
+    OP_SERVICE_ACCOUNT_TOKEN
+  )
+  local -a bootbox_command=(env)
+  local -a bootbox_display_command=(env)
+
+  case "${mode}" in
+    core)
+      unset_env_names+=("TANAAB_TARGET")
+      ;;
+    ssh)
+      ;;
+    *)
+      abort "unsupported internal bootbox mode ${tty_bold}${mode}${tty_reset}."
+      ;;
+  esac
+
+  for env_name in "${unset_env_names[@]}"; do
+    bootbox_command+=(-u "${env_name}")
+    bootbox_display_command+=(-u "${env_name}")
+  done
+
+  bootbox_command+=(/bin/bash "${BOOTBOX_SCRIPT_PATH}")
+  bootbox_display_command+=(/bin/bash "${BOOTBOX_SCRIPT_PATH}")
+
+  for arg in "$@"; do
+    bootbox_command+=("${arg}")
+
+    if [[ "${mask_next}" == "1" ]]; then
+      bootbox_display_command+=("$(mask_secret_for_display "${arg}")")
+      mask_next="0"
+      continue
+    fi
+
+    if [[ "${arg}" == --op-token=* ]]; then
+      bootbox_display_command+=("--op-token=$(mask_secret_for_display "${arg#*=}")")
+      continue
+    fi
+
+    bootbox_display_command+=("${arg}")
+
+    if [[ "${arg}" == "--op-token" ]]; then
+      mask_next="1"
+    fi
+  done
+
+  debug "${tty_tp}delegating${tty_reset} to ${tty_ts}bootbox${tty_reset} from ${tty_ts}${BOOT_TMPDIR}${tty_reset} with $(shell_join "${bootbox_display_command[@]}")"
+  run_bootbox_from_tmpdir "${bootbox_command[@]}"
+}
+
+bootbox_run_or_abort() {
+  local mode="$1"
+  local failure_message="$2"
+  shift 2
+
+  if ! bootbox_run "${mode}" "$@"; then
+    abort "${failure_message}"
+  fi
+}
+
 plan_wrapper_execution() {
   if core_remediation_needed; then
     plan_action "${tty_tp}ensure${tty_reset} ${tty_ts}homebrew${tty_reset} is installed"
@@ -724,24 +803,8 @@ prepare_bootbox_script() {
 }
 
 run_bootbox_check_core() {
-  local -a bootbox_command=(
-    env
-    -u TANAAB_BREWFILE
-    -u TANAAB_BREWFILES
-    -u TANAAB_DOTPKG
-    -u TANAAB_DOTPKGS
-    -u TANAAB_SSH_KEY
-    -u TANAAB_SSH_KEYS
-    -u TANAAB_OP_TOKEN
-    -u OP_SERVICE_ACCOUNT_TOKEN
-    -u TANAAB_TARGET
-    /bin/bash
-    "${BOOTBOX_SCRIPT_PATH}"
-    --check-core
-  )
-
   debug "${tty_tp}checking${tty_reset} ${tty_ts}bootbox core requirements${tty_reset} from ${tty_ts}${BOOT_TMPDIR}${tty_reset}"
-  if run_bootbox_from_tmpdir "${bootbox_command[@]}"; then
+  if bootbox_run core --check-core; then
     CORE_NEEDS_REMEDIATION="0"
     debug "bootbox core requirements are satisfied"
     return 0
@@ -753,44 +816,11 @@ run_bootbox_check_core() {
 }
 
 ensure_bootbox_core_requirements() {
-  local -a bootbox_command=(
-    env
-    -u TANAAB_BREWFILE
-    -u TANAAB_BREWFILES
-    -u TANAAB_DOTPKG
-    -u TANAAB_DOTPKGS
-    -u TANAAB_SSH_KEY
-    -u TANAAB_SSH_KEYS
-    -u TANAAB_OP_TOKEN
-    -u OP_SERVICE_ACCOUNT_TOKEN
-    -u TANAAB_TARGET
-    /bin/bash
-    "${BOOTBOX_SCRIPT_PATH}"
-  )
-  local -a bootbox_display_command=(
-    env
-    -u TANAAB_BREWFILE
-    -u TANAAB_BREWFILES
-    -u TANAAB_DOTPKG
-    -u TANAAB_DOTPKGS
-    -u TANAAB_SSH_KEY
-    -u TANAAB_SSH_KEYS
-    -u TANAAB_OP_TOKEN
-    -u OP_SERVICE_ACCOUNT_TOKEN
-    -u TANAAB_TARGET
-    /bin/bash
-    "${BOOTBOX_SCRIPT_PATH}"
-  )
-
   if ! core_remediation_needed; then
     return 0
   fi
 
-  debug "${tty_tp}delegating${tty_reset} to ${tty_ts}bootbox${tty_reset} from ${tty_ts}${BOOT_TMPDIR}${tty_reset} with $(shell_join "${bootbox_display_command[@]}")"
-  if ! run_bootbox_from_tmpdir "${bootbox_command[@]}"; then
-    abort "bootbox failed while ensuring core requirements."
-  fi
-
+  bootbox_run_or_abort core "bootbox failed while ensuring core requirements."
   if ! run_bootbox_check_core; then
     abort "bootbox core requirements are still not satisfied after remediation."
   fi
@@ -798,50 +828,14 @@ ensure_bootbox_core_requirements() {
 
 run_bootbox_for_ssh_key() {
   local ssh_key="$1"
-  local -a bootbox_command=(
-    env
-    -u TANAAB_BREWFILE
-    -u TANAAB_BREWFILES
-    -u TANAAB_DOTPKG
-    -u TANAAB_DOTPKGS
-    -u TANAAB_SSH_KEY
-    -u TANAAB_SSH_KEYS
-    -u TANAAB_OP_TOKEN
-    -u OP_SERVICE_ACCOUNT_TOKEN
-    /bin/bash
-    "${BOOTBOX_SCRIPT_PATH}"
-    --op-token
-    "${OP_TOKEN}"
-    --ssh-key
-    "${ssh_key}"
-  )
-  local -a bootbox_display_command=(
-    env
-    -u TANAAB_BREWFILE
-    -u TANAAB_BREWFILES
-    -u TANAAB_DOTPKG
-    -u TANAAB_DOTPKGS
-    -u TANAAB_SSH_KEY
-    -u TANAAB_SSH_KEYS
-    -u TANAAB_OP_TOKEN
-    -u OP_SERVICE_ACCOUNT_TOKEN
-    /bin/bash
-    "${BOOTBOX_SCRIPT_PATH}"
-    --op-token
-    "$(mask_secret_for_display "${OP_TOKEN}")"
-    --ssh-key
-    "${ssh_key}"
-  )
-
-  debug "${tty_tp}delegating${tty_reset} to ${tty_ts}bootbox${tty_reset} from ${tty_ts}${BOOT_TMPDIR}${tty_reset} with $(shell_join "${bootbox_display_command[@]}")"
-  if ! run_bootbox_from_tmpdir "${bootbox_command[@]}"; then
-    abort "bootbox failed while installing ssh key ${tty_ts}$(ssh_key_filename "${ssh_key}")${tty_reset}."
-  fi
+  bootbox_run_or_abort ssh "bootbox failed while installing ssh key ${tty_ts}$(ssh_key_filename "${ssh_key}")${tty_reset}." \
+    --op-token "${OP_TOKEN}" --ssh-key "${ssh_key}"
 }
 
 run_bootbox() {
   local ssh_key
   local destination_path
+  local -a ssh_keys_to_run=()
 
   collect_ssh_key_actions
 
@@ -858,16 +852,16 @@ run_bootbox() {
   fi
 
   if [[ "${#SSH_KEYS_TO_INSTALL[@]}" -gt 0 ]]; then
-    for ssh_key in "${SSH_KEYS_TO_INSTALL[@]}"; do
-      run_bootbox_for_ssh_key "${ssh_key}"
-    done
+    ssh_keys_to_run+=("${SSH_KEYS_TO_INSTALL[@]}")
   fi
 
   if [[ "${#SSH_KEYS_TO_OVERWRITE[@]}" -gt 0 ]]; then
-    for ssh_key in "${SSH_KEYS_TO_OVERWRITE[@]}"; do
-      run_bootbox_for_ssh_key "${ssh_key}"
-    done
+    ssh_keys_to_run+=("${SSH_KEYS_TO_OVERWRITE[@]}")
   fi
+
+  for ssh_key in "${ssh_keys_to_run[@]}"; do
+    run_bootbox_for_ssh_key "${ssh_key}"
+  done
 }
 
 main() {
