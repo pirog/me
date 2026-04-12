@@ -516,19 +516,21 @@ collect_ssh_key_actions() {
   SSH_KEYS_TO_OVERWRITE=()
   SSH_KEYS_TO_SKIP=()
 
-  for ssh_key in "${SSH_KEYS[@]}"; do
-    destination_path="$(ssh_key_destination_path "${ssh_key}")"
+  if [[ "${#SSH_KEYS[@]}" -gt 0 ]]; then
+    for ssh_key in "${SSH_KEYS[@]}"; do
+      destination_path="$(ssh_key_destination_path "${ssh_key}")"
 
-    if [[ -e "${destination_path}" ]]; then
-      if force_enabled; then
-        SSH_KEYS_TO_OVERWRITE+=("${ssh_key}")
+      if [[ -e "${destination_path}" ]]; then
+        if force_enabled; then
+          SSH_KEYS_TO_OVERWRITE+=("${ssh_key}")
+        else
+          SSH_KEYS_TO_SKIP+=("${ssh_key}")
+        fi
       else
-        SSH_KEYS_TO_SKIP+=("${ssh_key}")
+        SSH_KEYS_TO_INSTALL+=("${ssh_key}")
       fi
-    else
-      SSH_KEYS_TO_INSTALL+=("${ssh_key}")
-    fi
-  done
+    done
+  fi
 }
 
 have_planned_actions() {
@@ -843,23 +845,29 @@ run_bootbox() {
 
   collect_ssh_key_actions
 
-  for ssh_key in "${SSH_KEYS_TO_SKIP[@]}"; do
-    destination_path="$(ssh_key_destination_path "${ssh_key}")"
-    warn "${tty_tp}skipping${tty_reset} ssh key ${tty_ts}${ssh_key}${tty_reset} because ${tty_ts}${destination_path}${tty_reset} already exists and ${tty_bold}--force${tty_reset} is not set."
-  done
+  if [[ "${#SSH_KEYS_TO_SKIP[@]}" -gt 0 ]]; then
+    for ssh_key in "${SSH_KEYS_TO_SKIP[@]}"; do
+      destination_path="$(ssh_key_destination_path "${ssh_key}")"
+      warn "${tty_tp}skipping${tty_reset} ssh key ${tty_ts}${ssh_key}${tty_reset} because ${tty_ts}${destination_path}${tty_reset} already exists and ${tty_bold}--force${tty_reset} is not set."
+    done
+  fi
 
   if [[ "${#SSH_KEYS_TO_INSTALL[@]}" -eq 0 && "${#SSH_KEYS_TO_OVERWRITE[@]}" -eq 0 ]]; then
     debug "no SSH keys require installation after wrapper-side filtering"
     return 0
   fi
 
-  for ssh_key in "${SSH_KEYS_TO_INSTALL[@]}"; do
-    run_bootbox_for_ssh_key "${ssh_key}"
-  done
+  if [[ "${#SSH_KEYS_TO_INSTALL[@]}" -gt 0 ]]; then
+    for ssh_key in "${SSH_KEYS_TO_INSTALL[@]}"; do
+      run_bootbox_for_ssh_key "${ssh_key}"
+    done
+  fi
 
-  for ssh_key in "${SSH_KEYS_TO_OVERWRITE[@]}"; do
-    run_bootbox_for_ssh_key "${ssh_key}"
-  done
+  if [[ "${#SSH_KEYS_TO_OVERWRITE[@]}" -gt 0 ]]; then
+    for ssh_key in "${SSH_KEYS_TO_OVERWRITE[@]}"; do
+      run_bootbox_for_ssh_key "${ssh_key}"
+    done
+  fi
 }
 
 main() {
