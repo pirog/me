@@ -21,10 +21,8 @@ mkdir -p "$HOME/.ssh"
 test -n "$OPTOKEN"
 
 # should run boot.sh successfully using options while skipping an existing key and continuing
-boot.sh \
-  --op-token "$OPTOKEN" \
-  --ssh-key 'omfsw2uztmi2xqpid5g3kiv6ba/id_test' \
-  --debug && fail
+boot.sh --op-token "$OPTOKEN" --ssh-key 'omfsw2uztmi2xqpid5g3kiv6ba/id_test' --debug
+fail
 boot.sh \
   --op-token "$OPTOKEN" \
   --ssh-key 'omfsw2uztmi2xqpid5g3kiv6ba/id_test' \
