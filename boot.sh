@@ -223,14 +223,16 @@ fi
 
 append_csv_to_array SSH_KEYS "${SSH_KEYS_CSV}"
 
-for arg in "${ORIGINAL_ARGS[@]}"; do
-  case "${arg}" in
-    --ssh-key | --ssh-key=* | --ssh-keys | --ssh-keys=*)
-      SSH_KEYS=()
-      break
-      ;;
-  esac
-done
+if [[ "${#ORIGINAL_ARGS[@]}" -gt 0 ]]; then
+  for arg in "${ORIGINAL_ARGS[@]}"; do
+    case "${arg}" in
+      --ssh-key | --ssh-key=* | --ssh-keys | --ssh-keys=*)
+        SSH_KEYS=()
+        break
+        ;;
+    esac
+  done
+fi
 
 debug_enabled() {
   value_enabled "${DEBUG:-}"
