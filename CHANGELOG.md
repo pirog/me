@@ -1,5 +1,7 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+## v1.0.0-beta.1 - [April 13, 2026](https://github.com/pirog/me/releases/tag/v1.0.0-beta.1)
+
 ### Bootstrap
 
 - Added `--me` and `--tanaab` materialization of `~/tanaab/me` and `~/tanaab/canon` before applying the machine profile.
