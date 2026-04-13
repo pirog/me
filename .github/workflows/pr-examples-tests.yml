@@ -44,11 +44,23 @@ jobs:
       - name: Put prepared scripts on PATH
         shell: bash
         run: echo "$PWD/dist" >> "$GITHUB_PATH"
-      - name: Run Leia-backed example
+      - name: DEBUG
         shell: bash
         env:
           TMPDIR: ${{ github.workspace }}/examples/${{ matrix.example }}/.tmp
           OPTOKEN: ${{ secrets.TANAAB_OP_TEST }}
         run: |
-          mkdir -p "$TMPDIR"
-          bun run leia "examples/${{ matrix.example }}/README.md" -c "Destroy tests" --stdin
+          boot.sh \
+          --op-token "$OPTOKEN" \
+          --ssh-key 'omfsw2uztmi2xqpid5g3kiv6ba/id_test' \
+          --me "$GITHUB_WORKSPACE" \
+          --debug
+
+      # - name: Run Leia-backed example
+      #   shell: bash
+      #   env:
+      #     TMPDIR: ${{ github.workspace }}/examples/${{ matrix.example }}/.tmp
+      #     OPTOKEN: ${{ secrets.TANAAB_OP_TEST }}
+      #   run: |
+      #     mkdir -p "$TMPDIR"
+      #     bun run leia "examples/${{ matrix.example }}/README.md" -c "Destroy tests" --stdin
