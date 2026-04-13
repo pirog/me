@@ -97,12 +97,16 @@ test -d "$HOME/tanaab/canon/.git"
 # should point the tanaab canon clone at the github ssh remote
 test "$(git -C "$HOME/tanaab/canon" config --get remote.origin.url)" = "git@github.com:tanaabased/canon.git"
 
-# should stow a representative hyperdrive config from the me checkout
-test -L "$HOME/.config/hyperdrive/config.yaml"
+# should stow a representative hyperdrive config directory from the me checkout
+test -L "$HOME/.config/hyperdrive"
+test "$(python3 -c 'import os, sys; print(os.path.realpath(sys.argv[1]))' "$HOME/.config/hyperdrive")" = "$HOME/tanaab/me/dotfiles/hyperdrive/.config/hyperdrive"
+test -f "$HOME/.config/hyperdrive/config.yaml"
 cmp -s "$HOME/.config/hyperdrive/config.yaml" "$HOME/tanaab/me/dotfiles/hyperdrive/.config/hyperdrive/config.yaml"
 
-# should stow a representative lando config from the me checkout
-test -L "$HOME/.config/lando/config.yaml"
+# should stow a representative lando config directory from the me checkout
+test -L "$HOME/.config/lando"
+test "$(python3 -c 'import os, sys; print(os.path.realpath(sys.argv[1]))' "$HOME/.config/lando")" = "$HOME/tanaab/me/dotfiles/lando/.config/lando"
+test -f "$HOME/.config/lando/config.yaml"
 cmp -s "$HOME/.config/lando/config.yaml" "$HOME/tanaab/me/dotfiles/lando/.config/lando/config.yaml"
 
 # should stow the tanaab plugin link into the target codex plugins directory
@@ -113,9 +117,8 @@ test "$(python3 -c 'import os, sys; print(os.path.realpath(sys.argv[1]))' "$HOME
 ## Destroy tests
 
 ```bash
-# should remove representative stowed config files
-rm -f "$HOME/.config/hyperdrive/config.yaml" "$HOME/.config/lando/config.yaml"
-rmdir "$HOME/.config/hyperdrive" "$HOME/.config/lando" 2>/dev/null || true
+# should remove representative stowed config directory symlinks
+rm -f "$HOME/.config/hyperdrive" "$HOME/.config/lando"
 
 # should remove the stowed tanaab plugin link
 rm -f "$HOME/.codex/plugins/tanaab"
