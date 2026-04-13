@@ -9,10 +9,10 @@ built from this repo.
 
 ## Overview
 
-`boot.sh` is a thin hosted wrapper around bootbox. It installs core tools and requested SSH keys,
-materializes `~/tanaab/me`, materializes `~/tanaab/canon` unless disabled, and then applies the
-`me` checkout's [`Brewfile`](./Brewfile) plus top-level [`dotfiles/`](./dotfiles/) packages onto
-`$HOME`.
+`boot.sh` is a thin hosted wrapper around [bootbox](https://github.com/tanaabased/bootbox). It
+installs core tools and requested SSH keys, materializes `~/tanaab/me`, materializes
+`~/tanaab/canon` unless disabled, and then applies the `me` checkout's [`Brewfile`](./Brewfile)
+plus top-level [`dotfiles/`](./dotfiles/) packages onto `$HOME`.
 
 After bootstrap, open Codex and install the `piroplugin` and `tanaab` plugins from the `Pirostore`
 marketplace so their skills are available in the app.
@@ -84,12 +84,12 @@ curl -fsSL https://boot.pirog.me/boot.sh | \
 
 ## Advanced
 
-If you want a reusable local command, download the script first.
+If you want a reusable local command, download the script as `piroboot` first.
 
 ```sh
-curl -fsSL https://boot.pirog.me/boot.sh -o boot
-chmod +x boot
-./boot --help
+curl -fsSL https://boot.pirog.me/boot.sh -o piroboot
+chmod +x piroboot
+./piroboot --help
 ```
 
 Common wrapper options:
@@ -104,8 +104,8 @@ Common wrapper options:
 - `--version`: print the wrapper version.
 - `--help`: print the current CLI and envvar contract.
 
-Use `./boot --help` or `bash ./boot.sh --help` as the source of truth for the exact current flag
-and environment-variable surface.
+Use `./piroboot --help` or `bash ./boot.sh --help` as the source of truth for the exact current
+flag and environment-variable surface.
 
 Hosted-script example with envvars:
 
@@ -122,7 +122,7 @@ curl -fsSL https://boot.pirog.me/boot.sh | \
 Local-script example with pinned source values:
 
 ```sh
-./boot \
+./piroboot \
   --op-token "$OP_TOKEN" \
   --ssh-key "vmruk4ny353aly6tbom7z3v2hy/id_pirog" \
   --me v0.3.1 \
