@@ -18,6 +18,9 @@ jobs:
       matrix:
         example:
           - cli-contract
+          - options
+          - envvars
+          - version
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -45,6 +48,19 @@ jobs:
         shell: bash
         env:
           TMPDIR: ${{ github.workspace }}/examples/${{ matrix.example }}/.tmp
+          OPTOKEN: ${{ secrets.TANAAB_OP_TEST }}
         run: |
           mkdir -p "$TMPDIR"
           bun run leia "examples/${{ matrix.example }}/README.md" -c "Destroy tests" --stdin
+
+      # - name: Debug boot.sh invocation
+      #   shell: bash
+      #   env:
+      #     TMPDIR: ${{ github.workspace }}/examples/${{ matrix.example }}/.tmp
+      #     OPTOKEN: ${{ secrets.TANAAB_OP_TEST }}
+      #   run: |
+      #     boot.sh \
+      #       --op-token "$OPTOKEN" \
+      #       --ssh-key 'omfsw2uztmi2xqpid5g3kiv6ba/id_test' \
+      #       --me "$GITHUB_WORKSPACE" \
+      #       --debug

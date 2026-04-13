@@ -1,7 +1,7 @@
 [user]
 	name = Mike Pirog
 	email = mike@tanaab.dev
-	signingkey = /Users/pirog/.ssh/id_pirog.pub
+	signingkey = ~/.ssh/id_pirog.pub
 [gpg]
 	format = ssh
 [commit]
@@ -13,4 +13,4 @@
 	path = ~/.gitconfig-lando
 
 [gpg "ssh"]
-	allowedSignersFile = /Users/pirog/.config/git/allowed_signers
+	allowedSignersFile = ~/.config/git/allowed_signers
