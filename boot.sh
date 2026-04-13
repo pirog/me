@@ -16,7 +16,7 @@ set -euo pipefail
 MACOS_OLDEST_SUPPORTED="26.0"
 REQUIRED_CURL_VERSION="7.41.0"
 BOOTBOX_URL="https://bootbox.tanaab.sh/bootbox.sh"
-DEFAULT_SSH_KEY="vmruk4ny353aly6tbom7z3v2hy/id_pirog,vmruk4ny353aly6tbom7z3v2hy/id_bootbox"
+DEFAULT_SSH_KEY="vmruk4ny353aly6tbom7z3v2hy/id_pirog,vmruk4ny353aly6tbom7z3v2hy/id_botbox1"
 DEFAULT_ME_SOURCE="ssh"
 ME_REPO_SSH_URL="git@github.com:pirog/me.git"
 ME_REPO_RELEASE_BASE_URL="https://github.com/pirog/me/releases/download"
@@ -213,6 +213,7 @@ declare -a SSH_KEYS=()
 declare -a SSH_KEYS_TO_INSTALL=()
 declare -a SSH_KEYS_TO_OVERWRITE=()
 declare -a SSH_KEYS_TO_SKIP=()
+declare -a ME_APPLY_DOTPKGS=()
 declare -a PLANNED_ACTIONS=()
 BOOT_TMPDIR=""
 BOOTBOX_SCRIPT_PATH=""
@@ -226,6 +227,7 @@ ME_SOURCE_KIND=""
 ME_SOURCE_LOCAL_PATH=""
 ME_SOURCE_VERSION_TAG=""
 ME_TARGET_PATH=""
+ME_APPLY_BREWFILE=""
 
 if [[ -n "${PIROME_SSH_KEYS:-}" ]]; then
   SSH_KEYS_CSV="${SSH_KEYS_CSV}${SSH_KEYS_CSV:+,}${PIROME_SSH_KEYS}"
@@ -566,6 +568,10 @@ me_target_display() {
   display_home_path "${ME_TARGET_PATH}"
 }
 
+me_apply_brewfile_display() {
+  display_home_path "${ME_APPLY_BREWFILE}"
+}
+
 prepare_me_source() {
   ME_SOURCE_KIND="$(resolve_me_source_kind)"
   ME_SOURCE_LOCAL_PATH=""
@@ -591,6 +597,30 @@ prepare_me_source() {
       abort "unsupported internal me source kind ${tty_bold}${ME_SOURCE_KIND}${tty_reset}."
       ;;
   esac
+}
+
+discover_me_apply_payload() {
+  local dotfiles_root="${ME_TARGET_PATH}/dotfiles"
+  local dotpkg
+
+  ME_APPLY_BREWFILE="${ME_TARGET_PATH}/Brewfile"
+  ME_APPLY_DOTPKGS=()
+
+  if [[ ! -f "${ME_APPLY_BREWFILE}" ]]; then
+    abort "me checkout at ${tty_ts}$(me_target_display)${tty_reset} is missing required brewfile ${tty_ts}$(me_apply_brewfile_display)${tty_reset}."
+  fi
+
+  if [[ ! -d "${dotfiles_root}" ]]; then
+    abort "me checkout at ${tty_ts}$(me_target_display)${tty_reset} is missing required dotfiles directory ${tty_ts}$(display_home_path "${dotfiles_root}")${tty_reset}."
+  fi
+
+  while IFS= read -r dotpkg; do
+    append_array_value ME_APPLY_DOTPKGS "${dotpkg}"
+  done < <(find "${dotfiles_root}" -mindepth 1 -maxdepth 1 -type d | LC_ALL=C sort)
+
+  if [[ "${#ME_APPLY_DOTPKGS[@]}" -eq 0 ]]; then
+    abort "me checkout at ${tty_ts}$(me_target_display)${tty_reset} must contain at least one top-level dotpkg under ${tty_ts}$(display_home_path "${dotfiles_root}")${tty_reset}."
+  fi
 }
 
 build_git_ssh_command_from_ssh_keys() {
@@ -718,6 +748,10 @@ plan_me_fetch() {
   esac
 }
 
+plan_me_apply() {
+  plan_action "${tty_tp}run${tty_reset} ${tty_ts}bootbox${tty_reset} against the ${tty_ts}me${tty_reset} checkout at ${tty_ts}$(me_target_display)${tty_reset} using its ${tty_ts}Brewfile${tty_reset} and dotpkgs on ${tty_ts}~${tty_reset}"
+}
+
 run_me_fetch() {
   fetch_repo_source_to_target \
     "me" \
@@ -727,6 +761,17 @@ run_me_fetch() {
     "${ME_REPO_RELEASE_BASE_URL}" \
     "${ME_REPO_RELEASE_ARCHIVE_PREFIX}" \
     "${ME_SOURCE_KIND}"
+}
+
+run_bootbox_for_me_apply() {
+  local dotpkg
+  local -a bootbox_args=(--brewfile "${ME_APPLY_BREWFILE}")
+
+  for dotpkg in "${ME_APPLY_DOTPKGS[@]}"; do
+    bootbox_args+=(--dotpkg "${dotpkg}")
+  done
+
+  bootbox_run_or_abort me "bootbox failed while applying me checkout ${tty_ts}$(me_target_display)${tty_reset}." "${bootbox_args[@]}"
 }
 
 plan_action() {
@@ -996,6 +1041,9 @@ bootbox_run() {
     ssh)
       unset_env_names+=("TANAAB_TARGET")
       ;;
+    me)
+      unset_env_names+=("TANAAB_TARGET")
+      ;;
     *)
       abort "unsupported internal bootbox mode ${tty_bold}${mode}${tty_reset}."
       ;;
@@ -1084,6 +1132,7 @@ plan_wrapper_execution() {
   fi
 
   plan_me_fetch
+  plan_me_apply
 }
 
 prepare_bootbox_script() {
@@ -1193,6 +1242,10 @@ main() {
   ensure_bootbox_core_requirements
   run_bootbox
   run_me_fetch
+  discover_me_apply_payload
+  debug raw ME_APPLY_BREWFILE="$(me_apply_brewfile_display)"
+  debug raw ME_APPLY_DOTPKGS="$(array_join "," ME_APPLY_DOTPKGS)"
+  run_bootbox_for_me_apply
 }
 
 main "$@"

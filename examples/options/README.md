@@ -2,8 +2,10 @@
 
 This example keeps coverage on the shell-facing option contract of `boot.sh`. It runs the wrapper
 with CLI flags, delegates into bootbox, and then verifies that the requested SSH keys were
-installed into the default target directory. It also covers the wrapper-specific behavior of
-skipping an existing destination key while continuing with the remaining requested keys.
+installed, that `me` was materialized from a local checkout, and that the post-fetch bootbox apply
+step used the `me` checkout's brewfile and dotpkgs on the default target directory. It also covers
+the wrapper-specific behavior of skipping an existing destination key while continuing with the
+remaining requested keys.
 
 This scenario is intended to run in CI by default. Do not run it locally unless the task explicitly
 calls for a local Leia run.
@@ -47,6 +49,9 @@ command -v brew >/dev/null
 # should install core homebrew packages
 command -v git >/dev/null && command -v jq >/dev/null && command -v stow >/dev/null && command -v op >/dev/null
 
+# should satisfy the me checkout brewfile
+brew bundle check --file "$HOME/tanaab/me/Brewfile" --no-upgrade
+
 # should create the ssh directory
 test -d "$HOME/.ssh"
 
@@ -79,11 +84,23 @@ test -f "$HOME/tanaab/me/boot.sh"
 
 # should point the me clone origin at the local workspace source
 test "$(git -C "$HOME/tanaab/me" config --get remote.origin.url)" = "$GITHUB_WORKSPACE"
+
+# should stow a representative hyperdrive config from the me checkout
+test -L "$HOME/.config/hyperdrive/config.yaml"
+cmp -s "$HOME/.config/hyperdrive/config.yaml" "$HOME/tanaab/me/dotfiles/hyperdrive/.config/hyperdrive/config.yaml"
+
+# should stow a representative lando config from the me checkout
+test -L "$HOME/.config/lando/config.yaml"
+cmp -s "$HOME/.config/lando/config.yaml" "$HOME/tanaab/me/dotfiles/lando/.config/lando/config.yaml"
 ```
 
 ## Destroy tests
 
 ```bash
+# should remove representative stowed config files
+rm -f "$HOME/.config/hyperdrive/config.yaml" "$HOME/.config/lando/config.yaml"
+rmdir "$HOME/.config/hyperdrive" "$HOME/.config/lando" 2>/dev/null || true
+
 # should remove the installed example ssh keys
 rm -f "$HOME/.ssh/id_test" "$HOME/.ssh/id_test_options"
 

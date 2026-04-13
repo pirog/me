@@ -16,8 +16,9 @@ Specifically this means installing, maintaining, updating and managing:
 ## Usage
 
 The current wrapper fetches hosted bootbox, applies the wrapper-specific guards and planning flow,
-installs the required core dependencies and SSH keys, and then materializes `me` into
-`~/tanaab/me`.
+installs the required core dependencies and SSH keys, materializes `me` into `~/tanaab/me`, and
+then reruns bootbox against that checkout's root `Brewfile` plus the top-level `dotfiles/*`
+packages on the default target of `$HOME`.
 
 ```zsh
 # clone repo
@@ -30,6 +31,13 @@ bash boot.sh --op-token "$OP_TOKEN"
 The wrapper currently supports `--op-token`, `--ssh-key`, `--me`, `--yes`, `--force`, `--debug`,
 `--version`, and `--help`. `--me` accepts `ssh`, a local git repo path, or a release version such
 as `v0.3.1`, and defaults to `ssh`.
+
+When `--me` is `ssh`, the wrapper clones `git@github.com:pirog/me.git` into `~/tanaab/me` using the
+resolved installed SSH keys. When `--me` is a local path, it clones that local git repo into
+`~/tanaab/me`. When `--me` is a version, it downloads `piroplugin-<tag>.tar.gz` from GitHub
+Releases and extracts it into `~/tanaab/me`. If the target already exists, the wrapper skips that
+fetch step unless `--force` is set, then applies the current `~/tanaab/me` checkout by delegating
+back into bootbox with its root `Brewfile` and top-level `dotfiles/*` packages on `$HOME`.
 
 If you are looking to customize your install then [advanced usage](#advanced) is for you.
 
@@ -83,17 +91,22 @@ Preferred local runtime versions are tracked in [`.bun-version`](./.bun-version)
 ```zsh
 bun install
 bun run lint
-bun run build
 ```
 
-`bun run build` prepares the tracked `dist/` publish surface, including `boot.sh`, the
-landing-page redirect, and the hosting metadata files used by deployment.
+Only run `bun run build` locally when the task explicitly requires `dist/` or release verification.
+That command prepares the tracked `dist/` publish surface, including `boot.sh`, the landing-page
+redirect, and the hosting metadata files used by deployment. CI also uses it while preparing the
+Netlify-served `dist/` output and the GitHub Release `piroplugin-<tag>.tar.gz` archive.
+
+```zsh
+bun run build
+```
 
 The repo also carries a minimal Leia-backed example at
 [`examples/cli-contract/README.md`](./examples/cli-contract/README.md). That
 scenario is intentionally basic and CI-owned: do not run Leia locally unless you explicitly need a
-local Leia run for the task at hand. Normal local validation here is `bun run lint`, `bun run
-build`, and static review, while CI exercises the prepared `dist/` entrypoint.
+local Leia run for the task at hand. Normal local validation here is `bun run lint` and static
+review, while CI exercises the prepared `dist/` entrypoint.
 
 ## Issues, Questions and Support
 
