@@ -5,12 +5,11 @@ This root `AGENTS.md` is the repo-local override for Codex work in this reposito
 ## Purpose
 
 - This repo exists to seed a supported macOS machine with packages, dotfiles, identity or access material, and Codex plugin assets that approximate `@pirog`.
-- The repo is in a deliberate migration from legacy `piroboot.sh` to a thinner hosted `boot.sh` wrapper around bootbox.
+- The repo currently ships `boot.sh` as the bootstrap wrapper and `piroplugin` as the Codex plugin bundle.
 
 ## Source Of Truth
 
-- `boot.sh` is the shipped source entrypoint and the main shell surface to preserve.
-- `piroboot.sh` is reference-only unless the task explicitly targets legacy behavior.
+- `boot.sh` is the shipped shell entrypoint and the main bootstrap surface to preserve.
 - `dist/` is generated publish output for hosting and release preparation; do not hand-edit it during normal work.
 - Preserve the separation between `boot.sh` as source, `dist/` as generated hosting output, and `.codex-plugin/` plus `skills/` as plugin package inputs.
 
