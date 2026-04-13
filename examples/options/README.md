@@ -44,7 +44,9 @@ boot.sh \
   --op-token "$OPTOKEN" \
   --ssh-key 'omfsw2uztmi2xqpid5g3kiv6ba/id_test' \
   --ssh-key 'omfsw2uztmi2xqpid5g3kiv6ba/id_test:id_test_options' \
+  --debug \
   --me "$GITHUB_WORKSPACE"
+failme
 ```
 
 ## Testing
