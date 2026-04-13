@@ -7,6 +7,7 @@ set -euo pipefail
 #   $ ./boot.sh --op-token "$OP_TOKEN"
 #   $ ./boot.sh --op-token "$OP_TOKEN" --ssh-key vmruk4ny353aly6tbom7z3v2hy/id_botbox1
 #   $ ./boot.sh --op-token "$OP_TOKEN" --me v0.3.1
+#   $ ./boot.sh --op-token "$OP_TOKEN" --tanaab v0.2.0
 #   $ DEBUG=1 ./boot.sh --op-token "$OP_TOKEN" --yes
 #
 # option precedence: cli options override environment variables, which override defaults.
@@ -18,9 +19,14 @@ REQUIRED_CURL_VERSION="7.41.0"
 BOOTBOX_URL="https://bootbox.tanaab.sh/bootbox.sh"
 DEFAULT_SSH_KEY="vmruk4ny353aly6tbom7z3v2hy/id_pirog,vmruk4ny353aly6tbom7z3v2hy/id_botbox1"
 DEFAULT_ME_SOURCE="ssh"
+DEFAULT_TANAAB_SOURCE="ssh"
 ME_REPO_SSH_URL="git@github.com:pirog/me.git"
 ME_REPO_RELEASE_BASE_URL="https://github.com/pirog/me/releases/download"
 ME_REPO_RELEASE_ARCHIVE_PREFIX="piroplugin"
+TANAAB_REPO_SSH_URL="git@github.com:tanaabased/canon.git"
+TANAAB_REPO_RELEASE_BASE_URL="https://github.com/tanaabased/canon/releases/download"
+TANAAB_REPO_RELEASE_ARCHIVE_PREFIX="tanaab"
+TANAAB_PLUGIN_RELATIVE_TARGET="../../../../../canon"
 
 abort() {
   printf "%serror%s: %s\n" "${tty_red-}" "${tty_reset-}" "$@" >&2
@@ -41,6 +47,17 @@ value_enabled() {
       ;;
     *)
       return 0
+      ;;
+  esac
+}
+
+source_value_disabled() {
+  case "${1:-}" in
+    0 | false | FALSE | False | no | NO | No | off | OFF | Off | null | NULL | Null)
+      return 0
+      ;;
+    *)
+      return 1
       ;;
   esac
 }
@@ -208,6 +225,7 @@ FORCE="${PIROME_FORCE:-}"
 OP_TOKEN="${PIROME_OP_TOKEN:-${OP_SERVICE_ACCOUNT_TOKEN:-}}"
 SSH_KEYS_CSV="${PIROME_SSH_KEY:-${DEFAULT_SSH_KEY}}"
 ME_SOURCE="${PIROME_ME:-${DEFAULT_ME_SOURCE}}"
+TANAAB_SOURCE="${PIROME_TANAAB:-${DEFAULT_TANAAB_SOURCE}}"
 declare -a ORIGINAL_ARGS=("$@")
 declare -a SSH_KEYS=()
 declare -a SSH_KEYS_TO_INSTALL=()
@@ -227,6 +245,10 @@ ME_SOURCE_KIND=""
 ME_SOURCE_LOCAL_PATH=""
 ME_SOURCE_VERSION_TAG=""
 ME_TARGET_PATH=""
+TANAAB_SOURCE_KIND=""
+TANAAB_SOURCE_LOCAL_PATH=""
+TANAAB_SOURCE_VERSION_TAG=""
+TANAAB_TARGET_PATH=""
 ME_APPLY_BREWFILE=""
 
 if [[ -n "${PIROME_SSH_KEYS:-}" ]]; then
@@ -285,7 +307,7 @@ normalize_release_tag() {
   fi
 }
 
-normalize_me_source_value() {
+normalize_repo_source_value() {
   if is_semver_value "${1}"; then
     normalize_release_tag "${1}"
   else
@@ -299,6 +321,7 @@ usage() {
   local ssh_keys_display="none"
   local op_token_display="none"
   local me_display="none"
+  local tanaab_display="none"
 
   if debug_enabled; then
     debug_display="on"
@@ -315,7 +338,8 @@ usage() {
     op_token_display="$(mask_secret_for_display "${OP_TOKEN}")"
   fi
 
-  me_display="$(normalize_me_source_value "${ME_SOURCE}")"
+  me_display="$(normalize_repo_source_value "${ME_SOURCE}")"
+  tanaab_display="$(normalize_repo_source_value "${TANAAB_SOURCE}")"
 
   cat <<EOS
 Usage: ${tty_dim}[NONINTERACTIVE=1] [CI=1]${tty_reset} ${tty_bold}${SCRIPT_NAME}${tty_reset} ${tty_dim}[options]${tty_reset}
@@ -324,6 +348,7 @@ ${tty_tp}Options:${tty_reset}
   --ssh-key        installs 1password ssh keys as vault/item[:filename] ${tty_dim}[default: ${ssh_keys_display}]${tty_reset}
   --op-token       auths with 1password service account token ${tty_dim}[default: ${op_token_display}]${tty_reset}
   --me             fetches me from ssh, a local git repo path, or a release version ${tty_dim}[default: ${me_display}]${tty_reset}
+  --tanaab         fetches tanaab from ssh, a local git repo path, a release version, or a falsey disable value ${tty_dim}[default: ${tanaab_display}]${tty_reset}
   --version        shows version of this script
   --debug          shows debug messages ${tty_dim}[default: ${debug_display}]${tty_reset}
   --force          forces supported bootbox operations ${tty_dim}[default: ${force_display}]${tty_reset}
@@ -334,6 +359,7 @@ ${tty_tp}Environment Variables:${tty_reset}
   PIROME_SSH_KEY      comma-separated list of 1password ssh keys as vault/item[:filename]
   PIROME_OP_TOKEN     1password service account token; falls back to OP_SERVICE_ACCOUNT_TOKEN
   PIROME_ME           source for ~/tanaab/me; supports ssh, local repo paths, or release versions
+  PIROME_TANAAB       source for ~/tanaab/canon; supports ssh, local repo paths, release versions, or falsey disable values
   PIROME_FORCE        set to a truthy value to force supported operations
   PIROME_DEBUG        set to a truthy value to show debug messages
   NONINTERACTIVE      installs without prompting for user input
@@ -408,6 +434,16 @@ parse_args() {
       --me=*)
         require_inline_option_value "--me" "${1#*=}"
         ME_SOURCE="${1#*=}"
+        shift
+        ;;
+      --tanaab)
+        require_next_option_value "--tanaab" "$#"
+        TANAAB_SOURCE="$2"
+        shift 2
+        ;;
+      --tanaab=*)
+        require_inline_option_value "--tanaab" "${1#*=}"
+        TANAAB_SOURCE="${1#*=}"
         shift
         ;;
       --debug)
@@ -554,10 +590,15 @@ resolve_local_repo_source_path() {
   printf "%s" "${repo_root}"
 }
 
-resolve_me_source_kind() {
-  if [[ "${ME_SOURCE}" == "ssh" ]]; then
+resolve_repo_source_kind() {
+  local source_value="$1"
+  local allow_disable="${2:-0}"
+
+  if [[ "${allow_disable}" == "1" ]] && source_value_disabled "${source_value}"; then
+    printf "disabled"
+  elif [[ "${source_value}" == "ssh" ]]; then
     printf "ssh"
-  elif is_semver_value "${ME_SOURCE}"; then
+  elif is_semver_value "${source_value}"; then
     printf "version"
   else
     printf "local"
@@ -568,35 +609,116 @@ me_target_display() {
   display_home_path "${ME_TARGET_PATH}"
 }
 
+tanaab_target_display() {
+  display_home_path "${TANAAB_TARGET_PATH}"
+}
+
 me_apply_brewfile_display() {
   display_home_path "${ME_APPLY_BREWFILE}"
 }
 
-prepare_me_source() {
-  ME_SOURCE_KIND="$(resolve_me_source_kind)"
-  ME_SOURCE_LOCAL_PATH=""
-  ME_SOURCE_VERSION_TAG=""
-  ME_TARGET_PATH="${HOME}/tanaab/me"
+prepare_repo_source() {
+  local source_value="$1"
+  local target_path="$2"
+  local repo_label="$3"
+  local source_kind_var="$4"
+  local source_local_path_var="$5"
+  local source_version_tag_var="$6"
+  local allow_disable="${7:-0}"
+  local source_kind=""
+  local source_local_path=""
+  local source_version_tag=""
 
-  case "${ME_SOURCE_KIND}" in
+  source_kind="$(resolve_repo_source_kind "${source_value}" "${allow_disable}")"
+
+  case "${source_kind}" in
+    disabled)
+      ;;
     ssh)
       ;;
     version)
-      ME_SOURCE_VERSION_TAG="$(normalize_release_tag "${ME_SOURCE}")"
+      source_version_tag="$(normalize_release_tag "${source_value}")"
       ;;
     local)
-      if ! ME_SOURCE_LOCAL_PATH="$(resolve_local_repo_source_path "${ME_SOURCE}")"; then
-        abort "local me source ${tty_ts}${ME_SOURCE}${tty_reset} must resolve to a local git repo."
+      if ! source_local_path="$(resolve_local_repo_source_path "${source_value}")"; then
+        abort "local ${repo_label} source ${tty_ts}${source_value}${tty_reset} must resolve to a local git repo."
       fi
 
-      if [[ "${ME_SOURCE_LOCAL_PATH}" == "${ME_TARGET_PATH}" ]]; then
-        abort "local me source ${tty_ts}${ME_SOURCE_LOCAL_PATH}${tty_reset} cannot be the same as target ${tty_ts}$(me_target_display)${tty_reset}."
+      if [[ "${source_local_path}" == "${target_path}" ]]; then
+        abort "local ${repo_label} source ${tty_ts}${source_local_path}${tty_reset} cannot be the same as target ${tty_ts}$(display_home_path "${target_path}")${tty_reset}."
       fi
       ;;
     *)
-      abort "unsupported internal me source kind ${tty_bold}${ME_SOURCE_KIND}${tty_reset}."
+      abort "unsupported internal ${repo_label} source kind ${tty_bold}${source_kind}${tty_reset}."
       ;;
   esac
+
+  printf -v "${source_kind_var}" "%s" "${source_kind}"
+  printf -v "${source_local_path_var}" "%s" "${source_local_path}"
+  printf -v "${source_version_tag_var}" "%s" "${source_version_tag}"
+}
+
+prepare_me_source() {
+  ME_TARGET_PATH="${HOME}/tanaab/me"
+  prepare_repo_source \
+    "${ME_SOURCE}" \
+    "${ME_TARGET_PATH}" \
+    "me" \
+    "ME_SOURCE_KIND" \
+    "ME_SOURCE_LOCAL_PATH" \
+    "ME_SOURCE_VERSION_TAG"
+}
+
+prepare_tanaab_source() {
+  TANAAB_TARGET_PATH="${HOME}/tanaab/canon"
+  prepare_repo_source \
+    "${TANAAB_SOURCE}" \
+    "${TANAAB_TARGET_PATH}" \
+    "tanaab" \
+    "TANAAB_SOURCE_KIND" \
+    "TANAAB_SOURCE_LOCAL_PATH" \
+    "TANAAB_SOURCE_VERSION_TAG" \
+    "1"
+}
+
+tanaab_enabled() {
+  [[ "${TANAAB_SOURCE_KIND}" != "disabled" ]]
+}
+
+tanaab_plugin_checkout_path() {
+  printf "%s/dotfiles/ai/.codex/plugins/tanaab" "${ME_TARGET_PATH}"
+}
+
+tanaab_plugin_checkout_display() {
+  display_home_path "$(tanaab_plugin_checkout_path)"
+}
+
+prepare_tanaab_plugin_link() {
+  local ai_dotpkg_path="${ME_TARGET_PATH}/dotfiles/ai"
+  local plugin_checkout_path
+  local plugin_parent_path
+
+  plugin_checkout_path="$(tanaab_plugin_checkout_path)"
+
+  if ! tanaab_enabled; then
+    if [[ -L "${plugin_checkout_path}" || -e "${plugin_checkout_path}" ]]; then
+      execute rm -rf "${plugin_checkout_path}"
+    fi
+    return 0
+  fi
+
+  if [[ ! -d "${ai_dotpkg_path}" ]]; then
+    abort "me checkout at ${tty_ts}$(me_target_display)${tty_reset} is missing required ${tty_ts}ai${tty_reset} dotpkg needed for the tanaab plugin link."
+  fi
+
+  plugin_parent_path="$(dirname "${plugin_checkout_path}")"
+  execute mkdir -p "${plugin_parent_path}"
+
+  if [[ -L "${plugin_checkout_path}" || -e "${plugin_checkout_path}" ]]; then
+    execute rm -rf "${plugin_checkout_path}"
+  fi
+
+  execute ln -s "${TANAAB_PLUGIN_RELATIVE_TARGET}" "${plugin_checkout_path}"
 }
 
 discover_me_apply_payload() {
@@ -624,6 +746,7 @@ discover_me_apply_payload() {
 }
 
 build_git_ssh_command_from_ssh_keys() {
+  local repo_name="${1:-repo}"
   local ssh_key
   local key_path
   local arg
@@ -639,7 +762,7 @@ build_git_ssh_command_from_ssh_keys() {
   done
 
   if [[ "${#existing_key_paths[@]}" -eq 0 ]]; then
-    abort "cannot clone ${tty_ts}me${tty_reset} via ssh because no installed ssh key paths were found."
+    abort "cannot clone ${tty_ts}${repo_name}${tty_reset} via ssh because no installed ssh key paths were found."
   fi
 
   for key_path in "${existing_key_paths[@]}"; do
@@ -698,7 +821,7 @@ fetch_repo_source_to_target() {
 
   case "${source_kind}" in
     ssh)
-      git_ssh_command="$(build_git_ssh_command_from_ssh_keys)"
+      git_ssh_command="$(build_git_ssh_command_from_ssh_keys "${repo_name}")"
       log "${tty_tp}cloning${tty_reset} ${tty_ts}${repo_name}${tty_reset} via ssh to ${tty_ts}$(display_home_path "${target}")${tty_reset}"
       execute env GIT_SSH_COMMAND="${git_ssh_command}" git clone "${ssh_url}" "${target}"
       ;;
@@ -721,31 +844,58 @@ fetch_repo_source_to_target() {
   esac
 }
 
-plan_me_fetch() {
+plan_repo_fetch() {
+  local repo_name="$1"
+  local target_path="$2"
+  local source_kind="$3"
+  local source_local_path="$4"
+  local source_version_tag="$5"
   local target_display
 
-  target_display="$(me_target_display)"
+  target_display="$(display_home_path "${target_path}")"
 
-  if [[ -e "${ME_TARGET_PATH}" ]]; then
+  if [[ -e "${target_path}" ]]; then
     if force_enabled; then
-      plan_action "${tty_tp}replace${tty_reset} existing ${tty_ts}me${tty_reset} checkout at ${tty_ts}${target_display}${tty_reset} because ${tty_bold}--force${tty_reset} is set"
+      plan_action "${tty_tp}replace${tty_reset} existing ${tty_ts}${repo_name}${tty_reset} checkout at ${tty_ts}${target_display}${tty_reset} because ${tty_bold}--force${tty_reset} is set"
     else
-      plan_action "${tty_tp}skip${tty_reset} fetching ${tty_ts}me${tty_reset} because ${tty_ts}${target_display}${tty_reset} already exists and ${tty_bold}--force${tty_reset} is not set"
+      plan_action "${tty_tp}skip${tty_reset} fetching ${tty_ts}${repo_name}${tty_reset} because ${tty_ts}${target_display}${tty_reset} already exists and ${tty_bold}--force${tty_reset} is not set"
       return 0
     fi
   fi
 
-  case "${ME_SOURCE_KIND}" in
+  case "${source_kind}" in
     ssh)
-      plan_action "${tty_tp}clone${tty_reset} ${tty_ts}me${tty_reset} via ssh to ${tty_ts}${target_display}${tty_reset}"
+      plan_action "${tty_tp}clone${tty_reset} ${tty_ts}${repo_name}${tty_reset} via ssh to ${tty_ts}${target_display}${tty_reset}"
       ;;
     local)
-      plan_action "${tty_tp}clone${tty_reset} ${tty_ts}me${tty_reset} from local repo ${tty_ts}${ME_SOURCE_LOCAL_PATH}${tty_reset} to ${tty_ts}${target_display}${tty_reset}"
+      plan_action "${tty_tp}clone${tty_reset} ${tty_ts}${repo_name}${tty_reset} from local repo ${tty_ts}${source_local_path}${tty_reset} to ${tty_ts}${target_display}${tty_reset}"
       ;;
     version)
-      plan_action "${tty_tp}extract${tty_reset} ${tty_ts}me${tty_reset} release ${tty_ts}${ME_SOURCE_VERSION_TAG}${tty_reset} to ${tty_ts}${target_display}${tty_reset}"
+      plan_action "${tty_tp}extract${tty_reset} ${tty_ts}${repo_name}${tty_reset} release ${tty_ts}${source_version_tag}${tty_reset} to ${tty_ts}${target_display}${tty_reset}"
       ;;
   esac
+}
+
+plan_me_fetch() {
+  plan_repo_fetch \
+    "me" \
+    "${ME_TARGET_PATH}" \
+    "${ME_SOURCE_KIND}" \
+    "${ME_SOURCE_LOCAL_PATH}" \
+    "${ME_SOURCE_VERSION_TAG}"
+}
+
+plan_tanaab_fetch() {
+  plan_repo_fetch \
+    "tanaab" \
+    "${TANAAB_TARGET_PATH}" \
+    "${TANAAB_SOURCE_KIND}" \
+    "${TANAAB_SOURCE_LOCAL_PATH}" \
+    "${TANAAB_SOURCE_VERSION_TAG}"
+}
+
+plan_tanaab_plugin_link() {
+  plan_action "${tty_tp}ensure${tty_reset} relative ${tty_ts}tanaab${tty_reset} plugin link at ${tty_ts}$(tanaab_plugin_checkout_display)${tty_reset} points to ${tty_ts}$(tanaab_target_display)${tty_reset}"
 }
 
 plan_me_apply() {
@@ -761,6 +911,17 @@ run_me_fetch() {
     "${ME_REPO_RELEASE_BASE_URL}" \
     "${ME_REPO_RELEASE_ARCHIVE_PREFIX}" \
     "${ME_SOURCE_KIND}"
+}
+
+run_tanaab_fetch() {
+  fetch_repo_source_to_target \
+    "tanaab" \
+    "${TANAAB_SOURCE_LOCAL_PATH:-${TANAAB_SOURCE_VERSION_TAG:-${TANAAB_SOURCE}}}" \
+    "${TANAAB_TARGET_PATH}" \
+    "${TANAAB_REPO_SSH_URL}" \
+    "${TANAAB_REPO_RELEASE_BASE_URL}" \
+    "${TANAAB_REPO_RELEASE_ARCHIVE_PREFIX}" \
+    "${TANAAB_SOURCE_KIND}"
 }
 
 run_bootbox_for_me_apply() {
@@ -1132,6 +1293,10 @@ plan_wrapper_execution() {
   fi
 
   plan_me_fetch
+  if tanaab_enabled; then
+    plan_tanaab_fetch
+    plan_tanaab_plugin_link
+  fi
   plan_me_apply
 }
 
@@ -1220,14 +1385,18 @@ main() {
   debug raw FORCE="${FORCE:-}"
   debug raw OP_TOKEN="$(mask_secret_for_display "${OP_TOKEN}")"
   debug raw SSH_KEYS="$(array_join "," SSH_KEYS)"
-  debug raw ME="$(normalize_me_source_value "${ME_SOURCE}")"
+  debug raw ME="$(normalize_repo_source_value "${ME_SOURCE}")"
+  debug raw TANAAB="$(normalize_repo_source_value "${TANAAB_SOURCE}")"
   debug raw BOOTBOX_URL="${BOOTBOX_URL}"
   debug raw CURL="${CURL}"
   debug raw ARCH="${ARCH}"
   debug raw OS="${OS}"
   prepare_me_source
+  prepare_tanaab_source
   debug raw ME_SOURCE_KIND="${ME_SOURCE_KIND}"
   debug raw ME_TARGET="$(me_target_display)"
+  debug raw TANAAB_SOURCE_KIND="${TANAAB_SOURCE_KIND}"
+  debug raw TANAAB_TARGET="$(tanaab_target_display)"
 
   prepare_bootbox_script
   run_bootbox_check_core || true
@@ -1242,6 +1411,10 @@ main() {
   ensure_bootbox_core_requirements
   run_bootbox
   run_me_fetch
+  if tanaab_enabled; then
+    run_tanaab_fetch
+  fi
+  prepare_tanaab_plugin_link
   discover_me_apply_payload
   debug raw ME_APPLY_BREWFILE="$(me_apply_brewfile_display)"
   debug raw ME_APPLY_DOTPKGS="$(array_join "," ME_APPLY_DOTPKGS)"

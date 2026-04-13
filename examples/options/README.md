@@ -3,9 +3,10 @@
 This example keeps coverage on the shell-facing option contract of `boot.sh`. It runs the wrapper
 with CLI flags, delegates into bootbox, and then verifies that the requested SSH keys were
 installed, that `me` was materialized from a local checkout, and that the post-fetch bootbox apply
-step used the `me` checkout's brewfile and dotpkgs on the default target directory. It also covers
-the wrapper-specific behavior of skipping an existing destination key while continuing with the
-remaining requested keys.
+step used the `me` checkout's brewfile and dotpkgs on the default target directory. It also verifies
+that the default `--tanaab ssh` flow materialized canon and stowed the `tanaab` plugin link through
+the `ai` dotpkg, while still covering the wrapper-specific behavior of skipping an existing
+destination key and continuing with the remaining requested keys.
 
 This scenario is intended to run in CI by default. Do not run it locally unless the task explicitly
 calls for a local Leia run.
@@ -21,6 +22,12 @@ mkdir -p "$HOME/.ssh"
 
 # should remove an existing me checkout target
 rm -rf "$HOME/tanaab/me"
+
+# should remove an existing tanaab canon checkout target
+rm -rf "$HOME/tanaab/canon"
+
+# should remove any previously installed tanaab plugin link
+rm -f "$HOME/.codex/plugins/tanaab"
 
 # should have the local me source repo available
 test -d "$GITHUB_WORKSPACE/.git"
@@ -85,6 +92,12 @@ test -f "$HOME/tanaab/me/boot.sh"
 # should point the me clone origin at the local workspace source
 test "$(git -C "$HOME/tanaab/me" config --get remote.origin.url)" = "$GITHUB_WORKSPACE"
 
+# should clone tanaab canon via ssh by default
+test -d "$HOME/tanaab/canon/.git"
+
+# should point the tanaab canon clone at the github ssh remote
+test "$(git -C "$HOME/tanaab/canon" config --get remote.origin.url)" = "git@github.com:tanaabased/canon.git"
+
 # should stow a representative hyperdrive config from the me checkout
 test -L "$HOME/.config/hyperdrive/config.yaml"
 cmp -s "$HOME/.config/hyperdrive/config.yaml" "$HOME/tanaab/me/dotfiles/hyperdrive/.config/hyperdrive/config.yaml"
@@ -92,6 +105,10 @@ cmp -s "$HOME/.config/hyperdrive/config.yaml" "$HOME/tanaab/me/dotfiles/hyperdri
 # should stow a representative lando config from the me checkout
 test -L "$HOME/.config/lando/config.yaml"
 cmp -s "$HOME/.config/lando/config.yaml" "$HOME/tanaab/me/dotfiles/lando/.config/lando/config.yaml"
+
+# should stow the tanaab plugin link into the target codex plugins directory
+test -L "$HOME/.codex/plugins/tanaab"
+test "$(python3 -c 'import os, sys; print(os.path.realpath(sys.argv[1]))' "$HOME/.codex/plugins/tanaab")" = "$HOME/tanaab/canon"
 ```
 
 ## Destroy tests
@@ -101,9 +118,12 @@ cmp -s "$HOME/.config/lando/config.yaml" "$HOME/tanaab/me/dotfiles/lando/.config
 rm -f "$HOME/.config/hyperdrive/config.yaml" "$HOME/.config/lando/config.yaml"
 rmdir "$HOME/.config/hyperdrive" "$HOME/.config/lando" 2>/dev/null || true
 
+# should remove the stowed tanaab plugin link
+rm -f "$HOME/.codex/plugins/tanaab"
+
 # should remove the installed example ssh keys
 rm -f "$HOME/.ssh/id_test" "$HOME/.ssh/id_test_options"
 
-# should remove the cloned me checkout
-rm -rf "$HOME/tanaab/me"
+# should remove the cloned me and tanaab canon checkouts
+rm -rf "$HOME/tanaab/me" "$HOME/tanaab/canon"
 ```

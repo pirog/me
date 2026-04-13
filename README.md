@@ -16,9 +16,10 @@ Specifically this means installing, maintaining, updating and managing:
 ## Usage
 
 The current wrapper fetches hosted bootbox, applies the wrapper-specific guards and planning flow,
-installs the required core dependencies and SSH keys, materializes `me` into `~/tanaab/me`, and
-then reruns bootbox against that checkout's root `Brewfile` plus the top-level `dotfiles/*`
-packages on the default target of `$HOME`.
+installs the required core dependencies and SSH keys, materializes `me` into `~/tanaab/me`,
+materializes `tanaab` into `~/tanaab/canon` unless disabled, ensures the relative `tanaab` plugin
+link exists in the `me` checkout, and then reruns bootbox against that checkout's root `Brewfile`
+plus the top-level `dotfiles/*` packages on the default target of `$HOME`.
 
 ```zsh
 # clone repo
@@ -28,9 +29,11 @@ git clone git@github.com:pirog/me.git && cd me && chmod +x boot.sh
 bash boot.sh --op-token "$OP_TOKEN"
 ```
 
-The wrapper currently supports `--op-token`, `--ssh-key`, `--me`, `--yes`, `--force`, `--debug`,
-`--version`, and `--help`. `--me` accepts `ssh`, a local git repo path, or a release version such
-as `v0.3.1`, and defaults to `ssh`.
+The wrapper currently supports `--op-token`, `--ssh-key`, `--me`, `--tanaab`, `--yes`, `--force`,
+`--debug`, `--version`, and `--help`. `--me` accepts `ssh`, a local git repo path, or a release
+version such as `v0.3.1`, and defaults to `ssh`. `--tanaab` accepts `ssh`, a local git repo path,
+a release version such as `v0.2.0`, or a falsey disable value such as `off`, and also defaults to
+`ssh`.
 
 When `--me` is `ssh`, the wrapper clones `git@github.com:pirog/me.git` into `~/tanaab/me` using the
 resolved installed SSH keys. When `--me` is a local path, it clones that local git repo into
@@ -38,6 +41,13 @@ resolved installed SSH keys. When `--me` is a local path, it clones that local g
 Releases and extracts it into `~/tanaab/me`. If the target already exists, the wrapper skips that
 fetch step unless `--force` is set, then applies the current `~/tanaab/me` checkout by delegating
 back into bootbox with its root `Brewfile` and top-level `dotfiles/*` packages on `$HOME`.
+
+When `--tanaab` is `ssh`, the wrapper clones `git@github.com:tanaabased/canon.git` into
+`~/tanaab/canon`. When `--tanaab` is a local path, it clones that local git repo into
+`~/tanaab/canon`. When `--tanaab` is a version, it downloads `tanaab-<tag>.tar.gz` from the canon
+releases and extracts it into `~/tanaab/canon`. When enabled, the wrapper also ensures
+`~/tanaab/me/dotfiles/ai/.codex/plugins/tanaab` is a relative symlink back to `~/tanaab/canon`
+before the `me` apply pass. Set `--tanaab off` or `PIROME_TANAAB=false` to skip this canon flow.
 
 If you are looking to customize your install then [advanced usage](#advanced) is for you.
 
@@ -62,6 +72,7 @@ the script.
 PIROME_OP_TOKEN="$OP_TOKEN"
 PIROME_SSH_KEY="vmruk4ny353aly6tbom7z3v2hy/id_pirog"
 PIROME_ME=ssh
+PIROME_TANAAB=ssh
 PIROME_DEBUG=0
 PIROME_FORCE=0
 ```
@@ -75,11 +86,12 @@ These are equivalent commands and meant to demostrate environment variable usage
 PIROME_OP_TOKEN="$OP_TOKEN" \
 PIROME_SSH_KEY="vmruk4ny353aly6tbom7z3v2hy/id_pirog" \
 PIROME_ME="$HOME/src/me" \
+PIROME_TANAAB="$HOME/src/canon" \
 PIROME_DEBUG=1 \
   /bin/bash -c "$(curl -fsSL https://boot.pirog.me/boot.sh)"
 
 # invoke directly
-bash boot.sh --op-token "$OP_TOKEN" --ssh-key vmruk4ny353aly6tbom7z3v2hy/id_pirog --me v0.3.1 --debug
+bash boot.sh --op-token "$OP_TOKEN" --ssh-key vmruk4ny353aly6tbom7z3v2hy/id_pirog --me v0.3.1 --tanaab v0.2.0 --debug
 ```
 
 ## Development

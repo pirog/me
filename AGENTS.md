@@ -41,7 +41,9 @@ This root `AGENTS.md` is the repo-local override for Codex work in this reposito
 - Preserve token masking in debug output. Do not leak raw 1Password tokens in logs or display commands.
 - Do not reintroduce raw argument logging.
 - Preserve the public wrapper contract under the `PIROME_*` namespace unless the task is explicitly about changing it. Use upstream `TANAAB_*` names only as the internal bridge when delegating to bootbox.
-- Preserve the current token, SSH key, and `--me` contract unless the task is explicitly about changing it.
+- Preserve the current token, SSH key, `--me`, and `--tanaab` contract unless the task is explicitly about changing it.
 - Keep `--me` / `PIROME_ME` aligned with the current source modes: `ssh`, a local git repo path, or a release version, with a fixed target of `~/tanaab/me` and skip-or-replace behavior controlled by `--force`.
-- After `me` materialization, preserve the wrapper-side bootbox apply phase that uses the checkout's root `Brewfile` and top-level `dotfiles/*` package directories on the default `$HOME` target.
-- Keep planning output aligned with actual execution order: core remediation, SSH handling, `me` fetch, then the `me` apply step.
+- Keep `--tanaab` / `PIROME_TANAAB` aligned with the current source modes: `ssh`, a local git repo path, a release version, or falsey disable values, with a fixed target of `~/tanaab/canon`.
+- When `--tanaab` is enabled, preserve the wrapper-owned relative plugin link at `~/tanaab/me/dotfiles/ai/.codex/plugins/tanaab` so the main `ai` stow can install `~/.codex/plugins/tanaab` back to `~/tanaab/canon`.
+- After repo materialization, preserve the wrapper-side bootbox apply phase that uses the `me` checkout's root `Brewfile` and top-level `dotfiles/*` package directories on the default `$HOME` target.
+- Keep planning output aligned with actual execution order: core remediation, SSH handling, `me` fetch, optional `tanaab` fetch and plugin-link prep, then the `me` apply step.
