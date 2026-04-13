@@ -1,5 +1,30 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+### Bootstrap
+
+- Added `--me` and `--tanaab` materialization of `~/tanaab/me` and `~/tanaab/canon` before applying the machine profile.
+- Added hosted `boot.sh` installs at [boot.pirog.me](https://boot.pirog.me/boot.sh).
+- Removed legacy `piroboot.sh`.
+
+### Machine Profile
+
+- Added `Brewfile` as the base dependency inventory for Git, GitHub CLI, Bun, Node, Python, Stow, 1Password CLI, Tailscale, ImageMagick, and Zsh.
+- Added `ai` dotpkg for Codex defaults and `Pirostore` marketplace config.
+- Added `gh` dotpkg for GitHub CLI config.
+- Added `git` dotpkg for Git config and Lando includes.
+- Added `hyperdrive` dotpkg for Hyperdrive config.
+- Added `lando` dotpkg for Lando config.
+- Added `ssh` dotpkg for SSH config and public-key material.
+- Added `theme` dotpkg for Tanaab light and dark theme assets.
+- Added `vim` dotpkg for Vim config.
+- Added `zsh` dotpkg for shell and prompt config.
+
+### Codex
+
+- Added `Pirostore` marketplace entries for `piroplugin` and the paired `tanaab` plugin.
+- Added `piro-skill-author` as the initial repo-local Pirobased skill.
+- Added `piroplugin` as the repo's Codex plugin bundle and release archive surface.
+
 ## v0.3.1 - [April 11, 2026](https://github.com/pirog/me/releases/tag/v0.3.1)
 
 - Fixed bug causing `prepare-release-action` to export an incorrectly formated `plugin.json`
