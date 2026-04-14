@@ -19,14 +19,18 @@ This root `AGENTS.md` is the repo-local override for Codex work in this reposito
 - Prefer Codex plugin and skill-aware workflows when they are actually available in the active environment.
 - Verify skill files or skill availability before claiming a skill is loaded or in use.
 - If a skill is unavailable, say so plainly and continue with repo files and the current session guidance.
+- Treat `.codex-plugin/`, `.mcp.json`, `assets/`, `bin/`, `skills/`, `package.json`, and this root `AGENTS.md` as the managed plugin cache surface for `bun run codex:check` and `bun run codex:sync`.
+- Treat `dotfiles/ai` as a separate stow-owned surface. Use `bun run ai:sync` for home-directory restow work, not for Codex plugin cache refreshes.
 
 ## Validation Policy
 
 - Never run Leia locally. Leia scenarios in this repo are CI-only unless the user explicitly asks for a local Leia run.
 - Treat `bun run build` as CI-owned by default. Only run it locally when the task explicitly requires release or `dist/` verification.
 - Prefer narrow local validation such as static review and `bun run lint`.
+- For changes to managed plugin surfaces, run `bun run codex:check`; if it reports drift, run `bun run codex:sync`.
+- For `dotfiles/ai` changes, use `bun run ai:sync` when the task requires restowing the live home-directory surface.
 - New `boot.sh` features and bug fixes should add the smallest practical amount of coverage to all relevant Leia examples instead of relying on one catch-all scenario.
-- When Leia or `bun run build` is skipped because of repo policy, say so explicitly.
+- When cache sync, `ai:sync`, agent restart, Leia, or `bun run build` is intentionally skipped because of task scope or repo policy, say so explicitly.
 
 ## Release And Distribution
 

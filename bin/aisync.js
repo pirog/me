@@ -11,7 +11,9 @@ import {
   commonTanaabEnvironmentVariables,
   createCli,
   extractCommonFlags,
-} from './bun-cli-support.js';
+} from '../scripts/bun-cli-support.js';
+
+const CLI_NAME = 'aisync';
 
 const cli = createCli(import.meta.url);
 
@@ -73,12 +75,9 @@ function usage(code = 0) {
         },
         { label: '--debug', description: 'show debug diagnostics' },
         { label: '-h, --help', description: 'show this message' },
-        {
-          label: '-V, --version',
-          description: `show the repo version ${cli.dim(`[default: ${cli.version}]`)}`,
-        },
+        { label: '-V, --version', description: 'show the CLI version' },
       ],
-      usage: `${cli.bold(cli.cliName)} [options]`,
+      usage: `${cli.bold(CLI_NAME)} [options]`,
     },
     code,
   );
