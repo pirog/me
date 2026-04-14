@@ -15,6 +15,10 @@
     "access": "public"
   },
   "type": "module",
+  "bin": {
+    "aisync": "./bin/aisync.js",
+    "codexsync": "./bin/codexsync.js"
+  },
   "dependencies": {},
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -27,11 +31,13 @@
   },
   "scripts": {
     "build": "bun ./scripts/build-dist.js",
+    "ai:sync": "bun ./bin/aisync.js",
+    "codex:check": "bun ./bin/codexsync.js check",
+    "codex:sync": "bun ./bin/codexsync.js sync",
     "format:check": "prettier . --check --ignore-unknown",
     "format:write": "prettier . --write --ignore-unknown",
     "lint": "bun run lint:eslint && bun run format:check && bun run lint:shellcheck",
     "lint:eslint": "eslint .",
-    "lint:shellcheck": "shellcheck boot.sh",
-    "sync:ai": "bun scripts/sync-ai-stow.js"
+    "lint:shellcheck": "shellcheck boot.sh"
   }
 }

@@ -139,6 +139,19 @@ bun install
 bun run lint
 ```
 
+For day-to-day local work, the repo ships separate commands for plugin cache refreshes and `ai`
+dotpkg restows.
+
+```sh
+bun run codex:check
+bun run codex:sync
+bun run ai:sync
+```
+
+- `bun run codex:check` checks the installed `piroplugin` cache copy.
+- `bun run codex:sync` refreshes that cache copy when you want Codex to pick up local plugin changes.
+- `bun run ai:sync` restows [`dotfiles/ai`](./dotfiles/ai/) into `$HOME`.
+
 `bun run build` is CI-owned by default. Only run it locally when the task explicitly requires
 `dist/` or release verification.
 
