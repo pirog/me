@@ -158,7 +158,7 @@ function renderHelp({ cachePath, repoRoot }) {
         lines: MANAGED_PATHS.map((managedPath) => `  ${managedPath}`),
       },
     ],
-    usage: `${cli.bold(CLI_NAME)} <check|sync> [options]`,
+    usage: `${cli.bold(CLI_NAME)} <check|sync> ${cli.dim('[options]')}`,
   });
 }
 

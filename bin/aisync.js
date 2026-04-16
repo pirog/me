@@ -77,7 +77,7 @@ function usage(code = 0) {
         { label: '-h, --help', description: 'show this message' },
         { label: '-V, --version', description: 'show the CLI version' },
       ],
-      usage: `${cli.bold(CLI_NAME)} [options]`,
+      usage: `${cli.bold(CLI_NAME)} ${cli.dim('[options]')}`,
     },
     code,
   );
