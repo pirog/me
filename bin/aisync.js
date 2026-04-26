@@ -11,7 +11,7 @@ import {
   commonTanaabEnvironmentVariables,
   createCli,
   extractCommonFlags,
-} from '../scripts/bun-cli-support.js';
+} from '../lib/bun-cli-support.js';
 
 const CLI_NAME = 'aisync';
 

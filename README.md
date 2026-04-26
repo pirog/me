@@ -136,6 +136,7 @@ This repo uses Bun for repo-local tooling.
 
 ```sh
 bun install
+bun run test
 bun run lint
 ```
 
@@ -143,14 +144,19 @@ For day-to-day local work, the repo ships separate commands for plugin cache ref
 dotpkg restows.
 
 ```sh
+bun run codex:validate
 bun run codex:check
 bun run codex:sync
 bun run ai:sync
 ```
 
-- `bun run codex:check` checks the installed `piroplugin` cache copy.
-- `bun run codex:sync` refreshes that cache copy when you want Codex to pick up local plugin changes.
+- `bun run codex:validate` runs `codexsync validate` to validate the plugin manifest, skills, MCP stub, and workflow script references.
+- `bun run codex:check` runs `codexsync check` to check the installed `piroplugin` cache copy.
+- `bun run codex:sync` runs `codexsync sync` to refresh that cache copy when you want Codex to pick up local plugin changes.
 - `bun run ai:sync` restows [`dotfiles/ai`](./dotfiles/ai/) into `$HOME`.
+
+Run `bun run test` for JavaScript library and helper changes before the relevant lint and plugin
+cache checks.
 
 `bun run build` is CI-owned by default. Only run it locally when the task explicitly requires
 `dist/` or release verification.

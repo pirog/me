@@ -277,15 +277,15 @@ function splitLeadingFrontmatter(content) {
   };
 }
 
-function parseInterfaceYaml(content) {
+function parseIndentedKeyValues(content, sectionName) {
   const lines = String(content ?? '').split('\n');
-  const interfaceValues = {};
-  let inInterface = false;
+  const values = {};
+  let inSection = false;
 
   for (const line of lines) {
-    if (!inInterface) {
-      if (line.trim() === 'interface:') {
-        inInterface = true;
+    if (!inSection) {
+      if (line.trim() === `${sectionName}:`) {
+        inSection = true;
       }
       continue;
     }
@@ -303,10 +303,74 @@ function parseInterfaceYaml(content) {
       continue;
     }
 
-    interfaceValues[match[1]] = unquoteYaml(match[2]);
+    values[match[1]] = unquoteYaml(match[2]);
   }
 
-  return interfaceValues;
+  return values;
+}
+
+function parseInterfaceYaml(content) {
+  return parseIndentedKeyValues(content, 'interface');
+}
+
+function parsePolicyYaml(content) {
+  return parseIndentedKeyValues(content, 'policy');
+}
+
+function parseDependencyTools(content) {
+  const lines = String(content ?? '').split('\n');
+  const tools = [];
+  let inDependencies = false;
+  let inTools = false;
+  let currentTool = null;
+
+  for (const line of lines) {
+    if (!inDependencies) {
+      if (line.trim() === 'dependencies:') {
+        inDependencies = true;
+      }
+      continue;
+    }
+
+    if (!line.trim()) {
+      continue;
+    }
+
+    if (!line.startsWith('  ')) {
+      break;
+    }
+
+    if (!inTools) {
+      if (line.trim() === 'tools:') {
+        inTools = true;
+      }
+      continue;
+    }
+
+    if (!line.startsWith('    ')) {
+      break;
+    }
+
+    const firstEntryMatch = line.match(/^ {4}-\s+([a-z_]+):\s*(.+)$/);
+    if (firstEntryMatch) {
+      currentTool = {
+        [firstEntryMatch[1]]: unquoteYaml(firstEntryMatch[2]),
+      };
+      tools.push(currentTool);
+      continue;
+    }
+
+    const entryMatch = line.match(/^ {6}([a-z_]+):\s*(.+)$/);
+    if (entryMatch && currentTool) {
+      currentTool[entryMatch[1]] = unquoteYaml(entryMatch[2]);
+    }
+  }
+
+  return tools;
+}
+
+function hasDependenciesToolsSection(content) {
+  return /^\s{2}tools:\s*$/m.test(String(content ?? ''));
 }
 
 function normalizeSectionHeading(heading) {
@@ -797,6 +861,7 @@ async function validateOpenAiMetadata({
   warnings,
 }) {
   const interfaceValues = parseInterfaceYaml(openAiContent);
+  const policyValues = parsePolicyYaml(openAiContent);
 
   for (const key of REQUIRED_OPENAI_INTERFACE_KEYS) {
     if (!interfaceValues[key]) {
@@ -844,6 +909,29 @@ async function validateOpenAiMetadata({
     errors.push(
       `interface.short_description must start with \`${CANON_DESCRIPTION_PREFIX.trim()}\`.`,
     );
+  }
+
+  if (
+    policyValues.allow_implicit_invocation &&
+    !['true', 'false'].includes(policyValues.allow_implicit_invocation)
+  ) {
+    errors.push('policy.allow_implicit_invocation must be `true` or `false` when present.');
+  }
+
+  if (hasDependenciesToolsSection(openAiContent)) {
+    const dependencyTools = parseDependencyTools(openAiContent);
+    if (dependencyTools.length === 0) {
+      errors.push('dependencies.tools must contain at least one tool entry when present.');
+    }
+
+    for (const [index, tool] of dependencyTools.entries()) {
+      if (!tool.type) {
+        errors.push(`dependencies.tools[${index}] is missing type.`);
+      }
+      if (!tool.value) {
+        errors.push(`dependencies.tools[${index}] is missing value.`);
+      }
+    }
   }
 }
 

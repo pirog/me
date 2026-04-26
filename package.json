@@ -26,6 +26,7 @@
     "eslint": "^10.2.0",
     "eslint-config-prettier": "^10.1.1",
     "globals": "^17.5.0",
+    "mocha": "^9.2.2",
     "prettier": "^3.8.2",
     "shellcheck": "^4.1.0"
   },
@@ -33,11 +34,15 @@
     "build": "bun ./scripts/build-dist.js",
     "ai:sync": "bun ./bin/aisync.js",
     "codex:check": "bun ./bin/codexsync.js check",
+    "codex:validate": "bun ./bin/codexsync.js validate",
     "codex:sync": "bun ./bin/codexsync.js sync",
     "format:check": "prettier . --check --ignore-unknown",
     "format:write": "prettier . --write --ignore-unknown",
+    "leia": "leia",
     "lint": "bun run lint:eslint && bun run format:check && bun run lint:shellcheck",
     "lint:eslint": "eslint .",
-    "lint:shellcheck": "shellcheck boot.sh"
+    "lint:shellcheck": "shellcheck boot.sh",
+    "test": "bun run test:unit",
+    "test:unit": "mocha \"test/**/*.spec.js\""
   }
 }
