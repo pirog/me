@@ -67,8 +67,12 @@ skill-folder/
 - `[error]` `interface.icon_small` and `interface.icon_large` must point to existing relative skill asset paths.
 - `[error]` `interface.default_prompt` should explicitly mention the skill by `$<machine-id>`.
 - `[error]` `interface.brand_color` must equal `#db2777`.
+- `[error]` Optional `policy.allow_implicit_invocation` must be a boolean when present.
+- `[error]` Optional `dependencies.tools` entries must declare at least `type` and `value` when present.
 - `[warn]` `display_name` should be unprefixed by default unless the user explicitly wants `Pirog` in the human-facing title.
 - `[manual]` After the `Pirobased` prefix, `short_description` should describe the skill outcome.
+- `[manual]` Use `policy.allow_implicit_invocation: false` only when a skill should require explicit `$<machine-id>` invocation.
+- `[manual]` Use `dependencies.tools` only for real tool dependencies that improve execution, such as an MCP server the skill directly needs.
 
 ## Resource Placement Rules
 

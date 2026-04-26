@@ -10,6 +10,7 @@
         "eslint": "^10.2.0",
         "eslint-config-prettier": "^10.1.1",
         "globals": "^17.5.0",
+        "mocha": "^9.2.2",
         "prettier": "^3.8.2",
         "shellcheck": "^4.1.0",
       },

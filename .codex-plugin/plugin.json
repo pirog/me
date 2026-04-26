@@ -22,7 +22,8 @@
     "capabilities": ["Interactive", "Write"],
     "defaultPrompt": [
       "Rework this content as though it were written by @pirog.",
-      "Create a new $piroskill that mimics how @pirog writes javascript functions."
+      "Use $piro-writing to rework this content in @pirog's writing style.",
+      "Use $piro-skill-author to create a new skill that mimics how @pirog writes JavaScript functions."
     ],
     "brandColor": "#db2777",
     "composerIcon": "./assets/composer-icon.svg",
