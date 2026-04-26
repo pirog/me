@@ -1,5 +1,7 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+- Updated release archives to reinstall production dependencies before packaging so dev dependencies stay out of GitHub assets.
+
 ## v1.0.0-beta.2 - [April 26, 2026](https://github.com/pirog/me/releases/tag/v1.0.0-beta.2)
 
 ### Codex

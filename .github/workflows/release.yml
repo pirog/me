@@ -49,6 +49,10 @@ jobs:
             UNRELEASED_DATE=${{ env.RELEASE_DATE }}
             UNRELEASED_LINK=${{ github.event.release.html_url }}
             UNRELEASED_VERSION=${{ github.event.release.tag_name }}
+      - name: Install production dependencies
+        run: |
+          rm -rf node_modules
+          bun install --production --frozen-lockfile --ignore-scripts
       - name: Package release archive
         env:
           RELEASE_ARCHIVE: piroplugin-${{ github.event.release.tag_name }}.tar.gz
