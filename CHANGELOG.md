@@ -1,5 +1,17 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+### Codex
+
+- Added generated Codex config sync with portable shared defaults and machine-local overrides.
+- Added portable Codex defaults for `gpt-5.5`, `xhigh` reasoning, Fast mode, Memories, VS Code file links, and disabled commit attribution.
+- Updated `piroplugin` and repo-local Codex tooling for GPT-5.5. [#17](https://github.com/pirog/me/pull/17)
+
+### Developer Tools
+
+- Added `aisync` and `codexsync` Bun CLIs for AI dotpkg restows and plugin cache management. [#15](https://github.com/pirog/me/pull/15)
+- Added focused unit tests for Codex sync helpers, config generation, and CLI support.
+- Updated `aisync` and `codexsync` help output to match shared Tanaab CLI standards.
+
 ## v1.0.0-beta.1 - [April 13, 2026](https://github.com/pirog/me/releases/tag/v1.0.0-beta.1)
 
 ### Bootstrap
