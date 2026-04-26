@@ -14,6 +14,8 @@
 *.sublime-*
 
 # tanaab based
+dotfiles/ai/.codex/config.local.toml
+dotfiles/ai/.codex/config.toml
 dotfiles/ai/.codex/plugins/tanaab
 
 # Logs
@@ -48,4 +50,3 @@ docs/.vitepress/dist
 
 # tmp
 examples/**/.tmp
-

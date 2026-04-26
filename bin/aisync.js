@@ -12,18 +12,29 @@ import {
   createCli,
   extractCommonFlags,
 } from '../lib/bun-cli-support.js';
+import { syncCodexConfig } from '../lib/codex-config-sync.js';
 
 const CLI_NAME = 'aisync';
 
 const cli = createCli(import.meta.url);
 
 function buildEnvironment() {
+  const target = process.env.TANAAB_STOW_TARGET?.trim() || os.homedir();
+  const codexDir = path.join(target, '.codex');
+
   return {
+    codexConfigLocal:
+      process.env.TANAAB_CODEX_CONFIG_LOCAL?.trim() || path.join(codexDir, 'config.local.toml'),
+    codexConfigOutput:
+      process.env.TANAAB_CODEX_CONFIG_OUTPUT?.trim() || path.join(codexDir, 'config.toml'),
+    codexConfigShared:
+      process.env.TANAAB_CODEX_CONFIG_SHARED?.trim() || path.join(codexDir, 'config.shared.toml'),
+    codexConfigSync: booleanFromEnv(process.env.TANAAB_CODEX_CONFIG_SYNC, true),
     dotfilesDir: process.env.TANAAB_STOW_DOTFILES_DIR?.trim() || path.join(REPO_ROOT, 'dotfiles'),
     packageName: process.env.TANAAB_STOW_PACKAGE?.trim() || 'ai',
     prune: booleanFromEnv(process.env.TANAAB_STOW_PRUNE, true),
     simulate: booleanFromEnv(process.env.TANAAB_STOW_SIMULATE, false),
-    target: process.env.TANAAB_STOW_TARGET?.trim() || os.homedir(),
+    target,
   };
 }
 
@@ -40,6 +51,22 @@ function buildEnvironmentVariables() {
     {
       label: 'TANAAB_STOW_PRUNE',
       description: 'set to a truthy value to prune dangling links after restow',
+    },
+    {
+      label: 'TANAAB_CODEX_CONFIG_SYNC',
+      description: 'set to a falsey value to skip generated Codex config sync',
+    },
+    {
+      label: 'TANAAB_CODEX_CONFIG_SHARED',
+      description: 'portable shared Codex config fragment',
+    },
+    {
+      label: 'TANAAB_CODEX_CONFIG_LOCAL',
+      description: 'machine-local Codex config fragment',
+    },
+    {
+      label: 'TANAAB_CODEX_CONFIG_OUTPUT',
+      description: 'generated Codex config output path',
     },
   ];
 }
@@ -73,6 +100,22 @@ function usage(code = 0) {
           label: '--no-prune',
           description: `skip dangling skill-link cleanup after restow ${cli.dim(`[default: ${environment.prune ? 'off' : 'on'}]`)}`,
         },
+        {
+          label: '--no-codex-config',
+          description: `skip generated Codex config sync ${cli.dim(`[default: ${environment.codexConfigSync ? 'off' : 'on'}]`)}`,
+        },
+        {
+          label: '--codex-config-shared <path>',
+          description: `portable shared Codex config fragment ${cli.dim(`[default: ${environment.codexConfigShared}]`)}`,
+        },
+        {
+          label: '--codex-config-local <path>',
+          description: `machine-local Codex config fragment ${cli.dim(`[default: ${environment.codexConfigLocal}]`)}`,
+        },
+        {
+          label: '--codex-config-output <path>',
+          description: `generated Codex config output path ${cli.dim(`[default: ${environment.codexConfigOutput}]`)}`,
+        },
         { label: '--debug', description: 'show debug diagnostics' },
         { label: '-h, --help', description: 'show this message' },
         { label: '-V, --version', description: 'show the CLI version' },
@@ -85,6 +128,7 @@ function usage(code = 0) {
 
 function parseArgs(argv) {
   const parsed = { ...buildEnvironment() };
+  const explicitCodexConfigPaths = new Set();
 
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
@@ -103,6 +147,11 @@ function parseArgs(argv) {
       continue;
     }
 
+    if (arg === '--no-codex-config') {
+      parsed.codexConfigSync = false;
+      continue;
+    }
+
     if (!arg.startsWith('--')) {
       throw new Error(`Positional arguments are not supported: ${arg}`);
     }
@@ -114,11 +163,27 @@ function parseArgs(argv) {
 
     const key = arg.slice(2).replace(/-([a-z])/g, (_, char) => char.toUpperCase());
     parsed[key] = value;
+    if (['codexConfigShared', 'codexConfigLocal', 'codexConfigOutput'].includes(key)) {
+      explicitCodexConfigPaths.add(key);
+    }
     index += 1;
   }
 
   parsed.dotfilesDir = path.resolve(parsed.dotfilesDir);
   parsed.target = path.resolve(parsed.target);
+  const codexDir = path.join(parsed.target, '.codex');
+  if (!explicitCodexConfigPaths.has('codexConfigShared')) {
+    parsed.codexConfigShared = path.join(codexDir, 'config.shared.toml');
+  }
+  if (!explicitCodexConfigPaths.has('codexConfigLocal')) {
+    parsed.codexConfigLocal = path.join(codexDir, 'config.local.toml');
+  }
+  if (!explicitCodexConfigPaths.has('codexConfigOutput')) {
+    parsed.codexConfigOutput = path.join(codexDir, 'config.toml');
+  }
+  parsed.codexConfigShared = path.resolve(parsed.codexConfigShared);
+  parsed.codexConfigLocal = path.resolve(parsed.codexConfigLocal);
+  parsed.codexConfigOutput = path.resolve(parsed.codexConfigOutput);
   return parsed;
 }
 
@@ -234,7 +299,14 @@ async function main() {
 
   const options = parseArgs(argv);
   cli.debug('resolved options %O', options);
-  const stowArgs = ['--dir', options.dotfilesDir, '--target', options.target, '--restow'];
+  const stowArgs = [
+    '--dir',
+    options.dotfilesDir,
+    '--target',
+    options.target,
+    '--restow',
+    '--no-folding',
+  ];
 
   if (options.simulate) {
     stowArgs.push('--simulate');
@@ -279,9 +351,26 @@ async function main() {
     );
   }
 
+  if (options.codexConfigSync) {
+    const result = await syncCodexConfig({
+      localPath: options.codexConfigLocal,
+      outputPath: options.codexConfigOutput,
+      sharedPath: options.codexConfigShared,
+    });
+
+    if (result.migratedLocal) {
+      cli.note('migrated existing Codex config to %s', cli.ts(result.localPath));
+    }
+
+    cli.success('generated Codex config at %s', cli.ts(result.outputPath));
+  } else {
+    cli.note('skipped generated Codex config sync');
+  }
+
   const summaries = await Promise.all([
     summarizePath(path.join(options.target, '.codex', 'skills')),
     summarizePath(path.join(options.target, '.openclaw', 'skills')),
+    summarizePath(options.codexConfigOutput),
   ]);
 
   cli.log(summaries.join('\n'));
