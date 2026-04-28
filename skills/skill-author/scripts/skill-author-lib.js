@@ -983,9 +983,10 @@ function buildManualChecks({ expectedType }) {
   if (expectedType === 'coding') {
     checks.push(
       'Check that broad discovery language, if present, still funnels toward one dominant implementation pattern.',
+      'Check that `Documentation` describes the canonical docs surface for the owned code path.',
       'Check that `Testing` describes one canonical direct-test mechanism with one minimal example.',
       'Check that `GitHub Actions Workflow` describes one canonical GHA validation mechanism with one minimal example.',
-      'Check whether multiple materially different testing or GitHub Actions mechanisms mean the skill should split.',
+      'Check whether multiple materially different documentation, testing, or GitHub Actions mechanisms mean the skill should split.',
     );
   }
 

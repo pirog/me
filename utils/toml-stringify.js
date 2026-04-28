@@ -123,6 +123,16 @@ function renderTableArray(values, prefix) {
   return blocks.filter(Boolean).join('\n\n');
 }
 
+/**
+ * Render the small TOML subset used by generated Codex config files.
+ *
+ * Object keys are sorted for deterministic output. Plain-object arrays become
+ * table arrays; unsupported scalar or nested array values throw.
+ *
+ * @param {object} config Plain-object TOML tree to render.
+ * @returns {string} Deterministic TOML text ending in a newline when non-empty.
+ * @throws {Error} When a scalar or array shape is outside the supported subset.
+ */
 export function stringifyToml(config) {
   const rendered = renderTable(config);
   return rendered ? `${rendered}\n` : '';

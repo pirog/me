@@ -22,7 +22,7 @@ Use this skill when the skill itself is the artifact being created, standardized
 - Validation is a first-class workflow phase and a valid standalone mode.
 - Let the shared standard define the base contract and let local templates and scripts own type-specific authoring behavior.
 - Keep support material local unless it clearly passes the hoist test for repo-root canon.
-- For `coding` skills, define one owned code surface plus two lifecycle sections: `Testing` and `GitHub Actions Workflow`.
+- For `coding` skills, define one owned code surface plus three lifecycle sections: `Documentation`, `Testing`, and `GitHub Actions Workflow`.
 - In plugin-contained skill trees, keep the `piro-` machine id in frontmatter and prompts while omitting that prefix from the skill folder name.
 - If the reusable artifact is really a whole starter repository with committed structure, scripts, examples, and docs that users adopt wholesale, challenge whether it should be a repo template instead of a live skill.
 - When a skill implies durable, always-on repo policy, it may bundle `references/repo-agents-lines.md` as short copyable guidance for a target repo's `AGENTS.md`.
@@ -62,7 +62,7 @@ Use this skill when the skill itself is the artifact being created, standardized
 - Do not use `generic` as the default when a narrower type clearly fits.
 - Do not duplicate contract rules in skill prose when the standard or CLI already enforces them.
 - Do not hoist a file to repo root just because it might be reused later.
-- Do not let a `coding` skill accumulate multiple materially different testing or GitHub Actions validation mechanisms unless the variations are minor flavors of one pattern.
+- Do not let a `coding` skill accumulate multiple materially different documentation, testing, or GitHub Actions validation mechanisms unless the variations are minor flavors of one pattern.
 - Do not keep a live skill whose main job is to restate one repo template's structure, scripts, examples, and docs.
 - Do not use repo `AGENTS.md` guidance as a dumping ground for task-triggered workflow detail.
 
@@ -72,7 +72,7 @@ Use this skill when the skill itself is the artifact being created, standardized
 - Scaffold or patch the skill, then validate immediately.
 - Run validation first when the request is validation-only.
 - Tighten scope before adding new sections, resources, or hoisted canon.
-- For `coding` skills, challenge the scope before adding a second materially different direct-test or GitHub Actions workflow pattern.
+- For `coding` skills, challenge the scope before adding a second materially different documentation, direct-test, or GitHub Actions workflow pattern.
 - Challenge skill-vs-template ownership before adding doctrine for a surface that already looks like a reusable starter repo.
 
 ## Workflow
@@ -113,6 +113,7 @@ Use this skill when the skill itself is the artifact being created, standardized
 - Confirm the new or updated skill has a distinct owned surface.
 - Confirm the selected `type` is explicit and correct.
 - Confirm the selected type order is correct.
+- Confirm `coding` skills include `Documentation`, `Testing`, and `GitHub Actions Workflow` as the canonical lifecycle sections.
 - Confirm validation-only requests are handled by the same surface rather than a separate validator skill.
 - Confirm the surface is not better expressed as a repo template with the skill kept only as a thin discovery or adaptation layer, if needed.
 - Confirm any bundled repo `AGENTS.md` lines stay short, ambient, and worth copying into a project repo.
