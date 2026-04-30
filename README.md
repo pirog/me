@@ -52,6 +52,8 @@ When the script finishes, complete the manual setup checklist below.
 - Apps:
   - `monday.com`, connected as Michael Pirog for this `me` environment
 
+After completing this checklist, ask Codex to run `$piro-me-readiness`.
+
 ## What Gets Installed
 
 ### Brewfile
