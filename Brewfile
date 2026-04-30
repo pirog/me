@@ -1,5 +1,6 @@
 tap "oven-sh/bun"
 
+cask "1password"
 cask "1password-cli"
 
 brew "curl"

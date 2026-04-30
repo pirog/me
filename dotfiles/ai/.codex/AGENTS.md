@@ -49,3 +49,12 @@
 - Read only the parts of a skill, reference, template, or doc that are needed for the current task.
 - Prefer shipped scripts, references, and templates over re-deriving large blocks of guidance from memory.
 - Keep the active context small and relevant to the work at hand.
+
+## monday Connector
+
+- For monday.com board, item, update, workspace, or CRM work, prefer the monday app connector over browser or desktop automation unless the user explicitly asks for browser/computer use.
+- For this `me` environment, the monday connector is expected to post as Michael Pirog.
+- Before mutating monday data in a new session, confirm the connector is exposed and run a read-only identity probe such as `list_users_and_teams(getMe=true)`.
+- Treat monday user ID `71211606` and name `Michael Pirog` as the readiness check for this machine. Do not require an email because the connector may omit it.
+- If the connector is missing, unauthenticated, or authenticated as any other monday user, stop and report the setup or identity mismatch before making monday changes.
+- Treat monday app authorization as Codex-managed connector state. Do not store monday tokens, connector auth, app installation state, or MCP credentials in tracked repo config.
