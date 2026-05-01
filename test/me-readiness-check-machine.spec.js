@@ -3,6 +3,7 @@ import path from 'node:path';
 
 import {
   BOOTSTRAP_TOKEN_ENV_KEYS,
+  EXPECTED_ONEPASSWORD_ENVIRONMENT_ID,
   REQUIRED_COMMANDS,
   checkMachine,
   formatReport,
@@ -42,9 +43,18 @@ function makeDeps({
   brewfile = ['cask "1password"', 'cask "1password-cli"', 'cask "tailscale"'].join('\n'),
   commands = REQUIRED_COMMANDS,
   configMode = 0o100600,
+  environmentCliHelp = true,
+  environmentExecError = false,
+  environmentStdout,
+  environmentValues = {
+    GH_HOST: true,
+    GH_TOKEN: true,
+  },
   execCalls,
   existingPaths,
+  meEnvKeys = ['GH_HOST=github.com', 'GH_TOKEN'].join('\n'),
   opExecError = false,
+  opEnvironmentHelpError = false,
   symbolicLinks,
   tailscaleExecError = false,
   tailscaleStatus = makeHealthyTailscaleStatus(),
@@ -79,13 +89,47 @@ function makeDeps({
       execCalls?.push({ args, command, options });
 
       if (command === 'op') {
-        assert.deepEqual(args, ['vault', 'list', '--format', 'json']);
+        if (args[0] === 'vault') {
+          assert.deepEqual(args, ['vault', 'list', '--format', 'json']);
 
-        if (opExecError) {
-          throw opExecError instanceof Error ? opExecError : new Error('op failed');
+          if (opExecError) {
+            throw opExecError instanceof Error ? opExecError : new Error('op failed');
+          }
+
+          return { stdout: JSON.stringify(vaults) };
         }
 
-        return { stdout: JSON.stringify(vaults) };
+        if (args[0] === 'environment') {
+          assert.deepEqual(args, ['environment', 'read', '--help']);
+
+          if (opEnvironmentHelpError || !environmentCliHelp) {
+            throw opEnvironmentHelpError instanceof Error
+              ? opEnvironmentHelpError
+              : new Error('unknown command "environment"');
+          }
+
+          return {
+            stdout: 'Read environment variables from a 1Password Environment.\n',
+          };
+        }
+
+        if (args[0] === 'run' && args[1] === '--environment') {
+          assert.equal(args[2], EXPECTED_ONEPASSWORD_ENVIRONMENT_ID);
+          assert.equal(args[3], '--');
+          assert.equal(args[4], 'bun');
+          assert.equal(args[5], '-e');
+          assert.equal(typeof args[6], 'string');
+
+          if (environmentExecError) {
+            throw environmentExecError instanceof Error
+              ? environmentExecError
+              : new Error('op environment failed');
+          }
+
+          return { stdout: environmentStdout ?? JSON.stringify(environmentValues) };
+        }
+
+        throw new Error(`unexpected op args ${args.join(' ')}`);
       }
 
       if (command === 'tailscale') {
@@ -110,8 +154,19 @@ function makeDeps({
       return makeFileInfo({ symbolicLink: symlinks.has(targetPath) });
     },
     readFile(targetPath) {
-      assert.equal(targetPath, path.join(REPO_ROOT, 'Brewfile'));
-      return brewfile;
+      if (targetPath === path.join(REPO_ROOT, 'Brewfile')) {
+        return brewfile;
+      }
+
+      if (targetPath === path.join(REPO_ROOT, 'me.env.keys')) {
+        if (meEnvKeys === false) {
+          throw new Error('missing me.env.keys');
+        }
+
+        return meEnvKeys;
+      }
+
+      throw new Error(`unexpected readFile ${targetPath}`);
     },
     stat(targetPath) {
       assert.equal(targetPath, makePath('.codex', 'config.toml'));
@@ -189,6 +244,7 @@ describe('skills/me-readiness/scripts/check-machine', () => {
         makePath('.codex', 'plugins', 'piroplugin'),
         makePath('.codex', 'plugins', 'tanaab'),
       ],
+      meEnvKeys: ['GH_HOST=wrong.example', 'GH_TOKEN=literal-token', 'EXTRA=value'].join('\n'),
       vaults: [],
     });
 
@@ -209,6 +265,7 @@ describe('skills/me-readiness/scripts/check-machine', () => {
     assert.ok(report.checks.some((check) => check.id === 'tailscale_app'));
     assert.ok(report.checks.some((check) => check.id === 'tailscale_status'));
     assert.ok(report.checks.some((check) => check.id === 'bootstrap_token_env'));
+    assert.ok(report.checks.some((check) => check.id === 'me_env_keys_shape'));
   });
 
   it('should not leak bootstrap token values in formatted JSON', async () => {
@@ -263,6 +320,190 @@ describe('skills/me-readiness/scripts/check-machine', () => {
     for (const key of BOOTSTRAP_TOKEN_ENV_KEYS) {
       assert.equal(Object.hasOwn(opCall.options.env, key), false, key);
     }
+  });
+
+  it('should validate the expected me.env.keys contract', async () => {
+    const report = await runCheck({
+      existingPaths: [
+        '/Applications/1Password.app',
+        '/Applications/Tailscale.app',
+        makePath('.codex', 'AGENTS.md'),
+        makePath('.codex', 'config.shared.toml'),
+        makePath('.codex', 'plugins', 'piroplugin'),
+        makePath('.codex', 'plugins', 'tanaab'),
+        makePath('.codex', 'config.toml'),
+      ],
+    });
+    const readableCheck = report.checks.find((check) => check.id === 'me_env_keys_readable');
+    const shapeCheck = report.checks.find((check) => check.id === 'me_env_keys_shape');
+
+    assert.equal(readableCheck.status, 'pass');
+    assert.equal(shapeCheck.status, 'pass');
+  });
+
+  it('should reject malformed duplicate and unexpected me.env.keys entries', async () => {
+    const report = await runCheck({
+      existingPaths: [
+        '/Applications/1Password.app',
+        '/Applications/Tailscale.app',
+        makePath('.codex', 'AGENTS.md'),
+        makePath('.codex', 'config.shared.toml'),
+        makePath('.codex', 'plugins', 'piroplugin'),
+        makePath('.codex', 'plugins', 'tanaab'),
+        makePath('.codex', 'config.toml'),
+      ],
+      meEnvKeys: ['GH_HOST=github.com', 'GH_HOST=github.com', 'bad-name', 'EXTRA=value'].join('\n'),
+    });
+    const shapeCheck = report.checks.find((check) => check.id === 'me_env_keys_shape');
+
+    assert.equal(shapeCheck.status, 'fail');
+    assert.match(shapeCheck.message, /duplicates GH_HOST/);
+    assert.match(shapeCheck.message, /invalid environment variable name/);
+    assert.match(shapeCheck.message, /unexpected key EXTRA/);
+    assert.match(shapeCheck.message, /GH_TOKEN is missing/);
+  });
+
+  it('should reject literal GH_TOKEN values without leaking the value', async () => {
+    const report = await runCheck({
+      existingPaths: [
+        '/Applications/1Password.app',
+        '/Applications/Tailscale.app',
+        makePath('.codex', 'AGENTS.md'),
+        makePath('.codex', 'config.shared.toml'),
+        makePath('.codex', 'plugins', 'piroplugin'),
+        makePath('.codex', 'plugins', 'tanaab'),
+        makePath('.codex', 'config.toml'),
+      ],
+      meEnvKeys: ['GH_HOST=github.com', 'GH_TOKEN=do-not-print-this-token'].join('\n'),
+    });
+    const output = formatReport(report);
+    const shapeCheck = report.checks.find((check) => check.id === 'me_env_keys_shape');
+
+    assert.equal(shapeCheck.status, 'fail');
+    assert.match(shapeCheck.message, /GH_TOKEN must be key-only/);
+    assert.doesNotMatch(output, /do-not-print-this-token/);
+  });
+
+  it('should fail 1Password Environment readiness when the beta CLI surface is missing', async () => {
+    const report = await runCheck({
+      environmentCliHelp: false,
+      existingPaths: [
+        '/Applications/1Password.app',
+        '/Applications/Tailscale.app',
+        makePath('.codex', 'AGENTS.md'),
+        makePath('.codex', 'config.shared.toml'),
+        makePath('.codex', 'plugins', 'piroplugin'),
+        makePath('.codex', 'plugins', 'tanaab'),
+        makePath('.codex', 'config.toml'),
+      ],
+    });
+    const cliCheck = report.checks.find((check) => check.id === 'onepassword_environment_cli');
+    const developerCheck = report.checks.find(
+      (check) => check.id === 'onepassword_developer_experience',
+    );
+    const valuesCheck = report.checks.find(
+      (check) => check.id === 'onepassword_environment_values',
+    );
+
+    assert.equal(cliCheck.status, 'fail');
+    assert.match(cliCheck.remediation, /2\.33\.0-beta\.02/);
+    assert.equal(developerCheck.status, 'fail');
+    assert.match(developerCheck.remediation, /Show 1Password Developer experience/);
+    assert.equal(valuesCheck.status, 'fail');
+  });
+
+  it('should fail 1Password Developer experience when Environment access fails', async () => {
+    const report = await runCheck({
+      environmentExecError: Object.assign(new Error('op environment failed'), {
+        stderr: '1Password Developer experience is not enabled for Environments',
+      }),
+      existingPaths: [
+        '/Applications/1Password.app',
+        '/Applications/Tailscale.app',
+        makePath('.codex', 'AGENTS.md'),
+        makePath('.codex', 'config.shared.toml'),
+        makePath('.codex', 'plugins', 'piroplugin'),
+        makePath('.codex', 'plugins', 'tanaab'),
+        makePath('.codex', 'config.toml'),
+      ],
+    });
+    const developerCheck = report.checks.find(
+      (check) => check.id === 'onepassword_developer_experience',
+    );
+    const valuesCheck = report.checks.find(
+      (check) => check.id === 'onepassword_environment_values',
+    );
+
+    assert.equal(developerCheck.status, 'fail');
+    assert.match(developerCheck.remediation, /Show 1Password Developer experience/);
+    assert.equal(valuesCheck.status, 'fail');
+  });
+
+  it('should call op run environment without bootstrap token environment variables', async () => {
+    const execCalls = [];
+
+    await runCheck({
+      env: {
+        KEEP_ME: 'yes',
+        OP_SERVICE_ACCOUNT_TOKEN: 'do-not-pass',
+        PIROME_OP_TOKEN: 'do-not-pass',
+        TANAAB_OP_TOKEN: 'do-not-pass',
+      },
+      execCalls,
+      existingPaths: [
+        '/Applications/1Password.app',
+        '/Applications/Tailscale.app',
+        makePath('.codex', 'AGENTS.md'),
+        makePath('.codex', 'config.shared.toml'),
+        makePath('.codex', 'plugins', 'piroplugin'),
+        makePath('.codex', 'plugins', 'tanaab'),
+        makePath('.codex', 'config.toml'),
+      ],
+    });
+
+    const environmentCall = execCalls.find(
+      (call) => call.command === 'op' && call.args[0] === 'run' && call.args[1] === '--environment',
+    );
+
+    assert.deepEqual(environmentCall.args.slice(0, 6), [
+      'run',
+      '--environment',
+      EXPECTED_ONEPASSWORD_ENVIRONMENT_ID,
+      '--',
+      'bun',
+      '-e',
+    ]);
+    assert.doesNotMatch(environmentCall.args[6], /console\.log|printenv|GH_TOKEN=/);
+    assert.equal(environmentCall.options.env.KEEP_ME, 'yes');
+
+    for (const key of BOOTSTRAP_TOKEN_ENV_KEYS) {
+      assert.equal(Object.hasOwn(environmentCall.options.env, key), false, key);
+    }
+  });
+
+  it('should fail when 1Password Environment values are missing or wrong', async () => {
+    const report = await runCheck({
+      environmentValues: {
+        GH_HOST: false,
+        GH_TOKEN: false,
+      },
+      existingPaths: [
+        '/Applications/1Password.app',
+        '/Applications/Tailscale.app',
+        makePath('.codex', 'AGENTS.md'),
+        makePath('.codex', 'config.shared.toml'),
+        makePath('.codex', 'plugins', 'piroplugin'),
+        makePath('.codex', 'plugins', 'tanaab'),
+        makePath('.codex', 'config.toml'),
+      ],
+    });
+    const valuesCheck = report.checks.find(
+      (check) => check.id === 'onepassword_environment_values',
+    );
+
+    assert.equal(valuesCheck.status, 'fail');
+    assert.match(valuesCheck.message, /GH_HOST is not github\.com/);
+    assert.match(valuesCheck.message, /GH_TOKEN is missing or empty/);
   });
 
   it('should emit parseable JSON with only supported statuses', async () => {

@@ -42,7 +42,10 @@ When the script finishes, complete the manual setup checklist below.
 - Open 1Password.
 - Sign in and unlock it.
 - Enable Developer > Integrate with 1Password CLI.
+- Enable Developer > Show 1Password Developer experience.
+- Install or update to a 1Password CLI beta that supports `op run --environment`.
 - Confirm `op` can access the signed-in account with a read-only check such as `op vault list`.
+- Confirm Environment `zsstdfqknicwfv5glv76gd6tue` provides `GH_HOST=github.com` and `GH_TOKEN`.
 
 ### Tailscale
 
@@ -67,6 +70,12 @@ After completing this checklist, ask Codex to run `$piro-me-readiness`.
 [`Brewfile`](./Brewfile) is the single source of truth for base machine dependencies. It covers
 Homebrew tooling plus the core CLI and runtime stack used here, including Git and GitHub CLI,
 Bun/Node/Python, Stow, the 1Password desktop app and CLI, Tailscale, ImageMagick, and Zsh.
+
+### GitHub Environment
+
+[`me.env.keys`](./me.env.keys) is the tracked contract for GitHub environment values expected from
+1Password Environment `zsstdfqknicwfv5glv76gd6tue`. Runtime values should be loaded with
+`op run --environment zsstdfqknicwfv5glv76gd6tue`; do not commit a root `me.env`.
 
 ### Dotpkgs
 
