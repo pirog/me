@@ -54,6 +54,13 @@ tokens, run setup, manage environments, perform GitHub or monday work, or valida
    The helper emits checks in dependency order and every check includes one stable `bucket`:
    `homebrew`, `packages`, `dotfiles`, `manual_apps`, then `codex_plugins`.
 
+   Bucket meanings:
+   - `homebrew`: Homebrew command availability.
+   - `packages`: Brewfile declarations and required command availability.
+   - `dotfiles`: repo-owned stowed files and generated local config readiness.
+   - `manual_apps`: installed apps and local app/auth/network readiness.
+   - `codex_plugins`: local Codex plugin links or plugin install surfaces owned by this repo.
+
    The bucket order is intentional: package manager availability comes before package contracts,
    package contracts come before dotfile checks, dotfiles come before manual app readiness, and
    app readiness comes before Codex plugin and connector identity.
@@ -101,9 +108,8 @@ tokens, run setup, manage environments, perform GitHub or monday work, or valida
   `tanaab.dev`. Peer pings are troubleshooting tools, not readiness gates.
 - Treat the README as human setup guidance. Use the helper JSON and connector probes as the
   machine-readable source of readiness truth.
-- Update this skill and its helper when any readiness contract changes, including Brewfile
-  dependencies, dotfile layout, 1Password app integration behavior, Tailscale tailnet policy, Codex
-  plugin layout, expected GitHub or monday connector identities, or connector validation behavior.
+- Follow the root `AGENTS.md` readiness maintenance policy when deciding whether future repo or
+  skill changes should update this readiness skill.
 
 ## Completion Criteria
 

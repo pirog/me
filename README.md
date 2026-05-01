@@ -61,30 +61,6 @@ When the script finishes, complete the manual setup checklist below.
 
 After completing this checklist, ask Codex to run `$piro-me-readiness`.
 
-## Readiness Checks
-
-`$piro-me-readiness` only verifies that this repo and the current macOS user profile are set up
-correctly for Codex work as Michael Pirog. It is not a token-management, environment-management,
-GitHub automation, monday automation, setup, release, or general machine-admin workflow.
-
-The local helper emits `{ ok, checks }`, and every check includes a stable `bucket`. Buckets run in
-dependency order:
-
-1. `homebrew`: Homebrew itself is available.
-2. `packages`: the Brewfile package contract and required commands are present.
-3. `dotfiles`: repo-owned Codex dotfiles are stowed and generated config is private.
-4. `manual_apps`: 1Password and Tailscale are installed, unlocked or logged in, and ready.
-5. `codex_plugins`: expected Codex plugin links are installed.
-
-Connector readiness is checked through Codex app connectors after the local helper runs. GitHub must
-report login `pirog` with user ID `713424`; monday must report user ID `71211606` and name
-`Michael Pirog`.
-
-Update this skill when the Brewfile package contract, dotfile layout, manual app auth requirements,
-Tailscale tailnet policy, Codex plugin layout, or expected GitHub/monday connector identities change.
-Do not add environment-value checks or committed runtime env files to readiness without designing a
-separate environment contract first.
-
 ## What Gets Installed
 
 ### Brewfile
