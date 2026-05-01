@@ -42,10 +42,7 @@ When the script finishes, complete the manual setup checklist below.
 - Open 1Password.
 - Sign in and unlock it.
 - Enable Developer > Integrate with 1Password CLI.
-- Enable Developer > Show 1Password Developer experience.
-- Install or update to a 1Password CLI beta that supports `op run --environment`.
 - Confirm `op` can access the signed-in account with a read-only check such as `op vault list`.
-- Confirm Environment `zsstdfqknicwfv5glv76gd6tue` provides `GH_HOST=github.com` and `GH_TOKEN`.
 
 ### Tailscale
 
@@ -59,9 +56,34 @@ When the script finishes, complete the manual setup checklist below.
   - `piroplugin`
   - `tanaab`
 - Apps:
+  - `GitHub`, connected as `pirog`
   - `monday.com`, connected as Michael Pirog for this `me` environment
 
 After completing this checklist, ask Codex to run `$piro-me-readiness`.
+
+## Readiness Checks
+
+`$piro-me-readiness` only verifies that this repo and the current macOS user profile are set up
+correctly for Codex work as Michael Pirog. It is not a token-management, environment-management,
+GitHub automation, monday automation, setup, release, or general machine-admin workflow.
+
+The local helper emits `{ ok, checks }`, and every check includes a stable `bucket`. Buckets run in
+dependency order:
+
+1. `homebrew`: Homebrew itself is available.
+2. `packages`: the Brewfile package contract and required commands are present.
+3. `dotfiles`: repo-owned Codex dotfiles are stowed and generated config is private.
+4. `manual_apps`: 1Password and Tailscale are installed, unlocked or logged in, and ready.
+5. `codex_plugins`: expected Codex plugin links are installed.
+
+Connector readiness is checked through Codex app connectors after the local helper runs. GitHub must
+report login `pirog` with user ID `713424`; monday must report user ID `71211606` and name
+`Michael Pirog`.
+
+Update this skill when the Brewfile package contract, dotfile layout, manual app auth requirements,
+Tailscale tailnet policy, Codex plugin layout, or expected GitHub/monday connector identities change.
+Do not add environment-value checks or committed runtime env files to readiness without designing a
+separate environment contract first.
 
 ## What Gets Installed
 
@@ -70,12 +92,6 @@ After completing this checklist, ask Codex to run `$piro-me-readiness`.
 [`Brewfile`](./Brewfile) is the single source of truth for base machine dependencies. It covers
 Homebrew tooling plus the core CLI and runtime stack used here, including Git and GitHub CLI,
 Bun/Node/Python, Stow, the 1Password desktop app and CLI, Tailscale, ImageMagick, and Zsh.
-
-### GitHub Environment
-
-[`me.env.keys`](./me.env.keys) is the tracked contract for GitHub environment values expected from
-1Password Environment `zsstdfqknicwfv5glv76gd6tue`. Runtime values should be loaded with
-`op run --environment zsstdfqknicwfv5glv76gd6tue`; do not commit a root `me.env`.
 
 ### Dotpkgs
 
@@ -92,7 +108,7 @@ Bun/Node/Python, Stow, the 1Password desktop app and CLI, Tailscale, ImageMagick
 ### Skills
 
 - [`piro-skill-author`](./skills/skill-author/): creates, standardizes, and validates Pirobased repo-local skills.
-- [`piro-me-readiness`](./skills/me-readiness/): verifies local bootstrap, app auth, Tailscale, Codex, and monday readiness for this `me` machine.
+- [`piro-me-readiness`](./skills/me-readiness/): verifies this `me` repo and macOS user profile are ready for Codex work as Michael Pirog.
 
 This plugin surface is intentionally small. Broader shared canon skills come from the paired
 `tanaab` plugin.

@@ -17,14 +17,6 @@ const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_REPO_ROOT = path.resolve(SCRIPT_DIR, '..', '..', '..');
 const PRIVATE_CONFIG_MODE = 0o600;
 const EXPECTED_TAILNET_NAME = 'tanaab.dev';
-export const EXPECTED_ONEPASSWORD_ENVIRONMENT_ID = 'zsstdfqknicwfv5glv76gd6tue';
-export const ME_ENV_KEYS_FILENAME = 'me.env.keys';
-export const ENVIRONMENT_LITERAL_VALUES = Object.freeze({
-  GH_HOST: 'github.com',
-});
-export const ENVIRONMENT_SECRET_KEYS = ['GH_TOKEN'];
-const MINIMUM_ONEPASSWORD_ENVIRONMENT_CLI_VERSION = '2.33.0-beta.02';
-const ENVIRONMENT_VALIDATION_SCRIPT = `const result={GH_HOST:process.env.GH_HOST==="github.com",GH_TOKEN:Boolean(process.env.GH_TOKEN?.trim())};process.stdout.write(JSON.stringify(result));`;
 
 export const REQUIRED_BREWFILE_CASKS = ['1password', '1password-cli', 'tailscale'];
 export const REQUIRED_COMMANDS = ['brew', 'bun', 'git', 'gh', 'op', 'stow', 'tailscale'];
@@ -33,8 +25,15 @@ export const BOOTSTRAP_TOKEN_ENV_KEYS = [
   'OP_SERVICE_ACCOUNT_TOKEN',
   'TANAAB_OP_TOKEN',
 ];
+export const CHECK_BUCKET_ORDER = Object.freeze([
+  'homebrew',
+  'packages',
+  'dotfiles',
+  'manual_apps',
+  'codex_plugins',
+]);
 
-const CODEX_LINKS = [
+const DOTFILE_LINKS = [
   {
     id: 'codex_agents_link',
     relativePath: ['.codex', 'AGENTS.md'],
@@ -45,6 +44,9 @@ const CODEX_LINKS = [
     relativePath: ['.codex', 'config.shared.toml'],
     label: '~/.codex/config.shared.toml',
   },
+];
+
+const CODEX_PLUGIN_LINKS = [
   {
     id: 'codex_piroplugin_link',
     relativePath: ['.codex', 'plugins', 'piroplugin'],
@@ -57,8 +59,42 @@ const CODEX_LINKS = [
   },
 ];
 
+function checkIdSegment(value) {
+  return value.replace(/[^a-z0-9]+/g, '_');
+}
+
+const CHECK_BUCKET_BY_ID = new Map([
+  ...REQUIRED_COMMANDS.map((command) => [
+    `command_${command}`,
+    command === 'brew' ? 'homebrew' : 'packages',
+  ]),
+  ['brewfile_readable', 'packages'],
+  ...REQUIRED_BREWFILE_CASKS.map((cask) => [`brewfile_cask_${checkIdSegment(cask)}`, 'packages']),
+  ['codex_agents_link', 'dotfiles'],
+  ['codex_shared_config_link', 'dotfiles'],
+  ['codex_generated_config', 'dotfiles'],
+  ['onepassword_app', 'manual_apps'],
+  ['onepassword_cli_vault_access', 'manual_apps'],
+  ['tailscale_app', 'manual_apps'],
+  ['tailscale_status', 'manual_apps'],
+  ['bootstrap_token_env', 'manual_apps'],
+  ['codex_piroplugin_link', 'codex_plugins'],
+  ['codex_tanaab_link', 'codex_plugins'],
+]);
+const CHECK_STATUSES = new Set(['pass', 'warn', 'fail']);
+
 function makeCheck({ id, message, remediation, status }) {
-  const check = { id, status, message };
+  const bucket = CHECK_BUCKET_BY_ID.get(id);
+
+  if (!bucket) {
+    throw new Error(`No readiness bucket assigned for check ${id}.`);
+  }
+
+  if (!CHECK_STATUSES.has(status)) {
+    throw new Error(`Unsupported readiness status ${status}.`);
+  }
+
+  const check = { bucket, id, status, message };
 
   if (status !== 'pass') {
     check.remediation = remediation;
@@ -133,24 +169,6 @@ function formatOnePasswordCommandError(error) {
   };
 }
 
-function formatOnePasswordEnvironmentCommandError(error) {
-  const detail = formatErrorDetail(error);
-
-  if (/couldn'?t connect to the 1Password desktop app/i.test(detail)) {
-    return {
-      message: '1Password Environment access could not connect to the 1Password desktop app.',
-      remediation:
-        'If op run --environment works in your terminal, rerun the readiness helper with unsandboxed local access from Codex. Otherwise open 1Password, sign in, unlock it, then confirm Settings > Developer has Integrate with 1Password CLI and Show 1Password Developer experience enabled.',
-    };
-  }
-
-  return {
-    message: '1Password Environment access check failed.',
-    remediation:
-      'Open 1Password, sign in, unlock it, turn on Settings > Developer > Show 1Password Developer experience, confirm Environment zsstdfqknicwfv5glv76gd6tue is accessible, then rerun the readiness helper.',
-  };
-}
-
 function formatTailscaleCommandError(error) {
   const detail = formatErrorDetail(error);
 
@@ -201,78 +219,6 @@ function getCheck(checks, id) {
   return checks.find((check) => check.id === id);
 }
 
-function expectedEnvironmentKeys() {
-  return new Set([...Object.keys(ENVIRONMENT_LITERAL_VALUES), ...ENVIRONMENT_SECRET_KEYS]);
-}
-
-function parseMeEnvKeys(content) {
-  const expectedKeys = expectedEnvironmentKeys();
-  const secretKeys = new Set(ENVIRONMENT_SECRET_KEYS);
-  const errors = [];
-  const seen = new Set();
-
-  for (const [index, rawLine] of String(content ?? '')
-    .split(/\r?\n/)
-    .entries()) {
-    const lineNumber = index + 1;
-    const line = rawLine.trim();
-
-    if (!line || line.startsWith('#')) {
-      continue;
-    }
-
-    const separatorIndex = line.indexOf('=');
-    const hasValue = separatorIndex !== -1;
-    const key = (hasValue ? line.slice(0, separatorIndex) : line).trim();
-    const value = hasValue ? line.slice(separatorIndex + 1).trim() : null;
-
-    if (!/^[A-Z_][A-Z0-9_]*$/.test(key)) {
-      errors.push(`line ${lineNumber} has an invalid environment variable name`);
-      continue;
-    }
-
-    if (seen.has(key)) {
-      errors.push(`line ${lineNumber} duplicates ${key}`);
-      continue;
-    }
-    seen.add(key);
-
-    if (!expectedKeys.has(key)) {
-      errors.push(`line ${lineNumber} contains unexpected key ${key}`);
-      continue;
-    }
-
-    if (secretKeys.has(key)) {
-      if (hasValue) {
-        errors.push(`${key} must be key-only and must not contain a literal value`);
-      }
-      continue;
-    }
-
-    const expectedValue = ENVIRONMENT_LITERAL_VALUES[key];
-
-    if (!hasValue) {
-      errors.push(`${key} must be declared as ${key}=${expectedValue}`);
-      continue;
-    }
-
-    if (value !== expectedValue) {
-      errors.push(`${key} must be ${expectedValue}`);
-    }
-  }
-
-  for (const key of expectedKeys) {
-    if (!seen.has(key)) {
-      errors.push(`${key} is missing`);
-    }
-  }
-
-  return {
-    errors,
-    ok: errors.length === 0,
-  };
-}
-
 function checkTailscaleStatus(status) {
   if (!status || typeof status !== 'object') {
     return fail(
@@ -315,35 +261,59 @@ function checkTailscaleStatus(status) {
       );
 }
 
-function checkOnePasswordEnvironmentValues(result) {
-  if (!result || typeof result !== 'object') {
-    return fail(
-      'onepassword_environment_values',
-      '1Password Environment validation output was not a JSON object.',
-      'Run op run --environment zsstdfqknicwfv5glv76gd6tue with the readiness helper again after confirming the 1Password Environment is accessible.',
+async function appendStowedLinkChecks(checks, links, homeDir, deps) {
+  for (const link of links) {
+    const targetPath = path.join(homeDir, ...link.relativePath);
+    const info = await pathInfo(targetPath, deps);
+
+    if (!info) {
+      checks.push(
+        fail(
+          link.id,
+          `${link.label} is missing.`,
+          'Run bun run ai:sync from /Users/pirog/tanaab/me to restow the Codex dotfiles.',
+        ),
+      );
+      continue;
+    }
+
+    checks.push(
+      info.isSymbolicLink()
+        ? pass(link.id, `${link.label} exists as a stowed link.`)
+        : warn(
+            link.id,
+            `${link.label} exists but is not a symbolic link.`,
+            'Run bun run ai:sync from /Users/pirog/tanaab/me to restow the Codex dotfiles.',
+          ),
     );
   }
+}
 
-  const issues = [];
+async function appendGeneratedConfigCheck(checks, homeDir, deps) {
+  const generatedConfigPath = path.join(homeDir, '.codex', 'config.toml');
 
-  if (result.GH_HOST !== true) {
-    issues.push('GH_HOST is not github.com');
+  try {
+    const configStat = await deps.stat(generatedConfigPath);
+    const mode = configStat.mode & 0o777;
+
+    checks.push(
+      mode === PRIVATE_CONFIG_MODE
+        ? pass('codex_generated_config', '~/.codex/config.toml exists with private permissions.')
+        : warn(
+            'codex_generated_config',
+            `~/.codex/config.toml exists with mode ${formatMode(configStat.mode)}, expected 0600.`,
+            'Run bun run ai:sync from /Users/pirog/tanaab/me to regenerate Codex config with private permissions.',
+          ),
+    );
+  } catch {
+    checks.push(
+      fail(
+        'codex_generated_config',
+        '~/.codex/config.toml is missing.',
+        'Run bun run ai:sync from /Users/pirog/tanaab/me to generate Codex config.',
+      ),
+    );
   }
-
-  if (result.GH_TOKEN !== true) {
-    issues.push('GH_TOKEN is missing or empty');
-  }
-
-  return issues.length === 0
-    ? pass(
-        'onepassword_environment_values',
-        '1Password Environment provides GH_HOST=github.com and a non-empty GH_TOKEN.',
-      )
-    : fail(
-        'onepassword_environment_values',
-        `1Password Environment values are not ready: ${issues.join('; ')}.`,
-        'Update 1Password Environment zsstdfqknicwfv5glv76gd6tue so GH_HOST is github.com and GH_TOKEN is present, then rerun the readiness helper.',
-      );
 }
 
 export async function checkMachine(options = {}) {
@@ -382,12 +352,9 @@ export async function checkMachine(options = {}) {
     for (const cask of REQUIRED_BREWFILE_CASKS) {
       checks.push(
         hasCask(brewfile, cask)
-          ? pass(
-              `brewfile_cask_${cask.replace(/[^a-z0-9]+/g, '_')}`,
-              `Brewfile includes cask "${cask}".`,
-            )
+          ? pass(`brewfile_cask_${checkIdSegment(cask)}`, `Brewfile includes cask "${cask}".`)
           : fail(
-              `brewfile_cask_${cask.replace(/[^a-z0-9]+/g, '_')}`,
+              `brewfile_cask_${checkIdSegment(cask)}`,
               `Brewfile does not include cask "${cask}".`,
               'Update the Brewfile and rerun https://boot.pirog.me/boot.sh or install the missing Brewfile dependency.',
             ),
@@ -398,6 +365,9 @@ export async function checkMachine(options = {}) {
   for (const command of REQUIRED_COMMANDS.filter((requiredCommand) => requiredCommand !== 'brew')) {
     checks.push(await commandCheck(command, deps));
   }
+
+  await appendStowedLinkChecks(checks, DOTFILE_LINKS, homeDir, deps);
+  await appendGeneratedConfigCheck(checks, homeDir, deps);
 
   const onePasswordAppPath = '/Applications/1Password.app';
   checks.push(
@@ -455,152 +425,6 @@ export async function checkMachine(options = {}) {
     }
   }
 
-  const meEnvKeysPath = path.join(repoRoot, ME_ENV_KEYS_FILENAME);
-
-  try {
-    const meEnvKeys = await deps.readFile(meEnvKeysPath, 'utf8');
-    checks.push(pass('me_env_keys_readable', `${ME_ENV_KEYS_FILENAME} is readable.`));
-    const meEnvKeysReport = parseMeEnvKeys(meEnvKeys);
-    checks.push(
-      meEnvKeysReport.ok
-        ? pass('me_env_keys_shape', `${ME_ENV_KEYS_FILENAME} declares the expected keys.`)
-        : fail(
-            'me_env_keys_shape',
-            `${ME_ENV_KEYS_FILENAME} is invalid: ${meEnvKeysReport.errors.join('; ')}.`,
-            'Update me.env.keys so it contains GH_HOST=github.com and key-only GH_TOKEN, with no committed secret values.',
-          ),
-    );
-  } catch {
-    checks.push(
-      fail(
-        'me_env_keys_readable',
-        `${ME_ENV_KEYS_FILENAME} was not readable at ${meEnvKeysPath}.`,
-        'Create me.env.keys with GH_HOST=github.com and key-only GH_TOKEN.',
-      ),
-    );
-    checks.push(
-      fail(
-        'me_env_keys_shape',
-        `${ME_ENV_KEYS_FILENAME} could not be validated because it is missing or unreadable.`,
-        'Create me.env.keys with GH_HOST=github.com and key-only GH_TOKEN.',
-      ),
-    );
-  }
-
-  let environmentCliSupported = false;
-
-  if (getCheck(checks, 'command_op')?.status === 'fail') {
-    checks.push(
-      fail(
-        'onepassword_environment_cli',
-        '1Password Environment CLI support could not be checked because op is missing.',
-        `Install 1Password CLI beta ${MINIMUM_ONEPASSWORD_ENVIRONMENT_CLI_VERSION} or newer, then rerun op environment read --help.`,
-      ),
-    );
-  } else {
-    try {
-      const { stdout } = await deps.execFile('op', ['environment', 'read', '--help'], {
-        env: commandEnvWithoutBootstrapTokens(env),
-      });
-      environmentCliSupported = /read environment variables/i.test(stdout);
-      checks.push(
-        environmentCliSupported
-          ? pass(
-              'onepassword_environment_cli',
-              '1Password CLI supports loading values from 1Password Environments.',
-            )
-          : fail(
-              'onepassword_environment_cli',
-              '1Password CLI does not expose op environment read support.',
-              `Install or update to 1Password CLI beta ${MINIMUM_ONEPASSWORD_ENVIRONMENT_CLI_VERSION} or newer, then rerun op environment read --help.`,
-            ),
-      );
-    } catch {
-      checks.push(
-        fail(
-          'onepassword_environment_cli',
-          '1Password Environment CLI support check failed.',
-          `Install or update to 1Password CLI beta ${MINIMUM_ONEPASSWORD_ENVIRONMENT_CLI_VERSION} or newer, then rerun op environment read --help.`,
-        ),
-      );
-    }
-  }
-
-  if (!environmentCliSupported) {
-    checks.push(
-      fail(
-        'onepassword_developer_experience',
-        '1Password Developer experience could not be checked because Environment CLI support is missing.',
-        'Open 1Password > Settings > Developer and turn on Show 1Password Developer experience after installing a 1Password CLI beta with Environment support.',
-      ),
-    );
-    checks.push(
-      fail(
-        'onepassword_environment_values',
-        '1Password Environment values could not be checked because Environment CLI support is missing.',
-        `Install 1Password CLI beta ${MINIMUM_ONEPASSWORD_ENVIRONMENT_CLI_VERSION} or newer, then rerun the readiness helper.`,
-      ),
-    );
-  } else {
-    try {
-      const { stdout } = await deps.execFile(
-        'op',
-        [
-          'run',
-          '--environment',
-          EXPECTED_ONEPASSWORD_ENVIRONMENT_ID,
-          '--',
-          'bun',
-          '-e',
-          ENVIRONMENT_VALIDATION_SCRIPT,
-        ],
-        {
-          env: commandEnvWithoutBootstrapTokens(env),
-        },
-      );
-      const result = JSON.parse(stdout);
-      checks.push(
-        pass(
-          'onepassword_developer_experience',
-          '1Password Developer experience can provide Environment values to the CLI.',
-        ),
-      );
-      checks.push(checkOnePasswordEnvironmentValues(result));
-    } catch (error) {
-      if (error instanceof SyntaxError) {
-        checks.push(
-          pass(
-            'onepassword_developer_experience',
-            '1Password Developer experience can invoke the Environment command.',
-          ),
-        );
-        checks.push(
-          fail(
-            'onepassword_environment_values',
-            '1Password Environment validation output was not parseable JSON.',
-            'Rerun the readiness helper after confirming 1Password Environment zsstdfqknicwfv5glv76gd6tue is accessible.',
-          ),
-        );
-      } else {
-        const formattedError = formatOnePasswordEnvironmentCommandError(error);
-        checks.push(
-          fail(
-            'onepassword_developer_experience',
-            formattedError.message,
-            formattedError.remediation,
-          ),
-        );
-        checks.push(
-          fail(
-            'onepassword_environment_values',
-            '1Password Environment values could not be checked because Environment access failed.',
-            formattedError.remediation,
-          ),
-        );
-      }
-    }
-  }
-
   if (getCheck(checks, 'command_tailscale')?.status === 'fail') {
     checks.push(
       fail(
@@ -640,55 +464,7 @@ export async function checkMachine(options = {}) {
         ),
   );
 
-  for (const link of CODEX_LINKS) {
-    const targetPath = path.join(homeDir, ...link.relativePath);
-    const info = await pathInfo(targetPath, deps);
-
-    if (!info) {
-      checks.push(
-        fail(
-          link.id,
-          `${link.label} is missing.`,
-          'Run bun run ai:sync from /Users/pirog/tanaab/me to restow the Codex dotfiles.',
-        ),
-      );
-      continue;
-    }
-
-    checks.push(
-      info.isSymbolicLink()
-        ? pass(link.id, `${link.label} exists as a stowed link.`)
-        : warn(
-            link.id,
-            `${link.label} exists but is not a symbolic link.`,
-            'Run bun run ai:sync from /Users/pirog/tanaab/me to restow the Codex dotfiles.',
-          ),
-    );
-  }
-
-  const generatedConfigPath = path.join(homeDir, '.codex', 'config.toml');
-  try {
-    const configStat = await deps.stat(generatedConfigPath);
-    const mode = configStat.mode & 0o777;
-
-    checks.push(
-      mode === PRIVATE_CONFIG_MODE
-        ? pass('codex_generated_config', '~/.codex/config.toml exists with private permissions.')
-        : warn(
-            'codex_generated_config',
-            `~/.codex/config.toml exists with mode ${formatMode(configStat.mode)}, expected 0600.`,
-            'Run bun run ai:sync from /Users/pirog/tanaab/me to regenerate Codex config with private permissions.',
-          ),
-    );
-  } catch {
-    checks.push(
-      fail(
-        'codex_generated_config',
-        '~/.codex/config.toml is missing.',
-        'Run bun run ai:sync from /Users/pirog/tanaab/me to generate Codex config.',
-      ),
-    );
-  }
+  await appendStowedLinkChecks(checks, CODEX_PLUGIN_LINKS, homeDir, deps);
 
   return {
     ok: !checks.some((check) => check.status === 'fail'),

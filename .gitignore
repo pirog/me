@@ -18,9 +18,6 @@ dotfiles/ai/.codex/config.local.toml
 dotfiles/ai/.codex/config.toml
 dotfiles/ai/.codex/plugins/tanaab
 
-# 1Password Environment runtime files
-me.env
-
 # Logs
 *.log
 logs
