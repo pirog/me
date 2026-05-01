@@ -1,7 +1,7 @@
 tap "oven-sh/bun"
 
 cask "1password"
-cask "1password-cli"
+cask "1password-cli@beta"
 cask "tailscale"
 
 brew "curl"

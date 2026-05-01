@@ -7,6 +7,11 @@ This root `AGENTS.md` is the repo-local override for Codex work in this reposito
 - This repo exists to seed a supported macOS machine with packages, dotfiles, identity or access material, and Codex plugin assets that approximate `@pirog`.
 - The repo currently ships `boot.sh` as the bootstrap wrapper and `piroplugin` as the Codex plugin bundle.
 
+## Identity Text
+
+- Use `pirog` for casual prose references to the persona this repo approximates.
+- Preserve exact literal strings for connector checks, package metadata, URLs, IDs, and external account display names.
+
 ## Source Of Truth
 
 - `boot.sh` is the shipped shell entrypoint and the main bootstrap surface to preserve.
@@ -26,6 +31,9 @@ This root `AGENTS.md` is the repo-local override for Codex work in this reposito
 ## Me Readiness Maintenance
 
 - Treat `$piro-me-readiness` as a verification surface for this `me` checkout and macOS user profile. It should not become a token-management, environment-management, GitHub automation, monday automation, setup, release, Leia, or general machine-admin workflow.
+- For protected resource access, prefer native Codex connectors such as GitHub and monday when they are available. When a script or skill needs protected resources without a native connector, wrap it with `op run --environment zsstdfqknicwfv5glv76gd6tue` instead of using committed `.env` files, persistent shell environment secrets, or local token fallback.
+- Local readiness probes must prove desktop-app-backed 1Password access. Strip 1Password service-account, connect, session, and bootstrap token environment variables from `op` subprocesses so readiness does not pass through token fallback.
+- `$piro-me-readiness` may run its bundled read-only local helper unsandboxed by default because it verifies 1Password and Tailscale desktop/daemon readiness. Do not extend that unsandboxed default to unrelated repo commands, setup, package installation, tests, release validation, or broad machine administration.
 - Keep README readiness content limited to human bootstrap/manual setup steps and a brief pointer to run `$piro-me-readiness` after setup. Do not put detailed readiness bucket or maintenance policy in README.
 - Keep readiness maintenance policy in this `AGENTS.md`. Keep `skills/me-readiness/SKILL.md` focused on how to run readiness, parse helper output, and perform read-only connector identity checks.
 - Skill changes under `skills/**` do not automatically require readiness updates. Update readiness only when a skill adds or changes a stable machine prerequisite: a Brewfile dependency, a repo-owned dotfile, a manual app/auth/network step, a Codex plugin install/link surface, or a connector identity requirement.

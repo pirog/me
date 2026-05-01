@@ -42,6 +42,8 @@ When the script finishes, complete the manual setup checklist below.
 - Open 1Password.
 - Sign in and unlock it.
 - Enable Developer > Integrate with 1Password CLI.
+- Enable Developer > Show 1Password Developer experience.
+- Use the Brewfile-provided beta 1Password CLI; 1Password Environments require beta CLI support.
 - Confirm `op` can access the signed-in account with a read-only check such as `op vault list`.
 
 ### Tailscale
@@ -55,11 +57,13 @@ When the script finishes, complete the manual setup checklist below.
 - Plugins from `Pirostore`:
   - `piroplugin`
   - `tanaab`
-- Apps:
+- Codex app connectors:
   - `GitHub`, connected as `pirog`
-  - `monday.com`, connected as Michael Pirog for this `me` environment
+  - `monday.com`, connected as `Michael Pirog` for this `me` environment
 
-After completing this checklist, ask Codex to run `$piro-me-readiness`.
+After completing this checklist, ask Codex to run `$piro-me-readiness`. Readiness may trigger
+macOS, Codex, or 1Password permission prompts while it verifies local desktop app access. Approve
+those prompts only when you intentionally asked Codex to run readiness.
 
 ## What Gets Installed
 
@@ -84,7 +88,7 @@ Bun/Node/Python, Stow, the 1Password desktop app and CLI, Tailscale, ImageMagick
 ### Skills
 
 - [`piro-skill-author`](./skills/skill-author/): creates, standardizes, and validates Pirobased repo-local skills.
-- [`piro-me-readiness`](./skills/me-readiness/): verifies this `me` repo and macOS user profile are ready for Codex work as Michael Pirog.
+- [`piro-me-readiness`](./skills/me-readiness/): verifies this `me` repo and macOS user profile are ready for Codex work as `pirog`.
 
 This plugin surface is intentionally small. Broader shared canon skills come from the paired
 `tanaab` plugin.
