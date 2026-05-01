@@ -42,7 +42,13 @@ When the script finishes, complete the manual setup checklist below.
 - Open 1Password.
 - Sign in and unlock it.
 - Enable Developer > Integrate with 1Password CLI.
-- Confirm `op` can see the signed-in account with a read-only check such as `op account list`.
+- Confirm `op` can access the signed-in account with a read-only check such as `op vault list`.
+
+### Tailscale
+
+- Open Tailscale.
+- Sign in and connect this machine to the `tanaab.dev` tailnet.
+- Confirm `tailscale status --json` reports the local node as running and online.
 
 ### Codex
 
@@ -77,6 +83,7 @@ Bun/Node/Python, Stow, the 1Password desktop app and CLI, Tailscale, ImageMagick
 ### Skills
 
 - [`piro-skill-author`](./skills/skill-author/): creates, standardizes, and validates Pirobased repo-local skills.
+- [`piro-me-readiness`](./skills/me-readiness/): verifies local bootstrap, app auth, Tailscale, Codex, and monday readiness for this `me` machine.
 
 This plugin surface is intentionally small. Broader shared canon skills come from the paired
 `tanaab` plugin.

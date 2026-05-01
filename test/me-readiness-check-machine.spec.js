@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import path from 'node:path';
 
 import {
+  BOOTSTRAP_TOKEN_ENV_KEYS,
   REQUIRED_COMMANDS,
   checkMachine,
   formatReport,
@@ -22,18 +23,38 @@ function makeFileInfo({ symbolicLink = false } = {}) {
   };
 }
 
+function makeHealthyTailscaleStatus(overrides = {}) {
+  return {
+    BackendState: 'Running',
+    TailscaleIPs: ['100.64.0.1'],
+    CurrentTailnet: {
+      Name: 'tanaab.dev',
+    },
+    Self: {
+      InNetworkMap: true,
+      Online: true,
+    },
+    ...overrides,
+  };
+}
+
 function makeDeps({
-  accounts = [{ id: 'account' }],
-  brewfile = ['cask "1password"', 'cask "1password-cli"'].join('\n'),
+  brewfile = ['cask "1password"', 'cask "1password-cli"', 'cask "tailscale"'].join('\n'),
   commands = REQUIRED_COMMANDS,
   configMode = 0o100600,
-  execError = false,
+  execCalls,
   existingPaths,
+  opExecError = false,
   symbolicLinks,
+  tailscaleExecError = false,
+  tailscaleStatus = makeHealthyTailscaleStatus(),
+  tailscaleStdout,
+  vaults = [{ id: 'vault' }],
 } = {}) {
   const existing = new Set(
     existingPaths ?? [
       '/Applications/1Password.app',
+      '/Applications/Tailscale.app',
       makePath('.codex', 'AGENTS.md'),
       makePath('.codex', 'config.shared.toml'),
       makePath('.codex', 'plugins', 'piroplugin'),
@@ -54,15 +75,32 @@ function makeDeps({
     commandExists(command) {
       return commandSet.has(command);
     },
-    execFile(command, args) {
-      assert.equal(command, 'op');
-      assert.deepEqual(args, ['account', 'list', '--format', 'json']);
+    execFile(command, args, options = {}) {
+      execCalls?.push({ args, command, options });
 
-      if (execError) {
-        throw execError instanceof Error ? execError : new Error('op failed');
+      if (command === 'op') {
+        assert.deepEqual(args, ['vault', 'list', '--format', 'json']);
+
+        if (opExecError) {
+          throw opExecError instanceof Error ? opExecError : new Error('op failed');
+        }
+
+        return { stdout: JSON.stringify(vaults) };
       }
 
-      return { stdout: JSON.stringify(accounts) };
+      if (command === 'tailscale') {
+        assert.deepEqual(args, ['status', '--json']);
+
+        if (tailscaleExecError) {
+          throw tailscaleExecError instanceof Error
+            ? tailscaleExecError
+            : new Error('tailscale failed');
+        }
+
+        return { stdout: tailscaleStdout ?? JSON.stringify(tailscaleStatus) };
+      }
+
+      throw new Error(`unexpected command ${command}`);
     },
     lstat(targetPath) {
       if (!existing.has(targetPath)) {
@@ -101,6 +139,7 @@ describe('skills/me-readiness/scripts/check-machine', () => {
     const report = await runCheck({
       existingPaths: [
         '/Applications/1Password.app',
+        '/Applications/Tailscale.app',
         makePath('.codex', 'AGENTS.md'),
         makePath('.codex', 'config.shared.toml'),
         makePath('.codex', 'plugins', 'piroplugin'),
@@ -114,11 +153,26 @@ describe('skills/me-readiness/scripts/check-machine', () => {
     assert.deepEqual([...new Set(report.checks.map((check) => check.status))], ['pass']);
   });
 
+  it('should emit the Homebrew command check first', async () => {
+    const report = await runCheck({
+      existingPaths: [
+        '/Applications/1Password.app',
+        '/Applications/Tailscale.app',
+        makePath('.codex', 'AGENTS.md'),
+        makePath('.codex', 'config.shared.toml'),
+        makePath('.codex', 'plugins', 'piroplugin'),
+        makePath('.codex', 'plugins', 'tanaab'),
+        makePath('.codex', 'config.toml'),
+      ],
+    });
+
+    assert.equal(report.checks[0].id, 'command_brew');
+  });
+
   it('should include remediation for every warning and failure', async () => {
     const report = await runCheck({
-      accounts: [],
       brewfile: 'cask "1password-cli"\n',
-      commands: REQUIRED_COMMANDS.filter((command) => command !== 'gh'),
+      commands: REQUIRED_COMMANDS.filter((command) => !['gh', 'tailscale'].includes(command)),
       configMode: 0o100644,
       env: {
         PIROME_OP_TOKEN: 'super-secret-token',
@@ -135,6 +189,7 @@ describe('skills/me-readiness/scripts/check-machine', () => {
         makePath('.codex', 'plugins', 'piroplugin'),
         makePath('.codex', 'plugins', 'tanaab'),
       ],
+      vaults: [],
     });
 
     assert.equal(report.ok, false);
@@ -147,8 +202,12 @@ describe('skills/me-readiness/scripts/check-machine', () => {
     }
 
     assert.ok(report.checks.some((check) => check.id === 'brewfile_cask_1password'));
+    assert.ok(report.checks.some((check) => check.id === 'brewfile_cask_tailscale'));
     assert.ok(report.checks.some((check) => check.id === 'command_gh'));
+    assert.ok(report.checks.some((check) => check.id === 'command_tailscale'));
     assert.ok(report.checks.some((check) => check.id === 'onepassword_app'));
+    assert.ok(report.checks.some((check) => check.id === 'tailscale_app'));
+    assert.ok(report.checks.some((check) => check.id === 'tailscale_status'));
     assert.ok(report.checks.some((check) => check.id === 'bootstrap_token_env'));
   });
 
@@ -159,6 +218,7 @@ describe('skills/me-readiness/scripts/check-machine', () => {
       },
       existingPaths: [
         '/Applications/1Password.app',
+        '/Applications/Tailscale.app',
         makePath('.codex', 'AGENTS.md'),
         makePath('.codex', 'config.shared.toml'),
         makePath('.codex', 'plugins', 'piroplugin'),
@@ -173,11 +233,44 @@ describe('skills/me-readiness/scripts/check-machine', () => {
     assert.match(output, /OP_SERVICE_ACCOUNT_TOKEN/);
   });
 
-  it('should emit parseable JSON with only supported statuses', async () => {
-    const report = await runCheck({
-      execError: true,
+  it('should call 1Password vault list without bootstrap token environment variables', async () => {
+    const execCalls = [];
+
+    await runCheck({
+      env: {
+        KEEP_ME: 'yes',
+        OP_SERVICE_ACCOUNT_TOKEN: 'do-not-pass',
+        PIROME_OP_TOKEN: 'do-not-pass',
+        TANAAB_OP_TOKEN: 'do-not-pass',
+      },
+      execCalls,
       existingPaths: [
         '/Applications/1Password.app',
+        '/Applications/Tailscale.app',
+        makePath('.codex', 'AGENTS.md'),
+        makePath('.codex', 'config.shared.toml'),
+        makePath('.codex', 'plugins', 'piroplugin'),
+        makePath('.codex', 'plugins', 'tanaab'),
+        makePath('.codex', 'config.toml'),
+      ],
+    });
+
+    const opCall = execCalls.find((call) => call.command === 'op');
+
+    assert.deepEqual(opCall.args, ['vault', 'list', '--format', 'json']);
+    assert.equal(opCall.options.env.KEEP_ME, 'yes');
+
+    for (const key of BOOTSTRAP_TOKEN_ENV_KEYS) {
+      assert.equal(Object.hasOwn(opCall.options.env, key), false, key);
+    }
+  });
+
+  it('should emit parseable JSON with only supported statuses', async () => {
+    const report = await runCheck({
+      opExecError: true,
+      existingPaths: [
+        '/Applications/1Password.app',
+        '/Applications/Tailscale.app',
         makePath('.codex', 'AGENTS.md'),
         makePath('.codex', 'config.shared.toml'),
         makePath('.codex', 'plugins', 'piroplugin'),
@@ -194,10 +287,29 @@ describe('skills/me-readiness/scripts/check-machine', () => {
 
   it('should identify 1Password desktop app connection failures as local access issues', async () => {
     const report = await runCheck({
-      execError: Object.assign(new Error('op failed'), {
+      opExecError: Object.assign(new Error('op failed'), {
         stderr:
           "1Password CLI couldn't connect to the 1Password desktop app. To fix this, update the 1Password app.",
       }),
+      existingPaths: [
+        '/Applications/1Password.app',
+        '/Applications/Tailscale.app',
+        makePath('.codex', 'AGENTS.md'),
+        makePath('.codex', 'config.shared.toml'),
+        makePath('.codex', 'plugins', 'piroplugin'),
+        makePath('.codex', 'plugins', 'tanaab'),
+        makePath('.codex', 'config.toml'),
+      ],
+    });
+    const accountCheck = report.checks.find((check) => check.id === 'onepassword_cli_vault_access');
+
+    assert.equal(accountCheck.status, 'fail');
+    assert.match(accountCheck.message, /could not connect/);
+    assert.match(accountCheck.remediation, /unsandboxed local access/);
+  });
+
+  it('should fail when the Tailscale app is missing', async () => {
+    const report = await runCheck({
       existingPaths: [
         '/Applications/1Password.app',
         makePath('.codex', 'AGENTS.md'),
@@ -207,10 +319,123 @@ describe('skills/me-readiness/scripts/check-machine', () => {
         makePath('.codex', 'config.toml'),
       ],
     });
-    const accountCheck = report.checks.find((check) => check.id === 'onepassword_cli_account');
+    const tailscaleAppCheck = report.checks.find((check) => check.id === 'tailscale_app');
 
-    assert.equal(accountCheck.status, 'fail');
-    assert.match(accountCheck.message, /could not connect/);
-    assert.match(accountCheck.remediation, /unsandboxed local access/);
+    assert.equal(report.ok, false);
+    assert.equal(tailscaleAppCheck.status, 'fail');
+  });
+
+  it('should fail Tailscale status when the command is missing', async () => {
+    const report = await runCheck({
+      commands: REQUIRED_COMMANDS.filter((command) => command !== 'tailscale'),
+      existingPaths: [
+        '/Applications/1Password.app',
+        '/Applications/Tailscale.app',
+        makePath('.codex', 'AGENTS.md'),
+        makePath('.codex', 'config.shared.toml'),
+        makePath('.codex', 'plugins', 'piroplugin'),
+        makePath('.codex', 'plugins', 'tanaab'),
+        makePath('.codex', 'config.toml'),
+      ],
+    });
+    const commandCheck = report.checks.find((check) => check.id === 'command_tailscale');
+    const statusCheck = report.checks.find((check) => check.id === 'tailscale_status');
+
+    assert.equal(commandCheck.status, 'fail');
+    assert.equal(statusCheck.status, 'fail');
+    assert.match(statusCheck.message, /tailscale is missing/);
+  });
+
+  it('should fail Tailscale status when connected to the wrong tailnet', async () => {
+    const report = await runCheck({
+      existingPaths: [
+        '/Applications/1Password.app',
+        '/Applications/Tailscale.app',
+        makePath('.codex', 'AGENTS.md'),
+        makePath('.codex', 'config.shared.toml'),
+        makePath('.codex', 'plugins', 'piroplugin'),
+        makePath('.codex', 'plugins', 'tanaab'),
+        makePath('.codex', 'config.toml'),
+      ],
+      tailscaleStatus: makeHealthyTailscaleStatus({
+        CurrentTailnet: {
+          Name: 'other.example',
+        },
+      }),
+    });
+    const statusCheck = report.checks.find((check) => check.id === 'tailscale_status');
+
+    assert.equal(statusCheck.status, 'fail');
+    assert.match(statusCheck.message, /other\.example/);
+  });
+
+  it('should fail Tailscale status when the local node is offline or not running', async () => {
+    const report = await runCheck({
+      existingPaths: [
+        '/Applications/1Password.app',
+        '/Applications/Tailscale.app',
+        makePath('.codex', 'AGENTS.md'),
+        makePath('.codex', 'config.shared.toml'),
+        makePath('.codex', 'plugins', 'piroplugin'),
+        makePath('.codex', 'plugins', 'tanaab'),
+        makePath('.codex', 'config.toml'),
+      ],
+      tailscaleStatus: makeHealthyTailscaleStatus({
+        BackendState: 'Stopped',
+        Self: {
+          InNetworkMap: false,
+          Online: false,
+        },
+        TailscaleIPs: [],
+      }),
+    });
+    const statusCheck = report.checks.find((check) => check.id === 'tailscale_status');
+
+    assert.equal(statusCheck.status, 'fail');
+    assert.match(statusCheck.message, /BackendState/);
+    assert.match(statusCheck.message, /not online/);
+    assert.match(statusCheck.message, /no Tailscale IPs/);
+  });
+
+  it('should fail Tailscale status when JSON output is invalid', async () => {
+    const report = await runCheck({
+      existingPaths: [
+        '/Applications/1Password.app',
+        '/Applications/Tailscale.app',
+        makePath('.codex', 'AGENTS.md'),
+        makePath('.codex', 'config.shared.toml'),
+        makePath('.codex', 'plugins', 'piroplugin'),
+        makePath('.codex', 'plugins', 'tanaab'),
+        makePath('.codex', 'config.toml'),
+      ],
+      tailscaleStdout: '{not json',
+    });
+    const statusCheck = report.checks.find((check) => check.id === 'tailscale_status');
+
+    assert.equal(statusCheck.status, 'fail');
+    assert.match(statusCheck.message, /not parseable JSON/);
+  });
+
+  it('should identify Tailscale daemon connection failures as local access issues', async () => {
+    const report = await runCheck({
+      existingPaths: [
+        '/Applications/1Password.app',
+        '/Applications/Tailscale.app',
+        makePath('.codex', 'AGENTS.md'),
+        makePath('.codex', 'config.shared.toml'),
+        makePath('.codex', 'plugins', 'piroplugin'),
+        makePath('.codex', 'plugins', 'tanaab'),
+        makePath('.codex', 'config.toml'),
+      ],
+      tailscaleExecError: Object.assign(new Error('tailscale failed'), {
+        stderr:
+          'failed to connect to local Tailscaled process and failed to enumerate processes while looking for it',
+      }),
+    });
+    const statusCheck = report.checks.find((check) => check.id === 'tailscale_status');
+
+    assert.equal(statusCheck.status, 'fail');
+    assert.match(statusCheck.message, /local Tailscale service/);
+    assert.match(statusCheck.remediation, /unsandboxed local access/);
   });
 });

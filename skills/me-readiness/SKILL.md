@@ -16,13 +16,14 @@ metadata:
 ## Overview
 
 Use this skill to verify that a bootstrapped `me` machine is ready for Codex work as Michael
-Pirog. It checks local bootstrap state, 1Password readiness, Codex plugin links, and the monday
-connector identity without mutating monday data or machine configuration.
+Pirog. It checks local bootstrap state, 1Password readiness, Tailscale readiness, Codex plugin
+links, and the monday connector identity without mutating monday data or machine configuration.
 
 ## When to Use
 
 - Run after `boot.sh` and the README manual setup checklist have completed.
-- Run before relying on Codex plugin skills, monday connector actions, or 1Password-backed local setup.
+- Run before relying on Codex plugin skills, monday connector actions, 1Password-backed local
+  setup, or Tailscale network access.
 - Run when moving this `me` environment to a new interactive macOS user profile.
 
 ## When Not to Use
@@ -46,10 +47,14 @@ connector identity without mutating monday data or machine configuration.
    ```
 
 2. Parse the JSON output and summarize each `fail` and `warn` check with its `remediation` text.
-   If the only local failure is `onepassword_cli_account` and its message says the process could
-   not connect to the 1Password desktop app, retry the helper with unsandboxed/elevated local access
-   before declaring the machine not ready. Otherwise stop after local failures unless the user
-   explicitly wants the monday connector checked anyway.
+   The helper emits checks in this order: Homebrew command availability, Brewfile package
+   expectations, required commands, app/auth/network readiness, bootstrap token hygiene, Codex
+   stowed links, and generated Codex config.
+
+   If the only local failure is `onepassword_cli_vault_access` or `tailscale_status` and its
+   remediation says to retry with unsandboxed local access, retry the helper with
+   unsandboxed/elevated local access before declaring the machine not ready. Otherwise stop after
+   local failures unless the user explicitly wants the monday connector checked anyway.
 
 3. Discover the monday connector tools. If unavailable, report that the user should enable the
    monday.com app in Codex and confirm the monday app connection before rerunning readiness.
@@ -74,8 +79,16 @@ connector identity without mutating monday data or machine configuration.
   automation fallback.
 - Do not print tokens, secret values, raw environment contents, or raw command stderr that may
   contain sensitive data.
+- Treat `op vault list --format json` as the local 1Password readiness gate because it proves the
+  app is unlocked and integrated enough for authenticated CLI access.
+- Treat `tailscale status --json` as the local Tailscale readiness gate. Require the local node to
+  be running, online, present in the network map, assigned a Tailscale IP, and connected to
+  `tanaab.dev`. Peer pings are troubleshooting tools, not readiness gates.
 - Treat the README as human setup guidance. Use the helper JSON and connector probe as the
   machine-readable source of readiness truth.
+- Update this skill and its helper when any readiness contract changes, including Brewfile
+  dependencies, 1Password app integration behavior, Tailscale tailnet expectations, Codex dotfile
+  or plugin link layout, monday identity requirements, or connector validation behavior.
 
 ## Completion Criteria
 
