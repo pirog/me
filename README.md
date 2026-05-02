@@ -14,8 +14,8 @@ installs core tools and requested SSH keys, materializes `~/tanaab/me`, material
 `~/tanaab/canon` unless disabled, and then applies the `me` checkout's [`Brewfile`](./Brewfile)
 plus top-level [`dotfiles/`](./dotfiles/) packages onto `$HOME`.
 
-After bootstrap, open Codex and install the `piroplugin` and `tanaab` plugins from the `Pirostore`
-marketplace so their skills are available in the app.
+After bootstrap, complete the manual setup checklist so the expected apps, plugins, and connector
+auth are available.
 
 ## Quickstart
 
@@ -33,8 +33,37 @@ This default flow:
 - clones `git@github.com:tanaabased/canon.git` into `~/tanaab/canon`
 - applies the `me` Brewfile and dotpkgs onto `$HOME`
 
-When the script finishes, open Codex and install the `piroplugin` and `tanaab` plugins from
-`Pirostore`.
+When the script finishes, complete the manual setup checklist below.
+
+## Manual Setup Checklist
+
+### 1Password
+
+- Open 1Password.
+- Sign in and unlock it.
+- Enable Developer > Integrate with 1Password CLI.
+- Enable Developer > Show 1Password Developer experience.
+- Use the Brewfile-provided beta 1Password CLI; 1Password Environments require beta CLI support.
+- Confirm `op` can access the signed-in account with a read-only check such as `op vault list`.
+
+### Tailscale
+
+- Open Tailscale.
+- Sign in and connect this machine to the `tanaab.dev` tailnet.
+- Confirm `tailscale status --json` reports the local node as running and online.
+
+### Codex
+
+- Plugins from `Pirostore`:
+  - `piroplugin`
+  - `tanaab`
+- Codex app connectors:
+  - `GitHub`, connected as `pirog`
+  - `monday.com`, connected as `Michael Pirog` for this `me` environment
+
+After completing this checklist, ask Codex to run `$piro-me-readiness`. Readiness may trigger
+macOS, Codex, or 1Password permission prompts while it verifies local desktop app access. Approve
+those prompts only when you intentionally asked Codex to run readiness.
 
 ## What Gets Installed
 
@@ -42,7 +71,7 @@ When the script finishes, open Codex and install the `piroplugin` and `tanaab` p
 
 [`Brewfile`](./Brewfile) is the single source of truth for base machine dependencies. It covers
 Homebrew tooling plus the core CLI and runtime stack used here, including Git and GitHub CLI,
-Bun/Node/Python, Stow, 1Password CLI, Tailscale, ImageMagick, and Zsh.
+Bun/Node/Python, Stow, the 1Password desktop app and CLI, Tailscale, ImageMagick, and Zsh.
 
 ### Dotpkgs
 
@@ -59,6 +88,7 @@ Bun/Node/Python, Stow, 1Password CLI, Tailscale, ImageMagick, and Zsh.
 ### Skills
 
 - [`piro-skill-author`](./skills/skill-author/): creates, standardizes, and validates Pirobased repo-local skills.
+- [`piro-me-readiness`](./skills/me-readiness/): verifies this `me` repo and macOS user profile are ready for Codex work as `pirog`.
 
 This plugin surface is intentionally small. Broader shared canon skills come from the paired
 `tanaab` plugin.

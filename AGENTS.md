@@ -7,6 +7,11 @@ This root `AGENTS.md` is the repo-local override for Codex work in this reposito
 - This repo exists to seed a supported macOS machine with packages, dotfiles, identity or access material, and Codex plugin assets that approximate `@pirog`.
 - The repo currently ships `boot.sh` as the bootstrap wrapper and `piroplugin` as the Codex plugin bundle.
 
+## Identity Text
+
+- Use `pirog` for casual prose references to the persona this repo approximates.
+- Preserve exact literal strings for connector checks, package metadata, URLs, IDs, and external account display names.
+
 ## Source Of Truth
 
 - `boot.sh` is the shipped shell entrypoint and the main bootstrap surface to preserve.
@@ -22,6 +27,28 @@ This root `AGENTS.md` is the repo-local override for Codex work in this reposito
 - Treat `.codex-plugin/`, `.mcp.json`, `assets/`, `bin/`, `lib/`, `skills/`, `utils/`, `package.json`, and this root `AGENTS.md` as the managed plugin cache surface for `bun run codex:validate`, `bun run codex:check`, and `bun run codex:sync`.
 - Use `bun run codex:validate` for semantic plugin validation, including manifest paths, skill metadata, the MCP stub, and workflow script references.
 - Treat `dotfiles/ai` as a separate stow-owned surface. Use `bun run ai:sync` for home-directory restow work, not for Codex plugin cache refreshes.
+
+## Me Readiness Maintenance
+
+- Treat `$piro-me-readiness` as a verification surface for this `me` checkout and macOS user profile. It should not become a token-management, environment-management, GitHub automation, monday automation, setup, release, Leia, or general machine-admin workflow.
+- For protected resource access, prefer native Codex connectors such as GitHub and monday when they are available. When a script or skill needs protected resources without a native connector, wrap it with `op run --environment zsstdfqknicwfv5glv76gd6tue` instead of using committed `.env` files, persistent shell environment secrets, or local token fallback.
+- Local readiness probes must prove desktop-app-backed 1Password access. Strip 1Password service-account, connect, session, and bootstrap token environment variables from `op` subprocesses so readiness does not pass through token fallback.
+- `$piro-me-readiness` may run its bundled read-only local helper unsandboxed by default because it verifies 1Password and Tailscale desktop/daemon readiness. Do not extend that unsandboxed default to unrelated repo commands, setup, package installation, tests, release validation, or broad machine administration.
+- Keep README readiness content limited to human bootstrap/manual setup steps and a brief pointer to run `$piro-me-readiness` after setup. Do not put detailed readiness bucket or maintenance policy in README.
+- Keep readiness maintenance policy in this `AGENTS.md`. Keep `skills/me-readiness/SKILL.md` focused on how to run readiness, parse helper output, and perform read-only connector identity checks.
+- Skill changes under `skills/**` do not automatically require readiness updates. Update readiness only when a skill adds or changes a stable machine prerequisite: a Brewfile dependency, a repo-owned dotfile, a manual app/auth/network step, a Codex plugin install/link surface, or a connector identity requirement.
+- When a skill introduces a prerequisite, update the source of truth first, then readiness if the requirement is repo-owned, stable, read-only, and machine-verifiable:
+  - Brew package or cask requirements belong in `Brewfile`; then update the `packages` bucket only if the readiness helper should assert the new package or command.
+  - Repo-owned config belongs under the relevant `dotfiles/**` package; then update the `dotfiles` bucket only if readiness should assert the stowed/generated surface.
+  - Human app/auth/network setup belongs in the README manual setup checklist; then update the `manual_apps` bucket only if a local read-only probe can verify it.
+  - Codex plugin install or link layout belongs in the plugin/dotfile source of truth; then update the `codex_plugins` bucket only if the local installed surface should be asserted.
+  - GitHub or monday connector identity changes belong in `SKILL.md` runtime connector guidance, not `check-machine.js`.
+- Use these helper buckets only:
+  - `homebrew`: Homebrew command availability.
+  - `packages`: Brewfile declarations and required command availability.
+  - `dotfiles`: repo-owned stowed files and generated local config readiness.
+  - `manual_apps`: installed apps and local app/auth/network readiness that cannot be fully handled by Brewfile alone, including 1Password and Tailscale.
+  - `codex_plugins`: local Codex plugin links or plugin install surfaces owned by this repo.
 
 ## Validation Policy
 
