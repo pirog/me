@@ -1,5 +1,7 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+## v1.0.0-beta.4 - [May 2, 2026](https://github.com/pirog/me/releases/tag/v1.0.0-beta.4)
+
 ### Codex
 
 - Added `$piro-me-readiness` for read-only validation of this `me` checkout, Codex plugin links, app connector identities, and local machine readiness. [#19](https://github.com/pirog/me/pull/19)
