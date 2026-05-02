@@ -1,5 +1,16 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+### Codex
+
+- Added `$piro-me-readiness` for read-only validation of this `me` checkout, Codex plugin links, app connector identities, and local machine readiness. [#19](https://github.com/pirog/me/pull/19)
+- Added readiness maintenance guidance so future machine prerequisites are kept in the right source of truth. [#19](https://github.com/pirog/me/pull/19)
+- Updated Codex guidance for monday connector identity checks and generated pull request title prefixes. [#19](https://github.com/pirog/me/pull/19)
+
+### Machine Profile
+
+- Added manual setup guidance for 1Password Developer features, GitHub and monday Codex app connectors, and Tailscale readiness. [#19](https://github.com/pirog/me/pull/19)
+- Updated the Brewfile for 1Password Environment support and Tailscale app readiness. [#19](https://github.com/pirog/me/pull/19)
+
 ## v1.0.0-beta.3 - [April 26, 2026](https://github.com/pirog/me/releases/tag/v1.0.0-beta.3)
 
 - Updated release archives to reinstall production dependencies before packaging so dev dependencies stay out of GitHub assets.
