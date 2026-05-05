@@ -33,7 +33,7 @@ git -C "$HOME/tanaab/canon" remote get-url origin > "$TMPDIR/tanaab.ssh.origin"
 boot.sh \
   --op-token "$OPTOKEN" \
   --ssh-key 'omfsw2uztmi2xqpid5g3kiv6ba/id_test' \
-  --me v0.3.1 \
+  --me v1.0.0-beta.4 \
   --tanaab v0.2.0 \
   --force
 ```
