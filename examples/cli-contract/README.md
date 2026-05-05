@@ -73,6 +73,9 @@ PIROME_TANAAB='/tmp/example-tanaab-source' boot.sh --help | grep -F '/tmp/exampl
 # should normalize semantic version me defaults for display
 boot.sh --me 0.3.1 --help | grep -F 'v0.3.1'
 
+# should normalize prerelease semantic version me defaults for display
+boot.sh --me 1.0.0-beta.4 --help | grep -F 'v1.0.0-beta.4'
+
 # should normalize semantic version tanaab defaults for display
 boot.sh --tanaab 0.2.0 --help | grep -F 'v0.2.0'
 
