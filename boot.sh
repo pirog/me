@@ -1191,6 +1191,7 @@ bootbox_run() {
     TANAAB_DEBUG
     TANAAB_ARCH
     TANAAB_OS
+    INTERACTIVE
   )
   local -a bootbox_command=(env)
   local -a bootbox_display_command=()
@@ -1224,10 +1225,9 @@ bootbox_run() {
     bootbox_display_command+=("PIROME_FORCE=${FORCE}")
   fi
 
-  if [[ -n "${NONINTERACTIVE-}" ]]; then
-    bootbox_command+=("NONINTERACTIVE=${NONINTERACTIVE}")
-    bootbox_display_command+=("NONINTERACTIVE=${NONINTERACTIVE}")
-  fi
+  # The wrapper owns the confirmation gate; delegated bootbox runs should not prompt again.
+  bootbox_command+=("NONINTERACTIVE=1")
+  bootbox_display_command+=("NONINTERACTIVE=1")
 
   if [[ "${mode}" == "ssh" && -n "${PIROME_TARGET-}" ]]; then
     bootbox_command+=("TANAAB_TARGET=${PIROME_TARGET}")
