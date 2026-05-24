@@ -218,7 +218,7 @@ tty_ts="$(tty_escape '38;2;219;39;119')"   # #db2777
 
 SCRIPT_NAME="${0##*/}"
 # Keep a single top-level assignment so release automation can stamp the entrypoint in place.
-SCRIPT_VERSION="v1.0.0-beta.4"
+SCRIPT_VERSION="v1.0.0-beta.5"
 
 DEBUG="${PIROME_DEBUG:-${DEBUG:-${RUNNER_DEBUG:-}}}"
 FORCE="${PIROME_FORCE:-}"
@@ -296,7 +296,7 @@ show_version() {
 }
 
 is_semver_value() {
-  [[ "${1:-}" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+$ ]]
+  [[ "${1:-}" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$ ]]
 }
 
 normalize_release_tag() {
@@ -1191,6 +1191,7 @@ bootbox_run() {
     TANAAB_DEBUG
     TANAAB_ARCH
     TANAAB_OS
+    INTERACTIVE
   )
   local -a bootbox_command=(env)
   local -a bootbox_display_command=()
@@ -1224,10 +1225,9 @@ bootbox_run() {
     bootbox_display_command+=("PIROME_FORCE=${FORCE}")
   fi
 
-  if [[ -n "${NONINTERACTIVE-}" ]]; then
-    bootbox_command+=("NONINTERACTIVE=${NONINTERACTIVE}")
-    bootbox_display_command+=("NONINTERACTIVE=${NONINTERACTIVE}")
-  fi
+  # The wrapper owns the confirmation gate; delegated bootbox runs should not prompt again.
+  bootbox_command+=("NONINTERACTIVE=1")
+  bootbox_display_command+=("NONINTERACTIVE=1")
 
   if [[ "${mode}" == "ssh" && -n "${PIROME_TARGET-}" ]]; then
     bootbox_command+=("TANAAB_TARGET=${PIROME_TARGET}")
