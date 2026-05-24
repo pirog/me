@@ -47,6 +47,27 @@ export const CHECK_BUCKET_ORDER = Object.freeze([
 
 const DOTFILE_LINKS = [
   {
+    id: 'vimrc_link',
+    relativePath: ['.vimrc'],
+    label: '~/.vimrc',
+    remediation:
+      'Rerun https://boot.pirog.me/boot.sh or restow the vim dotpkg from /Users/pirog/tanaab/me.',
+  },
+  {
+    id: 'vimrc_before_link',
+    relativePath: ['.vimrc.before'],
+    label: '~/.vimrc.before',
+    remediation:
+      'Rerun https://boot.pirog.me/boot.sh or restow the vim dotpkg from /Users/pirog/tanaab/me.',
+  },
+  {
+    id: 'vimrc_after_link',
+    relativePath: ['.vimrc.after'],
+    label: '~/.vimrc.after',
+    remediation:
+      'Rerun https://boot.pirog.me/boot.sh or restow the vim dotpkg from /Users/pirog/tanaab/me.',
+  },
+  {
     id: 'codex_agents_link',
     relativePath: ['.codex', 'AGENTS.md'],
     label: '~/.codex/AGENTS.md',
@@ -83,6 +104,10 @@ const CHECK_BUCKET_BY_ID = new Map([
   ['brewfile_readable', 'packages'],
   ...REQUIRED_BREWFILE_CASKS.map((cask) => [`brewfile_cask_${checkIdSegment(cask)}`, 'packages']),
   ...FORBIDDEN_BREWFILE_CASKS.map(({ id }) => [id, 'packages']),
+  ['vimrc_link', 'dotfiles'],
+  ['vimrc_before_link', 'dotfiles'],
+  ['vimrc_after_link', 'dotfiles'],
+  ['vim_janus_runtime', 'dotfiles'],
   ['codex_agents_link', 'dotfiles'],
   ['codex_shared_config_link', 'dotfiles'],
   ['codex_generated_config', 'dotfiles'],
@@ -336,28 +361,44 @@ async function appendStowedLinkChecks(checks, links, homeDir, deps) {
   for (const link of links) {
     const targetPath = path.join(homeDir, ...link.relativePath);
     const info = await pathInfo(targetPath, deps);
+    const remediation =
+      link.remediation ??
+      'Run bun run ai:sync from /Users/pirog/tanaab/me to restow the Codex dotfiles.';
 
     if (!info) {
-      checks.push(
-        fail(
-          link.id,
-          `${link.label} is missing.`,
-          'Run bun run ai:sync from /Users/pirog/tanaab/me to restow the Codex dotfiles.',
-        ),
-      );
+      checks.push(fail(link.id, `${link.label} is missing.`, remediation));
       continue;
     }
 
     checks.push(
       info.isSymbolicLink()
         ? pass(link.id, `${link.label} exists as a stowed link.`)
-        : warn(
-            link.id,
-            `${link.label} exists but is not a symbolic link.`,
-            'Run bun run ai:sync from /Users/pirog/tanaab/me to restow the Codex dotfiles.',
-          ),
+        : warn(link.id, `${link.label} exists but is not a symbolic link.`, remediation),
     );
   }
+}
+
+async function appendVimJanusRuntimeCheck(checks, homeDir, deps) {
+  const janusRuntimePath = path.join(homeDir, '.vim', 'janus', 'vim');
+  const requiredFiles = [
+    path.join(janusRuntimePath, 'core', 'before', 'plugin', 'janus.vim'),
+    path.join(janusRuntimePath, 'core', 'plugins.vim'),
+  ];
+
+  for (const requiredFile of requiredFiles) {
+    if (!(await pathInfo(requiredFile, deps))) {
+      checks.push(
+        fail(
+          'vim_janus_runtime',
+          `Janus runtime is missing required file ${requiredFile}.`,
+          'Restore the Janus runtime at ~/.vim/janus/vim before launching Vim.',
+        ),
+      );
+      return;
+    }
+  }
+
+  checks.push(pass('vim_janus_runtime', 'Janus runtime exists at ~/.vim/janus/vim.'));
 }
 
 async function appendGeneratedConfigCheck(checks, homeDir, deps) {
@@ -656,6 +697,7 @@ export async function checkMachine(options = {}) {
   await appendBrewfileChecks(checks, repoRoot, deps);
   await appendRequiredCommandChecks(checks, deps);
   await appendStowedLinkChecks(checks, DOTFILE_LINKS, homeDir, deps);
+  await appendVimJanusRuntimeCheck(checks, homeDir, deps);
   await appendGeneratedConfigCheck(checks, homeDir, deps);
   await appendAppPresenceChecks(checks, deps);
   await appendOnePasswordChecks(checks, env, deps);
