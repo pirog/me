@@ -46,6 +46,11 @@ function healthyExistingPaths(...missingPaths) {
   return [
     '/Applications/1Password.app',
     '/Applications/Tailscale.app',
+    makePath('.vimrc'),
+    makePath('.vimrc.before'),
+    makePath('.vimrc.after'),
+    makePath('.vim', 'janus', 'vim', 'core', 'before', 'plugin', 'janus.vim'),
+    makePath('.vim', 'janus', 'vim', 'core', 'plugins.vim'),
     makePath('.codex', 'AGENTS.md'),
     makePath('.codex', 'config.shared.toml'),
     makePath('.codex', 'plugins', 'piroplugin'),
@@ -80,6 +85,9 @@ function makeDeps({
     symbolicLinks ?? [
       makePath('.codex', 'AGENTS.md'),
       makePath('.codex', 'config.shared.toml'),
+      makePath('.vimrc'),
+      makePath('.vimrc.before'),
+      makePath('.vimrc.after'),
       makePath('.codex', 'plugins', 'piroplugin'),
       makePath('.codex', 'plugins', 'tanaab'),
     ],
@@ -264,6 +272,8 @@ describe('skills/me-readiness/scripts/check-machine-lib', () => {
       report.checks.some((check) => check.id === 'brewfile_cask_1password_cli_stable_absent'),
     );
     assert.ok(report.checks.some((check) => check.id === 'brewfile_cask_tailscale'));
+    assert.ok(report.checks.some((check) => check.id === 'vimrc_link'));
+    assert.ok(report.checks.some((check) => check.id === 'vim_janus_runtime'));
     assert.ok(report.checks.some((check) => check.id === 'command_gh'));
     assert.ok(report.checks.some((check) => check.id === 'command_tailscale'));
     assert.ok(report.checks.some((check) => check.id === 'onepassword_app'));
@@ -330,6 +340,47 @@ describe('skills/me-readiness/scripts/check-machine-lib', () => {
     assert.equal(betaCheck.status, 'fail');
     assert.equal(stableCheck.status, 'fail');
     assert.match(stableCheck.remediation, /1password-cli@beta/);
+  });
+
+  it('should pass Vim readiness when stowed links and Janus runtime exist', async () => {
+    const report = await runCheck({
+      existingPaths: healthyExistingPaths(),
+    });
+    const vimChecks = report.checks.filter((check) => check.id.startsWith('vim'));
+
+    assert.deepEqual(
+      vimChecks.map((check) => [check.id, check.status]),
+      [
+        ['vimrc_link', 'pass'],
+        ['vimrc_before_link', 'pass'],
+        ['vimrc_after_link', 'pass'],
+        ['vim_janus_runtime', 'pass'],
+      ],
+    );
+  });
+
+  it('should fail Vim readiness when the stowed vimrc link is missing', async () => {
+    const report = await runCheck({
+      existingPaths: healthyExistingPaths(makePath('.vimrc')),
+    });
+    const vimrcCheck = report.checks.find((check) => check.id === 'vimrc_link');
+
+    assert.equal(report.ok, false);
+    assert.equal(vimrcCheck.status, 'fail');
+    assert.match(vimrcCheck.remediation, /restow/);
+  });
+
+  it('should fail Vim readiness when the external Janus runtime is missing', async () => {
+    const report = await runCheck({
+      existingPaths: healthyExistingPaths(
+        makePath('.vim', 'janus', 'vim', 'core', 'before', 'plugin', 'janus.vim'),
+      ),
+    });
+    const janusCheck = report.checks.find((check) => check.id === 'vim_janus_runtime');
+
+    assert.equal(report.ok, false);
+    assert.equal(janusCheck.status, 'fail');
+    assert.match(janusCheck.remediation, /~\/\.vim\/janus\/vim/);
   });
 
   it('should fail 1Password Environment readiness when the beta CLI surface is missing', async () => {

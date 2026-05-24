@@ -8,11 +8,17 @@ let g:lightline={'colorscheme': 'solarized'}
 ""
 
 " Add our custom hyperdrive dir as a janus group
-call janus#add_group("vim", expand("~/.hyperdrive.local"))
+let s:hyperdrive_local_path = expand("~/.hyperdrive.local")
+if isdirectory(s:hyperdrive_local_path)
+  call janus#add_group("vim", s:hyperdrive_local_path)
+endif
+
+" The bundled Janus tlib plugin defines a command incompatible with Vim 9.1.
+call janus#disable_plugin("tlib", "The bundled version is incompatible with Vim 9.1 command completion.")
 
 " Load our custom before vimrc
-if expand('<sfile>:p') != expand("~/.hyperdrive.local/vimrc.before")
-  if filereadable(expand("~/.hyperdrive.local/vimrc.before"))
+if expand('<sfile>:p') != s:hyperdrive_local_path . "/vimrc.before"
+  if filereadable(s:hyperdrive_local_path . "/vimrc.before")
     echo "Detected custom vimrc.before in ~/.hyperdrive.local, loading it..."
     source ~/.hyperdrive.local/vimrc.before
   endif

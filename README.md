@@ -82,7 +82,8 @@ Bun/Node/Python, Stow, the 1Password desktop app and CLI, Tailscale, ImageMagick
 - [`lando`](./dotfiles/lando): Lando config.
 - [`ssh`](./dotfiles/ssh): SSH config plus public-key material.
 - [`theme`](./dotfiles/theme): Tanaab light/dark theme JSON assets.
-- [`vim`](./dotfiles/vim): Vim config.
+- [`vim`](./dotfiles/vim): Vim wrapper and customization files. The Janus runtime remains an
+  external machine dependency and is expected at `~/.vim/janus/vim`.
 - [`zsh`](./dotfiles/zsh): Shell and prompt config.
 
 ### Skills
