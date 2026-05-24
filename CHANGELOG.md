@@ -1,5 +1,7 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+- Fixed `boot.sh` so delegated Bootbox runs stay non-interactive after the wrapper confirmation gate. [#22](https://github.com/pirog/me/pull/22)
+
 ## v1.0.0-beta.4 - [May 2, 2026](https://github.com/pirog/me/releases/tag/v1.0.0-beta.4)
 
 ### Codex
