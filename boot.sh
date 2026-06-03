@@ -5,7 +5,7 @@ set -euo pipefail
 # examples:
 #
 #   $ ./boot.sh --op-token "$OP_TOKEN"
-#   $ ./boot.sh --op-token "$OP_TOKEN" --ssh-key vmruk4ny353aly6tbom7z3v2hy/id_botbox1
+#   $ ./boot.sh --op-token "$OP_TOKEN" --ssh-key vmruk4ny353aly6tbom7z3v2hy/id_agentbox1
 #   $ ./boot.sh --op-token "$OP_TOKEN" --me v0.3.1
 #   $ ./boot.sh --op-token "$OP_TOKEN" --tanaab v0.2.0
 #   $ DEBUG=1 ./boot.sh --op-token "$OP_TOKEN" --yes
@@ -17,7 +17,7 @@ set -euo pipefail
 MACOS_OLDEST_SUPPORTED="26.0"
 REQUIRED_CURL_VERSION="7.41.0"
 BOOTBOX_URL="https://bootbox.tanaab.sh/bootbox.sh"
-DEFAULT_SSH_KEY="vmruk4ny353aly6tbom7z3v2hy/id_pirog,vmruk4ny353aly6tbom7z3v2hy/id_botbox1"
+DEFAULT_SSH_KEY="vmruk4ny353aly6tbom7z3v2hy/id_pirog,vmruk4ny353aly6tbom7z3v2hy/id_agentbox1"
 DEFAULT_ME_SOURCE="ssh"
 DEFAULT_TANAAB_SOURCE="ssh"
 ME_REPO_SSH_URL="git@github.com:pirog/me.git"
