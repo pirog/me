@@ -50,6 +50,7 @@ jobs:
           TMPDIR: ${{ github.workspace }}/examples/${{ matrix.example }}/.tmp
           OPTOKEN: ${{ secrets.TANAAB_OP_TEST }}
         run: |
+          brew update
           mkdir -p "$TMPDIR"
           bun run leia "examples/${{ matrix.example }}/README.md" -c "Destroy tests" --stdin
 
