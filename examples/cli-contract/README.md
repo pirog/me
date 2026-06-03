@@ -29,7 +29,7 @@ boot.sh --help | grep -- '--me'
 boot.sh --help | grep -- '--tanaab'
 
 # should show the default ssh key in help output
-boot.sh --help | grep -F 'vmruk4ny353aly6tbom7z3v2hy/id_pirog,vmruk4ny353aly6tbom7z3v2hy/id_botbox1'
+boot.sh --help | grep -F 'vmruk4ny353aly6tbom7z3v2hy/id_pirog,vmruk4ny353aly6tbom7z3v2hy/id_agentbox1'
 
 # should show the default me source in help output
 boot.sh --help | grep -F '[default: ssh]'
@@ -56,7 +56,7 @@ boot.sh --help | grep -F 'PIROME_DEBUG'
 PIROME_SSH_KEY='example-vault/example-item:id_example' boot.sh --help | grep -F 'example-vault/example-item:id_example'
 
 # should append PIROME_SSH_KEYS to the displayed ssh key default
-PIROME_SSH_KEYS='example-vault/example-item:id_extra' boot.sh --help | grep -F 'vmruk4ny353aly6tbom7z3v2hy/id_pirog,vmruk4ny353aly6tbom7z3v2hy/id_botbox1,example-vault/example-item:id_extra'
+PIROME_SSH_KEYS='example-vault/example-item:id_extra' boot.sh --help | grep -F 'vmruk4ny353aly6tbom7z3v2hy/id_pirog,vmruk4ny353aly6tbom7z3v2hy/id_agentbox1,example-vault/example-item:id_extra'
 
 # should append PIROME_SSH_KEYS after PIROME_SSH_KEY when both are set
 PIROME_SSH_KEY='example-vault/example-item:id_primary' PIROME_SSH_KEYS='example-vault/example-item:id_secondary' boot.sh --help | grep -F 'example-vault/example-item:id_primary,example-vault/example-item:id_secondary'
