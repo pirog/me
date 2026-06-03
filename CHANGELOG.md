@@ -1,5 +1,13 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+- Added `l337` and `l338` Codex pet profiles.
+- Fixed Vim Janus bootstrap paths and documented the external Janus runtime expectation. [#23](https://github.com/pirog/me/pull/23)
+- Updated GitHub CLI defaults to use SSH for Git operations.
+- Updated readiness checks for Homebrew `node@24`, active `node` path/version, Vim links, and the Janus runtime. [#23](https://github.com/pirog/me/pull/23) [#25](https://github.com/pirog/me/pull/25)
+- Updated shell startup to load Homebrew cleanly and prefer Homebrew `node@24` on `PATH`. [#25](https://github.com/pirog/me/pull/25)
+- Updated SSH and bootstrap defaults from `botbox1` toward `agentbox1` while preserving legacy host compatibility.
+- Updated the machine profile to require Homebrew `node@24` and `.tool-versions` Node 24. [#25](https://github.com/pirog/me/pull/25)
+
 ## v1.0.0-beta.5 - [May 24, 2026](https://github.com/pirog/me/releases/tag/v1.0.0-beta.5)
 
 - Fixed `boot.sh` so delegated Bootbox runs stay non-interactive after the wrapper confirmation gate. [#22](https://github.com/pirog/me/pull/22)
