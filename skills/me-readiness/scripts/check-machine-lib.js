@@ -21,15 +21,18 @@ const READINESS_AUTHORIZATION_CODE_KEY = 'READINESS_AUTHORIZATION_CODE';
 const EXPECTED_READINESS_AUTHORIZATION_CODE_SHA256 =
   'a924fd4b1d47841c36ae7663db374cf040b913ffa56541fe0f345435e3cce267';
 const ONEPASSWORD_ENVIRONMENT_VALIDATION_SCRIPT = `import { createHash } from "node:crypto";const value=process.env.${READINESS_AUTHORIZATION_CODE_KEY};const hash=value?createHash("sha256").update(value).digest("hex"):"";process.stdout.write(JSON.stringify({present:Boolean(value),matches:hash==="${EXPECTED_READINESS_AUTHORIZATION_CODE_SHA256}"}));`;
+const EXPECTED_NODE_FORMULA = 'node@24';
+const EXPECTED_NODE_MAJOR_VERSION = 24;
 
 export const REQUIRED_BREWFILE_CASKS = ['1password', '1password-cli@beta', 'tailscale'];
+export const REQUIRED_BREWFILE_FORMULAS = [EXPECTED_NODE_FORMULA];
 export const FORBIDDEN_BREWFILE_CASKS = [
   {
     cask: '1password-cli',
     id: 'brewfile_cask_1password_cli_stable_absent',
   },
 ];
-export const REQUIRED_COMMANDS = ['brew', 'bun', 'git', 'gh', 'op', 'stow', 'tailscale'];
+export const REQUIRED_COMMANDS = ['brew', 'bun', 'git', 'gh', 'node', 'op', 'stow', 'tailscale'];
 export const ONEPASSWORD_TOKEN_ENV_KEYS = [
   'PIROME_OP_TOKEN',
   'TANAAB_OP_TOKEN',
@@ -103,7 +106,13 @@ const CHECK_BUCKET_BY_ID = new Map([
   ]),
   ['brewfile_readable', 'packages'],
   ...REQUIRED_BREWFILE_CASKS.map((cask) => [`brewfile_cask_${checkIdSegment(cask)}`, 'packages']),
+  ...REQUIRED_BREWFILE_FORMULAS.map((formula) => [
+    `brewfile_formula_${checkIdSegment(formula)}`,
+    'packages',
+  ]),
   ...FORBIDDEN_BREWFILE_CASKS.map(({ id }) => [id, 'packages']),
+  ['node_homebrew_path', 'packages'],
+  ['node_version', 'packages'],
   ['vimrc_link', 'dotfiles'],
   ['vimrc_before_link', 'dotfiles'],
   ['vimrc_after_link', 'dotfiles'],
@@ -158,6 +167,13 @@ function fail(id, message, remediation) {
 function hasCask(brewfile, cask) {
   return new RegExp(
     `^\\s*cask\\s+["']${cask.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}["']`,
+    'm',
+  ).test(brewfile);
+}
+
+function hasFormula(brewfile, formula) {
+  return new RegExp(
+    `^\\s*brew\\s+["']${formula.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}["']`,
     'm',
   ).test(brewfile);
 }
@@ -462,6 +478,21 @@ async function appendBrewfileChecks(checks, repoRoot, deps) {
     );
   }
 
+  for (const formula of REQUIRED_BREWFILE_FORMULAS) {
+    checks.push(
+      hasFormula(brewfile, formula)
+        ? pass(
+            `brewfile_formula_${checkIdSegment(formula)}`,
+            `Brewfile includes formula "${formula}".`,
+          )
+        : fail(
+            `brewfile_formula_${checkIdSegment(formula)}`,
+            `Brewfile does not include formula "${formula}".`,
+            'Update the Brewfile and rerun https://boot.pirog.me/boot.sh or install the missing Brewfile dependency.',
+          ),
+    );
+  }
+
   for (const { cask, id } of FORBIDDEN_BREWFILE_CASKS) {
     checks.push(
       hasCask(brewfile, cask)
@@ -472,6 +503,99 @@ async function appendBrewfileChecks(checks, repoRoot, deps) {
           )
         : pass(id, `Brewfile does not include conflicting cask "${cask}".`),
     );
+  }
+}
+
+async function appendNodeRuntimeChecks(checks, deps) {
+  const brewCheck = getCheck(checks, 'command_brew');
+  const nodeCheck = getCheck(checks, 'command_node');
+  const formulaLabel = EXPECTED_NODE_FORMULA;
+  const remediation =
+    'Install node@24 from the Brewfile, ensure Homebrew shellenv loads first, and put "$(brew --prefix node@24)/bin" before other node providers on PATH.';
+
+  if (brewCheck?.status === 'fail') {
+    checks.push(
+      fail(
+        'node_homebrew_path',
+        'Homebrew node path could not be checked because brew is missing.',
+        'Install Homebrew, rerun https://boot.pirog.me/boot.sh, then rerun the readiness helper.',
+      ),
+      fail(
+        'node_version',
+        'Node version could not be checked because brew is missing.',
+        'Install Homebrew and node@24 from the Brewfile, then rerun the readiness helper.',
+      ),
+    );
+    return;
+  }
+
+  if (nodeCheck?.status === 'fail') {
+    checks.push(
+      fail(
+        'node_homebrew_path',
+        'Homebrew node path could not be checked because node is missing.',
+        remediation,
+      ),
+      fail(
+        'node_version',
+        'Node version could not be checked because node is missing.',
+        remediation,
+      ),
+    );
+    return;
+  }
+
+  let expectedNodePath = '';
+
+  try {
+    const { stdout } = await deps.execFile('brew', ['--prefix', formulaLabel]);
+    const nodePrefix = stdout.trim();
+    expectedNodePath = path.join(nodePrefix, 'bin', 'node');
+  } catch {
+    checks.push(
+      fail(
+        'node_homebrew_path',
+        `Homebrew prefix for ${formulaLabel} could not be resolved.`,
+        remediation,
+      ),
+    );
+  }
+
+  if (expectedNodePath) {
+    try {
+      const { stdout } = await deps.execFile('which', ['node']);
+      const actualNodePath = stdout.trim();
+
+      checks.push(
+        actualNodePath === expectedNodePath
+          ? pass('node_homebrew_path', `node resolves to ${formulaLabel} at ${actualNodePath}.`)
+          : fail(
+              'node_homebrew_path',
+              `node resolves to ${actualNodePath || 'an empty path'}, expected ${expectedNodePath}.`,
+              remediation,
+            ),
+      );
+    } catch {
+      checks.push(fail('node_homebrew_path', 'which node failed.', remediation));
+    }
+  }
+
+  try {
+    const { stdout } = await deps.execFile('node', ['--version']);
+    const version = stdout.trim();
+    const major = Number.parseInt(version.replace(/^v/, '').split('.')[0] ?? '', 10);
+
+    checks.push(
+      major === EXPECTED_NODE_MAJOR_VERSION
+        ? pass('node_version', `node reports version ${version}.`)
+        : fail(
+            'node_version',
+            `node reports version ${version || 'unknown'}, expected major version ${EXPECTED_NODE_MAJOR_VERSION}.`,
+            remediation,
+          ),
+    );
+  } catch {
+    checks.push(fail('node_version', 'node --version failed.', remediation));
   }
 }
 
@@ -696,6 +820,7 @@ export async function checkMachine(options = {}) {
   checks.push(await commandCheck('brew', deps));
   await appendBrewfileChecks(checks, repoRoot, deps);
   await appendRequiredCommandChecks(checks, deps);
+  await appendNodeRuntimeChecks(checks, deps);
   await appendStowedLinkChecks(checks, DOTFILE_LINKS, homeDir, deps);
   await appendVimJanusRuntimeCheck(checks, homeDir, deps);
   await appendGeneratedConfigCheck(checks, homeDir, deps);

@@ -40,6 +40,9 @@ function makeHealthyTailscaleStatus(overrides = {}) {
   };
 }
 
+const NODE_BREW_PREFIX = '/opt/homebrew/opt/node@24';
+const NODE_BREW_PATH = path.join(NODE_BREW_PREFIX, 'bin', 'node');
+
 function healthyExistingPaths(...missingPaths) {
   const missing = new Set(missingPaths);
 
@@ -60,7 +63,13 @@ function healthyExistingPaths(...missingPaths) {
 }
 
 function makeDeps({
-  brewfile = ['cask "1password"', 'cask "1password-cli@beta"', 'cask "tailscale"'].join('\n'),
+  brewfile = [
+    'cask "1password"',
+    'cask "1password-cli@beta"',
+    'cask "tailscale"',
+    'brew "node@24"',
+  ].join('\n'),
+  brewPrefixError = false,
   commands = REQUIRED_COMMANDS,
   configMode = 0o100600,
   environmentCliHelp = true,
@@ -74,11 +83,15 @@ function makeDeps({
   existingPaths,
   opExecError = false,
   opEnvironmentHelpError = false,
+  nodePath = NODE_BREW_PATH,
+  nodeVersion = 'v24.11.1',
+  nodeVersionError = false,
   symbolicLinks,
   tailscaleExecError = false,
   tailscaleStatus = makeHealthyTailscaleStatus(),
   tailscaleStdout,
   vaults = [{ id: 'vault' }],
+  whichNodeError = false,
 } = {}) {
   const existing = new Set(existingPaths ?? healthyExistingPaths());
   const symlinks = new Set(
@@ -100,6 +113,40 @@ function makeDeps({
     },
     execFile(command, args, options = {}) {
       execCalls?.push({ args, command, options });
+
+      if (command === 'brew') {
+        assert.deepEqual(args, ['--prefix', 'node@24']);
+
+        if (brewPrefixError) {
+          throw brewPrefixError instanceof Error
+            ? brewPrefixError
+            : new Error('brew prefix failed');
+        }
+
+        return { stdout: `${NODE_BREW_PREFIX}\n` };
+      }
+
+      if (command === 'which') {
+        assert.deepEqual(args, ['node']);
+
+        if (whichNodeError) {
+          throw whichNodeError instanceof Error ? whichNodeError : new Error('which node failed');
+        }
+
+        return { stdout: `${nodePath}\n` };
+      }
+
+      if (command === 'node') {
+        assert.deepEqual(args, ['--version']);
+
+        if (nodeVersionError) {
+          throw nodeVersionError instanceof Error
+            ? nodeVersionError
+            : new Error('node version failed');
+        }
+
+        return { stdout: `${nodeVersion}\n` };
+      }
 
       if (command === 'op') {
         if (args[0] === 'vault') {
@@ -214,6 +261,23 @@ describe('skills/me-readiness/scripts/check-machine-lib', () => {
     assert.equal(report.checks[0].bucket, 'homebrew');
   });
 
+  it('should verify Homebrew node@24 is the active node runtime', async () => {
+    const report = await runCheck({
+      existingPaths: healthyExistingPaths(),
+    });
+    const formulaCheck = report.checks.find((check) => check.id === 'brewfile_formula_node_24');
+    const commandCheck = report.checks.find((check) => check.id === 'command_node');
+    const pathCheck = report.checks.find((check) => check.id === 'node_homebrew_path');
+    const versionCheck = report.checks.find((check) => check.id === 'node_version');
+
+    assert.equal(formulaCheck.status, 'pass');
+    assert.equal(commandCheck.status, 'pass');
+    assert.equal(pathCheck.status, 'pass');
+    assert.equal(versionCheck.status, 'pass');
+    assert.match(pathCheck.message, /node@24/);
+    assert.match(versionCheck.message, /v24/);
+  });
+
   it('should assign stable buckets in readiness order', async () => {
     const report = await runCheck({
       existingPaths: healthyExistingPaths(),
@@ -268,6 +332,7 @@ describe('skills/me-readiness/scripts/check-machine-lib', () => {
 
     assert.ok(report.checks.some((check) => check.id === 'brewfile_cask_1password'));
     assert.ok(report.checks.some((check) => check.id === 'brewfile_cask_1password_cli_beta'));
+    assert.ok(report.checks.some((check) => check.id === 'brewfile_formula_node_24'));
     assert.ok(
       report.checks.some((check) => check.id === 'brewfile_cask_1password_cli_stable_absent'),
     );
@@ -327,7 +392,12 @@ describe('skills/me-readiness/scripts/check-machine-lib', () => {
 
   it('should require the beta 1Password CLI cask and reject the stable cask', async () => {
     const report = await runCheck({
-      brewfile: ['cask "1password"', 'cask "1password-cli"', 'cask "tailscale"'].join('\n'),
+      brewfile: [
+        'cask "1password"',
+        'cask "1password-cli"',
+        'cask "tailscale"',
+        'brew "node@24"',
+      ].join('\n'),
       existingPaths: healthyExistingPaths(),
     });
     const betaCheck = report.checks.find(
@@ -340,6 +410,47 @@ describe('skills/me-readiness/scripts/check-machine-lib', () => {
     assert.equal(betaCheck.status, 'fail');
     assert.equal(stableCheck.status, 'fail');
     assert.match(stableCheck.remediation, /1password-cli@beta/);
+  });
+
+  it('should require the node@24 Brewfile formula', async () => {
+    const report = await runCheck({
+      brewfile: ['cask "1password"', 'cask "1password-cli@beta"', 'cask "tailscale"'].join('\n'),
+      existingPaths: healthyExistingPaths(),
+    });
+    const formulaCheck = report.checks.find((check) => check.id === 'brewfile_formula_node_24');
+
+    assert.equal(report.ok, false);
+    assert.equal(formulaCheck.status, 'fail');
+    assert.match(formulaCheck.message, /node@24/);
+    assert.match(formulaCheck.remediation, /Brewfile/);
+  });
+
+  it('should fail when node resolves outside Homebrew node@24', async () => {
+    const report = await runCheck({
+      existingPaths: healthyExistingPaths(),
+      nodePath: '/Users/tester/.asdf/shims/node',
+    });
+    const pathCheck = report.checks.find((check) => check.id === 'node_homebrew_path');
+
+    assert.equal(report.ok, false);
+    assert.equal(pathCheck.status, 'fail');
+    assert.match(pathCheck.message, /asdf/);
+    assert.match(pathCheck.message, /node@24/);
+    assert.match(pathCheck.remediation, /brew --prefix node@24/);
+  });
+
+  it('should fail when node does not report major version 24', async () => {
+    const report = await runCheck({
+      existingPaths: healthyExistingPaths(),
+      nodeVersion: 'v23.11.0',
+    });
+    const versionCheck = report.checks.find((check) => check.id === 'node_version');
+
+    assert.equal(report.ok, false);
+    assert.equal(versionCheck.status, 'fail');
+    assert.match(versionCheck.message, /v23\.11\.0/);
+    assert.match(versionCheck.message, /24/);
+    assert.match(versionCheck.remediation, /node@24/);
   });
 
   it('should pass Vim readiness when stowed links and Janus runtime exist', async () => {
