@@ -1,5 +1,7 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+## v1.0.0-beta.6 - [June 3, 2026](https://github.com/pirog/me/releases/tag/v1.0.0-beta.6)
+
 - Added `l337` and `l338` Codex pet profiles.
 - Fixed Vim Janus bootstrap paths and documented the external Janus runtime expectation. [#23](https://github.com/pirog/me/pull/23)
 - Updated GitHub CLI defaults to use SSH for Git operations.
