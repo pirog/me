@@ -24,7 +24,13 @@ const ONEPASSWORD_ENVIRONMENT_VALIDATION_SCRIPT = `import { createHash } from "n
 const EXPECTED_NODE_FORMULA = 'node@24';
 const EXPECTED_NODE_MAJOR_VERSION = 24;
 
-export const REQUIRED_BREWFILE_CASKS = ['1password', '1password-cli@beta', 'tailscale'];
+export const REQUIRED_BREWFILE_CASKS = [
+  '1password',
+  '1password-cli@beta',
+  'codex',
+  'codex-app',
+  'tailscale',
+];
 export const REQUIRED_BREWFILE_FORMULAS = [EXPECTED_NODE_FORMULA];
 export const FORBIDDEN_BREWFILE_CASKS = [
   {
@@ -32,7 +38,17 @@ export const FORBIDDEN_BREWFILE_CASKS = [
     id: 'brewfile_cask_1password_cli_stable_absent',
   },
 ];
-export const REQUIRED_COMMANDS = ['brew', 'bun', 'git', 'gh', 'node', 'op', 'stow', 'tailscale'];
+export const REQUIRED_COMMANDS = [
+  'brew',
+  'bun',
+  'codex',
+  'git',
+  'gh',
+  'node',
+  'op',
+  'stow',
+  'tailscale',
+];
 export const ONEPASSWORD_TOKEN_ENV_KEYS = [
   'PIROME_OP_TOKEN',
   'TANAAB_OP_TOKEN',
@@ -126,6 +142,7 @@ const CHECK_BUCKET_BY_ID = new Map([
   ['onepassword_environment_run', 'manual_apps'],
   ['tailscale_app', 'manual_apps'],
   ['tailscale_status', 'manual_apps'],
+  ['codex_app', 'manual_apps'],
   ['bootstrap_token_env', 'manual_apps'],
   ['codex_piroplugin_link', 'codex_plugins'],
   ['codex_tanaab_link', 'codex_plugins'],
@@ -625,6 +642,17 @@ async function appendAppPresenceChecks(checks, deps) {
           'tailscale_app',
           'Tailscale.app was not found.',
           'Rerun https://boot.pirog.me/boot.sh or install the Tailscale desktop app, then open it and sign in.',
+        ),
+  );
+
+  const codexAppPath = '/Applications/Codex.app';
+  checks.push(
+    (await pathInfo(codexAppPath, deps))
+      ? pass('codex_app', 'Codex.app was found.')
+      : fail(
+          'codex_app',
+          'Codex.app was not found.',
+          'Rerun https://boot.pirog.me/boot.sh or install the Codex desktop app, then open it and sign in.',
         ),
   );
 }

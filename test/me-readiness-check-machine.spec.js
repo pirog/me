@@ -48,6 +48,7 @@ function healthyExistingPaths(...missingPaths) {
 
   return [
     '/Applications/1Password.app',
+    '/Applications/Codex.app',
     '/Applications/Tailscale.app',
     makePath('.vimrc'),
     makePath('.vimrc.before'),
@@ -66,6 +67,8 @@ function makeDeps({
   brewfile = [
     'cask "1password"',
     'cask "1password-cli@beta"',
+    'cask "codex"',
+    'cask "codex-app"',
     'cask "tailscale"',
     'brew "node@24"',
   ].join('\n'),
@@ -301,7 +304,9 @@ describe('skills/me-readiness/scripts/check-machine-lib', () => {
   it('should include remediation for every warning and failure', async () => {
     const report = await runCheck({
       brewfile: 'cask "1password-cli"\n',
-      commands: REQUIRED_COMMANDS.filter((command) => !['gh', 'tailscale'].includes(command)),
+      commands: REQUIRED_COMMANDS.filter(
+        (command) => !['codex', 'gh', 'tailscale'].includes(command),
+      ),
       configMode: 0o100644,
       env: {
         PIROME_OP_TOKEN: 'super-secret-token',
@@ -332,6 +337,8 @@ describe('skills/me-readiness/scripts/check-machine-lib', () => {
 
     assert.ok(report.checks.some((check) => check.id === 'brewfile_cask_1password'));
     assert.ok(report.checks.some((check) => check.id === 'brewfile_cask_1password_cli_beta'));
+    assert.ok(report.checks.some((check) => check.id === 'brewfile_cask_codex'));
+    assert.ok(report.checks.some((check) => check.id === 'brewfile_cask_codex_app'));
     assert.ok(report.checks.some((check) => check.id === 'brewfile_formula_node_24'));
     assert.ok(
       report.checks.some((check) => check.id === 'brewfile_cask_1password_cli_stable_absent'),
@@ -339,8 +346,10 @@ describe('skills/me-readiness/scripts/check-machine-lib', () => {
     assert.ok(report.checks.some((check) => check.id === 'brewfile_cask_tailscale'));
     assert.ok(report.checks.some((check) => check.id === 'vimrc_link'));
     assert.ok(report.checks.some((check) => check.id === 'vim_janus_runtime'));
+    assert.ok(report.checks.some((check) => check.id === 'command_codex'));
     assert.ok(report.checks.some((check) => check.id === 'command_gh'));
     assert.ok(report.checks.some((check) => check.id === 'command_tailscale'));
+    assert.ok(report.checks.some((check) => check.id === 'codex_app'));
     assert.ok(report.checks.some((check) => check.id === 'onepassword_app'));
     assert.ok(report.checks.some((check) => check.id === 'onepassword_environment_cli'));
     assert.ok(report.checks.some((check) => check.id === 'onepassword_environment_run'));
@@ -395,6 +404,8 @@ describe('skills/me-readiness/scripts/check-machine-lib', () => {
       brewfile: [
         'cask "1password"',
         'cask "1password-cli"',
+        'cask "codex"',
+        'cask "codex-app"',
         'cask "tailscale"',
         'brew "node@24"',
       ].join('\n'),
@@ -414,7 +425,13 @@ describe('skills/me-readiness/scripts/check-machine-lib', () => {
 
   it('should require the node@24 Brewfile formula', async () => {
     const report = await runCheck({
-      brewfile: ['cask "1password"', 'cask "1password-cli@beta"', 'cask "tailscale"'].join('\n'),
+      brewfile: [
+        'cask "1password"',
+        'cask "1password-cli@beta"',
+        'cask "codex"',
+        'cask "codex-app"',
+        'cask "tailscale"',
+      ].join('\n'),
       existingPaths: healthyExistingPaths(),
     });
     const formulaCheck = report.checks.find((check) => check.id === 'brewfile_formula_node_24');
@@ -634,6 +651,27 @@ describe('skills/me-readiness/scripts/check-machine-lib', () => {
 
     assert.equal(report.ok, false);
     assert.equal(tailscaleAppCheck.status, 'fail');
+  });
+
+  it('should fail when the Codex app is missing', async () => {
+    const report = await runCheck({
+      existingPaths: healthyExistingPaths('/Applications/Codex.app'),
+    });
+    const codexAppCheck = report.checks.find((check) => check.id === 'codex_app');
+
+    assert.equal(report.ok, false);
+    assert.equal(codexAppCheck.status, 'fail');
+  });
+
+  it('should fail when the Codex command is missing', async () => {
+    const report = await runCheck({
+      commands: REQUIRED_COMMANDS.filter((command) => command !== 'codex'),
+      existingPaths: healthyExistingPaths(),
+    });
+    const commandCheck = report.checks.find((check) => check.id === 'command_codex');
+
+    assert.equal(report.ok, false);
+    assert.equal(commandCheck.status, 'fail');
   });
 
   it('should fail Tailscale status when the command is missing', async () => {

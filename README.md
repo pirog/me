@@ -54,6 +54,8 @@ When the script finishes, complete the manual setup checklist below.
 
 ### Codex
 
+- Open the Brewfile-provided Codex desktop app.
+- Sign in to Codex.
 - Plugins from `Pirostore`:
   - `piroplugin`
   - `tanaab`
@@ -71,7 +73,8 @@ those prompts only when you intentionally asked Codex to run readiness.
 
 [`Brewfile`](./Brewfile) is the single source of truth for base machine dependencies. It covers
 Homebrew tooling plus the core CLI and runtime stack used here, including Git and GitHub CLI,
-Bun/Node/Python, Stow, the 1Password desktop app and CLI, Tailscale, ImageMagick, and Zsh.
+Codex CLI and the Codex desktop app, Bun/Node/Python, Stow, the 1Password desktop app and CLI,
+Tailscale, ImageMagick, and Zsh.
 
 ### Dotpkgs
 
