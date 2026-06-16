@@ -1,10 +1,12 @@
 # FINAL THINGS
 
+## ME
+
+- add pic to readme?
+
 ## EMORI
 
 - OC onboarding
-  - TANAAB\_ 2 emori in agents.md?
-
   - actual onboarding?
 
   - openclaw.json onboarding commands?
@@ -12,6 +14,7 @@
     --workspace
 
   - daemon launch when system does?
+  - add pic to README?
 
 - THEME stuff for fun?
 
@@ -47,6 +50,7 @@
 ## CANON
 
 - vscode theme and shiki and warp styles?
+- add similar badges + circle pic?
 
 ## THEME
 

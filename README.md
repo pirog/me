@@ -1,5 +1,15 @@
 # Me
 
+<p align="center">
+  <img src="./assets/icon-large-circle.png" alt="pirog" width="180" />
+</p>
+
+<p align="center">
+  <a href="https://github.com/pirog/me/releases"><img src="https://img.shields.io/github/v/release/pirog/me?&sort=semver" alt="Latest release" /></a>
+  <img src="https://img.shields.io/badge/macOS-26%2B-111827" alt="macOS 26+" />
+  <img src="https://img.shields.io/badge/Codex-piroplugin-00c88a" alt="Codex plugin: piroplugin" />
+</p>
+
 `me` seeds a macOS 26+ machine with the dependencies, dotfiles, and Codex plugin assets that
 approximate how `@pirog` does development. It is primarily consumed through the hosted `boot.sh`
 wrapper at `https://boot.pirog.me/boot.sh`, and it also ships the `piroplugin` Codex plugin bundle
