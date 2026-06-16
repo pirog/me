@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/pirog/me/releases"><img src="https://img.shields.io/github/v/release/pirog/me?&sort=semver" alt="Latest release" /></a>
+  <a href="https://github.com/pirog/me/releases"><img src="https://img.shields.io/github/v/release/pirog/me?include_prereleases&sort=semver" alt="Latest release" /></a>
   <img src="https://img.shields.io/badge/macOS-26%2B-111827" alt="macOS 26+" />
   <img src="https://img.shields.io/badge/Codex-piroplugin-00c88a" alt="Codex plugin: piroplugin" />
 </p>
