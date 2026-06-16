@@ -1,10 +1,5 @@
 # FINAL THINGS
 
-## AGENTBOX
-
-- release
-- update agentbox1
-
 ## EMORI
 
 - OC onboarding
