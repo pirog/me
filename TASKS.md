@@ -3,6 +3,14 @@
 ## EMORI
 
 - OC
+  - FUTURE improvements?
+    - a bun cli gateway wrapper is the key
+      - better "agent config" management
+      - better "secrets" management
+      - automatical hot reload will be an issue
+      - there is already a "default" agent
+      - how to handle per-agent secrets injection?
+
   - readme/agents.md updates
     - improved option usage information?
     - note that this spins up a "team emori" as an openclaw agent
