@@ -3,37 +3,42 @@
 ## EMORI
 
 - OC
+  - readme/agents.md updates
+    - improved option usage information?
+    - note that this spins up a "team emori" as an openclaw agent
+
+    - note you need to add ssh/signing keys to github first
+
+    - better discussion of what options do?
+    - 1password/github setup
+
+    - rework llms text?
+    - agents.md guidance for updates?
+
   - actual onboarding?
 
   - commit workspace stuff and do initial config pass
+    - openclaw.json handling, it says dont symlink, maybe just set workspace to ~/tanaab/emori directly?
     - add to tailnet and expose on all interafaces?
     - verify external connect?
   - handle --skip-bootstrap
+    - openclaw.json onboarding commands?
+      --reset and --reset full?
+      --workspace
 
   - readiness -> doctor (health plist deamon/wrapper?)
     - manual codex steps?
-    - github connector?
-    - netlify badge
     - add this into the BOOT.md check?
-
-  - readme/agents.md updates
 
   - openclaw env handling
     - save invoking OP password in auth somewhere?
+    - also need op-environment
     - openclaw gateway install --wrapper <path>
     - emori should install launchd wrapper with op-env support
     - env.shellEnv enabled
     - .env in workspace
     - add to emori doctor checks
-
     - skipping auth?
-
-  - ssh authorized user stuff?
-    - liek agentbox add --authorized-key option
-  - what about other ssh options?
-  - openclaw.json onboarding commands?
-    --reset and --reset full?
-    --workspace
 
   - daemon launch when system does?
   - portability test wrt things like auth keys?
@@ -52,14 +57,11 @@
   - repo standardization?
   - emori get issues to work on?
 
-  - subagents
-    - environment vars for each via op run --environment? master wrapper?
-
 - FIRST ISSUES
   - install tanaab repo into some kind of gitignored repo folder that is workspace specific?
   - get emori to rework our repos for improved guidance on CLI usage and llms.txt?
   - pictures and badges inc netlify (use connector?) as needed
-  - llm.txt
+  - llm.txts
   - usage quickstart with bash -s
   - bun trusting
   - document personal agentbox cli example?
@@ -70,10 +72,16 @@
   - helper tags for repos with similar flows?
   - known_hosts for github?
   - stdin -> script ruins NONINTERACTIVE for all hosted scripts!
+  - agent box ideally should be run on a fresh install with only 1 admin account
 
   - THEME stuff for fun?
 
-- GitHub channel plugin?
+  - GitHub channel plugin?
+  - real docs for emori
+  - subagents
+    - environment vars for each via op run --environment? master wrapper?
+  - how do i update?
+    - a skill?
 
 ## CANON
 
