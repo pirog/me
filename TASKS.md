@@ -15,6 +15,9 @@
       - git commit shim for keys/name/etc
       - also set GIT_TOKEN for github MCP?
       - some kind of "github flow" skill to actually pull down an issue and work on it?
+      - use multi MCP definitions for each agent with tool allow/deny to make sure it selects the correct one
+        - make own MCP with better agentID context
+      - load GITHUB_TOKEN|identity info from 1password directly in MCP?
 
 - OC
   - FUTURE improvements?
