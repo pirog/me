@@ -10,6 +10,10 @@
     - github channel
     - github mcp wrapper
 
+  - github identity handling and syncing
+    - git command shim?
+    - part of notification channel?
+
 - OC
   - FUTURE improvements?
     - a bun cli gateway wrapper is the key
