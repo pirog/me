@@ -2,6 +2,14 @@
 
 ## EMORI
 
+- SCOPE
+  - scripts to setup openclaw with custom wrapper entrypoint? separate repo?
+  - agent plugin for emori as "default" agent
+  - separate plugins
+    - custom wrapper entrypoint
+    - github channel
+    - github mcp wrapper
+
 - OC
   - FUTURE improvements?
     - a bun cli gateway wrapper is the key
