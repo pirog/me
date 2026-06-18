@@ -11,8 +11,10 @@
     - github mcp wrapper
 
   - github identity handling and syncing
-    - git command shim?
-    - part of notification channel?
+    - some kind of zsh profile loading that loads the 1password env?
+      - git commit shim for keys/name/etc
+      - also set GIT_TOKEN for github MCP?
+      - some kind of "github flow" skill to actually pull down an issue and work on it?
 
 - OC
   - FUTURE improvements?
