@@ -2,6 +2,13 @@
 
 ## EMORI
 
+- agentids
+  - can we inject envvars for EVERY agent load not just tool load?
+    - sort of but not really, better to just use things like `gh`
+  - how do we select an agent for work?
+    - good channel bindings
+    - discord needs creds agentid-secret?
+
 - SCOPE
   - scripts to setup openclaw with custom wrapper entrypoint? separate repo?
   - agent plugin for emori as "default" agent
@@ -18,6 +25,7 @@
       - use multi MCP definitions for each agent with tool allow/deny to make sure it selects the correct one
         - make own MCP with better agentID context
       - load GITHUB_TOKEN|identity info from 1password directly in MCP?
+      - MCP
 
 - OC
   - FUTURE improvements?
@@ -98,6 +106,9 @@
   - known_hosts for github?
   - stdin -> script ruins NONINTERACTIVE for all hosted scripts!
   - agent box ideally should be run on a fresh install with only 1 admin account
+  - refresh on readme structure wrt pics and badges
+  - skill to autotag repos
+  - tracking codex plugin installation?
 
   - THEME stuff for fun?
 
