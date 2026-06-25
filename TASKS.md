@@ -3,14 +3,37 @@
 - @tanaabased/agentbox
   - update readme styling with badges and pilot light and dark modes?
   - update brewfile
+
+  - setup user
+    - openclaw:openclaw:avatar photo?
+    - explicit brewgroup addition
+    - authorized keys
+    - autologin
+  - dotfiles and marketplace?
+
+  - openclaw onboarding
+    - as openclaw user
+    - auth choices
+    - tailnet if applicable
+
+  - codex plugin?
+    - revisit plugin installation/upgrade etc
+    - CODEX_LOCAL_DEBUG=true
+    -
   - openclaw agentbox plugin?
     - check health and propose remediation?
-  - agent box ideally should be run on a fresh install with only 1 admin account
+
   - readme/agents.md updates
-  - improved options usage information
-  - rework llms text?
-  - agents.md guidance for updates?
-  - manual codex setup steps?
+    - agent box ideally should be run on a fresh install with only 1 admin account
+    - improved options usage information
+    - rework llms text?
+    - agents.md guidance for updates?
+    - manual codex setup steps?
+
+  - long term
+    - make script for ubuntu LTS?
+    - caddy install
+    - install and configure needed openclaw plugins eg agent-os?
 
 - @tanaabased/emori
   - remove agentbox setup setuff
@@ -52,6 +75,7 @@
 - @tanaabased/github-notification-channel
 
 - @tanaabased/\*
+  - cli plugin installation now available in codex
   - known_hosts for github?
   - stdin -> script ruins NONINTERACTIVE for all hosted scripts!
   - refresh on readme structure wrt pics and badges
@@ -145,3 +169,6 @@
 - @tanaabased/template-netscript
   - AGENTS.md starter
   - llms?
+
+- @pirog/me
+  - add codex cli
