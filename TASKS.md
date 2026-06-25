@@ -1,97 +1,61 @@
 # FINAL THINGS
 
-## EMORI
-
-- agentids
-  - can we inject envvars for EVERY agent load not just tool load?
-    - sort of but not really, better to just use things like `gh`
-  - how do we select an agent for work?
-    - good channel bindings
-    - discord needs creds agentid-secret?
-
-- SCOPE
-  - scripts to setup openclaw with custom wrapper entrypoint? separate repo?
-  - agent plugin for emori as "default" agent
-  - separate plugins
-    - custom wrapper entrypoint
-    - github channel
-    - github mcp wrapper
-
-  - github identity handling and syncing
-    - some kind of zsh profile loading that loads the 1password env?
-      - git commit shim for keys/name/etc
-      - also set GIT_TOKEN for github MCP?
-      - some kind of "github flow" skill to actually pull down an issue and work on it?
-      - use multi MCP definitions for each agent with tool allow/deny to make sure it selects the correct one
-        - make own MCP with better agentID context
-      - load GITHUB_TOKEN|identity info from 1password directly in MCP?
-      - MCP
-
-- OC
-  - FUTURE improvements?
-    - a bun cli gateway wrapper is the key
-      - better "agent config" management
-      - better "secrets" management
-      - automatical hot reload will be an issue
-      - there is already a "default" agent
-      - how to handle per-agent secrets injection?
-
+- @tanaabased/agentbox
+  - update readme styling with badges and pilot light and dark modes?
+  - update brewfile
+  - openclaw agentbox plugin?
+    - check health and propose remediation?
+  - agent box ideally should be run on a fresh install with only 1 admin account
   - readme/agents.md updates
-    - improved option usage information?
-    - note that this spins up a "team emori" as an openclaw agent
+  - improved options usage information
+  - rework llms text?
+  - agents.md guidance for updates?
+  - manual codex setup steps?
 
-    - note you need to add ssh/signing keys to github first
-
-    - better discussion of what options do?
-    - 1password/github setup
-
-    - rework llms text?
-    - agents.md guidance for updates?
-
+- @tanaabased/emori
+  - remove agentbox setup setuff
   - actual onboarding?
-
   - commit workspace stuff and do initial config pass
-    - openclaw.json handling, it says dont symlink, maybe just set workspace to ~/tanaab/emori directly?
-    - add to tailnet and expose on all interafaces?
-    - verify external connect?
-  - handle --skip-bootstrap
-    - openclaw.json onboarding commands?
-      --reset and --reset full?
-      --workspace
 
-  - readiness -> doctor (health plist deamon/wrapper?)
-    - manual codex steps?
-    - add this into the BOOT.md check?
+  - agents.md prefer CLI tools eg `gh`
+    - add this into the BOOT.md check? check 1password access?
 
-  - openclaw env handling
-    - save invoking OP password in auth somewhere?
-    - also need op-environment
-    - openclaw gateway install --wrapper <path>
-    - emori should install launchd wrapper with op-env support
-    - env.shellEnv enabled
-    - .env in workspace
-    - add to emori doctor checks
-    - skipping auth?
-
-  - daemon launch when system does?
-  - portability test wrt things like auth keys?
-
-- initial EMORI setup
   - discord/imessage
-  - local mem0?
-  - backup memories
+  - backup memories?
   - automate emori improvements?
+  - some plugins to install for her?
 
-- ISSUE STUFF
-  - issue manager|author?
-  - work on issue skill?
-  - milestone creator w/ monday syncher?
-  - milestone form idea
-  - repo standardization?
+- @tanaabased/agent-system?
+  - note you need to add ssh/signing keys to github first? or part of setup?
+  - tracking codex plugin installation? add to clawhub?
+  - `openclaw identity`
+  - agent identity
+  - agent add/remove/update/setup
+  - agent signing/ssh transport
+  - where are good places to store the OP_SA_TOKEN?
+    - environment directly
+    - .env file
+    - keychain?
+    - op-sdk could potentailly match agentids
+  - also endpoints for these?
+  - can openclaw plugins install other openclaw plugin or use them as deps
+    - could my agentid cli install needed plugins after setup?
+  - add humans as well?
+  - agents.yaml can basically be the plugin config
+  - backups and scheduling
+    - setup creates cron job?
+  - local mem0? podman for now or postgres directly
   - emori get issues to work on?
 
-- FIRST ISSUES
-  - install tanaab repo into some kind of gitignored repo folder that is workspace specific?
+- @tanaabased/<persona>-template
+  - agent templates to see a repo
+- @tanaabased/github-notification-channel
+
+- @tanaabased/\*
+  - known_hosts for github?
+  - stdin -> script ruins NONINTERACTIVE for all hosted scripts!
+  - refresh on readme structure wrt pics and badges
+  - add similar badges + circle pic?
   - get emori to rework our repos for improved guidance on CLI usage and llms.txt?
   - pictures and badges inc netlify (use connector?) as needed
   - llm.txts
@@ -99,97 +63,85 @@
   - bun trusting
   - document personal agentbox cli example?
   - falsey shoudl include skip?
-  - release skill should always be against main unless explicitly said otherwise
   - github known hosts for scripts that ssh clone eg pirog/me
   - run bootbox in --quiet mode for all wrapper scripts
   - helper tags for repos with similar flows?
-  - known_hosts for github?
-  - stdin -> script ruins NONINTERACTIVE for all hosted scripts!
-  - agent box ideally should be run on a fresh install with only 1 admin account
-  - refresh on readme structure wrt pics and badges
-  - skill to autotag repos
-  - tracking codex plugin installation?
+    - canon list of tags?
+    - bootbox
+    - hosted-scripts
 
-  - THEME stuff for fun?
-
-  - GitHub channel plugin?
-  - real docs for emori
-  - subagents
-    - environment vars for each via op run --environment? master wrapper?
-  - how do i update?
-    - a skill?
-
-## CANON
-
-- vscode theme and shiki and warp styles?
-- add similar badges + circle pic?
-
-## THEME
-
-- tanaab/component-playground
+- @tanaabased/component-playground
   - migrate tms one
     - decouple styling
 
-- markdown files for agents?
-  - https://github.com/okineadev/vitepress-plugin-llms
-- accent colors
+- @tanaabased/theme
+  - markdown files for agents?
+    - https://github.com/okineadev/vitepress-plugin-llms
+  - accent colors
 
-- ELEMENTS
-  - form page and lock down presentation?
-  - toggle label centered?
+  - ELEMENTS
+    - form page and lock down presentation?
+    - toggle label centered?
 
-  - "utils?"
-    tms-visually-hidden
-    tms-hidden-link
+    - "utils?"
+      tms-visually-hidden
+      tms-hidden-link
 
-- Components pass 2
-  - external link arrow on TMSBox?
-  - TMSTag?
-  - TMSCard?
-    - blog/work?
+  - Components pass 2
+    - external link arrow on TMSBox?
+    - TMSTag?
+    - TMSCard?
+      - blog/work?
 
-- typography
-- colors
-- logo
-  - remove default color in sidebare
+  - typography
+  - colors
+  - logo
+    - remove default color in sidebare
 
-- CONTAINERS
-  - light/dark for primary?
+  - CONTAINERS
+    - light/dark for primary?
 
-- edit links/team/etc
-- lastUpdated?
-- "advanced usage" for things like component in component patterns?
-  - or just different sections to "usage" (as subtheme), (docs patterns)
-- ARIA accessibility?
-- remove containers?
-- review all components against vue-skill and see if we can do more?
+  - edit links/team/etc
+  - lastUpdated?
+  - "advanced usage" for things like component in component patterns?
+    - or just different sections to "usage" (as subtheme), (docs patterns)
+  - ARIA accessibility?
+  - remove containers?
+  - review all components against vue-skill and see if we can do more?
 
-- usage docs?
+  - usage docs?
 
-- future
-  - icon set that can also be distributed?
-  - some kind of prompt or scripts to consolidate stylings?
+  - future
+    - icon set that can also be distributed?
+    - some kind of prompt or scripts to consolidate stylings?
 
-  - robot switch
-  - logo pass 2
-    - more padding
-    - png kit
+    - robot switch
+    - logo pass 2
+      - more padding
+      - png kit
 
-## BOOTBOX
+- @tanaabased/bootbox
+  - warning if keys exist?
 
-- warning if keys exist?
+- @tanaabased/canon
+  - some kind of tanaab-coach/advisor skill?
+  - a brand enforcer skill (better as agent now?)
+  - vscode theme and shiki and warp styles?
+  - issue manager|author?
+  - work on issue skill?
+  - milestone creator w/ monday syncher?
+  - milestone form idea
+  - repo standardization?
+  - THEME stuff for fun?
+  - release skill should always be against main unless explicitly said otherwise
+  - skill to autotag repos
+  - list of repo tags
 
-## CANON
+- @tanaabased/website
+  - rebase on THEME
+  - get blog rolling
+    - rss/etc
 
-- some kind of tanaab-coach/advisor skill?
-- a brand enforcer skill
-
-## WEBSITE
-
-- rebase on THEME
-- get blog rolling
-  - rss/etc
-
-## TEMPLATE-NETSCRIPT
-
-- AGENTS.md starter
+- @tanaabased/template-netscript
+  - AGENTS.md starter
+  - llms?
