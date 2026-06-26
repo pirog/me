@@ -10,6 +10,7 @@
   - CTA/footer/etc
   - dependabot ignores and agents.md guidance
   - donate component
+  - www as primary domain
 
 - @tanaabased/agentbox
   - update readme styling with badges and pilot light and dark modes?
