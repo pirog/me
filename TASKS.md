@@ -1,17 +1,5 @@
 # FINAL THINGS
 
-- @lando/website
-  - better designed mission page
-    - with a single download PDF
-
-- @lando/events|blog
-  - update menus on blog and events?
-  - update copyright to 2026
-  - CTA/footer/etc
-  - dependabot ignores and agents.md guidance
-  - donate component
-  - www as primary domain
-
 - @tanaabased/agentbox
   - update readme styling with badges and pilot light and dark modes?
   - update brewfile
