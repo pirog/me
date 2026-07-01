@@ -1,39 +1,39 @@
 # FINAL THINGS
 
 - @tanaabased/agentbox
-  - update readme styling with badges and pilot light and dark modes?
-  - update brewfile
-
-  - setup user
-    - openclaw:openclaw:avatar photo?
-    - explicit brewgroup addition
-    - authorized keys
-    - autologin
-  - dotfiles and marketplace?
-
   - openclaw onboarding
     - as openclaw user
     - auth choices
     - tailnet if applicable
 
-  - codex plugin?
-    - revisit plugin installation/upgrade etc
-    - CODEX_LOCAL_DEBUG=true
-    -
-  - openclaw agentbox plugin?
-    - check health and propose remediation?
+  - rename agentbox.tanaab.sh/macos.sh?
+    - unsupported.sh?
 
   - readme/agents.md updates
+    - update readme styling with badges and pilot light and dark modes?
     - agent box ideally should be run on a fresh install with only 1 admin account
     - improved options usage information
     - rework llms text?
     - agents.md guidance for updates?
     - manual codex setup steps?
+    - our own personal command that we run on our agentboxs?
+    - currently unsupported on linux/windows
+
+  - codex plugin?
+    - revisit plugin installation/upgrade etc
+    - CODEX_LOCAL_DEBUG=true
+
+  - openclaw agentbox plugin?
+    - check health and propose remediation?
+
+  - need to install @tanaabased/agent-system globally once we have it
 
   - long term
     - make script for ubuntu LTS?
     - caddy install
     - install and configure needed openclaw plugins eg agent-os?
+
+  - dotfiles and marketplace?
 
 - @tanaabased/emori
   - remove agentbox setup setuff
@@ -49,6 +49,9 @@
   - some plugins to install for her?
 
 - @tanaabased/agent-system?
+  - plugin installation?
+  - dependencies eg `gh`?
+
   - note you need to add ssh/signing keys to github first? or part of setup?
   - tracking codex plugin installation? add to clawhub?
   - `openclaw identity`
@@ -77,6 +80,7 @@
 - @tanaabased/\*
   - cli plugin installation now available in codex
   - known_hosts for github?
+  - hosted scripts with better macos.sh and unsupported.sh routing?
   - stdin -> script ruins NONINTERACTIVE for all hosted scripts!
   - refresh on readme structure wrt pics and badges
   - add similar badges + circle pic?
