@@ -1,11 +1,13 @@
 # FINAL THINGS
 
+- @lando/code-sign-action
+  - implement azure signing
+
 - @tanaabased/agentbox
   - openclaw onboarding
-    - as openclaw user
-    - auth choices
-    - tailnet if applicable
-
+  - as openclaw user
+  - auth choices
+  - tailnet if applicable
   - rename agentbox.tanaab.sh/macos.sh?
     - unsupported.sh?
 
@@ -78,6 +80,7 @@
 - @tanaabased/github-notification-channel
 
 - @tanaabased/\*
+  - catch all email routing and AI triage?
   - cli plugin installation now available in codex
   - known_hosts for github?
   - hosted scripts with better macos.sh and unsupported.sh routing?
