@@ -2,11 +2,19 @@
 
 - @tanaabased/agentbox
   - openclaw onboarding
-  - as openclaw user
-  - auth choices
-  - tailnet if applicable
+    - openclaw auth env passthrough?
+
+    - deamon mode? which is default?
+      - launchdaemon as default
+      - launchagent (activates autologin for runner)
+
+  - review code
+
   - rename agentbox.tanaab.sh/macos.sh?
+    - should downloaded local script be called agentbox instead of boot?
     - unsupported.sh?
+
+  - release and add support for more versions?
 
   - readme/agents.md updates
     - update readme styling with badges and pilot light and dark modes?
@@ -28,9 +36,11 @@
   - need to install @tanaabased/agent-system globally once we have it
 
   - long term
+    - with tailscale serve we cannot use \*.tanaab.net addresses yet/
     - make script for ubuntu LTS?
     - caddy install
     - install and configure needed openclaw plugins eg agent-os?
+    - make this into a bun binary?
 
   - manual caddy setup?
   - dotfiles and marketplace?
@@ -167,6 +177,9 @@
   - release skill should always be against main unless explicitly said otherwise
   - skill to autotag repos
   - list of repo tags
+  - js skills should work for ts as well?
+  - adoption of schema|error|cli frameworks?
+  - organizatinal model for leia tests eg inputs|defaults|feature-x?
 
 - @tanaabased/website
   - rebase on THEME
