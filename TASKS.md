@@ -2,6 +2,7 @@
 
 - @tanaabased/agentbox
   - openclaw onboarding
+    - custom tailnet name?
     - openclaw auth env passthrough?
 
     - deamon mode? which is default?
