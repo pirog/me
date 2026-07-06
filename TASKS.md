@@ -180,6 +180,8 @@
   - js skills should work for ts as well?
   - adoption of schema|error|cli frameworks?
   - organizatinal model for leia tests eg inputs|defaults|feature-x?
+  - leia handling of ${} envvar brackets?
+    - maybe should just add support in @lando/leia?
 
 - @tanaabased/website
   - rebase on THEME
