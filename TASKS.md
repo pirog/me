@@ -1,8 +1,5 @@
 # FINAL THINGS
 
-- @lando/code-sign-action
-  - implement azure signing
-
 - @tanaabased/agentbox
   - openclaw onboarding
   - as openclaw user
@@ -35,6 +32,7 @@
     - caddy install
     - install and configure needed openclaw plugins eg agent-os?
 
+  - manual caddy setup?
   - dotfiles and marketplace?
 
 - @tanaabased/emori
@@ -53,6 +51,8 @@
 - @tanaabased/agent-system?
   - plugin installation?
   - dependencies eg `gh`?
+  - personal workspace?
+    - plugin to make each agent invocation run in its own shell? load OP env this way?
 
   - note you need to add ssh/signing keys to github first? or part of setup?
   - tracking codex plugin installation? add to clawhub?
