@@ -9,6 +9,8 @@
       - launchdaemon as default
       - launchagent (activates autologin for runner)
 
+  - magic dns in agentdox via network setup?
+    - check Tailscale MagicDNS and HTTPS cert settings; print helpful errors when disabled
   - review code
 
   - rename agentbox.tanaab.sh/macos.sh?
