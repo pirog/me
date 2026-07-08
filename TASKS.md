@@ -1,24 +1,8 @@
 # FINAL THINGS
 
 - @tanaabased/agentbox
-  - openclaw onboarding
-    - openclaw auth env passthrough?
-
-    - deamon mode? which is default?
-      - launchdaemon as default
-      - launchagent (activates autologin for runner)
-
-    - update LaunchDaemons? version string?
-
-  - magic dns in agentdox via network setup?
-    - check Tailscale MagicDNS and HTTPS cert settings; print helpful errors when disabled
-  - review code
-
-  - rename agentbox.tanaab.sh/macos.sh?
-    - should downloaded local script be called agentbox instead of boot?
-    - unsupported.sh?
-
-  - release and add support for more versions?
+  - changelog audit for this release?
+  - release
 
   - readme/agents.md updates
     - update readme styling with badges and pilot light and dark modes?
@@ -29,6 +13,15 @@
     - manual codex setup steps?
     - our own personal command that we run on our agentboxs?
     - currently unsupported on linux/windows
+    - what command do WE run?!?
+    - netlify badge?
+    - agents.md aspirational milestones and current scoping?
+      - releases.json|cehcksums?
+
+  - release
+  - attempt to install on mac?
+
+  - apple dev cert?
 
   - codex plugin?
     - revisit plugin installation/upgrade etc
@@ -37,9 +30,12 @@
   - openclaw agentbox plugin?
     - check health and propose remediation?
 
-  - need to install @tanaabased/agent-system globally once we have it
+  - need to install @tanaabased/agent-system globally once we have it?
 
-  - long term
+  - longer term
+    - hub netlify site on get.tanaab.sh (or elsewhere)
+      - use a product catalog .yaml to generate needed metadata files?
+    - milestone -> rework as a bun CLI?
     - with tailscale serve we cannot use \*.tanaab.net addresses yet/
     - make script for ubuntu LTS?
     - caddy install
@@ -61,6 +57,13 @@
   - backup memories?
   - automate emori improvements?
   - some plugins to install for her?
+
+- @pirog/me
+  - issue MGMT STUFF ASAP?
+    - milestone creation
+    - issue creation|triage|etc
+    - labels|fields|etc?
+  - add codex cli
 
 - @tanaabased/agent-system?
   - plugin installation?
@@ -94,6 +97,7 @@
 - @tanaabased/github-notification-channel
 
 - @tanaabased/\*
+  - update all scripts that are fundamentally complex to bun cli?
   - catch all email routing and AI triage?
   - cli plugin installation now available in codex
   - known_hosts for github?
@@ -167,6 +171,7 @@
 
 - @tanaabased/bootbox
   - warning if keys exist?
+  - make into bun cli as well?
 
 - @tanaabased/canon
   - some kind of tanaab-coach/advisor skill?
@@ -186,6 +191,9 @@
   - organizatinal model for leia tests eg inputs|defaults|feature-x?
   - leia handling of ${} envvar brackets?
     - maybe should just add support in @lando/leia?
+  - commit behavior?
+    - if you have a list of things to do then commit one per list item
+    - message syntax and formatting?
 
 - @tanaabased/website
   - rebase on THEME
@@ -195,6 +203,3 @@
 - @tanaabased/template-netscript
   - AGENTS.md starter
   - llms?
-
-- @pirog/me
-  - add codex cli
