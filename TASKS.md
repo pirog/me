@@ -2,12 +2,13 @@
 
 - @tanaabased/agentbox
   - openclaw onboarding
-    - custom tailnet name?
     - openclaw auth env passthrough?
 
     - deamon mode? which is default?
       - launchdaemon as default
       - launchagent (activates autologin for runner)
+
+    - update LaunchDaemons? version string?
 
   - magic dns in agentdox via network setup?
     - check Tailscale MagicDNS and HTTPS cert settings; print helpful errors when disabled
