@@ -1,27 +1,8 @@
 # FINAL THINGS
 
 - @tanaabased/agentbox
-  - changelog audit for this release?
-  - release
-
-  - readme/agents.md updates
-    - update readme styling with badges and pilot light and dark modes?
-    - agent box ideally should be run on a fresh install with only 1 admin account
-    - improved options usage information
-    - rework llms text?
-    - agents.md guidance for updates?
-    - manual codex setup steps?
-    - our own personal command that we run on our agentboxs?
-    - currently unsupported on linux/windows
-    - what command do WE run?!?
-    - netlify badge?
-    - agents.md aspirational milestones and current scoping?
-      - releases.json|cehcksums?
-
-  - release
-  - attempt to install on mac?
-
   - apple dev cert?
+  - attempt to install on mac?
 
   - codex plugin?
     - revisit plugin installation/upgrade etc
@@ -64,6 +45,15 @@
     - issue creation|triage|etc
     - labels|fields|etc?
   - add codex cli
+  - add warp?
+  - add trusted to bun tap?
+  - blog like pirog skill
+  - repo setup skills
+    - normal settings
+    - branch protection
+    - add tanabot 2 repo w write access
+    - suggest 3 good tags skill
+    - verify repo / repo audit
 
 - @tanaabased/agent-system?
   - plugin installation?
