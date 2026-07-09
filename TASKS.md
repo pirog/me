@@ -2,7 +2,6 @@
 
 - @pirog/me
   - shouldnt i just run @pirog/me?
-  - update model to 5.6?
 
   - update based on agentbox|emori work?
     - me materialize via source?

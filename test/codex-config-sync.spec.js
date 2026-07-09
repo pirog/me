@@ -81,7 +81,7 @@ describe('lib/codex-config-sync', () => {
       memories: {
         disable_on_external_context: true,
       },
-      model: 'gpt-5.5',
+      model: 'gpt-5.6',
       model_reasoning_effort: 'xhigh',
       personality: 'pragmatic',
       service_tier: 'fast',

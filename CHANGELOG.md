@@ -1,5 +1,7 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+- Updated portable Codex defaults to use `gpt-5.6`.
+
 ## v1.0.0-beta.6 - [June 3, 2026](https://github.com/pirog/me/releases/tag/v1.0.0-beta.6)
 
 - Added `l337` and `l338` Codex pet profiles.
