@@ -1,8 +1,52 @@
 # FINAL THINGS
 
+- @pirog/me
+  - shouldnt i just run @pirog/me?
+  - update model to 5.6?
+
+  - update based on agentbox|emori work?
+    - me materialize via source?
+    - --tanaab -> projects to clone down?
+
+  - mode user|agentbox?
+
+  - add codex cli/codex/openclaw?
+  - add warp?
+  - vscode?
+  - google chrome?
+  - add trusted to bun tap?
+  - theme as single codex string?
+  - TUI theme?
+
+  - issue MGMT STUFF ASAP?
+    - milestone creation
+    - issue creation|triage|etc
+    - labels|fields|etc?
+  - blog like pirog skill
+  - repo setup skills
+    - normal settings
+    - branch protection
+    - add tanabot 2 repo w write access
+    - suggest 3 good tags skill
+    - verify repo / repo audit
+
 - @tanaabased/agentbox
-  - apple dev cert?
-  - attempt to install on mac?
+  - test restart and gateway launch?
+  - tailscale/openclaw did not relaunch?
+
+  - small fixes
+    - no password multiple times, more tasteful
+      - better style on message?
+
+    - OPENCLAW_MDNS_HOSTNAME
+    - end of flow should be more concise with link to run full command?
+    - openclaw update|not?
+
+  - GATEWAY_TOKEN
+  - openclaw theme?
+  - model 5.6?
+
+  - add to codex via phone?
 
   - codex plugin?
     - revisit plugin installation/upgrade etc
@@ -23,12 +67,12 @@
     - install and configure needed openclaw plugins eg agent-os?
     - make this into a bun binary?
 
-  - manual caddy setup?
-  - dotfiles and marketplace?
-
 - @tanaabased/emori
   - remove agentbox setup setuff
   - actual onboarding?
+    - channels
+    - brave search API
+
   - commit workspace stuff and do initial config pass
 
   - agents.md prefer CLI tools eg `gh`
@@ -38,22 +82,6 @@
   - backup memories?
   - automate emori improvements?
   - some plugins to install for her?
-
-- @pirog/me
-  - issue MGMT STUFF ASAP?
-    - milestone creation
-    - issue creation|triage|etc
-    - labels|fields|etc?
-  - add codex cli
-  - add warp?
-  - add trusted to bun tap?
-  - blog like pirog skill
-  - repo setup skills
-    - normal settings
-    - branch protection
-    - add tanabot 2 repo w write access
-    - suggest 3 good tags skill
-    - verify repo / repo audit
 
 - @tanaabased/agent-system?
   - plugin installation?
