@@ -58,8 +58,18 @@ This root `AGENTS.md` is the repo-local override for Codex work in this reposito
 - For JavaScript library or helper changes, run `bun run test` before the relevant lint and plugin cache checks.
 - For changes to managed plugin surfaces, run `bun run codex:validate`, then `bun run codex:check`; if `codex:check` reports drift, run `bun run codex:sync`.
 - For `dotfiles/ai` changes, use `bun run ai:sync` when the task requires restowing the live home-directory surface.
-- New `boot.sh` features and bug fixes should add the smallest practical amount of coverage to all relevant Leia examples instead of relying on one catch-all scenario.
+- For public `boot.sh` input changes, cover help, defaults, validation, and option/environment precedence in `examples/inputs`, then cover runtime effects once in the narrowest functional example when behavior changes.
+- Do not add separate mutating examples merely to exercise option and environment-variable spellings for the same behavior.
 - When cache sync, `ai:sync`, agent restart, Leia, or `bun run build` is intentionally skipped because of task scope or repo policy, say so explicitly.
+
+## Examples And Leia
+
+- Examples are executable Leia specs consumed in CI, not prose-only documentation.
+- Keep `examples/inputs` non-mutating; it owns the public CLI contract, displayed defaults, input validation, and option/environment precedence.
+- Keep `examples/defaults` focused on one baseline machine-seeding run with default wrapper-owned behavior plus only the required CI secrets and fixtures.
+- Keep payload materialization and safe refresh behavior in `examples/payload`, and released Tanaab source behavior in `examples/version`.
+- Functional examples should prove observable behavior domains once instead of duplicating complete runs for every supported input form.
+- See `examples/AGENTS.md` before editing Leia examples.
 
 ## Release And Distribution
 
