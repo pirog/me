@@ -1,5 +1,6 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+- Added published `/llms.txt` metadata and an advanced configuration reference.
 - Removed public `--me` and `PIROME_ME` source selection from `boot.sh`.
 - Updated `boot.sh` to resolve explicit, source-relative, existing, or SSH-cloned `@pirog/me` payloads.
 - Updated portable Codex defaults to use `gpt-5.6`.
