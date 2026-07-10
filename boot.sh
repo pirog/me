@@ -183,7 +183,7 @@ fi
 
 # shellcheck disable=SC2016
 if [[ -n "${INTERACTIVE-}" && -n "${NONINTERACTIVE-}" ]]; then
-  abort 'both `$INTERACTIVE` and `$NONINTERACTIVE` are set. please unset at least one variable and try again.'
+  abort 'both $INTERACTIVE and $NONINTERACTIVE are set. please unset at least one variable and try again.'
 fi
 
 if [[ -n "${POSIXLY_CORRECT+1}" ]]; then
@@ -1405,7 +1405,7 @@ apply_noninteractive_mode() {
   # shellcheck disable=SC2016
   if [[ -z "${NONINTERACTIVE-}" ]]; then
     if [[ -n "${CI-}" ]]; then
-      warn "${tty_tp}running${tty_reset} in ${tty_ts}non-interactive mode${tty_reset} because \`\$CI\` is set."
+      warn "${tty_tp}running${tty_reset} in ${tty_ts}non-interactive mode${tty_reset} because \$CI is set."
       NONINTERACTIVE=1
     elif ! interactive_tty_available; then
       if [[ -z "${INTERACTIVE-}" ]]; then
@@ -1415,7 +1415,7 @@ apply_noninteractive_mode() {
         abort "cannot run interactive mode because no interactive terminal is available."
       fi
     elif [[ ! -t 0 ]]; then
-      debug "${tty_tp}using${tty_reset} ${tty_ts}/dev/tty${tty_reset} for interactive input because \`stdin\` is not a tty."
+      debug "${tty_tp}using${tty_reset} ${tty_ts}/dev/tty${tty_reset} for interactive input because stdin is not a tty."
     fi
   else
     log "${tty_tp}running${tty_reset} in ${tty_ts}non-interactive mode${tty_reset} ${tty_dim}because \$NONINTERACTIVE is set${tty_reset}"
