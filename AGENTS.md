@@ -82,8 +82,9 @@ This root `AGENTS.md` is the repo-local override for Codex work in this reposito
 - Keep `BOOTBOX_URL` fixed and not user-configurable unless the task explicitly changes that contract.
 - Preserve token masking in debug output. Do not leak raw 1Password tokens in logs or display commands.
 - Do not reintroduce raw argument logging.
-- Preserve the public wrapper contract under the `PIROME_*` namespace unless the task is explicitly about changing it. Use upstream `TANAAB_*` names only as the internal bridge when delegating to bootbox.
+- Preserve the public wrapper contract under the `PIROME_*` namespace unless the task is explicitly about changing it. Use canonical `BOOTBOX_*` names for internal delegation, and scrub both `BOOTBOX_*` inputs and Bootbox's legacy `TANAAB_*` aliases before rebuilding the child environment.
 - Preserve the current token, SSH key, and `--tanaab` contract unless the task is explicitly about changing it.
+- Keep `--ssh-keys` and `PIROME_SSH_KEYS` as hidden convenience aliases for comma-separated SSH-key lists; do not document them as public inputs.
 - Keep `PIROME_PAYLOAD_DIR` as a hidden development and CI override; do not expose it or payload selection as a public option or documented help environment variable.
 - Resolve the `me` payload in this order: explicit `PIROME_PAYLOAD_DIR`, source-relative checkout, existing `~/tanaab/me`, then a new SSH clone of `git@github.com:pirog/me.git` at `~/tanaab/me`.
 - Require the resolved `me` payload to be a Git checkout containing `boot.sh`, `Brewfile`, `dotfiles/`, and `.codex-plugin/plugin.json`.

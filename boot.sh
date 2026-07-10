@@ -7,7 +7,7 @@ set -euo pipefail
 #   $ ./boot.sh --op-token "$OP_TOKEN"
 #   $ ./boot.sh --op-token "$OP_TOKEN" --ssh-key vmruk4ny353aly6tbom7z3v2hy/id_agentbox1
 #   $ ./boot.sh --op-token "$OP_TOKEN" --tanaab v0.2.0
-#   $ DEBUG=1 ./boot.sh --op-token "$OP_TOKEN" --yes
+#   $ PIROME_DEBUG=1 ./boot.sh --op-token "$OP_TOKEN" --yes
 #
 # option precedence: cli options override environment variables, which override defaults.
 #
@@ -221,7 +221,6 @@ OP_TOKEN="${PIROME_OP_TOKEN:-${OP_SERVICE_ACCOUNT_TOKEN:-}}"
 SSH_KEYS_CSV="${PIROME_SSH_KEY:-${DEFAULT_SSH_KEY}}"
 ME_PAYLOAD_DIR_INPUT="${PIROME_PAYLOAD_DIR:-}"
 TANAAB_SOURCE="${PIROME_TANAAB:-${DEFAULT_TANAAB_SOURCE}}"
-declare -a ORIGINAL_ARGS=("$@")
 declare -a SSH_KEYS=()
 declare -a SSH_KEYS_TO_INSTALL=()
 declare -a SSH_KEYS_TO_OVERWRITE=()
@@ -244,23 +243,13 @@ TANAAB_SOURCE_LOCAL_PATH=""
 TANAAB_SOURCE_VERSION_TAG=""
 TANAAB_TARGET_PATH=""
 ME_APPLY_BREWFILE=""
+SSH_KEY_CLI_SEEN="0"
 
 if [[ -n "${PIROME_SSH_KEYS:-}" ]]; then
   SSH_KEYS_CSV="${SSH_KEYS_CSV}${SSH_KEYS_CSV:+,}${PIROME_SSH_KEYS}"
 fi
 
 append_csv_to_array SSH_KEYS "${SSH_KEYS_CSV}"
-
-if [[ "${#ORIGINAL_ARGS[@]}" -gt 0 ]]; then
-  for arg in "${ORIGINAL_ARGS[@]}"; do
-    case "${arg}" in
-      --ssh-key | --ssh-key=* | --ssh-keys | --ssh-keys=*)
-        SSH_KEYS=()
-        break
-        ;;
-    esac
-  done
-fi
 
 debug_enabled() {
   value_enabled "${DEBUG:-}"
@@ -388,21 +377,37 @@ parse_args() {
     case "$1" in
       --ssh-key)
         require_next_option_value "--ssh-key" "$#"
+        if [[ "${SSH_KEY_CLI_SEEN}" == "0" ]]; then
+          SSH_KEYS=()
+          SSH_KEY_CLI_SEEN="1"
+        fi
         append_array_value SSH_KEYS "$2"
         shift 2
         ;;
       --ssh-key=*)
         require_inline_option_value "--ssh-key" "${1#*=}"
+        if [[ "${SSH_KEY_CLI_SEEN}" == "0" ]]; then
+          SSH_KEYS=()
+          SSH_KEY_CLI_SEEN="1"
+        fi
         append_array_value SSH_KEYS "${1#*=}"
         shift
         ;;
       --ssh-keys)
         require_next_option_value "--ssh-keys" "$#"
+        if [[ "${SSH_KEY_CLI_SEEN}" == "0" ]]; then
+          SSH_KEYS=()
+          SSH_KEY_CLI_SEEN="1"
+        fi
         append_csv_to_array SSH_KEYS "$2"
         shift 2
         ;;
       --ssh-keys=*)
         require_inline_option_value "--ssh-keys" "${1#*=}"
+        if [[ "${SSH_KEY_CLI_SEEN}" == "0" ]]; then
+          SSH_KEYS=()
+          SSH_KEY_CLI_SEEN="1"
+        fi
         append_csv_to_array SSH_KEYS "${1#*=}"
         shift
         ;;
@@ -1182,7 +1187,7 @@ run_bootbox_for_me_apply() {
     bootbox_args+=(--dotpkg "${dotpkg}")
   done
 
-  bootbox_run_or_abort me "bootbox failed while applying me payload ${tty_ts}$(me_payload_display)${tty_reset}." "${bootbox_args[@]}"
+  bootbox_run_or_abort "bootbox failed while applying me payload ${tty_ts}$(me_payload_display)${tty_reset}." "${bootbox_args[@]}"
 }
 
 plan_action() {
@@ -1218,12 +1223,8 @@ ssh_key_filename() {
   ssh_key_spec_item "$1"
 }
 
-ssh_key_target_root() {
-  printf "%s" "${PIROME_TARGET:-${HOME}}"
-}
-
 ssh_key_destination_path() {
-  printf "%s/.ssh/%s" "$(ssh_key_target_root)" "$(ssh_key_filename "$1")"
+  printf "%s/.ssh/%s" "${HOME}" "$(ssh_key_filename "$1")"
 }
 
 describe_ssh_key_specs() {
@@ -1343,8 +1344,8 @@ validate_platform() {
   detect_arch
   detect_os
 
-  ARCH="${PIROME_ARCH:-${DETECTED_ARCH}}"
-  OS="${PIROME_OS:-${DETECTED_OS}}"
+  ARCH="${DETECTED_ARCH}"
+  OS="${DETECTED_OS}"
 
   if [[ "${EUID:-${UID}}" == "0" ]]; then
     abort "cannot run this script as root."
@@ -1404,14 +1405,6 @@ apply_noninteractive_mode() {
   fi
 }
 
-sync_bootbox_env() {
-  if [[ -n "${NONINTERACTIVE-}" ]]; then
-    export NONINTERACTIVE="${NONINTERACTIVE}"
-  else
-    unset NONINTERACTIVE || true
-  fi
-}
-
 core_remediation_needed() {
   [[ "${CORE_NEEDS_REMEDIATION:-0}" == "1" ]]
 }
@@ -1422,13 +1415,25 @@ run_bootbox_from_tmpdir() (
 )
 
 bootbox_run() {
-  local mode="$1"
-  shift
-
   local env_name
   local arg
   local mask_next="0"
   local -a unset_env_names=(
+    BOOTBOX_BREWFILE
+    BOOTBOX_BREWFILES
+    BOOTBOX_DOTPKG
+    BOOTBOX_DOTPKGS
+    BOOTBOX_SSH_KEY
+    BOOTBOX_SSH_KEYS
+    BOOTBOX_OP_TOKEN
+    BOOTBOX_FORCE
+    BOOTBOX_DEBUG
+    BOOTBOX_QUIET
+    BOOTBOX_NO_SUDO
+    BOOTBOX_EXTERNAL_SUDO
+    BOOTBOX_ARCH
+    BOOTBOX_OS
+    BOOTBOX_TARGET
     TANAAB_BREWFILE
     TANAAB_BREWFILES
     TANAAB_DOTPKG
@@ -1442,39 +1447,23 @@ bootbox_run() {
     TANAAB_QUIET
     TANAAB_ARCH
     TANAAB_OS
-    BOOTBOX_EXTERNAL_SUDO
-    BOOTBOX_QUIET
+    TANAAB_TARGET
     INTERACTIVE
   )
   local -a bootbox_command=(env)
   local -a bootbox_display_command=()
-
-  case "${mode}" in
-    core)
-      unset_env_names+=("TANAAB_TARGET")
-      ;;
-    ssh)
-      unset_env_names+=("TANAAB_TARGET")
-      ;;
-    me)
-      unset_env_names+=("TANAAB_TARGET")
-      ;;
-    *)
-      abort "unsupported internal bootbox mode ${tty_bold}${mode}${tty_reset}."
-      ;;
-  esac
 
   for env_name in "${unset_env_names[@]}"; do
     bootbox_command+=(-u "${env_name}")
   done
 
   if [[ -n "${DEBUG-}" ]]; then
-    bootbox_command+=("TANAAB_DEBUG=${DEBUG}")
+    bootbox_command+=("BOOTBOX_DEBUG=${DEBUG}")
     bootbox_display_command+=("PIROME_DEBUG=${DEBUG}")
   fi
 
   if [[ -n "${FORCE-}" ]]; then
-    bootbox_command+=("TANAAB_FORCE=${FORCE}")
+    bootbox_command+=("BOOTBOX_FORCE=${FORCE}")
     bootbox_display_command+=("PIROME_FORCE=${FORCE}")
   fi
 
@@ -1485,11 +1474,6 @@ bootbox_run() {
   # The wrapper owns the confirmation gate; delegated bootbox runs should not prompt again.
   bootbox_command+=("NONINTERACTIVE=1")
   bootbox_display_command+=("NONINTERACTIVE=1")
-
-  if [[ "${mode}" == "ssh" && -n "${PIROME_TARGET-}" ]]; then
-    bootbox_command+=("TANAAB_TARGET=${PIROME_TARGET}")
-    bootbox_display_command+=("PIROME_TARGET=${PIROME_TARGET}")
-  fi
 
   bootbox_command+=(/bin/bash "${BOOTBOX_SCRIPT_PATH}")
   bootbox_display_command+=(/bin/bash "${BOOTBOX_SCRIPT_PATH}")
@@ -1520,11 +1504,10 @@ bootbox_run() {
 }
 
 bootbox_run_or_abort() {
-  local mode="$1"
-  local failure_message="$2"
-  shift 2
+  local failure_message="$1"
+  shift
 
-  if ! bootbox_run "${mode}" "$@"; then
+  if ! bootbox_run "$@"; then
     abort "${failure_message}"
   fi
 }
@@ -1567,7 +1550,7 @@ prepare_bootbox_script() {
 
 run_bootbox_check_core() {
   debug "${tty_tp}checking${tty_reset} ${tty_ts}bootbox core requirements${tty_reset} from ${tty_ts}${BOOT_TMPDIR}${tty_reset}"
-  if bootbox_run core --check-core; then
+  if bootbox_run --check-core; then
     CORE_NEEDS_REMEDIATION="0"
     debug "bootbox core requirements are satisfied"
     return 0
@@ -1583,7 +1566,7 @@ ensure_bootbox_core_requirements() {
     return 0
   fi
 
-  bootbox_run_or_abort core "bootbox failed while ensuring core requirements."
+  bootbox_run_or_abort "bootbox failed while ensuring core requirements."
   if ! run_bootbox_check_core; then
     abort "bootbox core requirements are still not satisfied after remediation."
   fi
@@ -1591,7 +1574,7 @@ ensure_bootbox_core_requirements() {
 
 run_bootbox_for_ssh_key() {
   local ssh_key="$1"
-  bootbox_run_or_abort ssh "bootbox failed while installing ssh key ${tty_ts}$(ssh_key_filename "${ssh_key}")${tty_reset}." \
+  bootbox_run_or_abort "bootbox failed while installing ssh key ${tty_ts}$(ssh_key_filename "${ssh_key}")${tty_reset}." \
     --op-token "${OP_TOKEN}" --ssh-key "${ssh_key}"
 }
 
@@ -1633,7 +1616,6 @@ main() {
   validate_inputs
   validate_platform
   apply_noninteractive_mode
-  sync_bootbox_env
 
   debug "${tty_tp}running${tty_reset}" "${SCRIPT_NAME}" script version: "${SCRIPT_VERSION}"
   debug raw CI="${CI:-}"

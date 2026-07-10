@@ -70,6 +70,7 @@ PIROME_SSH_KEY="env-vault/env-item:id_env" PIROME_SSH_KEYS="extra-vault/extra-it
 PIROME_SSH_KEY="env-vault/env-item:id_env" boot.sh --ssh-key "cli-vault/cli-item:id_cli" --help | grep -F -- "--ssh-key" | grep -F "[default: cli-vault/cli-item:id_cli]"
 if PIROME_SSH_KEY="env-vault/env-item:id_env" boot.sh --ssh-key "cli-vault/cli-item:id_cli" --help | grep -F "env-vault/env-item:id_env"; then exit 1; fi
 boot.sh --ssh-key "cli-vault/first-item:id_first" --ssh-key "cli-vault/second-item:id_second" --help | grep -F -- "--ssh-key" | grep -F "[default: cli-vault/first-item:id_first,cli-vault/second-item:id_second]"
+boot.sh --ssh-keys "cli-vault/first-item:id_first,cli-vault/second-item:id_second" --help | grep -F -- "--ssh-key" | grep -F "[default: cli-vault/first-item:id_first,cli-vault/second-item:id_second]"
 
 # should show tanaab input precedence and normalization
 PIROME_TANAAB="/tmp/env-tanaab" boot.sh --help | grep -F -- "--tanaab" | grep -F "[default: /tmp/env-tanaab]"
@@ -82,6 +83,7 @@ PIROME_FORCE=1 boot.sh --help | grep -F -- "--force" | grep -F "[default: on]"
 PIROME_DEBUG=1 boot.sh --help | grep -F -- "--debug" | grep -F "[default: on]"
 PIROME_FORCE=off boot.sh --force --help | grep -F -- "--force" | grep -F "[default: on]"
 PIROME_DEBUG=off boot.sh --debug --help | grep -F -- "--debug" | grep -F "[default: on]"
+RUNNER_DEBUG=0 DEBUG=1 boot.sh --help | grep -F -- "--debug" | grep -F "[default: on]"
 
 # should print a version string
 test -n "$(boot.sh --version)"
