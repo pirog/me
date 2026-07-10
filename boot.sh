@@ -1382,6 +1382,12 @@ EOABORT
 )"
   fi
 
+  local user_groups
+  user_groups="$(/usr/bin/id -Gn 2>/dev/null || true)"
+  if [[ " ${user_groups} " != *" admin "* ]]; then
+    abort "you must run this script as a macOS administrator."
+  fi
+
   if [[ "${ARCH}" != "x64" ]] && [[ "${ARCH}" != "arm64" ]]; then
     abort_multi "$(cat <<EOABORT
 this script currently only supports ${tty_ts}x64${tty_reset} and ${tty_ts}arm64${tty_reset} systems.
