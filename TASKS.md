@@ -1,23 +1,40 @@
 # FINAL THINGS
 
-- @pirog/me
-  - shouldnt i just run @pirog/me?
+- @tanaabased/bootbox
+  - reorg tests?
+  - prep for macos.sh?
+  - add linux support?
 
+- @pirog/me
   - update based on agentbox|emori work?
     - me materialize via source?
-    - --tanaab -> projects to clone down?
 
-  - mode user|agentbox?
+    - review sudo stuff? do we really need it? always run as admin?
+
+    - clean up older stuff
+    - update bootbox envvars?
+    - --tanaab -> projects to clone down?
 
   - add codex cli/codex/openclaw?
   - add warp?
-  - vscode?
-  - google chrome?
+  - add vscode?
+  - add google chrome?
   - add trusted to bun tap?
-  - theme as single codex string?
-  - TUI theme?
+
+  - add agentbox plugin?
+  - themes
+    - codex
+    - warp
+      remove OHMYZSH?
+    - vscode?
+    - TUI theme?
+
+  - mode user|agentbox?
 
   - ips for pirobook and tanaabbook?
+  - remote management and authorized keys?
+
+  - shouldnt i just run @pirog/me?
 
   - issue MGMT STUFF ASAP?
     - milestone creation
