@@ -30,4 +30,17 @@ describe('utils/toml-stringify', () => {
       '[[projects]]\n\n[projects."repo.path"]\ntrust_level = "trusted"\n',
     );
   });
+
+  it('should preserve empty nested tables', () => {
+    assert.equal(
+      stringifyToml({
+        desktop: {
+          appearanceLightChromeTheme: {
+            fonts: {},
+          },
+        },
+      }),
+      '[desktop.appearanceLightChromeTheme.fonts]\n',
+    );
+  });
 });

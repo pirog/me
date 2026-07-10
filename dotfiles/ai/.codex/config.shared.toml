@@ -38,6 +38,8 @@ ink = "#102018"
 opaqueWindows = false
 surface = "#f6fbf9"
 
+[desktop.appearanceLightChromeTheme.fonts]
+
 [desktop.appearanceLightChromeTheme.semanticColors]
 diffAdded = "#00c88a"
 diffRemoved = "#db2777"
@@ -49,6 +51,8 @@ contrast = 68
 ink = "#e6f0eb"
 opaqueWindows = true
 surface = "#0a1210"
+
+[desktop.appearanceDarkChromeTheme.fonts]
 
 [desktop.appearanceDarkChromeTheme.semanticColors]
 diffAdded = "#33d4a1"
