@@ -6,9 +6,54 @@ file_opener = "vscode"
 service_tier = "fast"
 
 [features]
+chronicle = true
 memories = true
 multi_agent = true
 fast_mode = true
 
 [memories]
 disable_on_external_context = true
+
+[desktop]
+appearanceTheme = "system"
+appearanceLightCodeThemeId = "codex"
+appearanceDarkCodeThemeId = "codex"
+usePointerCursors = true
+dictationDictionary = ["Pirog", "EMOR1"]
+followUpQueueMode = "steer"
+preventSleepWhileRunning = true
+keepRemoteControlAwakeWhilePluggedIn = true
+git-branch-prefix = "pirog-"
+git-create-pull-request-as-draft = true
+git-pull-request-merge-method = "squash"
+git-show-sidebar-pr-icons = true
+git-commit-instructions = "the commit message should begin with an GitHub issue or PR number when possible eg `#NUMBER: commit message`. I do not like the insertion of `[codex]` into the commit message so lets not do that. "
+avatar-overlay-mascot-width-px = 134
+selected-avatar-id = "custom:l338"
+
+[desktop.appearanceLightChromeTheme]
+accent = "#db2777"
+contrast = 65
+ink = "#102018"
+opaqueWindows = false
+surface = "#f6fbf9"
+
+[desktop.appearanceLightChromeTheme.semanticColors]
+diffAdded = "#00c88a"
+diffRemoved = "#db2777"
+skill = "#db2777"
+
+[desktop.appearanceDarkChromeTheme]
+accent = "#00c88a"
+contrast = 68
+ink = "#e6f0eb"
+opaqueWindows = true
+surface = "#0a1210"
+
+[desktop.appearanceDarkChromeTheme.semanticColors]
+diffAdded = "#33d4a1"
+diffRemoved = "#db2777"
+skill = "#00c88a"
+
+[desktop.open-in-target-preferences]
+global = "vscode"

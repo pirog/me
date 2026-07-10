@@ -205,7 +205,8 @@ The Codex config files under the `ai` dotpkg use a shared/local/generated model:
 - `dotfiles/ai/.codex/config.shared.toml` is repo-owned and must contain only portable global
   Codex settings such as personality and stable feature defaults.
 - Current shared defaults include `gpt-5.6`, `xhigh` reasoning, disabled automatic commit
-  attribution, VS Code file links, Memories, multi-agent support, and Fast mode.
+  attribution, VS Code file links, Memories, Chronicle, multi-agent support, Fast mode, and
+  portable desktop preferences such as the app theme and selected avatar.
 - Fast mode is intentional: `service_tier = "fast"` plus `[features].fast_mode = true` can make
   supported Codex turns faster, but may increase credit consumption.
 - `~/.codex/config.local.toml` is machine-owned and must not be tracked here. Use it for project
