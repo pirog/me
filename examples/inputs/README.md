@@ -2,7 +2,7 @@
 
 This example keeps lightweight, non-mutating coverage on the public `boot.sh` input surface. It
 validates help text, displayed defaults, input validation, and option/environment precedence without
-running the machine-seeding path. Mutating coverage lives in the defaults, payload, and version
+running the machine-seeding path. Mutating coverage lives in the defaults, payload, and tanaab
 examples.
 
 ## Setup
@@ -37,7 +37,7 @@ boot.sh --help | grep -F -- "--yes"
 # should document public environment variables
 boot.sh --help | grep -F "PIROME_SSH_KEY      comma-separated list of 1password ssh keys"
 boot.sh --help | grep -F "PIROME_OP_TOKEN     1password service account token"
-boot.sh --help | grep -F "PIROME_TANAAB       source for ~/tanaab/canon"
+boot.sh --help | grep -F "PIROME_TANAAB       comma-separated list of @tanaabased repository names"
 boot.sh --help | grep -F "PIROME_FORCE        set to a truthy value"
 boot.sh --help | grep -F "PIROME_DEBUG        set to a truthy value"
 boot.sh --help | grep -F "NONINTERACTIVE      installs without prompting for user input"
@@ -46,6 +46,8 @@ boot.sh --help | grep -F "CI                  installs in CI mode"
 # should keep hidden and removed inputs out of help
 if boot.sh --help | grep -F -- "--ssh-keys"; then exit 1; fi
 if boot.sh --help | grep -F "PIROME_SSH_KEYS"; then exit 1; fi
+if boot.sh --help | grep -F -- "--tanaabs"; then exit 1; fi
+if boot.sh --help | grep -F "PIROME_TANAABS"; then exit 1; fi
 if boot.sh --help | grep -F -- "--me"; then exit 1; fi
 if boot.sh --help | grep -F "PIROME_ME"; then exit 1; fi
 if boot.sh --help | grep -F "PIROME_PAYLOAD_DIR"; then exit 1; fi
@@ -54,7 +56,7 @@ if boot.sh --help | grep -F "TANAAB_"; then exit 1; fi
 # should show default input values
 boot.sh --help | grep -F -- "--ssh-key" | grep -F "[default: vmruk4ny353aly6tbom7z3v2hy/id_pirog,vmruk4ny353aly6tbom7z3v2hy/id_agentbox1]"
 boot.sh --help | grep -F -- "--op-token" | grep -F "[default: none]"
-boot.sh --help | grep -F -- "--tanaab" | grep -F "[default: ssh]"
+boot.sh --help | grep -F -- "--tanaab" | grep -F "[default: none]"
 boot.sh --help | grep -F -- "--debug" | grep -F "[default: off]"
 boot.sh --help | grep -F -- "--force" | grep -F "[default: off]"
 
@@ -72,11 +74,13 @@ if PIROME_SSH_KEY="env-vault/env-item:id_env" boot.sh --ssh-key "cli-vault/cli-i
 boot.sh --ssh-key "cli-vault/first-item:id_first" --ssh-key "cli-vault/second-item:id_second" --help | grep -F -- "--ssh-key" | grep -F "[default: cli-vault/first-item:id_first,cli-vault/second-item:id_second]"
 boot.sh --ssh-keys "cli-vault/first-item:id_first,cli-vault/second-item:id_second" --help | grep -F -- "--ssh-key" | grep -F "[default: cli-vault/first-item:id_first,cli-vault/second-item:id_second]"
 
-# should show tanaab input precedence and normalization
-PIROME_TANAAB="/tmp/env-tanaab" boot.sh --help | grep -F -- "--tanaab" | grep -F "[default: /tmp/env-tanaab]"
-PIROME_TANAAB="/tmp/env-tanaab" boot.sh --tanaab 0.2.0 --help | grep -F -- "--tanaab" | grep -F "[default: v0.2.0]"
-if PIROME_TANAAB="/tmp/env-tanaab" boot.sh --tanaab 0.2.0 --help | grep -F "/tmp/env-tanaab"; then exit 1; fi
-boot.sh --tanaab false --help | grep -F -- "--tanaab" | grep -F "[default: false]"
+# should show tanaab repository input precedence
+PIROME_TANAAB="canon,agentbox" boot.sh --help | grep -F -- "--tanaab" | grep -F "[default: canon,agentbox]"
+PIROME_TANAAB="canon" PIROME_TANAABS="agentbox,bootbox" boot.sh --help | grep -F -- "--tanaab" | grep -F "[default: canon,agentbox,bootbox]"
+PIROME_TANAAB="canon" boot.sh --tanaab agentbox --tanaab bootbox --help | grep -F -- "--tanaab" | grep -F "[default: agentbox,bootbox]"
+if PIROME_TANAAB="canon" boot.sh --tanaab agentbox --help | grep -F "[default: canon"; then exit 1; fi
+boot.sh --tanaabs "canon,agentbox" --help | grep -F -- "--tanaab" | grep -F "[default: canon,agentbox]"
+boot.sh --tanaab canon --tanaab canon --help | grep -F -- "--tanaab" | grep -F "[default: canon]"
 
 # should show force and debug input precedence
 PIROME_FORCE=1 boot.sh --help | grep -F -- "--force" | grep -F "[default: on]"
@@ -166,6 +170,24 @@ printf "%s\n" "$output" | grep -F "option --tanaab must not be empty."
 printf "%s\n" "$output" | grep -F "Usage:"
 test "$command_status" -ne 0
 
+# should reject removed tanaab source modes
+set +e
+output="$(boot.sh --tanaab off 2>&1)"
+command_status="$?"
+set -e
+printf "%s\n" "$output"
+printf "%s\n" "$output" | grep -F "source modes and falsey disable values are no longer supported."
+test "$command_status" -ne 0
+
+# should reject tanaab paths instead of repository names
+set +e
+output="$(boot.sh --tanaab ../canon 2>&1)"
+command_status="$?"
+set -e
+printf "%s\n" "$output"
+printf "%s\n" "$output" | grep -F "must be a safe GitHub repository name"
+test "$command_status" -ne 0
+
 # should reject the removed me source option
 set +e
 output="$(boot.sh --me ssh 2>&1)"
@@ -186,11 +208,4 @@ printf "%s\n" "$output" | grep -F "unrecognized option"
 printf "%s\n" "$output" | grep -F "Usage:"
 printf "%s\n" "$output" | grep -F "boot.sh [options]"
 test "$command_status" -ne 0
-```
-
-## Destroy tests
-
-```bash
-# should remove the example scratch directory
-rm -rf "$TMPDIR"
 ```

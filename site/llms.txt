@@ -4,7 +4,7 @@
 
 `me` is a hosted macOS bootstrap and personal machine-profile repository. Its primary entrypoint is `boot.sh` at `https://boot.pirog.me/boot.sh`, and it also ships the `piroplugin` Codex plugin bundle.
 
-At a high level, `me` delegates core bootstrap work to Bootbox, installs applications and runtimes from its Brewfile, applies personal dotfile packages to the current user's home directory, installs 1Password-backed SSH keys, optionally materializes the shared Tanaab canon checkout, and installs Piro-specific Codex configuration, plugin links, and skills.
+At a high level, `me` delegates core bootstrap work to Bootbox, installs applications and runtimes from its Brewfile, applies personal dotfile packages to the current user's home directory, installs 1Password-backed SSH keys, optionally materializes explicitly selected `@tanaabased` repositories, and prepares local links for checkouts that declare themselves as Codex plugins.
 
 This repository targets the `pirog` workstation profile. Generic bootstrap behavior belongs in Bootbox, while headless host setup, SSH hardening, remote access, and service supervision belong in `agentbox`.
 
@@ -19,4 +19,4 @@ The advanced reference covers installed components, the complete option and envi
 - [Releases](https://github.com/pirog/me/releases): Published versions and `piroplugin` archives.
 - [Issues](https://github.com/pirog/me/issues): Bug reports, regressions, and feature requests.
 - [Bootbox](https://github.com/tanaabased/bootbox): The generic macOS bootstrap layer used by `me`.
-- [Tanaab canon](https://github.com/tanaabased/canon): The shared Tanaab plugin and skill source optionally installed by `me`.
+- [Tanaab organization](https://github.com/tanaabased): Repositories that `me` can clone into the editable `~/tanaab` workspace by explicit name.

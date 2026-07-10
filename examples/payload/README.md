@@ -26,8 +26,7 @@ test -n "$OPTOKEN"
 # should clone the canonical me payload via ssh
 env -u PIROME_PAYLOAD_DIR GIT_CONFIG_GLOBAL="$TMPDIR/gitconfig" "$TMPDIR/piroboot" \
   --op-token "$OPTOKEN" \
-  --ssh-key 'omfsw2uztmi2xqpid5g3kiv6ba/id_test' \
-  --tanaab off
+  --ssh-key 'omfsw2uztmi2xqpid5g3kiv6ba/id_test'
 ```
 
 ## Testing
@@ -46,8 +45,7 @@ git -C "$HOME/tanaab/me" reset --hard origin/main^2
 test "$(git -C "$HOME/tanaab/me" rev-parse HEAD)" != "$(git -C "$HOME/tanaab/me" rev-parse origin/main)"
 env -u PIROME_PAYLOAD_DIR GIT_CONFIG_GLOBAL="$TMPDIR/gitconfig" "$TMPDIR/piroboot" \
   --op-token "$OPTOKEN" \
-  --ssh-key 'omfsw2uztmi2xqpid5g3kiv6ba/id_test' \
-  --tanaab off
+  --ssh-key 'omfsw2uztmi2xqpid5g3kiv6ba/id_test'
 test "$(git -C "$HOME/tanaab/me" rev-parse HEAD)" = "$(git -C "$HOME/tanaab/me" rev-parse origin/main)"
 
 # should preserve a dirty canonical checkout without updating it
@@ -56,18 +54,8 @@ printf '%s\n' 'local payload work' > "$HOME/tanaab/me/payload-local-work.txt"
 payload_head="$(git -C "$HOME/tanaab/me" rev-parse HEAD)"
 env -u PIROME_PAYLOAD_DIR GIT_CONFIG_GLOBAL="$TMPDIR/gitconfig" "$TMPDIR/piroboot" \
   --op-token "$OPTOKEN" \
-  --ssh-key 'omfsw2uztmi2xqpid5g3kiv6ba/id_test' \
-  --tanaab off
+  --ssh-key 'omfsw2uztmi2xqpid5g3kiv6ba/id_test'
 test -f "$HOME/tanaab/me/payload-local-work.txt"
 test "$(git -C "$HOME/tanaab/me" rev-parse HEAD)" = "$payload_head"
 test "$(git -C "$HOME/tanaab/me" rev-parse HEAD)" != "$(git -C "$HOME/tanaab/me" rev-parse origin/main)"
-```
-
-## Destroy tests
-
-```bash
-# should remove payload example artifacts
-rm -f "$HOME/.ssh/id_test"
-rm -f "$HOME/.config/hyperdrive" "$HOME/.config/lando"
-rm -rf "$HOME/tanaab/me" "$HOME/tanaab/canon" "$TMPDIR"
 ```

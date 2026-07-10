@@ -104,11 +104,6 @@ const CODEX_PLUGIN_LINKS = [
     relativePath: ['.codex', 'plugins', 'piroplugin'],
     label: '~/.codex/plugins/piroplugin',
   },
-  {
-    id: 'codex_tanaab_link',
-    relativePath: ['.codex', 'plugins', 'tanaab'],
-    label: '~/.codex/plugins/tanaab',
-  },
 ];
 
 function checkIdSegment(value) {
@@ -145,7 +140,6 @@ const CHECK_BUCKET_BY_ID = new Map([
   ['codex_app', 'manual_apps'],
   ['bootstrap_token_env', 'manual_apps'],
   ['codex_piroplugin_link', 'codex_plugins'],
-  ['codex_tanaab_link', 'codex_plugins'],
 ]);
 const CHECK_STATUSES = new Set(['pass', 'warn', 'fail']);
 

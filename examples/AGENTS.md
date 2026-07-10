@@ -25,7 +25,8 @@ consumed in CI, and most scenarios mutate GitHub-hosted macOS runners.
 - `defaults` owns one baseline machine-seeding run with default wrapper-owned behavior plus required
   CI secrets and fixtures.
 - `payload` owns payload discovery, clone, refresh, rerun, and local-work preservation behavior.
-- `version` owns released Tanaab source materialization.
+- `tanaab` owns Tanaab repository materialization, safe refresh, and Codex plugin-link
+  reconciliation.
 - Add coverage to the narrowest existing example that owns the behavior. Add a new example only when
   the behavior needs incompatible bootstrap inputs, crosses enough domains to blur an existing
   example, or intentionally needs another successful `boot.sh` run.
@@ -41,8 +42,9 @@ consumed in CI, and most scenarios mutate GitHub-hosted macOS runners.
   when needed to prove replacement behavior.
 - Do not add expected-failure probes after machine mutation has begun. Keep failure-contract checks
   in `inputs` or make them fail during input validation before bootstrap side effects.
-- Keep `Destroy tests` cleanup scoped to artifacts created by the scenario, even on ephemeral CI
-  runners.
+- Omit `Destroy tests` sections on ephemeral CI runners when they only clean up scenario artifacts.
+  Add one only when cleanup, uninstall, or destructive behavior is itself an observable product
+  contract that the scenario intentionally verifies.
 - Run mutating examples with Leia retries disabled so a partial bootstrap is not retried on the same
   VM.
 

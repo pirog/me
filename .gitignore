@@ -16,7 +16,7 @@
 # tanaab based
 dotfiles/ai/.codex/config.local.toml
 dotfiles/ai/.codex/config.toml
-dotfiles/ai/.codex/plugins/tanaab
+dotfiles/ai/.codex/plugins/*
 
 # Logs
 *.log

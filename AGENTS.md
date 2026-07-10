@@ -16,7 +16,8 @@ In scope:
 - Personal macOS dependencies and application inventory.
 - Dotfiles, shell preferences, developer-tool configuration, and identity material.
 - The `piroplugin` Codex plugin, Pirobased skills, and local readiness verification.
-- An optional Tanaab canon checkout and plugin link for shared Tanaab capabilities.
+- Optional editable `@tanaabased` checkouts and generated links for repositories that declare
+  themselves as Codex plugins.
 
 Out of scope:
 
@@ -76,10 +77,10 @@ This is directional guidance, not an expansion of the current public contract:
   commands, and do not reintroduce raw argument logging.
 - Scrub both `BOOTBOX_*` inputs and Bootbox's legacy `TANAAB_*` aliases before rebuilding the child
   environment.
-- Preserve the current token, SSH-key, and `--tanaab` contract unless the task explicitly changes
-  it.
-- Keep `--ssh-keys` and `PIROME_SSH_KEYS` as hidden convenience aliases for comma-separated SSH-key
-  lists; do not document them as public inputs.
+- Preserve the current token, SSH-key, and repeatable Tanaab-repository contract unless the task
+  explicitly changes it.
+- Keep `--ssh-keys`, `PIROME_SSH_KEYS`, `--tanaabs`, and `PIROME_TANAABS` as hidden convenience
+  aliases for comma-separated lists; do not document them as public inputs.
 - Resolve interactive input through `/dev/tty` when available so hosted pipe-to-Bash invocations can
   still confirm the wrapper plan. Treat `INTERACTIVE` as a requirement and fail when no interactive
   terminal exists.
@@ -96,17 +97,24 @@ This is directional guidance, not an expansion of the current public contract:
 - Never delete or replace an existing `~/tanaab/me` path, including under `--force`. Invalid
   canonical payload paths should fail with an actionable error.
 - Treat `SCRIPT_VERSION` as wrapper metadata only; the resolved `me` payload revision may differ.
-- Keep `--tanaab` and `PIROME_TANAAB` aligned with the current source modes: `ssh`, a local Git
-  repository path, a release version, or a falsey disable value, with a fixed target of
-  `~/tanaab/canon`.
-- When Tanaab is enabled, preserve the wrapper-owned generated plugin link under the resolved `me`
-  payload so the main `ai` stow can install `~/.codex/plugins/tanaab` back to
-  `~/tanaab/canon` regardless of payload location.
+- Keep Tanaab repository selection empty by default. Treat repeatable `--tanaab` values as
+  repository names in `@tanaabased`, and treat `PIROME_TANAAB` as the comma-separated environment
+  equivalent. The first CLI value replaces the environment list; later values append.
+- Clone selected repositories over SSH to `~/tanaab/<repo>`. Never delete or replace an existing
+  target, including under `--force`; refresh only clean `main` checkouts that track `origin/main`
+  and have the expected `@tanaabased/<repo>` origin.
+- On every run, reconcile Codex plugin links for verified existing `@tanaabased` checkouts under
+  `~/tanaab`. Use `.codex-plugin/plugin.json` as the source of truth and its `name` as the generated
+  link name under the resolved payload's `dotfiles/ai/.codex/plugins/` directory.
+- Remove only generated or installed symlinks that resolve exactly to a verified checkout that no
+  longer has a plugin manifest. Preserve links when a present manifest is malformed, and never
+  overwrite a regular path or a link pointing elsewhere. Plugin linking does not install or enable
+  a plugin.
 - Preserve the wrapper-side Bootbox apply phase that uses the resolved payload's root `Brewfile` and
   top-level `dotfiles/*` package directories on the default `$HOME` target.
 - Keep planning output aligned with execution order: core remediation, SSH handling, `me` payload
-  materialization or safe refresh, optional Tanaab fetch and plugin-link preparation, then the
-  `me` apply step.
+  materialization or safe refresh, selected Tanaab repository materialization or safe refresh,
+  local plugin-link reconciliation, then the `me` apply step.
 
 ## Codex Plugin And Readiness
 
@@ -163,8 +171,8 @@ This is directional guidance, not an expansion of the current public contract:
   validation, and option/environment precedence.
 - Keep `examples/defaults` focused on one baseline machine-seeding run with default wrapper behavior
   plus only required CI secrets and fixtures.
-- Keep payload materialization and safe refresh behavior in `examples/payload`, and released Tanaab
-  source behavior in `examples/version`.
+- Keep `me` payload materialization and safe refresh behavior in `examples/payload`. Keep Tanaab
+  repository materialization, refresh safety, and plugin-link reconciliation in `examples/tanaab`.
 - Functional examples should prove observable behavior domains once instead of duplicating complete
   runs for every supported input form.
 - See `examples/AGENTS.md` before editing Leia examples.

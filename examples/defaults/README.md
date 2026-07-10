@@ -3,7 +3,8 @@
 This example runs the real `boot.sh` machine-seeding flow once with default product behavior, then
 verifies the resulting GitHub-hosted macOS runner state. The workflow provides the hidden payload
 directory, required 1Password token, a safe test SSH key, and force mode so the test can prove
-replacement of a conflicting key; Tanaab source, targets, and debug behavior stay on their defaults.
+replacement of a conflicting key; Tanaab repository selection and debug behavior stay on their
+empty defaults.
 
 This scenario is intended to run in CI by default. Do not run it locally unless the task explicitly
 calls for a local Leia run.
@@ -63,9 +64,8 @@ test -d "$PIROME_PAYLOAD_DIR/.git"
 test -f "$PIROME_PAYLOAD_DIR/boot.sh"
 ! test -e "$HOME/tanaab/me"
 
-# should clone tanaab canon via the default ssh source
-test -d "$HOME/tanaab/canon/.git"
-test "$(git -C "$HOME/tanaab/canon" config --get remote.origin.url)" = "git@github.com:tanaabased/canon.git"
+# should leave tanaab repository selection empty by default
+! test -e "$HOME/tanaab/canon"
 
 # should stow the hyperdrive config from the me payload
 test -L "$HOME/.config/hyperdrive"
@@ -79,24 +79,7 @@ test "$(python3 -c 'import os, sys; print(os.path.realpath(sys.argv[1]))' "$HOME
 test -f "$HOME/.config/lando/config.yaml"
 cmp -s "$HOME/.config/lando/config.yaml" "$PIROME_PAYLOAD_DIR/dotfiles/lando/.config/lando/config.yaml"
 
-# should stow the tanaab plugin link into the target codex plugins directory
-test -L "$HOME/.codex/plugins/tanaab"
-test "$(python3 -c 'import os, sys; print(os.path.realpath(sys.argv[1]))' "$HOME/.codex/plugins/tanaab")" = "$HOME/tanaab/canon"
-```
-
-## Destroy tests
-
-```bash
-# should remove representative stowed config directory symlinks
-rm -f "$HOME/.config/hyperdrive" "$HOME/.config/lando"
-
-# should remove tanaab plugin links
-rm -f "$HOME/.codex/plugins/tanaab"
-rm -f "$PIROME_PAYLOAD_DIR/dotfiles/ai/.codex/plugins/tanaab"
-
-# should remove the installed example ssh key
-rm -f "$HOME/.ssh/id_test"
-
-# should remove cloned checkout targets
-rm -rf "$HOME/tanaab/me" "$HOME/tanaab/canon"
+# should not generate a tanaab plugin link without a matching checkout
+! test -e "$HOME/.codex/plugins/tanaab"
+! test -L "$HOME/.codex/plugins/tanaab"
 ```

@@ -26,7 +26,8 @@ At a high level, `me`:
 - installs applications, runtimes, and command-line tools from [`Brewfile`](./Brewfile)
 - applies the personal configuration packages under [`dotfiles/`](./dotfiles/) to `$HOME`
 - clones or updates the editable `@pirog/me` checkout used as the machine-profile source
-- optionally materializes the shared [Tanaab canon](https://github.com/tanaabased/canon) checkout
+- optionally clones or safely updates explicitly selected repositories from
+  [`@tanaabased`](https://github.com/tanaabased)
 - installs `piroplugin`, Pirobased skills, shared Codex defaults, and local plugin links
 
 For the complete installed-component inventory, see
@@ -41,8 +42,8 @@ Provide a 1Password service account token and run the hosted bootstrap:
   --op-token "$OP_TOKEN"
 ```
 
-The default run installs the configured SSH keys, materializes `~/tanaab/canon` from GitHub, and
-applies the `me` Brewfile and dotfiles to `$HOME`.
+The default run installs the configured SSH keys and applies the `me` Brewfile and dotfiles to
+`$HOME`. It does not clone Tanaab repositories unless they are selected explicitly.
 
 Run the hosted help directly for the complete option and environment-variable contract:
 
@@ -68,19 +69,25 @@ Run it with flags when you want to keep the selected behavior explicit:
 piroboot \
   --op-token "$OP_TOKEN" \
   --ssh-key "vmruk4ny353aly6tbom7z3v2hy/id_pirog" \
-  --tanaab ssh
+  --tanaab canon \
+  --tanaab agentbox
 ```
 
 Common inputs:
 
-| Option       | Environment variable | Description                                                                                       |
-| ------------ | -------------------- | ------------------------------------------------------------------------------------------------- |
-| `--op-token` | `PIROME_OP_TOKEN`    | 1Password service account token used for private SSH-key access.                                  |
-| `--ssh-key`  | `PIROME_SSH_KEY`     | Repeatable `vault/item[:filename]` SSH-key specification.                                         |
-| `--tanaab`   | `PIROME_TANAAB`      | Tanaab source: `ssh`, a local Git repository, a release version, or a falsey value to disable it. |
-| `--yes`      | `NONINTERACTIVE`     | Accept the plan and run without prompts.                                                          |
-| `--force`    | `PIROME_FORCE`       | Allow supported existing targets to be replaced.                                                  |
-| `--debug`    | `PIROME_DEBUG`       | Show debug output with secrets masked.                                                            |
+| Option       | Environment variable | Description                                                      |
+| ------------ | -------------------- | ---------------------------------------------------------------- |
+| `--op-token` | `PIROME_OP_TOKEN`    | 1Password service account token used for private SSH-key access. |
+| `--ssh-key`  | `PIROME_SSH_KEY`     | Repeatable `vault/item[:filename]` SSH-key specification.        |
+| `--tanaab`   | `PIROME_TANAAB`      | Repeatable repository name from the `@tanaabased` organization.  |
+| `--yes`      | `NONINTERACTIVE`     | Accept the plan and run without prompts.                         |
+| `--force`    | `PIROME_FORCE`       | Allow supported existing targets to be replaced.                 |
+| `--debug`    | `PIROME_DEBUG`       | Show debug output with secrets masked.                           |
+
+Each Tanaab repository name maps to `git@github.com:tanaabased/<repo>.git` and
+`~/tanaab/<repo>`. Existing checkouts are updated only when a clean fast-forward is safe. On every
+run, verified Tanaab checkouts that declare `.codex-plugin/plugin.json` receive local plugin source
+links; installation and enablement remain explicit Codex actions.
 
 Use [ADVANCED.md](./ADVANCED.md) for the full option and environment-variable reference, installed
 components, checkout behavior, and Codex configuration and plugin sync.
@@ -106,7 +113,7 @@ Complete these app-backed steps after bootstrap.
 ### Codex
 
 - Open the Brewfile-provided Codex desktop app and sign in.
-- Install `piroplugin` and `tanaab` from `Pirostore`.
+- Install `piroplugin` from `Pirostore`. If Canon was selected, install `tanaab` as well.
 - Connect the GitHub app connector as `pirog`.
 - Connect the monday.com app connector as `Michael Pirog` for this `me` environment.
 

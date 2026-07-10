@@ -6,7 +6,7 @@ set -euo pipefail
 #
 #   $ ./boot.sh --op-token "$OP_TOKEN"
 #   $ ./boot.sh --op-token "$OP_TOKEN" --ssh-key vmruk4ny353aly6tbom7z3v2hy/id_agentbox1
-#   $ ./boot.sh --op-token "$OP_TOKEN" --tanaab v0.2.0
+#   $ ./boot.sh --op-token "$OP_TOKEN" --tanaab canon --tanaab agentbox
 #   $ PIROME_DEBUG=1 ./boot.sh --op-token "$OP_TOKEN" --yes
 #
 # option precedence: cli options override environment variables, which override defaults.
@@ -17,11 +17,7 @@ MACOS_OLDEST_SUPPORTED="26.0"
 REQUIRED_CURL_VERSION="7.41.0"
 BOOTBOX_URL="https://bootbox.tanaab.sh/bootbox.sh"
 DEFAULT_SSH_KEY="vmruk4ny353aly6tbom7z3v2hy/id_pirog,vmruk4ny353aly6tbom7z3v2hy/id_agentbox1"
-DEFAULT_TANAAB_SOURCE="ssh"
-ME_REPO_SSH_URL="git@github.com:pirog/me.git"
-TANAAB_REPO_SSH_URL="git@github.com:tanaabased/canon.git"
-TANAAB_REPO_RELEASE_BASE_URL="https://github.com/tanaabased/canon/releases/download"
-TANAAB_REPO_RELEASE_ARCHIVE_PREFIX="tanaab"
+TANAAB_GITHUB_ORG="tanaabased"
 
 abort() {
   printf "%serror%s: %s\n" "${tty_red-}" "${tty_reset-}" "$@" >&2
@@ -42,17 +38,6 @@ value_enabled() {
       ;;
     *)
       return 0
-      ;;
-  esac
-}
-
-source_value_disabled() {
-  case "${1:-}" in
-    0 | false | FALSE | False | no | NO | No | off | OFF | Off | null | NULL | Null)
-      return 0
-      ;;
-    *)
-      return 1
       ;;
   esac
 }
@@ -152,6 +137,55 @@ array_join() {
   done
 }
 
+array_contains_value() {
+  local array_name="$1"
+  local expected="$2"
+  local item
+  local value_count="0"
+  local -a values=()
+
+  eval "value_count=\${#${array_name}[@]}"
+  if [[ "${value_count}" -eq 0 ]]; then
+    return 1
+  fi
+
+  eval "values=(\"\${${array_name}[@]}\")"
+  for item in "${values[@]}"; do
+    if [[ "${item}" == "${expected}" ]]; then
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+dedupe_array_values() {
+  local array_name="$1"
+  local item
+  local quoted
+  local value_count="0"
+  local -a values=()
+  local -a unique_values=()
+
+  eval "value_count=\${#${array_name}[@]}"
+  if [[ "${value_count}" -eq 0 ]]; then
+    return 0
+  fi
+
+  eval "values=(\"\${${array_name}[@]}\")"
+  for item in "${values[@]}"; do
+    if ! array_contains_value unique_values "${item}"; then
+      unique_values+=("${item}")
+    fi
+  done
+
+  eval "${array_name}=()"
+  for item in "${unique_values[@]}"; do
+    printf -v quoted '%q' "${item}"
+    eval "${array_name}+=(${quoted})"
+  done
+}
+
 chomp() {
   printf "%s" "${1/"$'\n'"/}"
 }
@@ -220,11 +254,12 @@ FORCE="${PIROME_FORCE:-}"
 OP_TOKEN="${PIROME_OP_TOKEN:-${OP_SERVICE_ACCOUNT_TOKEN:-}}"
 SSH_KEYS_CSV="${PIROME_SSH_KEY:-${DEFAULT_SSH_KEY}}"
 ME_PAYLOAD_DIR_INPUT="${PIROME_PAYLOAD_DIR:-}"
-TANAAB_SOURCE="${PIROME_TANAAB:-${DEFAULT_TANAAB_SOURCE}}"
+TANAAB_REPOS_CSV="${PIROME_TANAAB:-}"
 declare -a SSH_KEYS=()
 declare -a SSH_KEYS_TO_INSTALL=()
 declare -a SSH_KEYS_TO_OVERWRITE=()
 declare -a SSH_KEYS_TO_SKIP=()
+declare -a TANAAB_REPOS=()
 declare -a ME_APPLY_DOTPKGS=()
 declare -a PLANNED_ACTIONS=()
 BOOT_TMPDIR=""
@@ -238,18 +273,20 @@ OS=""
 ME_PAYLOAD_DIR=""
 ME_PAYLOAD_SOURCE_KIND=""
 ME_PAYLOAD_CANONICAL_PATH=""
-TANAAB_SOURCE_KIND=""
-TANAAB_SOURCE_LOCAL_PATH=""
-TANAAB_SOURCE_VERSION_TAG=""
-TANAAB_TARGET_PATH=""
 ME_APPLY_BREWFILE=""
 SSH_KEY_CLI_SEEN="0"
+TANAAB_CLI_SEEN="0"
 
 if [[ -n "${PIROME_SSH_KEYS:-}" ]]; then
   SSH_KEYS_CSV="${SSH_KEYS_CSV}${SSH_KEYS_CSV:+,}${PIROME_SSH_KEYS}"
 fi
 
+if [[ -n "${PIROME_TANAABS:-}" ]]; then
+  TANAAB_REPOS_CSV="${TANAAB_REPOS_CSV}${TANAAB_REPOS_CSV:+,}${PIROME_TANAABS}"
+fi
+
 append_csv_to_array SSH_KEYS "${SSH_KEYS_CSV}"
+append_csv_to_array TANAAB_REPOS "${TANAAB_REPOS_CSV}"
 
 debug_enabled() {
   value_enabled "${DEBUG:-}"
@@ -278,32 +315,12 @@ show_version() {
   exit 0
 }
 
-is_semver_value() {
-  [[ "${1:-}" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$ ]]
-}
-
-normalize_release_tag() {
-  if [[ "${1}" == v* ]]; then
-    printf "%s" "${1}"
-  else
-    printf "v%s" "${1}"
-  fi
-}
-
-normalize_repo_source_value() {
-  if is_semver_value "${1}"; then
-    normalize_release_tag "${1}"
-  else
-    printf "%s" "${1}"
-  fi
-}
-
 usage() {
   local debug_display="off"
   local force_display="off"
   local ssh_keys_display="none"
   local op_token_display="none"
-  local tanaab_display="none"
+  local tanaab_repos_display="none"
 
   if debug_enabled; then
     debug_display="on"
@@ -320,7 +337,9 @@ usage() {
     op_token_display="$(mask_secret_for_display "${OP_TOKEN}")"
   fi
 
-  tanaab_display="$(normalize_repo_source_value "${TANAAB_SOURCE}")"
+  dedupe_array_values TANAAB_REPOS
+  tanaab_repos_display="$(array_join "," TANAAB_REPOS)"
+  tanaab_repos_display="${tanaab_repos_display:-none}"
 
   cat <<EOS
 Usage: ${tty_dim}[NONINTERACTIVE=1] [CI=1]${tty_reset} ${tty_bold}${SCRIPT_NAME}${tty_reset} ${tty_dim}[options]${tty_reset}
@@ -328,7 +347,7 @@ Usage: ${tty_dim}[NONINTERACTIVE=1] [CI=1]${tty_reset} ${tty_bold}${SCRIPT_NAME}
 ${tty_tp}Options:${tty_reset}
   --ssh-key        installs 1password ssh keys as vault/item[:filename] ${tty_dim}[default: ${ssh_keys_display}]${tty_reset}
   --op-token       auths with 1password service account token ${tty_dim}[default: ${op_token_display}]${tty_reset}
-  --tanaab         fetches tanaab from ssh, a local git repo path, a release version, or a falsey disable value ${tty_dim}[default: ${tanaab_display}]${tty_reset}
+  --tanaab         clones or safely updates a repeatable @tanaabased repository name ${tty_dim}[default: ${tanaab_repos_display}]${tty_reset}
   --version        shows version of this script
   --debug          shows debug messages ${tty_dim}[default: ${debug_display}]${tty_reset}
   --force          forces supported bootbox operations ${tty_dim}[default: ${force_display}]${tty_reset}
@@ -338,7 +357,7 @@ ${tty_tp}Options:${tty_reset}
 ${tty_tp}Environment Variables:${tty_reset}
   PIROME_SSH_KEY      comma-separated list of 1password ssh keys as vault/item[:filename]
   PIROME_OP_TOKEN     1password service account token; falls back to OP_SERVICE_ACCOUNT_TOKEN
-  PIROME_TANAAB       source for ~/tanaab/canon; supports ssh, local repo paths, release versions, or falsey disable values
+  PIROME_TANAAB       comma-separated list of @tanaabased repository names; same as --tanaab
   PIROME_FORCE        set to a truthy value to force supported operations
   PIROME_DEBUG        set to a truthy value to show debug messages
   NONINTERACTIVE      installs without prompting for user input
@@ -423,12 +442,38 @@ parse_args() {
         ;;
       --tanaab)
         require_next_option_value "--tanaab" "$#"
-        TANAAB_SOURCE="$2"
+        if [[ "${TANAAB_CLI_SEEN}" == "0" ]]; then
+          TANAAB_REPOS=()
+          TANAAB_CLI_SEEN="1"
+        fi
+        append_array_value TANAAB_REPOS "$2"
         shift 2
         ;;
       --tanaab=*)
         require_inline_option_value "--tanaab" "${1#*=}"
-        TANAAB_SOURCE="${1#*=}"
+        if [[ "${TANAAB_CLI_SEEN}" == "0" ]]; then
+          TANAAB_REPOS=()
+          TANAAB_CLI_SEEN="1"
+        fi
+        append_array_value TANAAB_REPOS "${1#*=}"
+        shift
+        ;;
+      --tanaabs)
+        require_next_option_value "--tanaabs" "$#"
+        if [[ "${TANAAB_CLI_SEEN}" == "0" ]]; then
+          TANAAB_REPOS=()
+          TANAAB_CLI_SEEN="1"
+        fi
+        append_csv_to_array TANAAB_REPOS "$2"
+        shift 2
+        ;;
+      --tanaabs=*)
+        require_inline_option_value "--tanaabs" "${1#*=}"
+        if [[ "${TANAAB_CLI_SEEN}" == "0" ]]; then
+          TANAAB_REPOS=()
+          TANAAB_CLI_SEEN="1"
+        fi
+        append_csv_to_array TANAAB_REPOS "${1#*=}"
         shift
         ;;
       --debug)
@@ -535,61 +580,6 @@ display_home_path() {
   printf "%s" "${path}"
 }
 
-find_git_repo_root() {
-  local path="$1"
-  local parent
-
-  while :; do
-    if [[ -d "${path}/.git" || -f "${path}/.git" ]]; then
-      printf "%s" "${path}"
-      return 0
-    fi
-
-    if [[ -f "${path}/HEAD" && -d "${path}/objects" && -d "${path}/refs" ]]; then
-      printf "%s" "${path}"
-      return 0
-    fi
-
-    parent="$(dirname "${path}")"
-    if [[ "${parent}" == "${path}" ]]; then
-      return 1
-    fi
-
-    path="${parent}"
-  done
-}
-
-resolve_local_repo_source_path() {
-  local source_path="$1"
-  local absolute_path
-  local repo_root
-
-  if ! absolute_path="$(cd "${source_path}" 2>/dev/null && pwd -P)"; then
-    return 1
-  fi
-
-  if ! repo_root="$(find_git_repo_root "${absolute_path}")"; then
-    return 1
-  fi
-
-  printf "%s" "${repo_root}"
-}
-
-resolve_repo_source_kind() {
-  local source_value="$1"
-  local allow_disable="${2:-0}"
-
-  if [[ "${allow_disable}" == "1" ]] && source_value_disabled "${source_value}"; then
-    printf "disabled"
-  elif [[ "${source_value}" == "ssh" ]]; then
-    printf "ssh"
-  elif is_semver_value "${source_value}"; then
-    printf "version"
-  else
-    printf "local"
-  fi
-}
-
 expand_home_path() {
   local path="$1"
 
@@ -639,10 +629,6 @@ me_payload_source_display() {
       printf "unresolved"
       ;;
   esac
-}
-
-tanaab_target_display() {
-  display_home_path "${TANAAB_TARGET_PATH}"
 }
 
 me_apply_brewfile_display() {
@@ -762,97 +748,41 @@ prepare_me_payload() {
   ME_PAYLOAD_SOURCE_KIND="clone"
 }
 
-prepare_repo_source() {
-  local source_value="$1"
-  local target_path="$2"
-  local repo_label="$3"
-  local source_kind_var="$4"
-  local source_local_path_var="$5"
-  local source_version_tag_var="$6"
-  local allow_disable="${7:-0}"
-  local source_kind=""
-  local source_local_path=""
-  local source_version_tag=""
+tanaab_repo_target_path() {
+  printf "%s/tanaab/%s" "${HOME}" "$1"
+}
 
-  source_kind="$(resolve_repo_source_kind "${source_value}" "${allow_disable}")"
-
-  case "${source_kind}" in
-    disabled)
-      ;;
-    ssh)
-      ;;
-    version)
-      source_version_tag="$(normalize_release_tag "${source_value}")"
-      ;;
-    local)
-      if ! source_local_path="$(resolve_local_repo_source_path "${source_value}")"; then
-        abort "local ${repo_label} source ${tty_ts}${source_value}${tty_reset} must resolve to a local git repo."
-      fi
-
-      if [[ "${source_local_path}" == "${target_path}" ]]; then
-        abort "local ${repo_label} source ${tty_ts}${source_local_path}${tty_reset} cannot be the same as target ${tty_ts}$(display_home_path "${target_path}")${tty_reset}."
-      fi
-      ;;
-    *)
-      abort "unsupported internal ${repo_label} source kind ${tty_bold}${source_kind}${tty_reset}."
+legacy_tanaab_source_value() {
+  case "${1:-}" in
+    ssh | 0 | false | FALSE | False | no | NO | No | off | OFF | Off | null | NULL | Null)
+      return 0
       ;;
   esac
 
-  printf -v "${source_kind_var}" "%s" "${source_kind}"
-  printf -v "${source_local_path_var}" "%s" "${source_local_path}"
-  printf -v "${source_version_tag_var}" "%s" "${source_version_tag}"
+  [[ "${1:-}" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$ ]]
 }
 
-prepare_tanaab_source() {
-  TANAAB_TARGET_PATH="${HOME}/tanaab/canon"
-  prepare_repo_source \
-    "${TANAAB_SOURCE}" \
-    "${TANAAB_TARGET_PATH}" \
-    "tanaab" \
-    "TANAAB_SOURCE_KIND" \
-    "TANAAB_SOURCE_LOCAL_PATH" \
-    "TANAAB_SOURCE_VERSION_TAG" \
-    "1"
-}
+validate_tanaab_repos() {
+  local repo
 
-tanaab_enabled() {
-  [[ "${TANAAB_SOURCE_KIND}" != "disabled" ]]
-}
-
-tanaab_plugin_checkout_path() {
-  printf "%s/dotfiles/ai/.codex/plugins/tanaab" "${ME_PAYLOAD_DIR}"
-}
-
-tanaab_plugin_checkout_display() {
-  display_home_path "$(tanaab_plugin_checkout_path)"
-}
-
-prepare_tanaab_plugin_link() {
-  local ai_dotpkg_path="${ME_PAYLOAD_DIR}/dotfiles/ai"
-  local plugin_checkout_path
-  local plugin_parent_path
-
-  plugin_checkout_path="$(tanaab_plugin_checkout_path)"
-
-  if ! tanaab_enabled; then
-    if [[ -L "${plugin_checkout_path}" || -e "${plugin_checkout_path}" ]]; then
-      execute rm -rf "${plugin_checkout_path}"
-    fi
+  dedupe_array_values TANAAB_REPOS
+  if [[ "${#TANAAB_REPOS[@]}" -eq 0 ]]; then
     return 0
   fi
 
-  if [[ ! -d "${ai_dotpkg_path}" ]]; then
-    abort "me payload at ${tty_ts}$(me_payload_display)${tty_reset} is missing required ${tty_ts}ai${tty_reset} dotpkg needed for the tanaab plugin link."
-  fi
+  for repo in "${TANAAB_REPOS[@]}"; do
+    if legacy_tanaab_source_value "${repo}"; then
+      abort "tanaab value ${tty_ts}${repo}${tty_reset} must name a repository in ${tty_ts}@${TANAAB_GITHUB_ORG}${tty_reset}; source modes and falsey disable values are no longer supported."
+    fi
 
-  plugin_parent_path="$(dirname "${plugin_checkout_path}")"
-  execute mkdir -p "${plugin_parent_path}"
+    if [[ "${repo}" == "me" ]]; then
+      abort "tanaab repository name ${tty_ts}me${tty_reset} is reserved for the ${tty_ts}@pirog/me${tty_reset} payload."
+    fi
 
-  if [[ -L "${plugin_checkout_path}" || -e "${plugin_checkout_path}" ]]; then
-    execute rm -rf "${plugin_checkout_path}"
-  fi
-
-  execute ln -s "${TANAAB_TARGET_PATH}" "${plugin_checkout_path}"
+    if [[ "${#repo}" -gt 100 || ! "${repo}" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]]; then
+      abort "tanaab value ${tty_ts}${repo}${tty_reset} must be a safe GitHub repository name containing only letters, numbers, dots, underscores, or hyphens."
+    fi
+  done
 }
 
 discover_me_apply_payload() {
@@ -912,9 +842,13 @@ build_git_ssh_command_from_ssh_keys() {
   printf "%s" "${command_string% }"
 }
 
-me_payload_origin_supported() {
-  case "$1" in
-    git@github.com:pirog/me.git | ssh://git@github.com/pirog/me.git | https://github.com/pirog/me | https://github.com/pirog/me.git)
+github_repo_origin_supported() {
+  local owner="$1"
+  local repo="$2"
+  local origin_url="$3"
+
+  case "${origin_url}" in
+    "git@github.com:${owner}/${repo}.git" | "ssh://git@github.com/${owner}/${repo}.git" | "ssh://git@github.com:${owner}/${repo}.git" | "https://github.com/${owner}/${repo}" | "https://github.com/${owner}/${repo}.git")
       return 0
       ;;
     *)
@@ -923,86 +857,122 @@ me_payload_origin_supported() {
   esac
 }
 
-fetch_existing_me_payload_main() {
+github_repo_ssh_url() {
+  printf "git@github.com:%s/%s.git" "$1" "$2"
+}
+
+fetch_existing_repo_main() {
+  local repo_label="$1"
+  local repo_dir="$2"
+  local origin_url="$3"
   local git_ssh_command
-  local origin_url="$1"
+  local repo_display
+
+  repo_display="$(display_home_path "${repo_dir}")"
 
   if [[ "${origin_url}" == git@* || "${origin_url}" == ssh://* ]]; then
-    git_ssh_command="$(build_git_ssh_command_from_ssh_keys "me")"
-    debug "${tty_tp}fetching${tty_reset}" "${tty_ts}origin/main${tty_reset}" for "${tty_ts}$(me_payload_display)${tty_reset}"
-    env GIT_SSH_COMMAND="${git_ssh_command}" git -C "${ME_PAYLOAD_DIR}" fetch origin main
+    git_ssh_command="$(build_git_ssh_command_from_ssh_keys "${repo_label}")"
+    debug "${tty_tp}fetching${tty_reset}" "${tty_ts}origin/main${tty_reset}" for "${tty_ts}${repo_display}${tty_reset}"
+    env GIT_SSH_COMMAND="${git_ssh_command}" git -C "${repo_dir}" fetch origin main
     return
   fi
 
-  debug "${tty_tp}fetching${tty_reset}" "${tty_ts}origin/main${tty_reset}" for "${tty_ts}$(me_payload_display)${tty_reset}"
-  git -C "${ME_PAYLOAD_DIR}" fetch origin main
+  debug "${tty_tp}fetching${tty_reset}" "${tty_ts}origin/main${tty_reset}" for "${tty_ts}${repo_display}${tty_reset}"
+  git -C "${repo_dir}" fetch origin main
 }
 
-refresh_existing_me_payload() {
+refresh_existing_repo() {
+  local repo_label="$1"
+  local repo_dir="$2"
+  local owner="$3"
+  local repo="$4"
   local branch
   local current_head
   local origin_head
   local origin_url
+  local repo_display
   local status_output
   local upstream
 
+  repo_display="$(display_home_path "${repo_dir}")"
+
+  status_output="$(git -C "${repo_dir}" status --porcelain --untracked-files=normal 2>/dev/null || true)"
+  if [[ -n "${status_output}" ]]; then
+    warn "${tty_tp}using${tty_reset} existing ${repo_label} checkout at ${tty_ts}${repo_display}${tty_reset} without updating because it has local changes."
+    return 0
+  fi
+
+  branch="$(git -C "${repo_dir}" symbolic-ref --quiet --short HEAD 2>/dev/null || true)"
+  if [[ "${branch}" != "main" ]]; then
+    warn "${tty_tp}using${tty_reset} existing ${repo_label} checkout at ${tty_ts}${repo_display}${tty_reset} without updating because its current branch is ${tty_ts}${branch:-detached}${tty_reset}, not ${tty_ts}main${tty_reset}."
+    return 0
+  fi
+
+  upstream="$(git -C "${repo_dir}" rev-parse --abbrev-ref --symbolic-full-name '@{upstream}' 2>/dev/null || true)"
+  if [[ "${upstream}" != "origin/main" ]]; then
+    warn "${tty_tp}using${tty_reset} existing ${repo_label} checkout at ${tty_ts}${repo_display}${tty_reset} without updating because ${tty_ts}main${tty_reset} does not track ${tty_ts}origin/main${tty_reset}."
+    return 0
+  fi
+
+  origin_url="$(git -C "${repo_dir}" config --get remote.origin.url 2>/dev/null || true)"
+  if ! github_repo_origin_supported "${owner}" "${repo}" "${origin_url}"; then
+    warn "${tty_tp}using${tty_reset} existing ${repo_label} checkout at ${tty_ts}${repo_display}${tty_reset} without updating because ${tty_ts}origin${tty_reset} is not ${tty_ts}@${owner}/${repo}${tty_reset}."
+    return 0
+  fi
+
+  if ! fetch_existing_repo_main "${repo_label}" "${repo_dir}" "${origin_url}"; then
+    warn "${tty_tp}using${tty_reset} existing ${repo_label} checkout at ${tty_ts}${repo_display}${tty_reset} because ${tty_ts}origin/main${tty_reset} could not be fetched."
+    return 0
+  fi
+
+  current_head="$(git -C "${repo_dir}" rev-parse HEAD)"
+  origin_head="$(git -C "${repo_dir}" rev-parse origin/main)"
+
+  if [[ "${current_head}" == "${origin_head}" ]]; then
+    debug "${repo_label} checkout at ${repo_display} already matches origin/main"
+    return 0
+  fi
+
+  if git -C "${repo_dir}" merge-base --is-ancestor HEAD origin/main; then
+    log "${tty_tp}updating${tty_reset} ${repo_label} checkout at ${tty_ts}${repo_display}${tty_reset} with a fast-forward to ${tty_ts}origin/main${tty_reset}"
+    execute git -C "${repo_dir}" merge --ff-only origin/main
+    return 0
+  fi
+
+  if git -C "${repo_dir}" merge-base --is-ancestor origin/main HEAD; then
+    warn "${tty_tp}using${tty_reset} existing ${repo_label} checkout at ${tty_ts}${repo_display}${tty_reset} without updating because local ${tty_ts}main${tty_reset} is ahead of ${tty_ts}origin/main${tty_reset}."
+    return 0
+  fi
+
+  warn "${tty_tp}using${tty_reset} existing ${repo_label} checkout at ${tty_ts}${repo_display}${tty_reset} without updating because local ${tty_ts}main${tty_reset} has diverged from ${tty_ts}origin/main${tty_reset}."
+}
+
+refresh_existing_me_payload() {
   if [[ "${ME_PAYLOAD_SOURCE_KIND}" != "existing" ]]; then
     return 0
   fi
 
-  status_output="$(git -C "${ME_PAYLOAD_DIR}" status --porcelain --untracked-files=normal 2>/dev/null || true)"
-  if [[ -n "${status_output}" ]]; then
-    warn "${tty_tp}using${tty_reset} existing me payload at ${tty_ts}$(me_payload_display)${tty_reset} without updating because the checkout has local changes."
-    return 0
+  refresh_existing_repo "me payload" "${ME_PAYLOAD_DIR}" "pirog" "me"
+}
+
+clone_github_repo_via_ssh() {
+  local owner="$1"
+  local repo="$2"
+  local target="$3"
+  local git_ssh_command
+  local repo_label="@${owner}/${repo}"
+
+  if [[ -e "${target}" || -L "${target}" ]]; then
+    abort "refusing to replace existing path ${tty_ts}$(display_home_path "${target}")${tty_reset} while cloning ${tty_ts}${repo_label}${tty_reset}."
   fi
 
-  branch="$(git -C "${ME_PAYLOAD_DIR}" symbolic-ref --quiet --short HEAD 2>/dev/null || true)"
-  if [[ "${branch}" != "main" ]]; then
-    warn "${tty_tp}using${tty_reset} existing me payload at ${tty_ts}$(me_payload_display)${tty_reset} without updating because its current branch is ${tty_ts}${branch:-detached}${tty_reset}, not ${tty_ts}main${tty_reset}."
-    return 0
-  fi
-
-  upstream="$(git -C "${ME_PAYLOAD_DIR}" rev-parse --abbrev-ref --symbolic-full-name '@{upstream}' 2>/dev/null || true)"
-  if [[ "${upstream}" != "origin/main" ]]; then
-    warn "${tty_tp}using${tty_reset} existing me payload at ${tty_ts}$(me_payload_display)${tty_reset} without updating because ${tty_ts}main${tty_reset} does not track ${tty_ts}origin/main${tty_reset}."
-    return 0
-  fi
-
-  origin_url="$(git -C "${ME_PAYLOAD_DIR}" config --get remote.origin.url 2>/dev/null || true)"
-  if ! me_payload_origin_supported "${origin_url}"; then
-    warn "${tty_tp}using${tty_reset} existing me payload at ${tty_ts}$(me_payload_display)${tty_reset} without updating because ${tty_ts}origin${tty_reset} is not ${tty_ts}@pirog/me${tty_reset}."
-    return 0
-  fi
-
-  if ! fetch_existing_me_payload_main "${origin_url}"; then
-    warn "${tty_tp}using${tty_reset} existing me payload at ${tty_ts}$(me_payload_display)${tty_reset} because ${tty_ts}origin/main${tty_reset} could not be fetched."
-    return 0
-  fi
-
-  current_head="$(git -C "${ME_PAYLOAD_DIR}" rev-parse HEAD)"
-  origin_head="$(git -C "${ME_PAYLOAD_DIR}" rev-parse origin/main)"
-
-  if [[ "${current_head}" == "${origin_head}" ]]; then
-    debug "me payload at $(me_payload_display) already matches origin/main"
-    return 0
-  fi
-
-  if git -C "${ME_PAYLOAD_DIR}" merge-base --is-ancestor HEAD origin/main; then
-    log "${tty_tp}updating${tty_reset} me payload at ${tty_ts}$(me_payload_display)${tty_reset} with a fast-forward to ${tty_ts}origin/main${tty_reset}"
-    execute git -C "${ME_PAYLOAD_DIR}" merge --ff-only origin/main
-    return 0
-  fi
-
-  if git -C "${ME_PAYLOAD_DIR}" merge-base --is-ancestor origin/main HEAD; then
-    warn "${tty_tp}using${tty_reset} existing me payload at ${tty_ts}$(me_payload_display)${tty_reset} without updating because local ${tty_ts}main${tty_reset} is ahead of ${tty_ts}origin/main${tty_reset}."
-    return 0
-  fi
-
-  warn "${tty_tp}using${tty_reset} existing me payload at ${tty_ts}$(me_payload_display)${tty_reset} without updating because local ${tty_ts}main${tty_reset} has diverged from ${tty_ts}origin/main${tty_reset}."
+  git_ssh_command="$(build_git_ssh_command_from_ssh_keys "${repo_label}")"
+  execute mkdir -p "$(dirname "${target}")"
+  log "${tty_tp}cloning${tty_reset} ${tty_ts}${repo_label}${tty_reset} via ssh to ${tty_ts}$(display_home_path "${target}")${tty_reset}"
+  execute env GIT_SSH_COMMAND="${git_ssh_command}" git clone "$(github_repo_ssh_url "${owner}" "${repo}")" "${target}"
 }
 
 materialize_me_payload() {
-  local git_ssh_command
   local resolved_payload_dir
 
   case "${ME_PAYLOAD_SOURCE_KIND}" in
@@ -1015,14 +985,7 @@ materialize_me_payload() {
       refresh_existing_me_payload
       ;;
     clone)
-      if [[ -e "${ME_PAYLOAD_CANONICAL_PATH}" ]]; then
-        abort "refusing to replace existing path ${tty_ts}$(display_home_path "${ME_PAYLOAD_CANONICAL_PATH}")${tty_reset} while cloning the me payload."
-      fi
-
-      git_ssh_command="$(build_git_ssh_command_from_ssh_keys "me")"
-      execute mkdir -p "$(dirname "${ME_PAYLOAD_CANONICAL_PATH}")"
-      log "${tty_tp}cloning${tty_reset} ${tty_ts}@pirog/me${tty_reset} via ssh to ${tty_ts}$(display_home_path "${ME_PAYLOAD_CANONICAL_PATH}")${tty_reset}"
-      execute env GIT_SSH_COMMAND="${git_ssh_command}" git clone "${ME_REPO_SSH_URL}" "${ME_PAYLOAD_CANONICAL_PATH}"
+      clone_github_repo_via_ssh "pirog" "me" "${ME_PAYLOAD_CANONICAL_PATH}"
       if ! resolved_payload_dir="$(resolve_existing_dir_path "${ME_PAYLOAD_CANONICAL_PATH}")"; then
         abort "cloned me payload did not resolve at ${tty_ts}$(display_home_path "${ME_PAYLOAD_CANONICAL_PATH}")${tty_reset}."
       fi
@@ -1036,102 +999,210 @@ materialize_me_payload() {
   validate_me_payload_dir "${ME_PAYLOAD_DIR}"
 }
 
-repo_release_archive_url() {
-  local release_base_url="$1"
-  local archive_prefix="$2"
-  local tag="$3"
+resolve_existing_git_checkout_path() {
+  local repo_label="$1"
+  local target="$2"
+  local resolved_target
 
-  printf "%s/%s/%s-%s.tar.gz" "${release_base_url}" "${tag}" "${archive_prefix}" "${tag}"
-}
-
-repo_prepare_target() {
-  local target="$1"
-
-  if [[ -e "${target}" ]]; then
-    if ! force_enabled; then
-      return 1
-    fi
-
-    execute rm -rf "${target}"
+  if ! resolved_target="$(resolve_existing_dir_path "${target}")"; then
+    abort "existing ${repo_label} path ${tty_ts}$(display_home_path "${target}")${tty_reset} must resolve to a directory."
   fi
 
-  execute mkdir -p "$(dirname "${target}")"
-  return 0
+  if [[ ! -d "${resolved_target}/.git" && ! -f "${resolved_target}/.git" ]]; then
+    abort "existing ${repo_label} path ${tty_ts}$(display_home_path "${target}")${tty_reset} must be a Git checkout."
+  fi
+
+  printf "%s" "${resolved_target}"
 }
 
-fetch_repo_source_to_target() {
-  local repo_name="$1"
-  local source_value="$2"
-  local target="$3"
-  local ssh_url="$4"
-  local release_base_url="$5"
-  local archive_prefix="$6"
-  local source_kind="$7"
-  local git_ssh_command
-  local archive_tag
-  local archive_url
-  local archive_path
+materialize_tanaab_repo() {
+  local repo="$1"
+  local repo_label="@${TANAAB_GITHUB_ORG}/${repo}"
+  local target
+  local resolved_target
 
-  if ! repo_prepare_target "${target}"; then
-    warn "${tty_tp}skipping${tty_reset} ${tty_ts}${repo_name}${tty_reset} because ${tty_ts}$(display_home_path "${target}")${tty_reset} already exists and ${tty_bold}--force${tty_reset} is not set."
+  target="$(tanaab_repo_target_path "${repo}")"
+  if [[ -e "${target}" || -L "${target}" ]]; then
+    resolved_target="$(resolve_existing_git_checkout_path "${repo_label}" "${target}")"
+    refresh_existing_repo "${repo_label}" "${resolved_target}" "${TANAAB_GITHUB_ORG}" "${repo}"
     return 0
   fi
 
-  case "${source_kind}" in
-    ssh)
-      git_ssh_command="$(build_git_ssh_command_from_ssh_keys "${repo_name}")"
-      log "${tty_tp}cloning${tty_reset} ${tty_ts}${repo_name}${tty_reset} via ssh to ${tty_ts}$(display_home_path "${target}")${tty_reset}"
-      execute env GIT_SSH_COMMAND="${git_ssh_command}" git clone "${ssh_url}" "${target}"
-      ;;
-    local)
-      log "${tty_tp}cloning${tty_reset} ${tty_ts}${repo_name}${tty_reset} from local repo ${tty_ts}${source_value}${tty_reset} to ${tty_ts}$(display_home_path "${target}")${tty_reset}"
-      execute git clone "${source_value}" "${target}"
-      ;;
-    version)
-      archive_tag="$(normalize_release_tag "${source_value}")"
-      archive_url="$(repo_release_archive_url "${release_base_url}" "${archive_prefix}" "${archive_tag}")"
-      archive_path="${BOOT_TMPDIR}/${repo_name}-${archive_tag}.tar.gz"
-      log "${tty_tp}extracting${tty_reset} ${tty_ts}${repo_name}${tty_reset} release ${tty_ts}${archive_tag}${tty_reset} to ${tty_ts}$(display_home_path "${target}")${tty_reset}"
-      execute mkdir -p "${target}"
-      execute "${CURL}" -fsSL "${archive_url}" -o "${archive_path}"
-      execute tar -xzf "${archive_path}" -C "${target}"
-      ;;
-    *)
-      abort "unsupported internal repo source kind ${tty_bold}${source_kind}${tty_reset}."
-      ;;
-  esac
+  clone_github_repo_via_ssh "${TANAAB_GITHUB_ORG}" "${repo}" "${target}"
+  resolve_existing_git_checkout_path "${repo_label}" "${target}" >/dev/null
 }
 
-plan_repo_fetch() {
-  local repo_name="$1"
-  local target_path="$2"
-  local source_kind="$3"
-  local source_local_path="$4"
-  local source_version_tag="$5"
-  local target_display
+materialize_tanaab_repos() {
+  local repo
 
-  target_display="$(display_home_path "${target_path}")"
-
-  if [[ -e "${target_path}" ]]; then
-    if force_enabled; then
-      plan_action "${tty_tp}replace${tty_reset} existing ${tty_ts}${repo_name}${tty_reset} checkout at ${tty_ts}${target_display}${tty_reset} because ${tty_bold}--force${tty_reset} is set"
-    else
-      plan_action "${tty_tp}skip${tty_reset} fetching ${tty_ts}${repo_name}${tty_reset} because ${tty_ts}${target_display}${tty_reset} already exists and ${tty_bold}--force${tty_reset} is not set"
-      return 0
-    fi
+  if [[ "${#TANAAB_REPOS[@]}" -eq 0 ]]; then
+    return 0
   fi
 
-  case "${source_kind}" in
-    ssh)
-      plan_action "${tty_tp}clone${tty_reset} ${tty_ts}${repo_name}${tty_reset} via ssh to ${tty_ts}${target_display}${tty_reset}"
-      ;;
-    local)
-      plan_action "${tty_tp}clone${tty_reset} ${tty_ts}${repo_name}${tty_reset} from local repo ${tty_ts}${source_local_path}${tty_reset} to ${tty_ts}${target_display}${tty_reset}"
-      ;;
-    version)
-      plan_action "${tty_tp}extract${tty_reset} ${tty_ts}${repo_name}${tty_reset} release ${tty_ts}${source_version_tag}${tty_reset} to ${tty_ts}${target_display}${tty_reset}"
-      ;;
-  esac
+  for repo in "${TANAAB_REPOS[@]}"; do
+    materialize_tanaab_repo "${repo}"
+  done
+}
+
+plugin_links_dir() {
+  printf "%s/dotfiles/ai/.codex/plugins" "${ME_PAYLOAD_DIR}"
+}
+
+resolve_symlink_dir_target() {
+  local link_path="$1"
+  local link_target
+  local target_path
+
+  [[ -L "${link_path}" ]] || return 1
+  link_target="$(readlink "${link_path}")" || return 1
+  if [[ "${link_target}" == /* ]]; then
+    target_path="${link_target}"
+  else
+    target_path="$(dirname "${link_path}")/${link_target}"
+  fi
+
+  resolve_existing_dir_path "${target_path}"
+}
+
+remove_plugin_links_for_checkout() {
+  local repo_dir="$1"
+  local keep_name="${2:-}"
+  local installed_link_path
+  local installed_link_target
+  local link_name
+  local link_path
+  local link_target
+  local links_dir
+
+  links_dir="$(plugin_links_dir)"
+  [[ -d "${links_dir}" ]] || return 0
+
+  for link_path in "${links_dir}"/*; do
+    [[ -L "${link_path}" ]] || continue
+    link_target="$(resolve_symlink_dir_target "${link_path}" 2>/dev/null || true)"
+    [[ "${link_target}" == "${repo_dir}" ]] || continue
+
+    link_name="$(basename "${link_path}")"
+    if [[ -n "${keep_name}" && "${link_name}" == "${keep_name}" ]]; then
+      continue
+    fi
+
+    installed_link_path="${HOME}/.codex/plugins/${link_name}"
+    if [[ -L "${installed_link_path}" ]]; then
+      installed_link_target="$(resolve_symlink_dir_target "${installed_link_path}" 2>/dev/null || true)"
+      if [[ "${installed_link_target}" == "${repo_dir}" ]]; then
+        log "${tty_tp}removing${tty_reset} installed Codex plugin link ${tty_ts}$(display_home_path "${installed_link_path}")${tty_reset} for ${tty_ts}$(display_home_path "${repo_dir}")${tty_reset}"
+        execute rm "${installed_link_path}"
+      fi
+    fi
+
+    log "${tty_tp}removing${tty_reset} stale Codex plugin link ${tty_ts}$(display_home_path "${link_path}")${tty_reset} for ${tty_ts}$(display_home_path "${repo_dir}")${tty_reset}"
+    execute rm "${link_path}"
+  done
+}
+
+ensure_plugin_link_for_checkout() {
+  local repo_dir="$1"
+  local plugin_name="$2"
+  local ai_dotpkg_path="${ME_PAYLOAD_DIR}/dotfiles/ai"
+  local existing_target
+  local link_path
+  local links_dir
+
+  if [[ ! -d "${ai_dotpkg_path}" ]]; then
+    abort "me payload at ${tty_ts}$(me_payload_display)${tty_reset} is missing required ${tty_ts}ai${tty_reset} dotpkg needed for generated Codex plugin links."
+  fi
+
+  links_dir="$(plugin_links_dir)"
+  link_path="${links_dir}/${plugin_name}"
+  execute mkdir -p "${links_dir}"
+
+  if [[ -L "${link_path}" ]]; then
+    existing_target="$(resolve_symlink_dir_target "${link_path}" 2>/dev/null || true)"
+    if [[ "${existing_target}" == "${repo_dir}" ]]; then
+      debug "Codex plugin link $(display_home_path "${link_path}") already points to $(display_home_path "${repo_dir}")"
+      return 0
+    fi
+
+    abort "refusing to replace Codex plugin link ${tty_ts}$(display_home_path "${link_path}")${tty_reset} because it points somewhere other than ${tty_ts}$(display_home_path "${repo_dir}")${tty_reset}."
+  fi
+
+  if [[ -e "${link_path}" ]]; then
+    abort "refusing to replace existing Codex plugin path ${tty_ts}$(display_home_path "${link_path}")${tty_reset}; expected a generated symlink."
+  fi
+
+  log "${tty_tp}linking${tty_reset} Codex plugin ${tty_ts}${plugin_name}${tty_reset} to ${tty_ts}$(display_home_path "${repo_dir}")${tty_reset}"
+  execute ln -s "${repo_dir}" "${link_path}"
+}
+
+reconcile_tanaab_repo_plugin() {
+  local repo="$1"
+  local repo_dir="$2"
+  local manifest_path="${repo_dir}/.codex-plugin/plugin.json"
+  local plugin_name
+
+  if [[ ! -f "${manifest_path}" ]]; then
+    remove_plugin_links_for_checkout "${repo_dir}"
+    debug "@${TANAAB_GITHUB_ORG}/${repo} is not a Codex plugin"
+    return 0
+  fi
+
+  plugin_name="$(jq -er 'if (.name | type) == "string" and (.name | length) > 0 then .name else empty end' "${manifest_path}" 2>/dev/null || true)"
+  if [[ -z "${plugin_name}" || "${#plugin_name}" -gt 100 || ! "${plugin_name}" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]]; then
+    warn "${tty_tp}preserving${tty_reset} existing plugin links for ${tty_ts}@${TANAAB_GITHUB_ORG}/${repo}${tty_reset} because ${tty_ts}.codex-plugin/plugin.json${tty_reset} does not contain a valid plugin name."
+    return 0
+  fi
+
+  remove_plugin_links_for_checkout "${repo_dir}" "${plugin_name}"
+  ensure_plugin_link_for_checkout "${repo_dir}" "${plugin_name}"
+}
+
+reconcile_tanaab_plugin_links() {
+  local origin_url
+  local repo
+  local repo_dir
+  local resolved_repo_dir
+  local tanaab_root="${HOME}/tanaab"
+
+  [[ -d "${tanaab_root}" ]] || return 0
+  for repo_dir in "${tanaab_root}"/*; do
+    [[ -d "${repo_dir}" ]] || continue
+    [[ -d "${repo_dir}/.git" || -f "${repo_dir}/.git" ]] || continue
+
+    repo="$(basename "${repo_dir}")"
+    resolved_repo_dir="$(resolve_existing_dir_path "${repo_dir}")" || continue
+    origin_url="$(git -C "${resolved_repo_dir}" config --get remote.origin.url 2>/dev/null || true)"
+    if ! github_repo_origin_supported "${TANAAB_GITHUB_ORG}" "${repo}" "${origin_url}"; then
+      continue
+    fi
+
+    reconcile_tanaab_repo_plugin "${repo}" "${resolved_repo_dir}"
+  done
+}
+
+plan_tanaab_repos() {
+  local repo
+  local repo_label
+  local target
+
+  if [[ "${#TANAAB_REPOS[@]}" -eq 0 ]]; then
+    return 0
+  fi
+
+  for repo in "${TANAAB_REPOS[@]}"; do
+    repo_label="@${TANAAB_GITHUB_ORG}/${repo}"
+    target="$(tanaab_repo_target_path "${repo}")"
+    if [[ -e "${target}" || -L "${target}" ]]; then
+      resolve_existing_git_checkout_path "${repo_label}" "${target}" >/dev/null
+      plan_action "${tty_tp}use${tty_reset} existing ${tty_ts}${repo_label}${tty_reset} checkout at ${tty_ts}$(display_home_path "${target}")${tty_reset} and fast-forward clean ${tty_ts}main${tty_reset} to ${tty_ts}origin/main${tty_reset} when safe"
+    else
+      plan_action "${tty_tp}clone${tty_reset} ${tty_ts}${repo_label}${tty_reset} via ssh to ${tty_ts}$(display_home_path "${target}")${tty_reset}"
+    fi
+  done
+}
+
+plan_plugin_reconciliation() {
+  plan_action "${tty_tp}reconcile${tty_reset} generated Codex plugin links for verified ${tty_ts}@${TANAAB_GITHUB_ORG}${tty_reset} checkouts under ${tty_ts}~/tanaab${tty_reset}"
 }
 
 plan_me_payload() {
@@ -1151,32 +1222,8 @@ plan_me_payload() {
   esac
 }
 
-plan_tanaab_fetch() {
-  plan_repo_fetch \
-    "tanaab" \
-    "${TANAAB_TARGET_PATH}" \
-    "${TANAAB_SOURCE_KIND}" \
-    "${TANAAB_SOURCE_LOCAL_PATH}" \
-    "${TANAAB_SOURCE_VERSION_TAG}"
-}
-
-plan_tanaab_plugin_link() {
-  plan_action "${tty_tp}ensure${tty_reset} generated ${tty_ts}tanaab${tty_reset} plugin link at ${tty_ts}$(tanaab_plugin_checkout_display)${tty_reset} points to ${tty_ts}$(tanaab_target_display)${tty_reset}"
-}
-
 plan_me_apply() {
   plan_action "${tty_tp}run${tty_reset} ${tty_ts}bootbox${tty_reset} against the ${tty_ts}me${tty_reset} payload at ${tty_ts}$(me_payload_display)${tty_reset} using its ${tty_ts}Brewfile${tty_reset} and dotpkgs on ${tty_ts}~${tty_reset}"
-}
-
-run_tanaab_fetch() {
-  fetch_repo_source_to_target \
-    "tanaab" \
-    "${TANAAB_SOURCE_LOCAL_PATH:-${TANAAB_SOURCE_VERSION_TAG:-${TANAAB_SOURCE}}}" \
-    "${TANAAB_TARGET_PATH}" \
-    "${TANAAB_REPO_SSH_URL}" \
-    "${TANAAB_REPO_RELEASE_BASE_URL}" \
-    "${TANAAB_REPO_RELEASE_ARCHIVE_PREFIX}" \
-    "${TANAAB_SOURCE_KIND}"
 }
 
 run_bootbox_for_me_apply() {
@@ -1341,6 +1388,8 @@ cleanup() {
 }
 
 validate_inputs() {
+  validate_tanaab_repos
+
   if [[ -z "${OP_TOKEN:-}" ]]; then
     abort_multi "$(cat <<EOABORT
 you must provide a 1Password service account token before using this wrapper.
@@ -1352,7 +1401,6 @@ EOABORT
   if [[ "${#SSH_KEYS[@]}" -eq 0 ]]; then
     abort "at least one ssh key is required. pass --ssh-key or set PIROME_SSH_KEY."
   fi
-
 }
 
 validate_platform() {
@@ -1556,10 +1604,8 @@ plan_wrapper_execution() {
   fi
 
   plan_me_payload
-  if tanaab_enabled; then
-    plan_tanaab_fetch
-    plan_tanaab_plugin_link
-  fi
+  plan_tanaab_repos
+  plan_plugin_reconciliation
   plan_me_apply
 }
 
@@ -1647,17 +1693,14 @@ main() {
   debug raw FORCE="${FORCE:-}"
   debug raw OP_TOKEN="$(mask_secret_for_display "${OP_TOKEN}")"
   debug raw SSH_KEYS="$(array_join "," SSH_KEYS)"
-  debug raw TANAAB="$(normalize_repo_source_value "${TANAAB_SOURCE}")"
+  debug raw TANAAB_REPOS="$(array_join "," TANAAB_REPOS)"
   debug raw BOOTBOX_URL="${BOOTBOX_URL}"
   debug raw CURL="${CURL}"
   debug raw ARCH="${ARCH}"
   debug raw OS="${OS}"
   prepare_me_payload
-  prepare_tanaab_source
   debug raw PIROME_PAYLOAD_DIR="$(me_payload_display)"
   debug raw ME_PAYLOAD_SOURCE="$(me_payload_source_display)"
-  debug raw TANAAB_SOURCE_KIND="${TANAAB_SOURCE_KIND}"
-  debug raw TANAAB_TARGET="$(tanaab_target_display)"
 
   prepare_bootbox_script
   run_bootbox_check_core || true
@@ -1672,10 +1715,8 @@ main() {
   ensure_bootbox_core_requirements
   run_bootbox
   materialize_me_payload
-  if tanaab_enabled; then
-    run_tanaab_fetch
-  fi
-  prepare_tanaab_plugin_link
+  materialize_tanaab_repos
+  reconcile_tanaab_plugin_links
   discover_me_apply_payload
   debug raw ME_APPLY_BREWFILE="$(me_apply_brewfile_display)"
   debug raw ME_APPLY_DOTPKGS="$(array_join "," ME_APPLY_DOTPKGS)"

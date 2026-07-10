@@ -58,7 +58,6 @@ function healthyExistingPaths(...missingPaths) {
     makePath('.codex', 'AGENTS.md'),
     makePath('.codex', 'config.shared.toml'),
     makePath('.codex', 'plugins', 'piroplugin'),
-    makePath('.codex', 'plugins', 'tanaab'),
     makePath('.codex', 'config.toml'),
   ].filter((targetPath) => !missing.has(targetPath));
 }
@@ -105,7 +104,6 @@ function makeDeps({
       makePath('.vimrc.before'),
       makePath('.vimrc.after'),
       makePath('.codex', 'plugins', 'piroplugin'),
-      makePath('.codex', 'plugins', 'tanaab'),
     ],
   );
   const commandSet = new Set(commands);
@@ -315,13 +313,11 @@ describe('skills/me-readiness/scripts/check-machine-lib', () => {
         makePath('.codex', 'AGENTS.md'),
         makePath('.codex', 'config.shared.toml'),
         makePath('.codex', 'plugins', 'piroplugin'),
-        makePath('.codex', 'plugins', 'tanaab'),
         makePath('.codex', 'config.toml'),
       ],
       symbolicLinks: [
         makePath('.codex', 'config.shared.toml'),
         makePath('.codex', 'plugins', 'piroplugin'),
-        makePath('.codex', 'plugins', 'tanaab'),
       ],
       vaults: [],
     });

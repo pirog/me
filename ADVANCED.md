@@ -54,16 +54,25 @@ The repository is packaged as `piroplugin` through
   repository-local skills.
 
 Broader shared canon skills come from the paired `tanaab` plugin. The `ai` dotfile package installs
-local links for both plugins and publishes their `Pirostore` marketplace entries.
+the `piroplugin` link and publishes the local `Pirostore` marketplace. Tanaab checkouts that contain
+`.codex-plugin/plugin.json` receive generated local source links; installation and enablement still
+happen separately through Codex.
 
-### Tanaab Canon
+### Tanaab Repositories
 
-By default, `piroboot` clones `git@github.com:tanaabased/canon.git` into `~/tanaab/canon`. The
-checkout supplies shared Tanaab plugin assets and remains separate from the Piro-specific sources in
-this repository.
+Tanaab repository selection is empty by default. Repeat `--tanaab` to clone editable repositories
+from `@tanaabased` into matching paths under `~/tanaab`:
 
-Use `--tanaab off` to skip it, a local Git repository path to use local work, or a release version
-when you want an archived canon payload.
+```sh
+piroboot \
+  --op-token "$OP_TOKEN" \
+  --tanaab canon \
+  --tanaab agentbox
+```
+
+Existing selected checkouts are fast-forwarded only when doing so is safe. Plugin-link detection is
+separate and examines verified existing `@tanaabased` checkouts on every run, even when no new
+repositories are selected.
 
 ## Configuration Reference
 
@@ -120,28 +129,24 @@ Debug and planning output mask the token.
 
 ### `--tanaab`
 
-| Field       | Value                                                              |
-| ----------- | ------------------------------------------------------------------ |
-| Environment | `PIROME_TANAAB`                                                    |
-| Default     | `ssh`                                                              |
-| Values      | `ssh`, local Git repository path, release version, or falsey value |
-| Description | Chooses the source for `~/tanaab/canon`.                           |
+| Field       | Value                                                                   |
+| ----------- | ----------------------------------------------------------------------- |
+| Environment | `PIROME_TANAAB`                                                         |
+| Default     | none                                                                    |
+| Values      | Repeatable repository name or comma-separated environment-variable list |
+| Description | Clones or safely updates repositories from `@tanaabased`.               |
 
-Supported source forms:
-
-- `ssh` clones `git@github.com:tanaabased/canon.git`.
-- A local Git repository path copies the selected local checkout.
-- A semantic version such as `v0.2.0` downloads the corresponding GitHub Release archive.
-- `0`, `false`, `no`, `off`, or `null` disables Tanaab materialization.
+The first CLI occurrence replaces the environment-sourced list. Additional occurrences append,
+and duplicate names are collapsed while preserving their first position.
 
 ```sh
-piroboot --op-token "$OP_TOKEN" --tanaab ssh
-piroboot --op-token "$OP_TOKEN" --tanaab "$HOME/tanaab/canon"
-piroboot --op-token "$OP_TOKEN" --tanaab v0.2.0
-piroboot --op-token "$OP_TOKEN" --tanaab off
+piroboot --op-token "$OP_TOKEN" --tanaab canon --tanaab agentbox
+PIROME_TANAAB="canon,agentbox" piroboot --op-token "$OP_TOKEN"
 ```
 
-The target is always `~/tanaab/canon`.
+Each name maps deterministically to `git@github.com:tanaabased/<repo>.git` and
+`~/tanaab/<repo>`. Local paths, release versions, source selectors, and falsey disable values are
+not supported.
 
 ### `-y`, `--yes`
 
@@ -165,8 +170,8 @@ piroboot --op-token "$OP_TOKEN" --yes
 | Values      | Flag or truthy environment value                  |
 | Description | Allows supported existing targets to be replaced. |
 
-`--force` applies to supported Bootbox operations, existing SSH-key destinations, and the Tanaab
-target. It never discards or replaces local work in `~/tanaab/me`.
+`--force` applies to supported Bootbox operations and existing SSH-key destinations. It never
+discards or replaces local work in `~/tanaab/me` or any Tanaab repository checkout.
 
 ### `--debug`
 
@@ -216,6 +221,27 @@ checkout without resetting, merging, rebasing, deleting, or overwriting local wo
 
 The resolved checkout must contain `boot.sh`, `Brewfile`, `dotfiles/`, and
 `.codex-plugin/plugin.json` before the machine profile is applied.
+
+## Tanaab Repository Checkouts
+
+Selected repositories are cloned over SSH into `~/tanaab/<repo>`. An existing target must be a Git
+checkout; the wrapper never deletes or replaces it, including under `--force`.
+
+An existing selected checkout is refreshed only when it is clean, on `main`, tracking
+`origin/main`, and connected to the expected `@tanaabased/<repo>` origin. The wrapper otherwise
+warns and preserves the current branch, commits, and local work.
+
+After repository materialization, every run scans direct Git checkouts under `~/tanaab` whose
+origins match `@tanaabased/<directory-name>`. A checkout containing
+`.codex-plugin/plugin.json` receives a generated link under the resolved `me` payload's
+`dotfiles/ai/.codex/plugins/` directory. The manifest's `name` determines the link name, so the
+`canon` repository correctly becomes the `tanaab` plugin link.
+
+If a verified checkout removes its plugin manifest, generated and installed symlinks resolving
+exactly to that checkout are removed. If the manifest exists but is malformed, existing links are
+preserved and a warning is emitted. Regular files, directories, and links pointing elsewhere are
+never replaced. These links prepare local plugin sources; they do not install or enable plugins in
+Codex.
 
 ## Codex Configuration And Plugin Sync
 
