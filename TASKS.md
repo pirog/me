@@ -17,6 +17,8 @@
   - theme as single codex string?
   - TUI theme?
 
+  - ips for pirobook and tanaabbook?
+
   - issue MGMT STUFF ASAP?
     - milestone creation
     - issue creation|triage|etc
@@ -31,8 +33,6 @@
 
 - @tanaabased/agentbox
   - small fixes
-    - no password multiple times, more tasteful
-      - better style on message?
     - openclaw update|not?
     - OPENCLAW_MDNS_HOSTNAME
     - end of flow should be more concise with link to run full command?
