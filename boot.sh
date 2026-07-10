@@ -1067,6 +1067,7 @@ resolve_symlink_dir_target() {
 remove_plugin_links_for_checkout() {
   local repo_dir="$1"
   local keep_name="${2:-}"
+  local -a links_to_remove
   local installed_link_path
   local installed_link_target
   local link_name
@@ -1087,17 +1088,18 @@ remove_plugin_links_for_checkout() {
       continue
     fi
 
+    links_to_remove=("${link_path}")
     installed_link_path="${HOME}/.codex/plugins/${link_name}"
     if [[ -L "${installed_link_path}" ]]; then
       installed_link_target="$(resolve_symlink_dir_target "${installed_link_path}" 2>/dev/null || true)"
       if [[ "${installed_link_target}" == "${repo_dir}" ]]; then
         log "${tty_tp}removing${tty_reset} installed Codex plugin link ${tty_ts}$(display_home_path "${installed_link_path}")${tty_reset} for ${tty_ts}$(display_home_path "${repo_dir}")${tty_reset}"
-        execute rm "${installed_link_path}"
+        links_to_remove+=("${installed_link_path}")
       fi
     fi
 
     log "${tty_tp}removing${tty_reset} stale Codex plugin link ${tty_ts}$(display_home_path "${link_path}")${tty_reset} for ${tty_ts}$(display_home_path "${repo_dir}")${tty_reset}"
-    execute rm "${link_path}"
+    execute rm -f "${links_to_remove[@]}"
   done
 }
 
