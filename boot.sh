@@ -1439,8 +1439,11 @@ bootbox_run() {
     OP_SERVICE_ACCOUNT_TOKEN
     TANAAB_FORCE
     TANAAB_DEBUG
+    TANAAB_QUIET
     TANAAB_ARCH
     TANAAB_OS
+    BOOTBOX_EXTERNAL_SUDO
+    BOOTBOX_QUIET
     INTERACTIVE
   )
   local -a bootbox_command=(env)
@@ -1474,6 +1477,10 @@ bootbox_run() {
     bootbox_command+=("TANAAB_FORCE=${FORCE}")
     bootbox_display_command+=("PIROME_FORCE=${FORCE}")
   fi
+
+  # The wrapper owns user-facing status; delegated bootbox runs should stay quiet.
+  bootbox_command+=("BOOTBOX_QUIET=1")
+  bootbox_display_command+=("BOOTBOX_QUIET=1")
 
   # The wrapper owns the confirmation gate; delegated bootbox runs should not prompt again.
   bootbox_command+=("NONINTERACTIVE=1")
