@@ -30,20 +30,15 @@
     - verify repo / repo audit
 
 - @tanaabased/agentbox
-  - test restart and gateway launch?
-  - tailscale/openclaw did not relaunch?
-
   - small fixes
     - no password multiple times, more tasteful
       - better style on message?
-
+    - openclaw update|not?
     - OPENCLAW_MDNS_HOSTNAME
     - end of flow should be more concise with link to run full command?
-    - openclaw update|not?
 
   - GATEWAY_TOKEN
   - openclaw theme?
-  - model 5.6?
 
   - add to codex via phone?
 
