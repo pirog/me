@@ -88,6 +88,24 @@ RUNNER_DEBUG=0 DEBUG=1 boot.sh --help | grep -F -- "--debug" | grep -F "[default
 # should print a version string
 test -n "$(boot.sh --version)"
 
+# should reject force-interactive mode in CI
+set +e
+output="$(CI=1 INTERACTIVE=1 boot.sh --help 2>&1)"
+command_status="$?"
+set -e
+printf "%s\n" "$output"
+printf "%s\n" "$output" | grep -F "cannot run force-interactive mode in CI."
+test "$command_status" -ne 0
+
+# should reject contradictory interactive controls
+set +e
+output="$(INTERACTIVE=1 NONINTERACTIVE=1 boot.sh --help 2>&1)"
+command_status="$?"
+set -e
+printf "%s\n" "$output"
+printf "%s\n" "$output" | grep -F 'both `$INTERACTIVE` and `$NONINTERACTIVE` are set.'
+test "$command_status" -ne 0
+
 # should fail when ssh key values are missing
 set +e
 output="$(boot.sh --ssh-key 2>&1)"
