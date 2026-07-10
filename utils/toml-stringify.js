@@ -86,6 +86,15 @@ function renderTable(config, prefix = []) {
   const blocks = [];
   const { scalarLines, tables, tableArrays } = collectTables(config, prefix);
 
+  if (
+    prefix.length > 0 &&
+    scalarLines.length === 0 &&
+    tables.length === 0 &&
+    tableArrays.length === 0
+  ) {
+    return `[${formatDottedKey(prefix)}]`;
+  }
+
   if (scalarLines.length > 0) {
     const heading = prefix.length > 0 ? `[${formatDottedKey(prefix)}]\n` : '';
     blocks.push(`${heading}${scalarLines.join('\n')}`);
@@ -127,7 +136,8 @@ function renderTableArray(values, prefix) {
  * Render the small TOML subset used by generated Codex config files.
  *
  * Object keys are sorted for deterministic output. Plain-object arrays become
- * table arrays; unsupported scalar or nested array values throw.
+ * table arrays, and empty nested objects remain explicit tables. Unsupported
+ * scalar or nested array values throw.
  *
  * @param {object} config Plain-object TOML tree to render.
  * @returns {string} Deterministic TOML text ending in a newline when non-empty.

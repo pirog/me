@@ -33,8 +33,9 @@
 - Prefer the obvious local solution over a more abstract reusable one unless reuse is already proven or the user explicitly asks for standardization.
 - Flag repo drift, unclear ownership, or duplicated standards when they materially affect the task.
 
-## Git Defaults
+## Git Commit Syntax
 
+- Write commit messages in all lowercase.
 - When asked to commit, prefer a commit subject that begins with a known GitHub issue or PR number, such as `#123: update config sync`.
 - Do not add `[codex]` or similar generated-tool prefixes to commit messages or pull request titles unless explicitly requested.
 

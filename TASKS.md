@@ -1,25 +1,46 @@
 # FINAL THINGS
 
-- @lando/code-sign-action
-  - implement azure signing
+- @pirog/me
+  - shouldnt i just run @pirog/me?
+
+  - update based on agentbox|emori work?
+    - me materialize via source?
+    - --tanaab -> projects to clone down?
+
+  - mode user|agentbox?
+
+  - add codex cli/codex/openclaw?
+  - add warp?
+  - vscode?
+  - google chrome?
+  - add trusted to bun tap?
+  - theme as single codex string?
+  - TUI theme?
+
+  - ips for pirobook and tanaabbook?
+
+  - issue MGMT STUFF ASAP?
+    - milestone creation
+    - issue creation|triage|etc
+    - labels|fields|etc?
+  - blog like pirog skill
+  - repo setup skills
+    - normal settings
+    - branch protection
+    - add tanabot 2 repo w write access
+    - suggest 3 good tags skill
+    - verify repo / repo audit
 
 - @tanaabased/agentbox
-  - openclaw onboarding
-  - as openclaw user
-  - auth choices
-  - tailnet if applicable
-  - rename agentbox.tanaab.sh/macos.sh?
-    - unsupported.sh?
+  - small fixes
+    - openclaw update|not?
+    - OPENCLAW_MDNS_HOSTNAME
+    - end of flow should be more concise with link to run full command?
 
-  - readme/agents.md updates
-    - update readme styling with badges and pilot light and dark modes?
-    - agent box ideally should be run on a fresh install with only 1 admin account
-    - improved options usage information
-    - rework llms text?
-    - agents.md guidance for updates?
-    - manual codex setup steps?
-    - our own personal command that we run on our agentboxs?
-    - currently unsupported on linux/windows
+  - GATEWAY_TOKEN
+  - openclaw theme?
+
+  - add to codex via phone?
 
   - codex plugin?
     - revisit plugin installation/upgrade etc
@@ -28,18 +49,24 @@
   - openclaw agentbox plugin?
     - check health and propose remediation?
 
-  - need to install @tanaabased/agent-system globally once we have it
+  - need to install @tanaabased/agent-system globally once we have it?
 
-  - long term
+  - longer term
+    - hub netlify site on get.tanaab.sh (or elsewhere)
+      - use a product catalog .yaml to generate needed metadata files?
+    - milestone -> rework as a bun CLI?
+    - with tailscale serve we cannot use \*.tanaab.net addresses yet/
     - make script for ubuntu LTS?
     - caddy install
     - install and configure needed openclaw plugins eg agent-os?
-
-  - dotfiles and marketplace?
+    - make this into a bun binary?
 
 - @tanaabased/emori
   - remove agentbox setup setuff
   - actual onboarding?
+    - channels
+    - brave search API
+
   - commit workspace stuff and do initial config pass
 
   - agents.md prefer CLI tools eg `gh`
@@ -53,6 +80,8 @@
 - @tanaabased/agent-system?
   - plugin installation?
   - dependencies eg `gh`?
+  - personal workspace?
+    - plugin to make each agent invocation run in its own shell? load OP env this way?
 
   - note you need to add ssh/signing keys to github first? or part of setup?
   - tracking codex plugin installation? add to clawhub?
@@ -80,6 +109,7 @@
 - @tanaabased/github-notification-channel
 
 - @tanaabased/\*
+  - update all scripts that are fundamentally complex to bun cli?
   - catch all email routing and AI triage?
   - cli plugin installation now available in codex
   - known_hosts for github?
@@ -153,6 +183,7 @@
 
 - @tanaabased/bootbox
   - warning if keys exist?
+  - make into bun cli as well?
 
 - @tanaabased/canon
   - some kind of tanaab-coach/advisor skill?
@@ -167,6 +198,14 @@
   - release skill should always be against main unless explicitly said otherwise
   - skill to autotag repos
   - list of repo tags
+  - js skills should work for ts as well?
+  - adoption of schema|error|cli frameworks?
+  - organizatinal model for leia tests eg inputs|defaults|feature-x?
+  - leia handling of ${} envvar brackets?
+    - maybe should just add support in @lando/leia?
+  - commit behavior?
+    - if you have a list of things to do then commit one per list item
+    - message syntax and formatting?
 
 - @tanaabased/website
   - rebase on THEME
@@ -176,6 +215,3 @@
 - @tanaabased/template-netscript
   - AGENTS.md starter
   - llms?
-
-- @pirog/me
-  - add codex cli
