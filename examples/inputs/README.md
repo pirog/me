@@ -99,7 +99,7 @@ test "$command_status" -ne 0
 
 # should reject contradictory interactive controls
 set +e
-output="$(INTERACTIVE=1 NONINTERACTIVE=1 boot.sh --help 2>&1)"
+output="$(CI=1 INTERACTIVE=1 NONINTERACTIVE=1 boot.sh --help 2>&1)"
 command_status="$?"
 set -e
 printf "%s\n" "$output"

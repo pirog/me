@@ -177,13 +177,13 @@ if [ -z "${BASH_VERSION:-}" ]; then
   abort "bash is required to interpret this script."
 fi
 
-if [[ -n "${CI-}" && -n "${INTERACTIVE-}" ]]; then
-  abort "cannot run force-interactive mode in CI."
-fi
-
 # shellcheck disable=SC2016
 if [[ -n "${INTERACTIVE-}" && -n "${NONINTERACTIVE-}" ]]; then
   abort 'both $INTERACTIVE and $NONINTERACTIVE are set. please unset at least one variable and try again.'
+fi
+
+if [[ -n "${CI-}" && -n "${INTERACTIVE-}" ]]; then
+  abort "cannot run force-interactive mode in CI."
 fi
 
 if [[ -n "${POSIXLY_CORRECT+1}" ]]; then
