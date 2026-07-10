@@ -6,7 +6,6 @@ set -euo pipefail
 #
 #   $ ./boot.sh --op-token "$OP_TOKEN"
 #   $ ./boot.sh --op-token "$OP_TOKEN" --ssh-key vmruk4ny353aly6tbom7z3v2hy/id_agentbox1
-#   $ ./boot.sh --op-token "$OP_TOKEN" --me v0.3.1
 #   $ ./boot.sh --op-token "$OP_TOKEN" --tanaab v0.2.0
 #   $ DEBUG=1 ./boot.sh --op-token "$OP_TOKEN" --yes
 #
@@ -18,15 +17,11 @@ MACOS_OLDEST_SUPPORTED="26.0"
 REQUIRED_CURL_VERSION="7.41.0"
 BOOTBOX_URL="https://bootbox.tanaab.sh/bootbox.sh"
 DEFAULT_SSH_KEY="vmruk4ny353aly6tbom7z3v2hy/id_pirog,vmruk4ny353aly6tbom7z3v2hy/id_agentbox1"
-DEFAULT_ME_SOURCE="ssh"
 DEFAULT_TANAAB_SOURCE="ssh"
 ME_REPO_SSH_URL="git@github.com:pirog/me.git"
-ME_REPO_RELEASE_BASE_URL="https://github.com/pirog/me/releases/download"
-ME_REPO_RELEASE_ARCHIVE_PREFIX="piroplugin"
 TANAAB_REPO_SSH_URL="git@github.com:tanaabased/canon.git"
 TANAAB_REPO_RELEASE_BASE_URL="https://github.com/tanaabased/canon/releases/download"
 TANAAB_REPO_RELEASE_ARCHIVE_PREFIX="tanaab"
-TANAAB_PLUGIN_RELATIVE_TARGET="../../../../../canon"
 
 abort() {
   printf "%serror%s: %s\n" "${tty_red-}" "${tty_reset-}" "$@" >&2
@@ -224,7 +219,7 @@ DEBUG="${PIROME_DEBUG:-${DEBUG:-${RUNNER_DEBUG:-}}}"
 FORCE="${PIROME_FORCE:-}"
 OP_TOKEN="${PIROME_OP_TOKEN:-${OP_SERVICE_ACCOUNT_TOKEN:-}}"
 SSH_KEYS_CSV="${PIROME_SSH_KEY:-${DEFAULT_SSH_KEY}}"
-ME_SOURCE="${PIROME_ME:-${DEFAULT_ME_SOURCE}}"
+ME_PAYLOAD_DIR_INPUT="${PIROME_PAYLOAD_DIR:-}"
 TANAAB_SOURCE="${PIROME_TANAAB:-${DEFAULT_TANAAB_SOURCE}}"
 declare -a ORIGINAL_ARGS=("$@")
 declare -a SSH_KEYS=()
@@ -241,10 +236,9 @@ DETECTED_ARCH=""
 DETECTED_OS=""
 ARCH=""
 OS=""
-ME_SOURCE_KIND=""
-ME_SOURCE_LOCAL_PATH=""
-ME_SOURCE_VERSION_TAG=""
-ME_TARGET_PATH=""
+ME_PAYLOAD_DIR=""
+ME_PAYLOAD_SOURCE_KIND=""
+ME_PAYLOAD_CANONICAL_PATH=""
 TANAAB_SOURCE_KIND=""
 TANAAB_SOURCE_LOCAL_PATH=""
 TANAAB_SOURCE_VERSION_TAG=""
@@ -320,7 +314,6 @@ usage() {
   local force_display="off"
   local ssh_keys_display="none"
   local op_token_display="none"
-  local me_display="none"
   local tanaab_display="none"
 
   if debug_enabled; then
@@ -338,7 +331,6 @@ usage() {
     op_token_display="$(mask_secret_for_display "${OP_TOKEN}")"
   fi
 
-  me_display="$(normalize_repo_source_value "${ME_SOURCE}")"
   tanaab_display="$(normalize_repo_source_value "${TANAAB_SOURCE}")"
 
   cat <<EOS
@@ -347,7 +339,6 @@ Usage: ${tty_dim}[NONINTERACTIVE=1] [CI=1]${tty_reset} ${tty_bold}${SCRIPT_NAME}
 ${tty_tp}Options:${tty_reset}
   --ssh-key        installs 1password ssh keys as vault/item[:filename] ${tty_dim}[default: ${ssh_keys_display}]${tty_reset}
   --op-token       auths with 1password service account token ${tty_dim}[default: ${op_token_display}]${tty_reset}
-  --me             fetches me from ssh, a local git repo path, or a release version ${tty_dim}[default: ${me_display}]${tty_reset}
   --tanaab         fetches tanaab from ssh, a local git repo path, a release version, or a falsey disable value ${tty_dim}[default: ${tanaab_display}]${tty_reset}
   --version        shows version of this script
   --debug          shows debug messages ${tty_dim}[default: ${debug_display}]${tty_reset}
@@ -358,7 +349,6 @@ ${tty_tp}Options:${tty_reset}
 ${tty_tp}Environment Variables:${tty_reset}
   PIROME_SSH_KEY      comma-separated list of 1password ssh keys as vault/item[:filename]
   PIROME_OP_TOKEN     1password service account token; falls back to OP_SERVICE_ACCOUNT_TOKEN
-  PIROME_ME           source for ~/tanaab/me; supports ssh, local repo paths, or release versions
   PIROME_TANAAB       source for ~/tanaab/canon; supports ssh, local repo paths, release versions, or falsey disable values
   PIROME_FORCE        set to a truthy value to force supported operations
   PIROME_DEBUG        set to a truthy value to show debug messages
@@ -424,16 +414,6 @@ parse_args() {
       --op-token=*)
         require_inline_option_value "--op-token" "${1#*=}"
         OP_TOKEN="${1#*=}"
-        shift
-        ;;
-      --me)
-        require_next_option_value "--me" "$#"
-        ME_SOURCE="$2"
-        shift 2
-        ;;
-      --me=*)
-        require_inline_option_value "--me" "${1#*=}"
-        ME_SOURCE="${1#*=}"
         shift
         ;;
       --tanaab)
@@ -555,7 +535,7 @@ find_git_repo_root() {
   local parent
 
   while :; do
-    if [[ -d "${path}/.git" ]]; then
+    if [[ -d "${path}/.git" || -f "${path}/.git" ]]; then
       printf "%s" "${path}"
       return 0
     fi
@@ -605,8 +585,55 @@ resolve_repo_source_kind() {
   fi
 }
 
-me_target_display() {
-  display_home_path "${ME_TARGET_PATH}"
+expand_home_path() {
+  local path="$1"
+
+  if [[ "${path}" == "~" ]]; then
+    printf "%s" "${HOME}"
+    return 0
+  fi
+
+  if [[ "${path}" == \~/* ]]; then
+    printf "%s/%s" "${HOME}" "${path#\~/}"
+    return 0
+  fi
+
+  printf "%s" "${path}"
+}
+
+resolve_existing_dir_path() (
+  local path
+
+  path="$(expand_home_path "$1")"
+  if [[ ! -d "${path}" ]]; then
+    return 1
+  fi
+
+  cd "${path}" 2>/dev/null && pwd -P
+)
+
+me_payload_display() {
+  display_home_path "${ME_PAYLOAD_DIR}"
+}
+
+me_payload_source_display() {
+  case "${ME_PAYLOAD_SOURCE_KIND:-unresolved}" in
+    explicit)
+      printf "explicit payload dir"
+      ;;
+    source)
+      printf "source-relative payload"
+      ;;
+    existing)
+      printf "existing canonical checkout"
+      ;;
+    clone)
+      printf "new ssh clone"
+      ;;
+    *)
+      printf "unresolved"
+      ;;
+  esac
 }
 
 tanaab_target_display() {
@@ -615,6 +642,119 @@ tanaab_target_display() {
 
 me_apply_brewfile_display() {
   display_home_path "${ME_APPLY_BREWFILE}"
+}
+
+me_payload_valid() {
+  local dir="$1"
+
+  [[ -d "${dir}" ]] || return 1
+  [[ -d "${dir}/.git" || -f "${dir}/.git" ]] || return 1
+  [[ -f "${dir}/boot.sh" ]] || return 1
+  [[ -f "${dir}/Brewfile" ]] || return 1
+  [[ -d "${dir}/dotfiles" ]] || return 1
+  [[ -f "${dir}/.codex-plugin/plugin.json" ]] || return 1
+}
+
+validate_me_payload_dir() {
+  local dir="$1"
+
+  if ! me_payload_valid "${dir}"; then
+    abort "me payload at ${tty_ts}$(display_home_path "${dir}")${tty_reset} must be a git checkout containing boot.sh, Brewfile, dotfiles/, and .codex-plugin/plugin.json."
+  fi
+}
+
+me_script_real_path() {
+  local link_target
+  local script_dir
+  local script_path="${0}"
+
+  if [[ "${script_path}" != */* ]]; then
+    if [[ -f "${script_path}" ]]; then
+      script_path="./${script_path}"
+    else
+      script_path="$(command -v "${script_path}" 2>/dev/null || true)"
+    fi
+  fi
+
+  if [[ -z "${script_path}" ]]; then
+    return 1
+  fi
+
+  while [[ -L "${script_path}" ]]; do
+    script_dir="$(cd -P "$(dirname "${script_path}")" 2>/dev/null && pwd)" || return 1
+    link_target="$(readlink "${script_path}")" || return 1
+    case "${link_target}" in
+      /*)
+        script_path="${link_target}"
+        ;;
+      *)
+        script_path="${script_dir}/${link_target}"
+        ;;
+    esac
+  done
+
+  script_dir="$(cd -P "$(dirname "${script_path}")" 2>/dev/null && pwd)" || return 1
+  printf "%s/%s" "${script_dir}" "$(basename "${script_path}")"
+}
+
+resolve_source_relative_me_payload() {
+  local candidate
+  local resolved_candidate
+  local script_dir
+  local script_path
+
+  script_path="$(me_script_real_path)" || return 1
+  script_dir="$(dirname "${script_path}")"
+
+  for candidate in "${script_dir}" "${script_dir}/.." "${script_dir}/../.."; do
+    resolved_candidate="$(resolve_existing_dir_path "${candidate}")" || continue
+    if me_payload_valid "${resolved_candidate}"; then
+      printf "%s" "${resolved_candidate}"
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+prepare_me_payload() {
+  local explicit_payload_dir
+  local existing_payload_dir
+  local source_payload_dir
+
+  ME_PAYLOAD_CANONICAL_PATH="${HOME}/tanaab/me"
+  ME_PAYLOAD_DIR_INPUT="$(trim_whitespace "${ME_PAYLOAD_DIR_INPUT}")"
+
+  if [[ -n "${ME_PAYLOAD_DIR_INPUT}" ]]; then
+    if ! explicit_payload_dir="$(resolve_existing_dir_path "${ME_PAYLOAD_DIR_INPUT}")"; then
+      abort "me payload dir ${tty_ts}${ME_PAYLOAD_DIR_INPUT}${tty_reset} must resolve to an existing directory."
+    fi
+
+    validate_me_payload_dir "${explicit_payload_dir}"
+    ME_PAYLOAD_DIR="${explicit_payload_dir}"
+    ME_PAYLOAD_SOURCE_KIND="explicit"
+    return 0
+  fi
+
+  if source_payload_dir="$(resolve_source_relative_me_payload)"; then
+    ME_PAYLOAD_DIR="${source_payload_dir}"
+    ME_PAYLOAD_SOURCE_KIND="source"
+    return 0
+  fi
+
+  if [[ -e "${ME_PAYLOAD_CANONICAL_PATH}" ]]; then
+    if ! existing_payload_dir="$(resolve_existing_dir_path "${ME_PAYLOAD_CANONICAL_PATH}")"; then
+      abort "canonical me payload path ${tty_ts}$(display_home_path "${ME_PAYLOAD_CANONICAL_PATH}")${tty_reset} exists but is not a directory."
+    fi
+
+    validate_me_payload_dir "${existing_payload_dir}"
+    ME_PAYLOAD_DIR="${existing_payload_dir}"
+    ME_PAYLOAD_SOURCE_KIND="existing"
+    return 0
+  fi
+
+  ME_PAYLOAD_DIR="${ME_PAYLOAD_CANONICAL_PATH}"
+  ME_PAYLOAD_SOURCE_KIND="clone"
 }
 
 prepare_repo_source() {
@@ -658,17 +798,6 @@ prepare_repo_source() {
   printf -v "${source_version_tag_var}" "%s" "${source_version_tag}"
 }
 
-prepare_me_source() {
-  ME_TARGET_PATH="${HOME}/tanaab/me"
-  prepare_repo_source \
-    "${ME_SOURCE}" \
-    "${ME_TARGET_PATH}" \
-    "me" \
-    "ME_SOURCE_KIND" \
-    "ME_SOURCE_LOCAL_PATH" \
-    "ME_SOURCE_VERSION_TAG"
-}
-
 prepare_tanaab_source() {
   TANAAB_TARGET_PATH="${HOME}/tanaab/canon"
   prepare_repo_source \
@@ -686,7 +815,7 @@ tanaab_enabled() {
 }
 
 tanaab_plugin_checkout_path() {
-  printf "%s/dotfiles/ai/.codex/plugins/tanaab" "${ME_TARGET_PATH}"
+  printf "%s/dotfiles/ai/.codex/plugins/tanaab" "${ME_PAYLOAD_DIR}"
 }
 
 tanaab_plugin_checkout_display() {
@@ -694,7 +823,7 @@ tanaab_plugin_checkout_display() {
 }
 
 prepare_tanaab_plugin_link() {
-  local ai_dotpkg_path="${ME_TARGET_PATH}/dotfiles/ai"
+  local ai_dotpkg_path="${ME_PAYLOAD_DIR}/dotfiles/ai"
   local plugin_checkout_path
   local plugin_parent_path
 
@@ -708,7 +837,7 @@ prepare_tanaab_plugin_link() {
   fi
 
   if [[ ! -d "${ai_dotpkg_path}" ]]; then
-    abort "me checkout at ${tty_ts}$(me_target_display)${tty_reset} is missing required ${tty_ts}ai${tty_reset} dotpkg needed for the tanaab plugin link."
+    abort "me payload at ${tty_ts}$(me_payload_display)${tty_reset} is missing required ${tty_ts}ai${tty_reset} dotpkg needed for the tanaab plugin link."
   fi
 
   plugin_parent_path="$(dirname "${plugin_checkout_path}")"
@@ -718,22 +847,22 @@ prepare_tanaab_plugin_link() {
     execute rm -rf "${plugin_checkout_path}"
   fi
 
-  execute ln -s "${TANAAB_PLUGIN_RELATIVE_TARGET}" "${plugin_checkout_path}"
+  execute ln -s "${TANAAB_TARGET_PATH}" "${plugin_checkout_path}"
 }
 
 discover_me_apply_payload() {
-  local dotfiles_root="${ME_TARGET_PATH}/dotfiles"
+  local dotfiles_root="${ME_PAYLOAD_DIR}/dotfiles"
   local dotpkg
 
-  ME_APPLY_BREWFILE="${ME_TARGET_PATH}/Brewfile"
+  ME_APPLY_BREWFILE="${ME_PAYLOAD_DIR}/Brewfile"
   ME_APPLY_DOTPKGS=()
 
   if [[ ! -f "${ME_APPLY_BREWFILE}" ]]; then
-    abort "me checkout at ${tty_ts}$(me_target_display)${tty_reset} is missing required brewfile ${tty_ts}$(me_apply_brewfile_display)${tty_reset}."
+    abort "me payload at ${tty_ts}$(me_payload_display)${tty_reset} is missing required Brewfile ${tty_ts}$(me_apply_brewfile_display)${tty_reset}."
   fi
 
   if [[ ! -d "${dotfiles_root}" ]]; then
-    abort "me checkout at ${tty_ts}$(me_target_display)${tty_reset} is missing required dotfiles directory ${tty_ts}$(display_home_path "${dotfiles_root}")${tty_reset}."
+    abort "me payload at ${tty_ts}$(me_payload_display)${tty_reset} is missing required dotfiles directory ${tty_ts}$(display_home_path "${dotfiles_root}")${tty_reset}."
   fi
 
   while IFS= read -r dotpkg; do
@@ -741,7 +870,7 @@ discover_me_apply_payload() {
   done < <(find "${dotfiles_root}" -mindepth 1 -maxdepth 1 -type d | LC_ALL=C sort)
 
   if [[ "${#ME_APPLY_DOTPKGS[@]}" -eq 0 ]]; then
-    abort "me checkout at ${tty_ts}$(me_target_display)${tty_reset} must contain at least one top-level dotpkg under ${tty_ts}$(display_home_path "${dotfiles_root}")${tty_reset}."
+    abort "me payload at ${tty_ts}$(me_payload_display)${tty_reset} must contain at least one top-level dotpkg under ${tty_ts}$(display_home_path "${dotfiles_root}")${tty_reset}."
   fi
 }
 
@@ -776,6 +905,130 @@ build_git_ssh_command_from_ssh_keys() {
   done
 
   printf "%s" "${command_string% }"
+}
+
+me_payload_origin_supported() {
+  case "$1" in
+    git@github.com:pirog/me.git | ssh://git@github.com/pirog/me.git | https://github.com/pirog/me | https://github.com/pirog/me.git)
+      return 0
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+fetch_existing_me_payload_main() {
+  local git_ssh_command
+  local origin_url="$1"
+
+  if [[ "${origin_url}" == git@* || "${origin_url}" == ssh://* ]]; then
+    git_ssh_command="$(build_git_ssh_command_from_ssh_keys "me")"
+    debug "${tty_tp}fetching${tty_reset}" "${tty_ts}origin/main${tty_reset}" for "${tty_ts}$(me_payload_display)${tty_reset}"
+    env GIT_SSH_COMMAND="${git_ssh_command}" git -C "${ME_PAYLOAD_DIR}" fetch origin main
+    return
+  fi
+
+  debug "${tty_tp}fetching${tty_reset}" "${tty_ts}origin/main${tty_reset}" for "${tty_ts}$(me_payload_display)${tty_reset}"
+  git -C "${ME_PAYLOAD_DIR}" fetch origin main
+}
+
+refresh_existing_me_payload() {
+  local branch
+  local current_head
+  local origin_head
+  local origin_url
+  local status_output
+  local upstream
+
+  if [[ "${ME_PAYLOAD_SOURCE_KIND}" != "existing" ]]; then
+    return 0
+  fi
+
+  status_output="$(git -C "${ME_PAYLOAD_DIR}" status --porcelain --untracked-files=normal 2>/dev/null || true)"
+  if [[ -n "${status_output}" ]]; then
+    warn "${tty_tp}using${tty_reset} existing me payload at ${tty_ts}$(me_payload_display)${tty_reset} without updating because the checkout has local changes."
+    return 0
+  fi
+
+  branch="$(git -C "${ME_PAYLOAD_DIR}" symbolic-ref --quiet --short HEAD 2>/dev/null || true)"
+  if [[ "${branch}" != "main" ]]; then
+    warn "${tty_tp}using${tty_reset} existing me payload at ${tty_ts}$(me_payload_display)${tty_reset} without updating because its current branch is ${tty_ts}${branch:-detached}${tty_reset}, not ${tty_ts}main${tty_reset}."
+    return 0
+  fi
+
+  upstream="$(git -C "${ME_PAYLOAD_DIR}" rev-parse --abbrev-ref --symbolic-full-name '@{upstream}' 2>/dev/null || true)"
+  if [[ "${upstream}" != "origin/main" ]]; then
+    warn "${tty_tp}using${tty_reset} existing me payload at ${tty_ts}$(me_payload_display)${tty_reset} without updating because ${tty_ts}main${tty_reset} does not track ${tty_ts}origin/main${tty_reset}."
+    return 0
+  fi
+
+  origin_url="$(git -C "${ME_PAYLOAD_DIR}" config --get remote.origin.url 2>/dev/null || true)"
+  if ! me_payload_origin_supported "${origin_url}"; then
+    warn "${tty_tp}using${tty_reset} existing me payload at ${tty_ts}$(me_payload_display)${tty_reset} without updating because ${tty_ts}origin${tty_reset} is not ${tty_ts}@pirog/me${tty_reset}."
+    return 0
+  fi
+
+  if ! fetch_existing_me_payload_main "${origin_url}"; then
+    warn "${tty_tp}using${tty_reset} existing me payload at ${tty_ts}$(me_payload_display)${tty_reset} because ${tty_ts}origin/main${tty_reset} could not be fetched."
+    return 0
+  fi
+
+  current_head="$(git -C "${ME_PAYLOAD_DIR}" rev-parse HEAD)"
+  origin_head="$(git -C "${ME_PAYLOAD_DIR}" rev-parse origin/main)"
+
+  if [[ "${current_head}" == "${origin_head}" ]]; then
+    debug "me payload at $(me_payload_display) already matches origin/main"
+    return 0
+  fi
+
+  if git -C "${ME_PAYLOAD_DIR}" merge-base --is-ancestor HEAD origin/main; then
+    log "${tty_tp}updating${tty_reset} me payload at ${tty_ts}$(me_payload_display)${tty_reset} with a fast-forward to ${tty_ts}origin/main${tty_reset}"
+    execute git -C "${ME_PAYLOAD_DIR}" merge --ff-only origin/main
+    return 0
+  fi
+
+  if git -C "${ME_PAYLOAD_DIR}" merge-base --is-ancestor origin/main HEAD; then
+    warn "${tty_tp}using${tty_reset} existing me payload at ${tty_ts}$(me_payload_display)${tty_reset} without updating because local ${tty_ts}main${tty_reset} is ahead of ${tty_ts}origin/main${tty_reset}."
+    return 0
+  fi
+
+  warn "${tty_tp}using${tty_reset} existing me payload at ${tty_ts}$(me_payload_display)${tty_reset} without updating because local ${tty_ts}main${tty_reset} has diverged from ${tty_ts}origin/main${tty_reset}."
+}
+
+materialize_me_payload() {
+  local git_ssh_command
+  local resolved_payload_dir
+
+  case "${ME_PAYLOAD_SOURCE_KIND}" in
+    explicit | source)
+      if [[ "${ME_PAYLOAD_DIR}" != "${ME_PAYLOAD_CANONICAL_PATH}" ]]; then
+        warn "${tty_tp}using${tty_reset} me payload at ${tty_ts}$(me_payload_display)${tty_reset} in place; stowed files will reference this checkout."
+      fi
+      ;;
+    existing)
+      refresh_existing_me_payload
+      ;;
+    clone)
+      if [[ -e "${ME_PAYLOAD_CANONICAL_PATH}" ]]; then
+        abort "refusing to replace existing path ${tty_ts}$(display_home_path "${ME_PAYLOAD_CANONICAL_PATH}")${tty_reset} while cloning the me payload."
+      fi
+
+      git_ssh_command="$(build_git_ssh_command_from_ssh_keys "me")"
+      execute mkdir -p "$(dirname "${ME_PAYLOAD_CANONICAL_PATH}")"
+      log "${tty_tp}cloning${tty_reset} ${tty_ts}@pirog/me${tty_reset} via ssh to ${tty_ts}$(display_home_path "${ME_PAYLOAD_CANONICAL_PATH}")${tty_reset}"
+      execute env GIT_SSH_COMMAND="${git_ssh_command}" git clone "${ME_REPO_SSH_URL}" "${ME_PAYLOAD_CANONICAL_PATH}"
+      if ! resolved_payload_dir="$(resolve_existing_dir_path "${ME_PAYLOAD_CANONICAL_PATH}")"; then
+        abort "cloned me payload did not resolve at ${tty_ts}$(display_home_path "${ME_PAYLOAD_CANONICAL_PATH}")${tty_reset}."
+      fi
+      ME_PAYLOAD_DIR="${resolved_payload_dir}"
+      ;;
+    *)
+      abort "unsupported internal me payload source ${tty_bold}${ME_PAYLOAD_SOURCE_KIND:-unresolved}${tty_reset}."
+      ;;
+  esac
+
+  validate_me_payload_dir "${ME_PAYLOAD_DIR}"
 }
 
 repo_release_archive_url() {
@@ -876,13 +1129,21 @@ plan_repo_fetch() {
   esac
 }
 
-plan_me_fetch() {
-  plan_repo_fetch \
-    "me" \
-    "${ME_TARGET_PATH}" \
-    "${ME_SOURCE_KIND}" \
-    "${ME_SOURCE_LOCAL_PATH}" \
-    "${ME_SOURCE_VERSION_TAG}"
+plan_me_payload() {
+  case "${ME_PAYLOAD_SOURCE_KIND}" in
+    explicit)
+      plan_action "${tty_tp}use${tty_reset} ${tty_ts}me${tty_reset} payload from ${tty_ts}$(me_payload_display)${tty_reset} ${tty_dim}(explicit payload dir)${tty_reset}"
+      ;;
+    source)
+      plan_action "${tty_tp}use${tty_reset} ${tty_ts}me${tty_reset} payload from ${tty_ts}$(me_payload_display)${tty_reset} ${tty_dim}(source-relative payload)${tty_reset}"
+      ;;
+    existing)
+      plan_action "${tty_tp}use${tty_reset} existing ${tty_ts}me${tty_reset} payload at ${tty_ts}$(me_payload_display)${tty_reset} and fast-forward clean ${tty_ts}main${tty_reset} to ${tty_ts}origin/main${tty_reset} when safe"
+      ;;
+    clone)
+      plan_action "${tty_tp}clone${tty_reset} ${tty_ts}@pirog/me${tty_reset} via ssh to ${tty_ts}$(me_payload_display)${tty_reset}"
+      ;;
+  esac
 }
 
 plan_tanaab_fetch() {
@@ -895,22 +1156,11 @@ plan_tanaab_fetch() {
 }
 
 plan_tanaab_plugin_link() {
-  plan_action "${tty_tp}ensure${tty_reset} relative ${tty_ts}tanaab${tty_reset} plugin link at ${tty_ts}$(tanaab_plugin_checkout_display)${tty_reset} points to ${tty_ts}$(tanaab_target_display)${tty_reset}"
+  plan_action "${tty_tp}ensure${tty_reset} generated ${tty_ts}tanaab${tty_reset} plugin link at ${tty_ts}$(tanaab_plugin_checkout_display)${tty_reset} points to ${tty_ts}$(tanaab_target_display)${tty_reset}"
 }
 
 plan_me_apply() {
-  plan_action "${tty_tp}run${tty_reset} ${tty_ts}bootbox${tty_reset} against the ${tty_ts}me${tty_reset} checkout at ${tty_ts}$(me_target_display)${tty_reset} using its ${tty_ts}Brewfile${tty_reset} and dotpkgs on ${tty_ts}~${tty_reset}"
-}
-
-run_me_fetch() {
-  fetch_repo_source_to_target \
-    "me" \
-    "${ME_SOURCE_LOCAL_PATH:-${ME_SOURCE_VERSION_TAG:-${ME_SOURCE}}}" \
-    "${ME_TARGET_PATH}" \
-    "${ME_REPO_SSH_URL}" \
-    "${ME_REPO_RELEASE_BASE_URL}" \
-    "${ME_REPO_RELEASE_ARCHIVE_PREFIX}" \
-    "${ME_SOURCE_KIND}"
+  plan_action "${tty_tp}run${tty_reset} ${tty_ts}bootbox${tty_reset} against the ${tty_ts}me${tty_reset} payload at ${tty_ts}$(me_payload_display)${tty_reset} using its ${tty_ts}Brewfile${tty_reset} and dotpkgs on ${tty_ts}~${tty_reset}"
 }
 
 run_tanaab_fetch() {
@@ -932,7 +1182,7 @@ run_bootbox_for_me_apply() {
     bootbox_args+=(--dotpkg "${dotpkg}")
   done
 
-  bootbox_run_or_abort me "bootbox failed while applying me checkout ${tty_ts}$(me_target_display)${tty_reset}." "${bootbox_args[@]}"
+  bootbox_run_or_abort me "bootbox failed while applying me payload ${tty_ts}$(me_payload_display)${tty_reset}." "${bootbox_args[@]}"
 }
 
 plan_action() {
@@ -1292,7 +1542,7 @@ plan_wrapper_execution() {
     plan_action "${tty_tp}skip${tty_reset} existing ssh keys because ${tty_bold}--force${tty_reset} is not set: $(describe_ssh_key_specs "${SSH_KEYS_TO_SKIP[@]}")"
   fi
 
-  plan_me_fetch
+  plan_me_payload
   if tanaab_enabled; then
     plan_tanaab_fetch
     plan_tanaab_plugin_link
@@ -1385,16 +1635,15 @@ main() {
   debug raw FORCE="${FORCE:-}"
   debug raw OP_TOKEN="$(mask_secret_for_display "${OP_TOKEN}")"
   debug raw SSH_KEYS="$(array_join "," SSH_KEYS)"
-  debug raw ME="$(normalize_repo_source_value "${ME_SOURCE}")"
   debug raw TANAAB="$(normalize_repo_source_value "${TANAAB_SOURCE}")"
   debug raw BOOTBOX_URL="${BOOTBOX_URL}"
   debug raw CURL="${CURL}"
   debug raw ARCH="${ARCH}"
   debug raw OS="${OS}"
-  prepare_me_source
+  prepare_me_payload
   prepare_tanaab_source
-  debug raw ME_SOURCE_KIND="${ME_SOURCE_KIND}"
-  debug raw ME_TARGET="$(me_target_display)"
+  debug raw PIROME_PAYLOAD_DIR="$(me_payload_display)"
+  debug raw ME_PAYLOAD_SOURCE="$(me_payload_source_display)"
   debug raw TANAAB_SOURCE_KIND="${TANAAB_SOURCE_KIND}"
   debug raw TANAAB_TARGET="$(tanaab_target_display)"
 
@@ -1410,7 +1659,7 @@ main() {
 
   ensure_bootbox_core_requirements
   run_bootbox
-  run_me_fetch
+  materialize_me_payload
   if tanaab_enabled; then
     run_tanaab_fetch
   fi

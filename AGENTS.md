@@ -73,9 +73,14 @@ This root `AGENTS.md` is the repo-local override for Codex work in this reposito
 - Preserve token masking in debug output. Do not leak raw 1Password tokens in logs or display commands.
 - Do not reintroduce raw argument logging.
 - Preserve the public wrapper contract under the `PIROME_*` namespace unless the task is explicitly about changing it. Use upstream `TANAAB_*` names only as the internal bridge when delegating to bootbox.
-- Preserve the current token, SSH key, `--me`, and `--tanaab` contract unless the task is explicitly about changing it.
-- Keep `--me` / `PIROME_ME` aligned with the current source modes: `ssh`, a local git repo path, or a release version, with a fixed target of `~/tanaab/me` and skip-or-replace behavior controlled by `--force`.
+- Preserve the current token, SSH key, and `--tanaab` contract unless the task is explicitly about changing it.
+- Keep `PIROME_PAYLOAD_DIR` as a hidden development and CI override; do not expose it or payload selection as a public option or documented help environment variable.
+- Resolve the `me` payload in this order: explicit `PIROME_PAYLOAD_DIR`, source-relative checkout, existing `~/tanaab/me`, then a new SSH clone of `git@github.com:pirog/me.git` at `~/tanaab/me`.
+- Require the resolved `me` payload to be a Git checkout containing `boot.sh`, `Brewfile`, `dotfiles/`, and `.codex-plugin/plugin.json`.
+- Use explicit and source-relative payloads in place without updating them. Only refresh the existing canonical checkout when it is clean, on `main`, tracking `origin/main`, and connected to `@pirog/me`; use fetch plus fast-forward checks and otherwise warn without changing local work.
+- Never delete or replace an existing `~/tanaab/me` path, including under `--force`. Invalid canonical payload paths should fail with an actionable error.
+- Treat `SCRIPT_VERSION` as wrapper metadata only; the resolved `me` payload revision may differ.
 - Keep `--tanaab` / `PIROME_TANAAB` aligned with the current source modes: `ssh`, a local git repo path, a release version, or falsey disable values, with a fixed target of `~/tanaab/canon`.
-- When `--tanaab` is enabled, preserve the wrapper-owned relative plugin link at `~/tanaab/me/dotfiles/ai/.codex/plugins/tanaab` so the main `ai` stow can install `~/.codex/plugins/tanaab` back to `~/tanaab/canon`.
-- After repo materialization, preserve the wrapper-side bootbox apply phase that uses the `me` checkout's root `Brewfile` and top-level `dotfiles/*` package directories on the default `$HOME` target.
-- Keep planning output aligned with actual execution order: core remediation, SSH handling, `me` fetch, optional `tanaab` fetch and plugin-link prep, then the `me` apply step.
+- When `--tanaab` is enabled, preserve the wrapper-owned generated plugin link under the resolved `me` payload so the main `ai` stow can install `~/.codex/plugins/tanaab` back to `~/tanaab/canon` regardless of payload location.
+- Preserve the wrapper-side bootbox apply phase that uses the resolved `me` payload's root `Brewfile` and top-level `dotfiles/*` package directories on the default `$HOME` target.
+- Keep planning output aligned with actual execution order: core remediation, SSH handling, `me` payload materialization or safe refresh, optional `tanaab` fetch and plugin-link prep, then the `me` apply step.

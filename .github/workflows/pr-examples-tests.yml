@@ -20,6 +20,7 @@ jobs:
           - cli-contract
           - options
           - envvars
+          - payload
           - version
     steps:
       - name: Checkout code
@@ -47,6 +48,7 @@ jobs:
       - name: Run Leia-backed example
         shell: bash
         env:
+          PIROME_PAYLOAD_DIR: ${{ github.workspace }}
           TMPDIR: ${{ github.workspace }}/examples/${{ matrix.example }}/.tmp
           OPTOKEN: ${{ secrets.TANAAB_OP_TEST }}
         run: |
@@ -63,5 +65,4 @@ jobs:
       #     boot.sh \
       #       --op-token "$OPTOKEN" \
       #       --ssh-key 'omfsw2uztmi2xqpid5g3kiv6ba/id_test' \
-      #       --me "$GITHUB_WORKSPACE" \
       #       --debug

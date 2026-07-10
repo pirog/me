@@ -20,9 +20,9 @@ built from this repo.
 ## Overview
 
 `boot.sh` is a thin hosted wrapper around [bootbox](https://github.com/tanaabased/bootbox). It
-installs core tools and requested SSH keys, materializes `~/tanaab/me`, materializes
-`~/tanaab/canon` unless disabled, and then applies the `me` checkout's [`Brewfile`](./Brewfile)
-plus top-level [`dotfiles/`](./dotfiles/) packages onto `$HOME`.
+installs core tools and requested SSH keys, resolves a `me` payload, materializes
+`~/tanaab/canon` unless disabled, and then applies the payload's [`Brewfile`](./Brewfile) plus
+top-level [`dotfiles/`](./dotfiles/) packages onto `$HOME`.
 
 After bootstrap, complete the manual setup checklist so the expected apps, plugins, and connector
 auth are available.
@@ -39,7 +39,8 @@ curl -fsSL https://boot.pirog.me/boot.sh | PIROME_OP_TOKEN="$OP_TOKEN" bash
 This default flow:
 
 - installs core dependencies and SSH keys
-- clones `git@github.com:pirog/me.git` into `~/tanaab/me`
+- uses a source-relative `me` checkout when the wrapper is run from this repo
+- otherwise safely refreshes an existing `~/tanaab/me` checkout or clones `git@github.com:pirog/me.git`
 - clones `git@github.com:tanaabased/canon.git` into `~/tanaab/canon`
 - applies the `me` Brewfile and dotpkgs onto `$HOME`
 
@@ -113,15 +114,15 @@ The hosted script is the primary install surface. Environment variables are the 
 customize it without installing a local command first.
 
 - `PIROME_OP_TOKEN` or `--op-token` is required for 1Password-backed SSH-key install.
-- `--me` / `PIROME_ME` defaults to `ssh` and supports `ssh`, a local git repo path, or a release version.
 - `--tanaab` / `PIROME_TANAAB` defaults to `ssh` and supports `ssh`, a local git repo path, a release version, or a falsey disable value such as `off`.
-- The wrapper installs into fixed checkouts at `~/tanaab/me` and `~/tanaab/canon`, then applies the `me` checkout onto the default target of `$HOME`.
+- The wrapper uses the source checkout beside the running script when available. Otherwise it uses
+  `~/tanaab/me`, cloning `@pirog/me` there when needed.
+- The wrapper applies the resolved `me` payload onto the default target of `$HOME`.
 - Set `PIROME_TANAAB=off` or `--tanaab off` if you want to skip the canon checkout.
 
 ```sh
 curl -fsSL https://boot.pirog.me/boot.sh | \
   PIROME_OP_TOKEN="$OP_TOKEN" \
-  PIROME_ME="$HOME/src/me" \
   PIROME_TANAAB=off \
   bash
 ```
@@ -140,7 +141,6 @@ Common wrapper options:
 
 - `--op-token`: 1Password service account token.
 - `--ssh-key`: one or more `vault/item[:filename]` SSH key specs.
-- `--me`: `ssh`, a local repo path, or a release version for `~/tanaab/me`.
 - `--tanaab`: `ssh`, a local repo path, a release version, or a falsey disable value for `~/tanaab/canon`.
 - `--yes`: accept defaults and disable prompts.
 - `--force`: replace supported existing targets.
@@ -151,25 +151,38 @@ Common wrapper options:
 Use `./piroboot --help` or `bash ./boot.sh --help` as the source of truth for the exact current
 flag and environment-variable surface.
 
+`boot.sh` resolves its `me` payload in this order:
+
+1. the hidden `PIROME_PAYLOAD_DIR` development or CI override;
+2. a valid Git checkout beside the real invoked script path;
+3. an existing checkout at `~/tanaab/me`;
+4. a new SSH clone of `git@github.com:pirog/me.git` at `~/tanaab/me`.
+
+Explicit and source-relative payloads are used in place and are never updated automatically. For an
+existing canonical checkout, the wrapper fetches and fast-forwards only when it is clean, on `main`,
+tracking `origin/main`, and connected to `@pirog/me`. Otherwise it warns and uses the current checkout
+without resetting, merging, rebasing, or deleting local work.
+
+The reported script version describes the wrapper itself. The resolved `me` payload can be newer or
+locally modified.
+
 Hosted-script example with envvars:
 
 ```sh
 curl -fsSL https://boot.pirog.me/boot.sh | \
   PIROME_OP_TOKEN="$OP_TOKEN" \
   PIROME_SSH_KEY="vmruk4ny353aly6tbom7z3v2hy/id_pirog" \
-  PIROME_ME=ssh \
   PIROME_TANAAB=ssh \
   PIROME_DEBUG=1 \
   bash
 ```
 
-Local-script example with pinned source values:
+Local-script example with a pinned canon source:
 
 ```sh
 ./piroboot \
   --op-token "$OP_TOKEN" \
   --ssh-key "vmruk4ny353aly6tbom7z3v2hy/id_pirog" \
-  --me v0.3.1 \
   --tanaab v0.2.0 \
   --yes
 ```
