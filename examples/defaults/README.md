@@ -33,12 +33,15 @@ chmod 600 "$HOME/.ssh/id_test"
 boot.sh \
   --op-token "$OPTOKEN" \
   --ssh-key 'omfsw2uztmi2xqpid5g3kiv6ba/id_test' \
-  --force
+  --force 2>&1 | tee "$TMPDIR/setup.log"
 ```
 
 ## Testing
 
 ```bash
+# should report successful setup completion
+grep -F 'me setup succeeded' "$TMPDIR/setup.log"
+
 # should ensure homebrew is installed
 command -v brew >/dev/null
 

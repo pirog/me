@@ -1775,6 +1775,11 @@ run_bootbox() {
   done
 }
 
+run_me_post_bootstrap_summary() {
+  log
+  log "me setup ${tty_green}succeeded${tty_reset}"
+}
+
 main() {
   trap cleanup EXIT
   parse_args "$@"
@@ -1820,6 +1825,7 @@ main() {
   debug raw ME_APPLY_BREWFILE="$(me_apply_brewfile_display)"
   debug raw ME_APPLY_DOTPKGS="$(array_join "," ME_APPLY_DOTPKGS)"
   run_bootbox_for_me_apply
+  run_me_post_bootstrap_summary
 }
 
 main "$@"
