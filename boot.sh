@@ -612,6 +612,41 @@ resolve_existing_dir_path() (
   cd "${path}" 2>/dev/null && pwd -P
 )
 
+relative_path_from_dir() {
+  local from_dir="$1"
+  local target_dir="$2"
+  local from_rest
+  local target_rest
+  local relative_path=""
+  local common_index="0"
+  local index
+  local -a from_parts=()
+  local -a target_parts=()
+
+  from_dir="$(resolve_existing_dir_path "${from_dir}")" || return 1
+  target_dir="$(resolve_existing_dir_path "${target_dir}")" || return 1
+  from_rest="${from_dir#/}"
+  target_rest="${target_dir#/}"
+  IFS='/' read -r -a from_parts <<< "${from_rest}"
+  IFS='/' read -r -a target_parts <<< "${target_rest}"
+
+  while [[ "${common_index}" -lt "${#from_parts[@]}" ]] \
+    && [[ "${common_index}" -lt "${#target_parts[@]}" ]] \
+    && [[ "${from_parts[${common_index}]}" == "${target_parts[${common_index}]}" ]]; do
+    common_index=$((common_index + 1))
+  done
+
+  for ((index = common_index; index < ${#from_parts[@]}; index++)); do
+    relative_path="${relative_path}${relative_path:+/}.."
+  done
+
+  for ((index = common_index; index < ${#target_parts[@]}; index++)); do
+    relative_path="${relative_path}${relative_path:+/}${target_parts[${index}]}"
+  done
+
+  printf "%s" "${relative_path:-.}"
+}
+
 me_payload_display() {
   display_home_path "${ME_PAYLOAD_DIR}"
 }
@@ -1150,8 +1185,10 @@ ensure_plugin_link_for_checkout() {
   local repo_dir="$1"
   local plugin_name="$2"
   local ai_dotpkg_path="${ME_PAYLOAD_DIR}/dotfiles/ai"
+  local current_link_target
   local existing_target
   local link_path
+  local relative_link_target
   local links_dir
 
   if [[ ! -d "${ai_dotpkg_path}" ]]; then
@@ -1161,10 +1198,16 @@ ensure_plugin_link_for_checkout() {
   links_dir="$(plugin_links_dir)"
   link_path="${links_dir}/${plugin_name}"
   execute mkdir -p "${links_dir}"
+  relative_link_target="$(relative_path_from_dir "${links_dir}" "${repo_dir}")" || abort "could not determine a relative Codex plugin link from ${tty_ts}$(display_home_path "${links_dir}")${tty_reset} to ${tty_ts}$(display_home_path "${repo_dir}")${tty_reset}."
 
   if [[ -L "${link_path}" ]]; then
     existing_target="$(resolve_symlink_dir_target "${link_path}" 2>/dev/null || true)"
     if [[ "${existing_target}" == "${repo_dir}" ]]; then
+      current_link_target="$(readlink "${link_path}")"
+      if [[ "${current_link_target}" == /* ]]; then
+        log "${tty_tp}normalizing${tty_reset} Codex plugin link ${tty_ts}$(display_home_path "${link_path}")${tty_reset} to a Stow-compatible relative target"
+        execute ln -sfn "${relative_link_target}" "${link_path}"
+      fi
       debug "Codex plugin link $(display_home_path "${link_path}") already points to $(display_home_path "${repo_dir}")"
       return 0
     fi
@@ -1177,7 +1220,7 @@ ensure_plugin_link_for_checkout() {
   fi
 
   log "${tty_tp}linking${tty_reset} Codex plugin ${tty_ts}${plugin_name}${tty_reset} to ${tty_ts}$(display_home_path "${repo_dir}")${tty_reset}"
-  execute ln -s "${repo_dir}" "${link_path}"
+  execute ln -s "${relative_link_target}" "${link_path}"
 }
 
 reconcile_tanaab_repo_plugin() {

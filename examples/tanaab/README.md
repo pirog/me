@@ -67,6 +67,7 @@ test "$(git -C "$HOME/tanaab/agentbox" remote get-url origin)" = "git@github.com
 # should link only the repository that declares a codex plugin
 test -L "$PIROME_PAYLOAD_DIR/dotfiles/ai/.codex/plugins/tanaab"
 test -L "$HOME/.codex/plugins/tanaab"
+case "$(readlink "$PIROME_PAYLOAD_DIR/dotfiles/ai/.codex/plugins/tanaab")" in /*) exit 1;; esac
 test "$(python3 -c 'import os, sys; print(os.path.realpath(sys.argv[1]))' "$HOME/.codex/plugins/tanaab")" = "$HOME/tanaab/canon"
 ! test -e "$PIROME_PAYLOAD_DIR/dotfiles/ai/.codex/plugins/agentbox-plugin"
 ! test -L "$PIROME_PAYLOAD_DIR/dotfiles/ai/.codex/plugins/agentbox-plugin"
@@ -78,6 +79,8 @@ git -C "$HOME/tanaab/agentbox" reset --hard HEAD^
 printf '%s\n' 'local agentbox work' > "$HOME/tanaab/agentbox/local-work.txt"
 mkdir -p "$HOME/tanaab/agentbox/.codex-plugin"
 printf '%s\n' '{"name":"agentbox-plugin"}' > "$HOME/tanaab/agentbox/.codex-plugin/plugin.json"
+rm -f "$PIROME_PAYLOAD_DIR/dotfiles/ai/.codex/plugins/tanaab"
+ln -s "$HOME/tanaab/canon" "$PIROME_PAYLOAD_DIR/dotfiles/ai/.codex/plugins/tanaab"
 
 # should fast-forward clean work and preserve dirty work while detecting a new plugin
 GIT_CONFIG_GLOBAL="$TMPDIR/gitconfig" boot.sh \
@@ -89,6 +92,8 @@ test "$(git -C "$HOME/tanaab/canon" rev-parse HEAD)" = "$(git -C "$HOME/tanaab/c
 test "$(git -C "$HOME/tanaab/agentbox" rev-parse HEAD)" != "$(git -C "$HOME/tanaab/agentbox" rev-parse origin/main)"
 test -f "$HOME/tanaab/agentbox/local-work.txt"
 test -L "$HOME/.codex/plugins/agentbox-plugin"
+case "$(readlink "$PIROME_PAYLOAD_DIR/dotfiles/ai/.codex/plugins/tanaab")" in /*) exit 1;; esac
+case "$(readlink "$PIROME_PAYLOAD_DIR/dotfiles/ai/.codex/plugins/agentbox-plugin")" in /*) exit 1;; esac
 
 # should remove a generated link when the checkout stops declaring a plugin
 rm -f "$HOME/tanaab/agentbox/.codex-plugin/plugin.json"
