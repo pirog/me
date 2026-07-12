@@ -89,6 +89,17 @@ Each Tanaab repository name maps to `git@github.com:tanaabased/<repo>.git` and
 run, verified Tanaab checkouts that declare `.codex-plugin/plugin.json` receive local plugin source
 links; installation and enablement remain explicit Codex actions.
 
+### Agentbox Hosts
+
+When the installed Agentbox health script and LaunchDaemon are present, `piroboot` treats the
+machine as an Agentbox host. The final `me` Brewfile apply automatically skips the `tailscale-app`
+and `1password` desktop casks while preserving any existing Homebrew Bundle cask skips. The beta
+`1password-cli@beta` cask remains installed for service-account-backed SSH-key retrieval, and
+Agentbox's formula-backed `tailscaled` runtime provides Tailscale.
+
+This automatic behavior assumes Agentbox is installed before `me`; a checkout alone does not mark a
+machine as an Agentbox host.
+
 Use [ADVANCED.md](./ADVANCED.md) for the full option and environment-variable reference, installed
 components, checkout behavior, and Codex configuration and plugin sync.
 
@@ -98,6 +109,8 @@ Complete these app-backed steps after bootstrap.
 
 ### 1Password
 
+These desktop-app steps are not required on a detected Agentbox host.
+
 - Open 1Password, sign in, and unlock it.
 - Enable Developer > Integrate with 1Password CLI.
 - Enable Developer > Show 1Password Developer experience.
@@ -105,6 +118,8 @@ Complete these app-backed steps after bootstrap.
 - Confirm `op` can access the signed-in account with a read-only check such as `op vault list`.
 
 ### Tailscale
+
+Detected Agentbox hosts use Agentbox's managed `tailscaled` runtime instead of `Tailscale.app`.
 
 - Open Tailscale.
 - Sign in and connect this machine to the `tanaab.dev` tailnet.

@@ -6,6 +6,8 @@
 
 At a high level, `me` delegates core bootstrap work to Bootbox, installs applications and runtimes from its Brewfile, applies personal dotfile packages to the current user's home directory, installs 1Password-backed SSH keys, optionally materializes explicitly selected `@tanaabased` repositories, and prepares local links for checkouts that declare themselves as Codex plugins.
 
+When an installed Agentbox runtime is detected, `me` automatically leaves Agentbox's formula-backed `tailscaled` runtime in control and skips the 1Password and Tailscale desktop casks while retaining the beta 1Password CLI used for service-account-backed bootstrap work.
+
 This repository targets the `pirog` workstation profile. Generic bootstrap behavior belongs in Bootbox, while headless host setup, SSH hardening, remote access, and service supervision belong in `agentbox`.
 
 The advanced reference covers installed components, the complete option and environment-variable contract, checkout behavior, and Codex configuration and plugin sync.

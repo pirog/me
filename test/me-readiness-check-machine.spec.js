@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import path from 'node:path';
 
 import {
+  AGENTBOX_HEALTH_PLIST_PATH,
+  AGENTBOX_HEALTH_SCRIPT_PATH,
   CHECK_BUCKET_ORDER,
   EXPECTED_ONEPASSWORD_ENVIRONMENT_ID,
   ONEPASSWORD_TOKEN_ENV_KEYS,
@@ -62,13 +64,27 @@ function healthyExistingPaths(...missingPaths) {
   ].filter((targetPath) => !missing.has(targetPath));
 }
 
+function healthyAgentboxExistingPaths(...missingPaths) {
+  const missing = new Set(missingPaths);
+
+  return [
+    ...healthyExistingPaths(
+      '/Applications/1Password.app',
+      '/Applications/Tailscale.app',
+      ...missingPaths,
+    ),
+    AGENTBOX_HEALTH_SCRIPT_PATH,
+    AGENTBOX_HEALTH_PLIST_PATH,
+  ].filter((targetPath) => !missing.has(targetPath));
+}
+
 function makeDeps({
   brewfile = [
     'cask "1password"',
     'cask "1password-cli@beta"',
     'cask "codex"',
     'cask "codex-app"',
-    'cask "tailscale"',
+    'cask "tailscale-app"',
     'brew "node@24"',
   ].join('\n'),
   brewPrefixError = false,
@@ -339,7 +355,7 @@ describe('skills/me-readiness/scripts/check-machine-lib', () => {
     assert.ok(
       report.checks.some((check) => check.id === 'brewfile_cask_1password_cli_stable_absent'),
     );
-    assert.ok(report.checks.some((check) => check.id === 'brewfile_cask_tailscale'));
+    assert.ok(report.checks.some((check) => check.id === 'brewfile_cask_tailscale_app'));
     assert.ok(report.checks.some((check) => check.id === 'vimrc_link'));
     assert.ok(report.checks.some((check) => check.id === 'vim_janus_runtime'));
     assert.ok(report.checks.some((check) => check.id === 'command_codex'));
@@ -402,7 +418,7 @@ describe('skills/me-readiness/scripts/check-machine-lib', () => {
         'cask "1password-cli"',
         'cask "codex"',
         'cask "codex-app"',
-        'cask "tailscale"',
+        'cask "tailscale-app"',
         'brew "node@24"',
       ].join('\n'),
       existingPaths: healthyExistingPaths(),
@@ -426,7 +442,7 @@ describe('skills/me-readiness/scripts/check-machine-lib', () => {
         'cask "1password-cli@beta"',
         'cask "codex"',
         'cask "codex-app"',
-        'cask "tailscale"',
+        'cask "tailscale-app"',
       ].join('\n'),
       existingPaths: healthyExistingPaths(),
     });
@@ -647,6 +663,42 @@ describe('skills/me-readiness/scripts/check-machine-lib', () => {
 
     assert.equal(report.ok, false);
     assert.equal(tailscaleAppCheck.status, 'fail');
+  });
+
+  it('should use Agentbox runtime readiness without desktop-only apps', async () => {
+    const execCalls = [];
+    const report = await runCheck({
+      commands: [...REQUIRED_COMMANDS, 'tailscaled'],
+      execCalls,
+      existingPaths: healthyAgentboxExistingPaths(),
+    });
+    const onePasswordChecks = report.checks.filter((check) => check.id.startsWith('onepassword_'));
+    const tailscaleAppCheck = report.checks.find((check) => check.id === 'tailscale_app');
+    const tailscaledCheck = report.checks.find((check) => check.id === 'command_tailscaled');
+    const tailscaleStatusCheck = report.checks.find((check) => check.id === 'tailscale_status');
+
+    assert.equal(report.ok, true);
+    assert.ok(onePasswordChecks.every((check) => check.status === 'pass'));
+    assert.ok(onePasswordChecks.every((check) => /not required/.test(check.message)));
+    assert.equal(tailscaleAppCheck.status, 'pass');
+    assert.match(tailscaleAppCheck.message, /not required/);
+    assert.equal(tailscaledCheck.status, 'pass');
+    assert.equal(tailscaleStatusCheck.status, 'pass');
+    assert.equal(
+      execCalls.some((call) => call.command === 'op'),
+      false,
+    );
+  });
+
+  it('should fail Agentbox readiness when tailscaled is missing', async () => {
+    const report = await runCheck({
+      existingPaths: healthyAgentboxExistingPaths(),
+    });
+    const tailscaledCheck = report.checks.find((check) => check.id === 'command_tailscaled');
+
+    assert.equal(report.ok, false);
+    assert.equal(tailscaledCheck.status, 'fail');
+    assert.match(tailscaledCheck.remediation, /tailscaled/);
   });
 
   it('should fail when the Codex app is missing', async () => {

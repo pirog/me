@@ -18,6 +18,8 @@ REQUIRED_CURL_VERSION="7.41.0"
 BOOTBOX_URL="https://bootbox.tanaab.sh/bootbox.sh"
 DEFAULT_SSH_KEY="vmruk4ny353aly6tbom7z3v2hy/id_pirog,vmruk4ny353aly6tbom7z3v2hy/id_agentbox1"
 TANAAB_GITHUB_ORG="tanaabased"
+AGENTBOX_HEALTH_SCRIPT_PATH="/opt/tanaab/agentbox/bin/health.sh"
+AGENTBOX_HEALTH_PLIST_PATH="/Library/LaunchDaemons/dev.tanaab.agentbox.health.plist"
 
 abort() {
   printf "%serror%s: %s\n" "${tty_red-}" "${tty_reset-}" "$@" >&2
@@ -261,6 +263,7 @@ declare -a SSH_KEYS_TO_OVERWRITE=()
 declare -a SSH_KEYS_TO_SKIP=()
 declare -a TANAAB_REPOS=()
 declare -a ME_APPLY_DOTPKGS=()
+declare -a ME_APPLY_CASK_SKIPS=()
 declare -a PLANNED_ACTIONS=()
 BOOT_TMPDIR=""
 BOOTBOX_SCRIPT_PATH=""
@@ -274,6 +277,8 @@ ME_PAYLOAD_DIR=""
 ME_PAYLOAD_SOURCE_KIND=""
 ME_PAYLOAD_CANONICAL_PATH=""
 ME_APPLY_BREWFILE=""
+ME_HOMEBREW_BUNDLE_CASK_SKIP=""
+AGENTBOX_HOST_DETECTED="0"
 SSH_KEY_CLI_SEEN="0"
 TANAAB_CLI_SEEN="0"
 
@@ -633,6 +638,44 @@ me_payload_source_display() {
 
 me_apply_brewfile_display() {
   display_home_path "${ME_APPLY_BREWFILE}"
+}
+
+agentbox_host_installed() {
+  [[ -x "${AGENTBOX_HEALTH_SCRIPT_PATH}" && -f "${AGENTBOX_HEALTH_PLIST_PATH}" ]]
+}
+
+tailscale_formula_installed() {
+  command -v brew >/dev/null 2>&1 && brew list --formula tailscale >/dev/null 2>&1
+}
+
+prepare_me_apply_cask_skips() {
+  local cask
+  local -a inherited_cask_skips=()
+
+  ME_APPLY_CASK_SKIPS=()
+  AGENTBOX_HOST_DETECTED="0"
+  if [[ -n "${HOMEBREW_BUNDLE_CASK_SKIP:-}" ]]; then
+    read -r -a inherited_cask_skips <<< "${HOMEBREW_BUNDLE_CASK_SKIP}"
+    for cask in "${inherited_cask_skips[@]}"; do
+      append_array_value ME_APPLY_CASK_SKIPS "${cask}"
+    done
+  fi
+
+  if agentbox_host_installed; then
+    AGENTBOX_HOST_DETECTED="1"
+    append_array_value ME_APPLY_CASK_SKIPS "tailscale-app"
+    append_array_value ME_APPLY_CASK_SKIPS "1password"
+  elif tailscale_formula_installed; then
+    append_array_value ME_APPLY_CASK_SKIPS "tailscale-app"
+  fi
+
+  dedupe_array_values ME_APPLY_CASK_SKIPS
+  if [[ "${#ME_APPLY_CASK_SKIPS[@]}" -eq 0 ]]; then
+    ME_HOMEBREW_BUNDLE_CASK_SKIP=""
+    return 0
+  fi
+
+  ME_HOMEBREW_BUNDLE_CASK_SKIP="$(array_join " " ME_APPLY_CASK_SKIPS)"
 }
 
 me_payload_valid() {
@@ -1226,6 +1269,9 @@ plan_me_payload() {
 
 plan_me_apply() {
   plan_action "${tty_tp}run${tty_reset} ${tty_ts}bootbox${tty_reset} against the ${tty_ts}me${tty_reset} payload at ${tty_ts}$(me_payload_display)${tty_reset} using its ${tty_ts}Brewfile${tty_reset} and dotpkgs on ${tty_ts}~${tty_reset}"
+  if [[ -n "${ME_HOMEBREW_BUNDLE_CASK_SKIP}" ]]; then
+    plan_action "${tty_tp}skip${tty_reset} Homebrew casks ${tty_ts}$(array_join ", " ME_APPLY_CASK_SKIPS)${tty_reset} during the ${tty_ts}me${tty_reset} Brewfile apply"
+  fi
 }
 
 run_bootbox_for_me_apply() {
@@ -1236,7 +1282,12 @@ run_bootbox_for_me_apply() {
     bootbox_args+=(--dotpkg "${dotpkg}")
   done
 
-  bootbox_run_or_abort "bootbox failed while applying me payload ${tty_ts}$(me_payload_display)${tty_reset}." "${bootbox_args[@]}"
+  if [[ -n "${ME_HOMEBREW_BUNDLE_CASK_SKIP}" ]]; then
+    HOMEBREW_BUNDLE_CASK_SKIP="${ME_HOMEBREW_BUNDLE_CASK_SKIP}" \
+      bootbox_run_or_abort "bootbox failed while applying me payload ${tty_ts}$(me_payload_display)${tty_reset}." "${bootbox_args[@]}"
+  else
+    bootbox_run_or_abort "bootbox failed while applying me payload ${tty_ts}$(me_payload_display)${tty_reset}." "${bootbox_args[@]}"
+  fi
 }
 
 plan_action() {
@@ -1687,6 +1738,7 @@ main() {
   validate_inputs
   validate_platform
   apply_noninteractive_mode
+  prepare_me_apply_cask_skips
 
   debug "${tty_tp}running${tty_reset}" "${SCRIPT_NAME}" script version: "${SCRIPT_VERSION}"
   debug raw CI="${CI:-}"
@@ -1696,6 +1748,8 @@ main() {
   debug raw OP_TOKEN="$(mask_secret_for_display "${OP_TOKEN}")"
   debug raw SSH_KEYS="$(array_join "," SSH_KEYS)"
   debug raw TANAAB_REPOS="$(array_join "," TANAAB_REPOS)"
+  debug raw AGENTBOX_HOST_DETECTED="${AGENTBOX_HOST_DETECTED}"
+  debug raw HOMEBREW_BUNDLE_CASK_SKIP="${ME_HOMEBREW_BUNDLE_CASK_SKIP}"
   debug raw BOOTBOX_URL="${BOOTBOX_URL}"
   debug raw CURL="${CURL}"
   debug raw ARCH="${ARCH}"

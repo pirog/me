@@ -1,38 +1,32 @@
 # FINAL THINGS
 
 - @tanaabased/bootbox
-  - reorg tests?
-  - prep for macos.sh?
-  - add linux support?
+  - badges and readme changes?
+  - [![Netlify Status](https://api.netlify.com/api/v1/badges/a0a7d3ee-3e74-4ecf-99ca-a952163b889e/deploy-status)](https://app.netlify.com/projects/tanaab-bootbox-sh/deploys)
+  - homebrew -> a one-user or one-admin system
 
 - @pirog/me
   - update based on agentbox|emori work?
-    - me materialize via source?
-
-    - review sudo stuff? do we really need it? always run as admin?
-
-    - clean up older stuff
-    - update bootbox envvars?
-    - --tanaab -> projects to clone down?
 
   - add codex cli/codex/openclaw?
   - add warp?
   - add vscode?
   - add google chrome?
-  - add trusted to bun tap?
 
   - add agentbox plugin?
+
   - themes
     - codex
     - warp
       remove OHMYZSH?
+      warp settings in dotfile?
     - vscode?
+    - vim settings?
     - TUI theme?
 
-  - mode user|agentbox?
-
-  - ips for pirobook and tanaabbook?
   - remote management and authorized keys?
+  - review sudo stuff? do we really need it? always run as admin?
+  - ips for pirobook and tanaabbook?
 
   - shouldnt i just run @pirog/me?
 
@@ -49,15 +43,14 @@
     - verify repo / repo audit
 
 - @tanaabased/agentbox
-  - small fixes
+  - verify
     - openclaw update|not?
     - OPENCLAW_MDNS_HOSTNAME
     - end of flow should be more concise with link to run full command?
 
-  - GATEWAY_TOKEN
-  - openclaw theme?
-
   - add to codex via phone?
+
+  - openclaw theme?
 
   - codex plugin?
     - revisit plugin installation/upgrade etc
@@ -77,6 +70,10 @@
     - caddy install
     - install and configure needed openclaw plugins eg agent-os?
     - make this into a bun binary?
+
+- @lando/leia
+  - fix JS literals
+  - update canon guidance
 
 - @tanaabased/emori
   - remove agentbox setup setuff

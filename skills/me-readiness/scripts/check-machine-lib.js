@@ -13,6 +13,8 @@ const execFileAsync = promisify(execFileCallback);
 
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_REPO_ROOT = path.resolve(SCRIPT_DIR, '..', '..', '..');
+export const AGENTBOX_HEALTH_SCRIPT_PATH = '/opt/tanaab/agentbox/bin/health.sh';
+export const AGENTBOX_HEALTH_PLIST_PATH = '/Library/LaunchDaemons/dev.tanaab.agentbox.health.plist';
 const PRIVATE_CONFIG_MODE = 0o600;
 const EXPECTED_TAILNET_NAME = 'tanaab.dev';
 export const EXPECTED_ONEPASSWORD_ENVIRONMENT_ID = 'zsstdfqknicwfv5glv76gd6tue';
@@ -29,7 +31,7 @@ export const REQUIRED_BREWFILE_CASKS = [
   '1password-cli@beta',
   'codex',
   'codex-app',
-  'tailscale',
+  'tailscale-app',
 ];
 export const REQUIRED_BREWFILE_FORMULAS = [EXPECTED_NODE_FORMULA];
 export const FORBIDDEN_BREWFILE_CASKS = [
@@ -136,6 +138,7 @@ const CHECK_BUCKET_BY_ID = new Map([
   ['onepassword_environment_cli', 'manual_apps'],
   ['onepassword_environment_run', 'manual_apps'],
   ['tailscale_app', 'manual_apps'],
+  ['command_tailscaled', 'manual_apps'],
   ['tailscale_status', 'manual_apps'],
   ['codex_app', 'manual_apps'],
   ['bootstrap_token_env', 'manual_apps'],
@@ -255,21 +258,25 @@ function formatOnePasswordEnvironmentCommandError(error) {
   };
 }
 
-function formatTailscaleCommandError(error) {
+function tailscaleRemediation(agentboxHost) {
+  return agentboxHost
+    ? 'Run sudo /opt/tanaab/agentbox/bin/health.sh --report and repair the managed tailscaled service, then rerun tailscale status --json.'
+    : 'Open Tailscale, sign in, connect this machine to the tanaab.dev tailnet, then rerun tailscale status --json.';
+}
+
+function formatTailscaleCommandError(error, agentboxHost) {
   const detail = formatErrorDetail(error);
 
   if (/failed to connect to local Tailscaled|local tailscaled|tailscaled process/i.test(detail)) {
     return {
       message: 'Tailscale CLI could not connect to the local Tailscale service from this process.',
-      remediation:
-        'If this was a sandboxed run and tailscale status --json works in your terminal, rerun the readiness helper with unsandboxed local access from Codex. Otherwise open Tailscale, sign in, and connect this machine to the tanaab.dev tailnet.',
+      remediation: `If this was a sandboxed run and tailscale status --json works in your terminal, rerun the readiness helper with unsandboxed local access from Codex. Otherwise ${tailscaleRemediation(agentboxHost)}`,
     };
   }
 
   return {
     message: 'Tailscale status check failed.',
-    remediation:
-      'Open Tailscale, sign in, connect this machine to the tanaab.dev tailnet, then rerun tailscale status --json.',
+    remediation: tailscaleRemediation(agentboxHost),
   };
 }
 
@@ -342,12 +349,12 @@ function checkOnePasswordEnvironmentRun(result) {
   );
 }
 
-function checkTailscaleStatus(status) {
+function checkTailscaleStatus(status, agentboxHost) {
   if (!status || typeof status !== 'object') {
     return fail(
       'tailscale_status',
       'Tailscale status output was not a JSON object.',
-      'Open Tailscale, sign in, connect this machine to the tanaab.dev tailnet, then rerun tailscale status --json.',
+      tailscaleRemediation(agentboxHost),
     );
   }
 
@@ -380,8 +387,17 @@ function checkTailscaleStatus(status) {
     : fail(
         'tailscale_status',
         `Tailscale is not ready: ${issues.join('; ')}.`,
-        'Open Tailscale, sign in, connect this machine to the tanaab.dev tailnet, then rerun tailscale status --json.',
+        tailscaleRemediation(agentboxHost),
       );
+}
+
+async function agentboxHostInstalled(deps) {
+  const [healthScript, healthPlist] = await Promise.all([
+    pathInfo(AGENTBOX_HEALTH_SCRIPT_PATH, deps),
+    pathInfo(AGENTBOX_HEALTH_PLIST_PATH, deps),
+  ]);
+
+  return Boolean(healthScript && healthPlist);
 }
 
 async function appendStowedLinkChecks(checks, links, homeDir, deps) {
@@ -616,27 +632,31 @@ async function appendRequiredCommandChecks(checks, deps) {
   }
 }
 
-async function appendAppPresenceChecks(checks, deps) {
+async function appendAppPresenceChecks(checks, agentboxHost, deps) {
   const onePasswordAppPath = '/Applications/1Password.app';
   checks.push(
-    (await pathInfo(onePasswordAppPath, deps))
-      ? pass('onepassword_app', '1Password.app was found.')
-      : fail(
-          'onepassword_app',
-          '1Password.app was not found.',
-          'Rerun https://boot.pirog.me/boot.sh or install the 1Password desktop app, then open it and sign in.',
-        ),
+    agentboxHost
+      ? pass('onepassword_app', '1Password.app is not required on an Agentbox host.')
+      : (await pathInfo(onePasswordAppPath, deps))
+        ? pass('onepassword_app', '1Password.app was found.')
+        : fail(
+            'onepassword_app',
+            '1Password.app was not found.',
+            'Rerun https://boot.pirog.me/boot.sh or install the 1Password desktop app, then open it and sign in.',
+          ),
   );
 
   const tailscaleAppPath = '/Applications/Tailscale.app';
   checks.push(
-    (await pathInfo(tailscaleAppPath, deps))
-      ? pass('tailscale_app', 'Tailscale.app was found.')
-      : fail(
-          'tailscale_app',
-          'Tailscale.app was not found.',
-          'Rerun https://boot.pirog.me/boot.sh or install the Tailscale desktop app, then open it and sign in.',
-        ),
+    agentboxHost
+      ? pass('tailscale_app', 'Tailscale.app is not required on an Agentbox host.')
+      : (await pathInfo(tailscaleAppPath, deps))
+        ? pass('tailscale_app', 'Tailscale.app was found.')
+        : fail(
+            'tailscale_app',
+            'Tailscale.app was not found.',
+            'Rerun https://boot.pirog.me/boot.sh or install the Tailscale desktop app, then open it and sign in.',
+          ),
   );
 
   const codexAppPath = '/Applications/Codex.app';
@@ -766,18 +786,52 @@ async function appendOnePasswordEnvironmentChecks(checks, env, deps) {
   }
 }
 
-async function appendOnePasswordChecks(checks, env, deps) {
+async function appendOnePasswordChecks(checks, agentboxHost, env, deps) {
+  if (agentboxHost) {
+    checks.push(
+      pass(
+        'onepassword_cli_vault_access',
+        'Desktop-backed 1Password vault access is not required on an Agentbox host.',
+      ),
+      pass(
+        'onepassword_environment_cli',
+        '1Password Environment desktop integration is not required on an Agentbox host.',
+      ),
+      pass(
+        'onepassword_environment_run',
+        '1Password Environment authorization is not required on an Agentbox host.',
+      ),
+    );
+    return;
+  }
+
   await appendOnePasswordVaultAccessCheck(checks, env, deps);
   await appendOnePasswordEnvironmentChecks(checks, env, deps);
 }
 
-async function appendTailscaleStatusCheck(checks, deps) {
+async function appendAgentboxTailscaledCheck(checks, agentboxHost, deps) {
+  if (!agentboxHost) {
+    return;
+  }
+
+  checks.push(
+    (await deps.commandExists('tailscaled'))
+      ? pass('command_tailscaled', 'Command "tailscaled" is available for the Agentbox runtime.')
+      : fail(
+          'command_tailscaled',
+          'Command "tailscaled" is not available on PATH for the Agentbox runtime.',
+          'Rerun Agentbox so its Homebrew tailscale formula and managed tailscaled service are installed.',
+        ),
+  );
+}
+
+async function appendTailscaleStatusCheck(checks, agentboxHost, deps) {
   if (getCheck(checks, 'command_tailscale')?.status === 'fail') {
     checks.push(
       fail(
         'tailscale_status',
         'Tailscale status could not be checked because tailscale is missing.',
-        'Install the Tailscale desktop app, sign in, connect this machine to the tanaab.dev tailnet, then rerun tailscale status --json.',
+        tailscaleRemediation(agentboxHost),
       ),
     );
     return;
@@ -785,20 +839,20 @@ async function appendTailscaleStatusCheck(checks, deps) {
 
   try {
     const { stdout } = await deps.execFile('tailscale', ['status', '--json']);
-    checks.push(checkTailscaleStatus(JSON.parse(stdout)));
+    checks.push(checkTailscaleStatus(JSON.parse(stdout), agentboxHost));
   } catch (error) {
     if (error instanceof SyntaxError) {
       checks.push(
         fail(
           'tailscale_status',
           'Tailscale status output was not parseable JSON.',
-          'Open Tailscale, sign in, connect this machine to the tanaab.dev tailnet, then rerun tailscale status --json.',
+          tailscaleRemediation(agentboxHost),
         ),
       );
       return;
     }
 
-    const formattedError = formatTailscaleCommandError(error);
+    const formattedError = formatTailscaleCommandError(error, agentboxHost);
     checks.push(fail('tailscale_status', formattedError.message, formattedError.remediation));
   }
 }
@@ -814,7 +868,7 @@ function appendTokenFallbackCheck(checks, env) {
       : warn(
           'bootstrap_token_env',
           `1Password token fallback environment variable(s) are still set: ${presentTokenKeys.join(', ')}.`,
-          'Unset 1Password token fallback environment variables so readiness proves desktop app and Environment access without persistent token material.',
+          'Unset 1Password token fallback environment variables so readiness does not rely on persistent token material.',
         ),
   );
 }
@@ -838,6 +892,7 @@ export async function checkMachine(options = {}) {
   const homeDir = options.homeDir ?? os.homedir();
   const repoRoot = options.repoRoot ?? DEFAULT_REPO_ROOT;
   const checks = [];
+  const agentboxHost = await agentboxHostInstalled(deps);
 
   checks.push(await commandCheck('brew', deps));
   await appendBrewfileChecks(checks, repoRoot, deps);
@@ -846,9 +901,10 @@ export async function checkMachine(options = {}) {
   await appendStowedLinkChecks(checks, DOTFILE_LINKS, homeDir, deps);
   await appendVimJanusRuntimeCheck(checks, homeDir, deps);
   await appendGeneratedConfigCheck(checks, homeDir, deps);
-  await appendAppPresenceChecks(checks, deps);
-  await appendOnePasswordChecks(checks, env, deps);
-  await appendTailscaleStatusCheck(checks, deps);
+  await appendAppPresenceChecks(checks, agentboxHost, deps);
+  await appendOnePasswordChecks(checks, agentboxHost, env, deps);
+  await appendAgentboxTailscaledCheck(checks, agentboxHost, deps);
+  await appendTailscaleStatusCheck(checks, agentboxHost, deps);
   appendTokenFallbackCheck(checks, env);
   await appendStowedLinkChecks(checks, CODEX_PLUGIN_LINKS, homeDir, deps);
 

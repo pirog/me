@@ -27,6 +27,8 @@ consumed in CI, and most scenarios mutate GitHub-hosted macOS runners.
 - `payload` owns payload discovery, clone, refresh, rerun, and local-work preservation behavior.
 - `tanaab` owns Tanaab repository materialization, safe refresh, and Codex plugin-link
   reconciliation.
+- `agentbox` owns installed-Agentbox detection, formula-backed Tailscale preservation, and automatic
+  desktop-cask skips.
 - Add coverage to the narrowest existing example that owns the behavior. Add a new example only when
   the behavior needs incompatible bootstrap inputs, crosses enough domains to blur an existing
   example, or intentionally needs another successful `boot.sh` run.

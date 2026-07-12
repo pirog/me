@@ -42,7 +42,8 @@ This is directional guidance, not an expansion of the current public contract:
 ## Source Map
 
 - `boot.sh`: shipped shell entrypoint and main bootstrap surface.
-- `Brewfile`: Homebrew package and application inventory.
+- `Brewfile`: Homebrew package and application inventory, including the canonical `tailscale-app`
+  desktop cask used outside Agentbox hosts.
 - `dotfiles/*`: top-level GNU Stow packages applied to `$HOME`.
 - `.codex-plugin/`, `.mcp.json`, `assets/`, `bin/`, `lib/`, `skills/`, and `utils/`:
   `piroplugin` package inputs and local Codex tooling.
@@ -112,6 +113,15 @@ This is directional guidance, not an expansion of the current public contract:
   a plugin.
 - Preserve the wrapper-side Bootbox apply phase that uses the resolved payload's root `Brewfile` and
   top-level `dotfiles/*` package directories on the default `$HOME` target.
+- Treat a machine as an installed Agentbox host only when both
+  `/opt/tanaab/agentbox/bin/health.sh` and
+  `/Library/LaunchDaemons/dev.tanaab.agentbox.health.plist` are present. Do not infer the host role
+  from a source checkout.
+- On detected Agentbox hosts, preserve inherited Homebrew Bundle cask skips and add `tailscale-app`
+  plus `1password` only for the final `me` Brewfile apply. Keep `1password-cli@beta` installed for
+  service-account-backed SSH-key retrieval.
+- Skip `tailscale-app` when the Homebrew `tailscale` formula is already installed, even when the
+  complete Agentbox marker pair is absent, so the formula/cask conflict is never reintroduced.
 - Keep planning output aligned with execution order: core remediation, SSH handling, `me` payload
   materialization or safe refresh, selected Tanaab repository materialization or safe refresh,
   local plugin-link reconciliation, then the `me` apply step.
@@ -133,8 +143,14 @@ This is directional guidance, not an expansion of the current public contract:
 - For protected resources, prefer native Codex connectors. When no native connector exists, wrap
   access with `op run --environment zsstdfqknicwfv5glv76gd6tue` instead of committed `.env` files,
   persistent shell secrets, or local token fallbacks.
-- Local readiness probes must prove desktop-app-backed 1Password access. Strip 1Password service
-  account, connect, session, and bootstrap token variables from `op` subprocesses.
+- On standard workstations, local readiness probes must prove desktop-app-backed 1Password access.
+  On detected Agentbox hosts, treat the 1Password desktop, vault, and Environment checks as not
+  required while continuing to require the beta `op` CLI and retaining token-fallback warnings.
+  Strip 1Password service account, connect, session, and bootstrap token variables from any `op`
+  subprocesses that do run.
+- On detected Agentbox hosts, require `tailscaled` plus the existing `tailscale status --json`
+  tailnet gate instead of requiring `Tailscale.app`. Do not duplicate Agentbox launchd, Serve,
+  OpenClaw, or complete host-health checks inside `piro-me-readiness`.
 - The readiness skill may run its bundled read-only local helper unsandboxed by default because it
   verifies 1Password and Tailscale desktop or daemon readiness. Do not extend that default to
   unrelated commands, setup, installation, tests, release validation, or machine administration.

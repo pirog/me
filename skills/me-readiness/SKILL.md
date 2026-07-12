@@ -19,6 +19,8 @@ Use this skill only to verify that the current `me` checkout and macOS user prof
 Codex work as `pirog`. It checks the repo-owned machine setup, manually configured app
 readiness, Codex plugin links, and read-only Codex connector identities. It does not configure
 tokens, run setup, manage environments, perform GitHub or monday work, or validate releases.
+When the `pirog` profile is installed on an Agentbox host, the local probe recognizes Agentbox's
+managed `tailscaled` runtime and does not require desktop-backed 1Password integration.
 
 ## When to Use
 
@@ -29,7 +31,8 @@ tokens, run setup, manage environments, perform GitHub or monday work, or valida
 
 ## When Not to Use
 
-- Do not use this skill for Agentbox or robot-user readiness.
+- Do not use this skill to validate the Agentbox product, its OpenClaw runner, or robot-user
+  readiness. It may validate the interactive `pirog` profile installed on an Agentbox host.
 - Do not use this skill to configure GitHub tokens, write runtime env files, configure 1Password
   shell plugins, or provision secrets.
 - Do not use this skill to mutate GitHub or monday data, post readiness updates, run setup, run
@@ -56,7 +59,8 @@ tokens, run setup, manage environments, perform GitHub or monday work, or valida
    as permission to run unrelated repo commands unsandboxed.
 
    If a local permission prompt appears during this helper run, tell the user it is expected for
-   1Password or Tailscale desktop readiness. Denying the prompt may make readiness fail.
+   1Password or Tailscale desktop readiness on a standard workstation. Denying the prompt may make
+   readiness fail. Detected Agentbox hosts do not run the desktop-backed 1Password probes.
 
    If unsandboxed access is denied or unavailable, run the helper sandboxed. If that sandboxed run
    fails only on retryable local desktop or daemon access checks, report those checks as unresolved
@@ -121,6 +125,10 @@ tokens, run setup, manage environments, perform GitHub or monday work, or valida
    Local access note: sandboxed helper could not reach local desktop services, but the unsandboxed read-only retry passed.
    ```
 
+   On a detected Agentbox host, report the 1Password surfaces as not required and describe the
+   Tailscale surface as the managed `tailscaled` runtime plus tailnet status. Do not substitute the
+   full Agentbox health report for this skill's local checks.
+
    If any surface fails or warns, mark it with `❌` or `⚠️` and list only the failed or warning
    checks below the status list with their remediation text. Include `Local access note` only when
    the sandboxed and unsandboxed helper results differ.
@@ -135,8 +143,10 @@ tokens, run setup, manage environments, perform GitHub or monday work, or valida
   automation, setup mutation, release builds, or Leia. The only Environment value this skill may
   verify is the hashed readiness authorization sentinel.
 - Do not add a new helper check id without assigning it to one of the five allowed local buckets.
-- Treat `op vault list --format json` as the local 1Password readiness gate because it proves the
-  app is unlocked and integrated enough for authenticated CLI access.
+- Treat `op vault list --format json` as the standard-workstation 1Password readiness gate because
+  it proves the app is unlocked and integrated enough for authenticated CLI access. Do not run the
+  desktop-backed vault or Environment probes on a detected Agentbox host; continue to require the
+  beta `op` command and keep token-fallback warnings.
 - Treat `op environment read --help` and `op run --environment zsstdfqknicwfv5glv76gd6tue` as the
   local protected-resource fallback readiness gate. The helper must verify only the hashed
   readiness authorization sentinel and must not print or commit the sentinel value.
@@ -158,8 +168,10 @@ tokens, run setup, manage environments, perform GitHub or monday work, or valida
 - The helper JSON was parsed successfully.
 - Every local `fail` or `warn` was reported with a remediation step.
 - Every helper check included a known bucket and bucket order matched the dependency order.
-- 1Password Environment readiness either proved `op run --environment` access to the readiness
-  Environment or reported the setup mismatch without printing the authorization sentinel.
+- On a standard workstation, 1Password Environment readiness either proved
+  `op run --environment` access to the readiness Environment or reported the setup mismatch without
+  printing the authorization sentinel. On a detected Agentbox host, the report marked desktop
+  1Password and Environment integration as not required.
 - The GitHub connector either matched login `pirog` and ID `713424` or the setup mismatch was
   reported.
 - The monday connector either matched `Michael Pirog` ID `71211606` or the setup mismatch was

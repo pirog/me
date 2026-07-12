@@ -15,7 +15,7 @@ Applications:
 - 1Password
 - the beta 1Password CLI required for 1Password Environments
 - Codex CLI and the Codex desktop app
-- Tailscale
+- the Tailscale desktop app
 
 Command-line tools and runtimes:
 
@@ -25,6 +25,23 @@ Command-line tools and runtimes:
 - Python 3.14
 
 Bootbox installs or repairs the core prerequisites before `me` applies the complete Brewfile.
+
+#### Agentbox Hosts
+
+`me` recognizes an installed Agentbox host only when both
+`/opt/tanaab/agentbox/bin/health.sh` and
+`/Library/LaunchDaemons/dev.tanaab.agentbox.health.plist` are present. A source checkout under
+`~/tanaab` is not sufficient.
+
+On a detected Agentbox host, the final Brewfile apply merges `tailscale-app` and `1password` into
+Homebrew Bundle's inherited `HOMEBREW_BUNDLE_CASK_SKIP` value. This leaves Agentbox's
+formula-backed `tailscaled` runtime in control and avoids installing desktop-only 1Password. The
+`1password-cli@beta` cask remains required because `piroboot` uses `op` with the supplied service
+account token for SSH-key retrieval.
+
+If the Homebrew `tailscale` formula is already installed without the complete Agentbox markers,
+`me` still skips `tailscale-app` to avoid Homebrew's formula/cask conflict. Automatic Agentbox
+detection assumes Agentbox is installed before `me`.
 
 ### Dotfiles
 

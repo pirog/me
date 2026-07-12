@@ -3,6 +3,7 @@
 - Added published `/llms.txt` metadata and an advanced configuration reference.
 - Removed public `--me` and `PIROME_ME` source selection from `boot.sh`.
 - Updated `boot.sh` to resolve explicit, source-relative, existing, or SSH-cloned `@pirog/me` payloads.
+- Updated detected Agentbox hosts to skip desktop 1Password and Tailscale casks and use daemon-aware readiness.
 - Updated portable Codex defaults to use `gpt-5.6`.
 - Updated the `oven-sh/bun` tap to trust its formula.
 

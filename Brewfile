@@ -4,7 +4,7 @@ cask "1password"
 cask "1password-cli@beta"
 cask "codex"
 cask "codex-app"
-cask "tailscale"
+cask "tailscale-app"
 
 brew "curl"
 brew "gh"
