@@ -45,6 +45,12 @@ jobs:
           plugin_version="v$(bun --eval 'const plugin = JSON.parse(await Bun.file(".codex-plugin/plugin.json").text()); console.log(plugin.version)')"
           printf 'plugin=%s\n' "$plugin_version"
           test "$plugin_version" = "${{ env.STAMPED_VERSION }}"
+      - name: Verify published metadata
+        shell: bash
+        run: |
+          test -s dist/llms.txt
+          grep -F 'https://boot.pirog.me/llms.txt' dist/sitemap.xml
+          grep -F 'Allow: /llms.txt' dist/robots.txt
       - name: Install production dependencies
         run: |
           rm -rf node_modules
@@ -64,6 +70,7 @@ jobs:
         run: |
           tar -tzf "${RUNNER_TEMP}/${RELEASE_ARCHIVE}" | grep -F '.codex-plugin/plugin.json'
           tar -tzf "${RUNNER_TEMP}/${RELEASE_ARCHIVE}" | grep -F 'dist/boot.sh'
+          tar -tzf "${RUNNER_TEMP}/${RELEASE_ARCHIVE}" | grep -F 'dist/llms.txt'
           if tar -tzf "${RUNNER_TEMP}/${RELEASE_ARCHIVE}" | grep -E '(^|/)node_modules/(@lando/leia|@eslint/js|eslint|eslint-config-prettier|globals|mocha|prettier|shellcheck)/'; then
             echo 'release archive must not include dev dependencies' >&2
             exit 1

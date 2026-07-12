@@ -1,0 +1,65 @@
+# Leia Example Guidance
+
+This file applies when editing `examples/**/README.md`. These README files are executable Leia specs
+consumed in CI, and most scenarios mutate GitHub-hosted macOS runners.
+
+## General Style
+
+- Prefer behavior-focused `# should` labels over scenario labels.
+- Keep each `# should` block focused on one observable contract. Split blocks whose title needs
+  `and`/`or`, mixes unrelated domains, or grows past roughly 12-15 command lines unless the block is
+  one coherent multiline command.
+- Treat each blank-line-separated Leia block as a separate script. Do not rely on shell variables,
+  functions, or working-directory changes persisting across `should` blocks.
+- Prefer direct command pipelines, command substitutions, and deterministic inline values over
+  writing files only to inspect them later.
+- Do not capture command output into shell variables merely to grep it later. When capture is needed
+  to preserve a failing command's status, print the output before assertions.
+- Keep freeform `# should` prose lowercase while preserving exact casing for identifiers, paths,
+  flags, environment variables, and expected output.
+
+## Example Placement
+
+- `inputs` owns non-mutating public interface checks: help text, displayed defaults, input
+  validation, secret masking, hidden or removed inputs, and option/environment precedence.
+- `defaults` owns one baseline machine-seeding run with default wrapper-owned behavior plus required
+  CI secrets and fixtures.
+- `payload` owns payload discovery, clone, refresh, rerun, and local-work preservation behavior.
+- `tanaab` owns Tanaab repository materialization, safe refresh, and Codex plugin-link
+  reconciliation.
+- `agentbox` owns installed-Agentbox detection, formula-backed Tailscale preservation, and automatic
+  desktop-cask skips.
+- Add coverage to the narrowest existing example that owns the behavior. Add a new example only when
+  the behavior needs incompatible bootstrap inputs, crosses enough domains to blur an existing
+  example, or intentionally needs another successful `boot.sh` run.
+
+## Mutating Examples
+
+- Mutating examples should run the prepared `boot.sh` entrypoint once unless the example explicitly
+  owns rerun, idempotency, or payload lifecycle behavior.
+- Use one representative input form for a runtime flow. Prove CLI and environment spellings in
+  `inputs` instead of repeating the machine-seeding path.
+- Defaults-focused examples should avoid overriding wrapper-owned defaults while still providing
+  required CI inputs such as payload paths, 1Password tokens, safe SSH-key fixtures, and force mode
+  when needed to prove replacement behavior.
+- Do not add expected-failure probes after machine mutation has begun. Keep failure-contract checks
+  in `inputs` or make them fail during input validation before bootstrap side effects.
+- Omit `Destroy tests` sections on ephemeral CI runners when they only clean up scenario artifacts.
+  Add one only when cleanup, uninstall, or destructive behavior is itself an observable product
+  contract that the scenario intentionally verifies.
+- Run mutating examples with Leia retries disabled so a partial bootstrap is not retried on the same
+  VM.
+
+## Shell Fixtures
+
+- Use `TMPDIR` for durable fixtures, unavoidable logs, and helper internals only.
+- Keep checked-in fixtures beside the README that owns them; do not duplicate one fixture across
+  input-form examples.
+- Leia embeds executable command blocks in JavaScript template literals. Inside those blocks, do not
+  use literal backticks or braced shell expansions such as `${VAR}`.
+- Use `$(command)` instead of backtick command substitution and `$VAR` instead of `${VAR}`. When
+  braces are required for shell semantics, move that logic into a checked-in example-local helper.
+- These restrictions do not apply to Markdown fences or inline code outside executable blocks;
+  shell tests using `[ ... ]` or `[[ ... ]]` remain safe.
+- Do not give setup fixture commands standalone `# should` blocks unless the fixture state itself is
+  the contract.

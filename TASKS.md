@@ -1,23 +1,22 @@
 # FINAL THINGS
 
 - @pirog/me
-  - shouldnt i just run @pirog/me?
+  - themes
+    - codex
+    - warp
+      remove OHMYZSH?
+      warp settings in dotfile?
+    - vscode?
+    - vim settings?
+    - TUI theme?
 
-  - update based on agentbox|emori work?
-    - me materialize via source?
-    - --tanaab -> projects to clone down?
+  - add agentbox plugin to marketplace?
 
-  - mode user|agentbox?
-
-  - add codex cli/codex/openclaw?
-  - add warp?
-  - vscode?
-  - google chrome?
-  - add trusted to bun tap?
-  - theme as single codex string?
-  - TUI theme?
-
+  - remote management and authorized keys?
+  - review sudo stuff? do we really need it? always run as admin?
   - ips for pirobook and tanaabbook?
+
+  - shouldnt i just run @pirog/me?
 
   - issue MGMT STUFF ASAP?
     - milestone creation
@@ -32,15 +31,14 @@
     - verify repo / repo audit
 
 - @tanaabased/agentbox
-  - small fixes
+  - verify
     - openclaw update|not?
     - OPENCLAW_MDNS_HOSTNAME
     - end of flow should be more concise with link to run full command?
 
-  - GATEWAY_TOKEN
-  - openclaw theme?
-
   - add to codex via phone?
+
+  - openclaw theme?
 
   - codex plugin?
     - revisit plugin installation/upgrade etc
@@ -60,6 +58,11 @@
     - caddy install
     - install and configure needed openclaw plugins eg agent-os?
     - make this into a bun binary?
+
+- @lando/leia
+  - fix JS literals
+  - ESM?
+  - update canon guidance
 
 - @tanaabased/emori
   - remove agentbox setup setuff

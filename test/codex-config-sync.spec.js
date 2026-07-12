@@ -95,13 +95,13 @@ describe('lib/codex-config-sync', () => {
     assert.match(content, /\[features\]\nmemories = true/);
   });
 
-  it('should let local config override shared defaults', async () => {
+  it('should merge non-overlapping keys from shared and local tables', async () => {
     const paths = await tempConfigPaths();
     await writeFile(
       paths.sharedPath,
       'personality = "pragmatic"\n\n[features]\nmemories = true\nmulti_agent = true\n',
     );
-    await writeFile(paths.localPath, '[features]\nmulti_agent = false\n');
+    await writeFile(paths.localPath, '[features]\ncomputer_use = true\n');
 
     await sync(paths);
 
@@ -114,10 +114,28 @@ describe('lib/codex-config-sync', () => {
         'personality = "pragmatic"',
         '',
         '[features]',
+        'computer_use = true',
         'memories = true',
-        'multi_agent = false',
+        'multi_agent = true',
         '',
       ].join('\n'),
+    );
+  });
+
+  it('should reject exact shared and local key collisions', async () => {
+    const paths = await tempConfigPaths();
+    await writeFile(
+      paths.sharedPath,
+      'personality = "pragmatic"\n\n[features]\nmulti_agent = true\n',
+    );
+    await writeFile(
+      paths.localPath,
+      'personality = "friendly"\n\n[features]\nmulti_agent = false\n',
+    );
+
+    await assert.rejects(
+      sync(paths),
+      /config\.local\.toml must not override settings from .*config\.shared\.toml[\s\S]*personality[\s\S]*features\.multi_agent/,
     );
   });
 

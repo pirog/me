@@ -1,10 +1,14 @@
-tap "oven-sh/bun"
+tap "oven-sh/bun", trusted: true
 
 cask "1password"
 cask "1password-cli@beta"
 cask "codex"
 cask "codex-app"
-cask "tailscale"
+cask "google-chrome"
+cask "openclaw"
+cask "tailscale-app"
+cask "visual-studio-code"
+cask "warp"
 
 brew "curl"
 brew "gh"
