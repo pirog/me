@@ -1,7 +1,11 @@
+import { constants as fsConstants } from 'node:fs';
 import { execFile as execFileCallback } from 'node:child_process';
 import {
+  access as defaultAccess,
   lstat as defaultLstat,
   readFile as defaultReadFile,
+  readdir as defaultReaddir,
+  realpath as defaultRealpath,
   stat as defaultStat,
 } from 'node:fs/promises';
 import os from 'node:os';
@@ -10,47 +14,21 @@ import { promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
 
 const execFileAsync = promisify(execFileCallback);
-
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_REPO_ROOT = path.resolve(SCRIPT_DIR, '..', '..', '..');
-export const AGENTBOX_HEALTH_SCRIPT_PATH = '/opt/tanaab/agentbox/bin/health.sh';
-export const AGENTBOX_HEALTH_PLIST_PATH = '/Library/LaunchDaemons/dev.tanaab.agentbox.health.plist';
 const PRIVATE_CONFIG_MODE = 0o600;
 const EXPECTED_TAILNET_NAME = 'tanaab.dev';
-export const EXPECTED_ONEPASSWORD_ENVIRONMENT_ID = 'zsstdfqknicwfv5glv76gd6tue';
+const MINIMUM_NODE_MAJOR_VERSION = 24;
 const MINIMUM_ONEPASSWORD_ENVIRONMENT_CLI_VERSION = '2.33.0-beta.02';
 const READINESS_AUTHORIZATION_CODE_KEY = 'READINESS_AUTHORIZATION_CODE';
 const EXPECTED_READINESS_AUTHORIZATION_CODE_SHA256 =
   'a924fd4b1d47841c36ae7663db374cf040b913ffa56541fe0f345435e3cce267';
 const ONEPASSWORD_ENVIRONMENT_VALIDATION_SCRIPT = `import { createHash } from "node:crypto";const value=process.env.${READINESS_AUTHORIZATION_CODE_KEY};const hash=value?createHash("sha256").update(value).digest("hex"):"";process.stdout.write(JSON.stringify({present:Boolean(value),matches:hash==="${EXPECTED_READINESS_AUTHORIZATION_CODE_SHA256}"}));`;
-const EXPECTED_NODE_FORMULA = 'node@24';
-const EXPECTED_NODE_MAJOR_VERSION = 24;
 
-export const REQUIRED_BREWFILE_CASKS = [
-  '1password',
-  '1password-cli@beta',
-  'codex',
-  'codex-app',
-  'tailscale-app',
-];
-export const REQUIRED_BREWFILE_FORMULAS = [EXPECTED_NODE_FORMULA];
-export const FORBIDDEN_BREWFILE_CASKS = [
-  {
-    cask: '1password-cli',
-    id: 'brewfile_cask_1password_cli_stable_absent',
-  },
-];
-export const REQUIRED_COMMANDS = [
-  'brew',
-  'bun',
-  'codex',
-  'git',
-  'gh',
-  'node',
-  'op',
-  'stow',
-  'tailscale',
-];
+export const AGENTBOX_HEALTH_SCRIPT_PATH = '/opt/tanaab/agentbox/bin/health.sh';
+export const AGENTBOX_HEALTH_PLIST_PATH = '/Library/LaunchDaemons/dev.tanaab.agentbox.health.plist';
+export const EXPECTED_ONEPASSWORD_ENVIRONMENT_ID = 'zsstdfqknicwfv5glv76gd6tue';
+export const REQUIRED_COMMANDS = ['brew', 'bun', 'curl', 'git', 'stow', 'zsh'];
 export const ONEPASSWORD_TOKEN_ENV_KEYS = [
   'PIROME_OP_TOKEN',
   'TANAAB_OP_TOKEN',
@@ -66,81 +44,28 @@ export const CHECK_BUCKET_ORDER = Object.freeze([
   'codex_plugins',
 ]);
 
-const DOTFILE_LINKS = [
-  {
-    id: 'vimrc_link',
-    relativePath: ['.vimrc'],
-    label: '~/.vimrc',
-    remediation:
-      'Rerun https://boot.pirog.me/boot.sh or restow the vim dotpkg from /Users/pirog/tanaab/me.',
-  },
-  {
-    id: 'vimrc_before_link',
-    relativePath: ['.vimrc.before'],
-    label: '~/.vimrc.before',
-    remediation:
-      'Rerun https://boot.pirog.me/boot.sh or restow the vim dotpkg from /Users/pirog/tanaab/me.',
-  },
-  {
-    id: 'vimrc_after_link',
-    relativePath: ['.vimrc.after'],
-    label: '~/.vimrc.after',
-    remediation:
-      'Rerun https://boot.pirog.me/boot.sh or restow the vim dotpkg from /Users/pirog/tanaab/me.',
-  },
-  {
-    id: 'codex_agents_link',
-    relativePath: ['.codex', 'AGENTS.md'],
-    label: '~/.codex/AGENTS.md',
-  },
-  {
-    id: 'codex_shared_config_link',
-    relativePath: ['.codex', 'config.shared.toml'],
-    label: '~/.codex/config.shared.toml',
-  },
-];
-
-const CODEX_PLUGIN_LINKS = [
-  {
-    id: 'codex_piroplugin_link',
-    relativePath: ['.codex', 'plugins', 'piroplugin'],
-    label: '~/.codex/plugins/piroplugin',
-  },
-];
-
-function checkIdSegment(value) {
-  return value.replace(/[^a-z0-9]+/g, '_');
-}
-
+const AGENTBOX_SKIPPED_CASKS = new Set(['1password', 'tailscale-app']);
 const CHECK_BUCKET_BY_ID = new Map([
-  ...REQUIRED_COMMANDS.map((command) => [
-    `command_${command}`,
-    command === 'brew' ? 'homebrew' : 'packages',
-  ]),
+  ['command_brew', 'homebrew'],
+  ['homebrew_writable', 'homebrew'],
   ['brewfile_readable', 'packages'],
-  ...REQUIRED_BREWFILE_CASKS.map((cask) => [`brewfile_cask_${checkIdSegment(cask)}`, 'packages']),
-  ...REQUIRED_BREWFILE_FORMULAS.map((formula) => [
-    `brewfile_formula_${checkIdSegment(formula)}`,
+  ['brewfile_formulas_installed', 'packages'],
+  ['brewfile_casks_installed', 'packages'],
+  ...REQUIRED_COMMANDS.filter((command) => command !== 'brew').map((command) => [
+    `command_${command}`,
     'packages',
   ]),
-  ...FORBIDDEN_BREWFILE_CASKS.map(({ id }) => [id, 'packages']),
-  ['node_homebrew_path', 'packages'],
   ['node_version', 'packages'],
-  ['vimrc_link', 'dotfiles'],
-  ['vimrc_before_link', 'dotfiles'],
-  ['vimrc_after_link', 'dotfiles'],
+  ['dotfiles_stowed', 'dotfiles'],
   ['vim_janus_runtime', 'dotfiles'],
-  ['codex_agents_link', 'dotfiles'],
-  ['codex_shared_config_link', 'dotfiles'],
   ['codex_generated_config', 'dotfiles'],
-  ['onepassword_app', 'manual_apps'],
+  ['command_op', 'manual_apps'],
   ['onepassword_cli_vault_access', 'manual_apps'],
   ['onepassword_environment_cli', 'manual_apps'],
   ['onepassword_environment_run', 'manual_apps'],
-  ['tailscale_app', 'manual_apps'],
+  ['command_tailscale', 'manual_apps'],
   ['command_tailscaled', 'manual_apps'],
   ['tailscale_status', 'manual_apps'],
-  ['codex_app', 'manual_apps'],
   ['bootstrap_token_env', 'manual_apps'],
   ['codex_piroplugin_link', 'codex_plugins'],
 ]);
@@ -158,7 +83,6 @@ function makeCheck({ id, message, remediation, status }) {
   }
 
   const check = { bucket, id, status, message };
-
   if (status !== 'pass') {
     check.remediation = remediation;
   }
@@ -178,22 +102,41 @@ function fail(id, message, remediation) {
   return makeCheck({ id, status: 'fail', message, remediation });
 }
 
-function hasCask(brewfile, cask) {
-  return new RegExp(
-    `^\\s*cask\\s+["']${cask.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}["']`,
-    'm',
-  ).test(brewfile);
-}
-
-function hasFormula(brewfile, formula) {
-  return new RegExp(
-    `^\\s*brew\\s+["']${formula.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}["']`,
-    'm',
-  ).test(brewfile);
-}
-
 function formatMode(mode) {
   return `0${(mode & 0o777).toString(8)}`;
+}
+
+function formatErrorDetail(error) {
+  const stderr = typeof error?.stderr === 'string' ? error.stderr : '';
+  const message = error instanceof Error ? error.message : String(error ?? '');
+  return (stderr || message).replace(/\s+/g, ' ').trim();
+}
+
+function stripStowSimulationNoise(output) {
+  return output
+    .split(/\r?\n/)
+    .filter((line) => line.trim() !== 'WARNING: in simulation mode so not modifying filesystem.')
+    .join('\n')
+    .trim();
+}
+
+function parseBrewfileEntries(brewfile) {
+  const formulas = [];
+  const casks = [];
+
+  for (const line of brewfile.split(/\r?\n/)) {
+    const formula = line.match(/^\s*brew\s+["']([^"']+)["']/)?.[1];
+    const cask = line.match(/^\s*cask\s+["']([^"']+)["']/)?.[1];
+
+    if (formula && !formulas.includes(formula)) {
+      formulas.push(formula);
+    }
+    if (cask && !casks.includes(cask)) {
+      casks.push(cask);
+    }
+  }
+
+  return { casks, formulas };
 }
 
 async function defaultCommandExists(command) {
@@ -206,78 +149,13 @@ async function defaultCommandExists(command) {
 }
 
 async function defaultExecFile(command, args, options = {}) {
-  const { stdout } = await execFileAsync(command, args, {
+  const { stderr, stdout } = await execFileAsync(command, args, {
     env: options.env ?? process.env,
     maxBuffer: 1024 * 1024,
     timeout: options.timeout ?? 10000,
   });
 
-  return { stdout };
-}
-
-function formatErrorDetail(error) {
-  const stderr = typeof error?.stderr === 'string' ? error.stderr : '';
-  const message = error instanceof Error ? error.message : String(error ?? '');
-  return (stderr || message).replace(/\s+/g, ' ').trim();
-}
-
-function formatOnePasswordCommandError(error) {
-  const detail = formatErrorDetail(error);
-
-  if (/couldn'?t connect to the 1Password desktop app/i.test(detail)) {
-    return {
-      message: '1Password CLI could not connect to the 1Password desktop app from this process.',
-      remediation:
-        'If this was a sandboxed run and op vault list --format json works in your terminal, rerun the readiness helper with unsandboxed local access from Codex. Otherwise open 1Password, sign in, unlock it, and enable Developer > Integrate with 1Password CLI.',
-    };
-  }
-
-  return {
-    message: '1Password CLI vault access check failed.',
-    remediation:
-      'Open 1Password, sign in, unlock it, enable Developer > Integrate with 1Password CLI, then rerun op vault list.',
-  };
-}
-
-function formatOnePasswordEnvironmentCommandError(error) {
-  const detail = formatErrorDetail(error);
-
-  if (/couldn'?t connect to the 1Password desktop app/i.test(detail)) {
-    return {
-      message:
-        '1Password Environment access could not connect to the desktop app from this process.',
-      remediation:
-        'If this was a sandboxed run and op run --environment works in your terminal, rerun the readiness helper with unsandboxed local access from Codex. Otherwise open 1Password, sign in, unlock it, enable Developer > Integrate with 1Password CLI, and enable Developer > Show 1Password Developer experience.',
-    };
-  }
-
-  return {
-    message: '1Password Environment access check failed.',
-    remediation:
-      'Open 1Password, sign in, unlock it, enable Developer > Integrate with 1Password CLI, enable Developer > Show 1Password Developer experience, confirm the readiness Environment is accessible, then rerun the readiness helper.',
-  };
-}
-
-function tailscaleRemediation(agentboxHost) {
-  return agentboxHost
-    ? 'Run sudo /opt/tanaab/agentbox/bin/health.sh --report and repair the managed tailscaled service, then rerun tailscale status --json.'
-    : 'Open Tailscale, sign in, connect this machine to the tanaab.dev tailnet, then rerun tailscale status --json.';
-}
-
-function formatTailscaleCommandError(error, agentboxHost) {
-  const detail = formatErrorDetail(error);
-
-  if (/failed to connect to local Tailscaled|local tailscaled|tailscaled process/i.test(detail)) {
-    return {
-      message: 'Tailscale CLI could not connect to the local Tailscale service from this process.',
-      remediation: `If this was a sandboxed run and tailscale status --json works in your terminal, rerun the readiness helper with unsandboxed local access from Codex. Otherwise ${tailscaleRemediation(agentboxHost)}`,
-    };
-  }
-
-  return {
-    message: 'Tailscale status check failed.',
-    remediation: tailscaleRemediation(agentboxHost),
-  };
+  return { stderr, stdout };
 }
 
 async function pathInfo(targetPath, deps) {
@@ -296,99 +174,34 @@ function onePasswordTokenEnvKeys(env) {
 
 function commandEnvWithoutOnePasswordTokenFallbacks(env) {
   const commandEnv = { ...env };
-
   for (const key of onePasswordTokenEnvKeys(env)) {
     delete commandEnv[key];
   }
-
   return commandEnv;
 }
 
-async function commandCheck(command, deps) {
+async function requiredCommandCheck(command, deps) {
   return (await deps.commandExists(command))
     ? pass(`command_${command}`, `Command "${command}" is available.`)
     : fail(
         `command_${command}`,
         `Command "${command}" is not available on PATH.`,
-        'Rerun https://boot.pirog.me/boot.sh or install the missing Brewfile dependency.',
+        'Rerun https://boot.pirog.me/boot.sh or install the missing Brewfile formula.',
+      );
+}
+
+async function optionalCommandCheck(command, remediation, deps) {
+  return (await deps.commandExists(command))
+    ? pass(`command_${command}`, `Optional command "${command}" is available.`)
+    : warn(
+        `command_${command}`,
+        `Optional command "${command}" is not available on PATH.`,
+        remediation,
       );
 }
 
 function getCheck(checks, id) {
   return checks.find((check) => check.id === id);
-}
-
-function checkOnePasswordEnvironmentRun(result) {
-  if (!result || typeof result !== 'object') {
-    return fail(
-      'onepassword_environment_run',
-      '1Password Environment readiness output was not a JSON object.',
-      'Rerun the readiness helper after confirming the readiness Environment is accessible through 1Password Developer.',
-    );
-  }
-
-  if (result.present !== true) {
-    return fail(
-      'onepassword_environment_run',
-      `${READINESS_AUTHORIZATION_CODE_KEY} was not provided by the 1Password Environment.`,
-      'Open 1Password, enable Developer > Show 1Password Developer experience, and confirm the readiness Environment includes the authorization sentinel.',
-    );
-  }
-
-  if (result.matches !== true) {
-    return fail(
-      'onepassword_environment_run',
-      `${READINESS_AUTHORIZATION_CODE_KEY} did not match the expected readiness sentinel.`,
-      'Update the readiness Environment authorization sentinel in 1Password, then rerun the readiness helper.',
-    );
-  }
-
-  return pass(
-    'onepassword_environment_run',
-    '1Password Environment provided the expected readiness authorization sentinel.',
-  );
-}
-
-function checkTailscaleStatus(status, agentboxHost) {
-  if (!status || typeof status !== 'object') {
-    return fail(
-      'tailscale_status',
-      'Tailscale status output was not a JSON object.',
-      tailscaleRemediation(agentboxHost),
-    );
-  }
-
-  const issues = [];
-  const tailscaleIps = Array.isArray(status.TailscaleIPs) ? status.TailscaleIPs : [];
-  const tailnetName = status.CurrentTailnet?.Name;
-
-  if (status.BackendState !== 'Running') {
-    issues.push(`BackendState is "${String(status.BackendState ?? 'missing')}"`);
-  }
-
-  if (status.Self?.Online !== true) {
-    issues.push('local node is not online');
-  }
-
-  if (status.Self?.InNetworkMap !== true) {
-    issues.push('local node is not in the network map');
-  }
-
-  if (tailscaleIps.length === 0) {
-    issues.push('no Tailscale IPs are assigned');
-  }
-
-  if (tailnetName !== EXPECTED_TAILNET_NAME) {
-    issues.push(`CurrentTailnet.Name is "${String(tailnetName ?? 'missing')}"`);
-  }
-
-  return issues.length === 0
-    ? pass('tailscale_status', `Tailscale is running on the ${EXPECTED_TAILNET_NAME} tailnet.`)
-    : fail(
-        'tailscale_status',
-        `Tailscale is not ready: ${issues.join('; ')}.`,
-        tailscaleRemediation(agentboxHost),
-      );
 }
 
 async function agentboxHostInstalled(deps) {
@@ -397,26 +210,263 @@ async function agentboxHostInstalled(deps) {
     pathInfo(AGENTBOX_HEALTH_PLIST_PATH, deps),
   ]);
 
-  return Boolean(healthScript && healthPlist);
+  return Boolean(
+    healthScript?.isFile?.() && (healthScript.mode & 0o111) !== 0 && healthPlist?.isFile?.(),
+  );
 }
 
-async function appendStowedLinkChecks(checks, links, homeDir, deps) {
-  for (const link of links) {
-    const targetPath = path.join(homeDir, ...link.relativePath);
-    const info = await pathInfo(targetPath, deps);
-    const remediation =
-      link.remediation ??
-      'Run bun run ai:sync from /Users/pirog/tanaab/me to restow the Codex dotfiles.';
-
-    if (!info) {
-      checks.push(fail(link.id, `${link.label} is missing.`, remediation));
-      continue;
-    }
-
+async function appendHomebrewWritabilityCheck(checks, deps) {
+  if (getCheck(checks, 'command_brew')?.status === 'fail') {
     checks.push(
-      info.isSymbolicLink()
-        ? pass(link.id, `${link.label} exists as a stowed link.`)
-        : warn(link.id, `${link.label} exists but is not a symbolic link.`, remediation),
+      fail(
+        'homebrew_writable',
+        'Homebrew writability could not be checked because brew is missing.',
+        'Install Homebrew for the current macOS user, then rerun the readiness helper.',
+      ),
+    );
+    return;
+  }
+
+  const locations = [];
+  try {
+    for (const args of [['--prefix'], ['--cellar'], ['--cache']]) {
+      const { stdout } = await deps.execFile('brew', args);
+      locations.push(stdout.trim());
+    }
+  } catch {
+    checks.push(
+      fail(
+        'homebrew_writable',
+        'Homebrew could not report its prefix, Cellar, and cache locations.',
+        'Repair the Homebrew installation for the current macOS user, then rerun brew doctor.',
+      ),
+    );
+    return;
+  }
+
+  const unwritable = [];
+  for (const location of locations) {
+    try {
+      await deps.access(location, fsConstants.W_OK);
+    } catch {
+      unwritable.push(location);
+    }
+  }
+
+  checks.push(
+    unwritable.length === 0
+      ? pass('homebrew_writable', 'Homebrew prefix, Cellar, and cache are writable.')
+      : fail(
+          'homebrew_writable',
+          `Homebrew location(s) are not writable: ${unwritable.join(', ')}.`,
+          'Repair Homebrew permissions for the current macOS user, then rerun brew doctor.',
+        ),
+  );
+}
+
+async function brewPackageInstalled(type, name, deps) {
+  try {
+    await deps.execFile('brew', ['list', type === 'formula' ? '--formula' : '--cask', name]);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function appendBrewfileChecks(checks, repoRoot, agentboxHost, deps) {
+  const brewfilePath = path.join(repoRoot, 'Brewfile');
+  let brewfile;
+
+  try {
+    brewfile = await deps.readFile(brewfilePath, 'utf8');
+  } catch {
+    checks.push(
+      fail(
+        'brewfile_readable',
+        `Brewfile was not readable at ${brewfilePath}.`,
+        'Run this probe from the me checkout or rerun https://boot.pirog.me/boot.sh to materialize the repo.',
+      ),
+      fail(
+        'brewfile_formulas_installed',
+        'Brewfile formulas could not be checked because the Brewfile is unreadable.',
+        'Restore the me checkout and rerun the readiness helper.',
+      ),
+      warn(
+        'brewfile_casks_installed',
+        'Brewfile casks could not be checked because the Brewfile is unreadable.',
+        'Restore the me checkout and rerun the readiness helper.',
+      ),
+    );
+    return;
+  }
+
+  checks.push(pass('brewfile_readable', 'Brewfile is readable.'));
+  const { casks, formulas } = parseBrewfileEntries(brewfile);
+
+  if (getCheck(checks, 'command_brew')?.status === 'fail') {
+    checks.push(
+      fail(
+        'brewfile_formulas_installed',
+        'Brewfile formulas could not be checked because brew is missing.',
+        'Install Homebrew and rerun https://boot.pirog.me/boot.sh.',
+      ),
+      warn(
+        'brewfile_casks_installed',
+        'Brewfile casks could not be checked because brew is missing.',
+        'Install Homebrew and rerun https://boot.pirog.me/boot.sh.',
+      ),
+    );
+    return;
+  }
+
+  const missingFormulas = [];
+  for (const formula of formulas) {
+    if (!(await brewPackageInstalled('formula', formula, deps))) {
+      missingFormulas.push(formula);
+    }
+  }
+  checks.push(
+    missingFormulas.length === 0
+      ? pass(
+          'brewfile_formulas_installed',
+          `All ${formulas.length} Brewfile formulas are installed.`,
+        )
+      : fail(
+          'brewfile_formulas_installed',
+          `Missing Brewfile formula(s): ${missingFormulas.join(', ')}.`,
+          'Rerun https://boot.pirog.me/boot.sh to install every required Brewfile formula.',
+        ),
+  );
+
+  const checkedCasks = agentboxHost
+    ? casks.filter((cask) => !AGENTBOX_SKIPPED_CASKS.has(cask))
+    : casks;
+  const missingCasks = [];
+  for (const cask of checkedCasks) {
+    if (!(await brewPackageInstalled('cask', cask, deps))) {
+      missingCasks.push(cask);
+    }
+  }
+  const agentboxNote = agentboxHost
+    ? ' Agentbox intentionally skips 1password and tailscale-app.'
+    : '';
+  checks.push(
+    missingCasks.length === 0
+      ? pass(
+          'brewfile_casks_installed',
+          `All ${checkedCasks.length} applicable Brewfile casks are installed.${agentboxNote}`,
+        )
+      : warn(
+          'brewfile_casks_installed',
+          `Missing optional Brewfile cask(s): ${missingCasks.join(', ')}.${agentboxNote}`,
+          'Rerun https://boot.pirog.me/boot.sh or install the optional applications you want on this machine.',
+        ),
+  );
+}
+
+async function appendRequiredCommandChecks(checks, deps) {
+  for (const command of REQUIRED_COMMANDS.filter((entry) => entry !== 'brew')) {
+    checks.push(await requiredCommandCheck(command, deps));
+  }
+}
+
+async function appendNodeRuntimeCheck(checks, deps) {
+  if (getCheck(checks, 'command_brew')?.status === 'fail') {
+    checks.push(
+      fail(
+        'node_version',
+        'The Homebrew node@24 runtime could not be checked because brew is missing.',
+        'Install Homebrew and node@24 from the Brewfile.',
+      ),
+    );
+    return;
+  }
+
+  try {
+    const { stdout: prefixOutput } = await deps.execFile('brew', ['--prefix', 'node@24']);
+    const nodePath = path.join(prefixOutput.trim(), 'bin', 'node');
+    const { stdout: versionOutput } = await deps.execFile(nodePath, ['--version']);
+    const version = versionOutput.trim();
+    const major = Number.parseInt(version.replace(/^v/, '').split('.')[0] ?? '', 10);
+    checks.push(
+      major >= MINIMUM_NODE_MAJOR_VERSION
+        ? pass('node_version', `Homebrew node@24 reports supported version ${version}.`)
+        : fail(
+            'node_version',
+            `Homebrew node@24 reports version ${version || 'unknown'}, expected major version ${MINIMUM_NODE_MAJOR_VERSION} or newer.`,
+            'Install or update node@24 from the Brewfile.',
+          ),
+    );
+  } catch {
+    checks.push(
+      fail(
+        'node_version',
+        'The Homebrew node@24 binary could not be resolved or executed.',
+        'Install or repair node@24 from the Brewfile.',
+      ),
+    );
+  }
+}
+
+async function appendDotfileChecks(checks, repoRoot, homeDir, deps) {
+  const dotfilesRoot = path.join(repoRoot, 'dotfiles');
+  let packages;
+
+  try {
+    const entries = await deps.readdir(dotfilesRoot, { withFileTypes: true });
+    packages = entries
+      .filter((entry) => entry.isDirectory())
+      .map((entry) => entry.name)
+      .sort();
+  } catch {
+    checks.push(
+      fail(
+        'dotfiles_stowed',
+        `Dotfile packages could not be read from ${dotfilesRoot}.`,
+        'Restore the me checkout and rerun https://boot.pirog.me/boot.sh.',
+      ),
+    );
+    return;
+  }
+
+  if (getCheck(checks, 'command_stow')?.status === 'fail') {
+    checks.push(
+      fail(
+        'dotfiles_stowed',
+        'Dotfile installation could not be checked because stow is missing.',
+        'Install Stow from the Brewfile and rerun https://boot.pirog.me/boot.sh.',
+      ),
+    );
+    return;
+  }
+
+  try {
+    const { stderr = '', stdout = '' } = await deps.execFile('stow', [
+      '--simulate',
+      '--verbose=1',
+      '--dir',
+      dotfilesRoot,
+      '--target',
+      homeDir,
+      ...packages,
+    ]);
+    const changes = stripStowSimulationNoise(`${stdout}\n${stderr}`);
+    checks.push(
+      changes === ''
+        ? pass('dotfiles_stowed', `All ${packages.length} dotfile packages are fully stowed.`)
+        : fail(
+            'dotfiles_stowed',
+            'The repo-owned dotfile packages are not fully stowed into the current home directory.',
+            'Rerun https://boot.pirog.me/boot.sh or run bun run ai:sync for the ai package, then rerun readiness.',
+          ),
+    );
+  } catch {
+    checks.push(
+      fail(
+        'dotfiles_stowed',
+        'Stow could not simulate the complete repo-owned dotfile layout.',
+        'Resolve Stow conflicts and rerun https://boot.pirog.me/boot.sh.',
+      ),
     );
   }
 }
@@ -427,30 +477,30 @@ async function appendVimJanusRuntimeCheck(checks, homeDir, deps) {
     path.join(janusRuntimePath, 'core', 'before', 'plugin', 'janus.vim'),
     path.join(janusRuntimePath, 'core', 'plugins.vim'),
   ];
+  const missing = [];
 
   for (const requiredFile of requiredFiles) {
     if (!(await pathInfo(requiredFile, deps))) {
-      checks.push(
-        fail(
-          'vim_janus_runtime',
-          `Janus runtime is missing required file ${requiredFile}.`,
-          'Restore the Janus runtime at ~/.vim/janus/vim before launching Vim.',
-        ),
-      );
-      return;
+      missing.push(requiredFile);
     }
   }
 
-  checks.push(pass('vim_janus_runtime', 'Janus runtime exists at ~/.vim/janus/vim.'));
+  checks.push(
+    missing.length === 0
+      ? pass('vim_janus_runtime', 'Janus runtime exists at ~/.vim/janus/vim.')
+      : warn(
+          'vim_janus_runtime',
+          `Optional Janus runtime is incomplete: ${missing.join(', ')}.`,
+          'Restore the Janus runtime at ~/.vim/janus/vim before relying on the Vim profile.',
+        ),
+  );
 }
 
 async function appendGeneratedConfigCheck(checks, homeDir, deps) {
   const generatedConfigPath = path.join(homeDir, '.codex', 'config.toml');
-
   try {
     const configStat = await deps.stat(generatedConfigPath);
     const mode = configStat.mode & 0o777;
-
     checks.push(
       mode === PRIVATE_CONFIG_MODE
         ? pass('codex_generated_config', '~/.codex/config.toml exists with private permissions.')
@@ -471,213 +521,86 @@ async function appendGeneratedConfigCheck(checks, homeDir, deps) {
   }
 }
 
-async function appendBrewfileChecks(checks, repoRoot, deps) {
-  const brewfilePath = path.join(repoRoot, 'Brewfile');
-  let brewfile = '';
-
-  try {
-    brewfile = await deps.readFile(brewfilePath, 'utf8');
-  } catch {
-    checks.push(
-      fail(
-        'brewfile_readable',
-        `Brewfile was not readable at ${brewfilePath}.`,
-        'Run this probe from the me checkout or rerun https://boot.pirog.me/boot.sh to materialize the repo.',
-      ),
+function checkOnePasswordEnvironmentRun(result) {
+  if (!result || typeof result !== 'object') {
+    return warn(
+      'onepassword_environment_run',
+      '1Password Environment readiness output was not a JSON object.',
+      'Confirm the readiness Environment is accessible through 1Password Developer.',
     );
   }
-
-  if (!brewfile) {
-    return;
-  }
-
-  checks.push(pass('brewfile_readable', 'Brewfile is readable.'));
-
-  for (const cask of REQUIRED_BREWFILE_CASKS) {
-    checks.push(
-      hasCask(brewfile, cask)
-        ? pass(`brewfile_cask_${checkIdSegment(cask)}`, `Brewfile includes cask "${cask}".`)
-        : fail(
-            `brewfile_cask_${checkIdSegment(cask)}`,
-            `Brewfile does not include cask "${cask}".`,
-            'Update the Brewfile and rerun https://boot.pirog.me/boot.sh or install the missing Brewfile dependency.',
-          ),
+  if (result.present !== true || result.matches !== true) {
+    return warn(
+      'onepassword_environment_run',
+      result.present === true
+        ? `${READINESS_AUTHORIZATION_CODE_KEY} did not match the expected readiness sentinel.`
+        : `${READINESS_AUTHORIZATION_CODE_KEY} was not provided by the 1Password Environment.`,
+      'Confirm the readiness Environment contains the expected authorization sentinel.',
     );
   }
-
-  for (const formula of REQUIRED_BREWFILE_FORMULAS) {
-    checks.push(
-      hasFormula(brewfile, formula)
-        ? pass(
-            `brewfile_formula_${checkIdSegment(formula)}`,
-            `Brewfile includes formula "${formula}".`,
-          )
-        : fail(
-            `brewfile_formula_${checkIdSegment(formula)}`,
-            `Brewfile does not include formula "${formula}".`,
-            'Update the Brewfile and rerun https://boot.pirog.me/boot.sh or install the missing Brewfile dependency.',
-          ),
-    );
-  }
-
-  for (const { cask, id } of FORBIDDEN_BREWFILE_CASKS) {
-    checks.push(
-      hasCask(brewfile, cask)
-        ? fail(
-            id,
-            `Brewfile still includes conflicting cask "${cask}".`,
-            'Replace cask "1password-cli" with cask "1password-cli@beta" so op supports 1Password Environments.',
-          )
-        : pass(id, `Brewfile does not include conflicting cask "${cask}".`),
-    );
-  }
-}
-
-async function appendNodeRuntimeChecks(checks, deps) {
-  const brewCheck = getCheck(checks, 'command_brew');
-  const nodeCheck = getCheck(checks, 'command_node');
-  const formulaLabel = EXPECTED_NODE_FORMULA;
-  const remediation =
-    'Install node@24 from the Brewfile, ensure Homebrew shellenv loads first, and put "$(brew --prefix node@24)/bin" before other node providers on PATH.';
-
-  if (brewCheck?.status === 'fail') {
-    checks.push(
-      fail(
-        'node_homebrew_path',
-        'Homebrew node path could not be checked because brew is missing.',
-        'Install Homebrew, rerun https://boot.pirog.me/boot.sh, then rerun the readiness helper.',
-      ),
-      fail(
-        'node_version',
-        'Node version could not be checked because brew is missing.',
-        'Install Homebrew and node@24 from the Brewfile, then rerun the readiness helper.',
-      ),
-    );
-    return;
-  }
-
-  if (nodeCheck?.status === 'fail') {
-    checks.push(
-      fail(
-        'node_homebrew_path',
-        'Homebrew node path could not be checked because node is missing.',
-        remediation,
-      ),
-      fail(
-        'node_version',
-        'Node version could not be checked because node is missing.',
-        remediation,
-      ),
-    );
-    return;
-  }
-
-  let expectedNodePath = '';
-
-  try {
-    const { stdout } = await deps.execFile('brew', ['--prefix', formulaLabel]);
-    const nodePrefix = stdout.trim();
-    expectedNodePath = path.join(nodePrefix, 'bin', 'node');
-  } catch {
-    checks.push(
-      fail(
-        'node_homebrew_path',
-        `Homebrew prefix for ${formulaLabel} could not be resolved.`,
-        remediation,
-      ),
-    );
-  }
-
-  if (expectedNodePath) {
-    try {
-      const { stdout } = await deps.execFile('which', ['node']);
-      const actualNodePath = stdout.trim();
-
-      checks.push(
-        actualNodePath === expectedNodePath
-          ? pass('node_homebrew_path', `node resolves to ${formulaLabel} at ${actualNodePath}.`)
-          : fail(
-              'node_homebrew_path',
-              `node resolves to ${actualNodePath || 'an empty path'}, expected ${expectedNodePath}.`,
-              remediation,
-            ),
-      );
-    } catch {
-      checks.push(fail('node_homebrew_path', 'which node failed.', remediation));
-    }
-  }
-
-  try {
-    const { stdout } = await deps.execFile('node', ['--version']);
-    const version = stdout.trim();
-    const major = Number.parseInt(version.replace(/^v/, '').split('.')[0] ?? '', 10);
-
-    checks.push(
-      major === EXPECTED_NODE_MAJOR_VERSION
-        ? pass('node_version', `node reports version ${version}.`)
-        : fail(
-            'node_version',
-            `node reports version ${version || 'unknown'}, expected major version ${EXPECTED_NODE_MAJOR_VERSION}.`,
-            remediation,
-          ),
-    );
-  } catch {
-    checks.push(fail('node_version', 'node --version failed.', remediation));
-  }
-}
-
-async function appendRequiredCommandChecks(checks, deps) {
-  for (const command of REQUIRED_COMMANDS.filter((requiredCommand) => requiredCommand !== 'brew')) {
-    checks.push(await commandCheck(command, deps));
-  }
-}
-
-async function appendAppPresenceChecks(checks, agentboxHost, deps) {
-  const onePasswordAppPath = '/Applications/1Password.app';
-  checks.push(
-    agentboxHost
-      ? pass('onepassword_app', '1Password.app is not required on an Agentbox host.')
-      : (await pathInfo(onePasswordAppPath, deps))
-        ? pass('onepassword_app', '1Password.app was found.')
-        : fail(
-            'onepassword_app',
-            '1Password.app was not found.',
-            'Rerun https://boot.pirog.me/boot.sh or install the 1Password desktop app, then open it and sign in.',
-          ),
-  );
-
-  const tailscaleAppPath = '/Applications/Tailscale.app';
-  checks.push(
-    agentboxHost
-      ? pass('tailscale_app', 'Tailscale.app is not required on an Agentbox host.')
-      : (await pathInfo(tailscaleAppPath, deps))
-        ? pass('tailscale_app', 'Tailscale.app was found.')
-        : fail(
-            'tailscale_app',
-            'Tailscale.app was not found.',
-            'Rerun https://boot.pirog.me/boot.sh or install the Tailscale desktop app, then open it and sign in.',
-          ),
-  );
-
-  const codexAppPath = '/Applications/Codex.app';
-  checks.push(
-    (await pathInfo(codexAppPath, deps))
-      ? pass('codex_app', 'Codex.app was found.')
-      : fail(
-          'codex_app',
-          'Codex.app was not found.',
-          'Rerun https://boot.pirog.me/boot.sh or install the Codex desktop app, then open it and sign in.',
-        ),
+  return pass(
+    'onepassword_environment_run',
+    '1Password Environment provided the expected readiness authorization sentinel.',
   );
 }
 
-async function appendOnePasswordVaultAccessCheck(checks, env, deps) {
-  if (getCheck(checks, 'command_op')?.status === 'fail') {
+function formatOnePasswordCommandError(error) {
+  const detail = formatErrorDetail(error);
+  return /couldn'?t connect to the 1Password desktop app/i.test(detail)
+    ? {
+        message: '1Password CLI could not connect to the desktop app from this process.',
+        remediation:
+          'If this was sandboxed, rerun readiness with unsandboxed local access. Otherwise open and unlock 1Password and enable CLI integration.',
+      }
+    : {
+        message: '1Password CLI vault access check failed.',
+        remediation: 'Open and unlock 1Password, enable CLI integration, then rerun op vault list.',
+      };
+}
+
+async function appendOnePasswordChecks(checks, agentboxHost, env, deps) {
+  checks.push(
+    await optionalCommandCheck(
+      'op',
+      'Install the optional 1Password CLI beta cask if protected-resource access is needed.',
+      deps,
+    ),
+  );
+
+  if (agentboxHost) {
     checks.push(
-      fail(
+      pass(
         'onepassword_cli_vault_access',
-        '1Password CLI vault access could not be checked because op is missing.',
-        'Install 1Password CLI, open 1Password, sign in, unlock it, and enable Developer > Integrate with 1Password CLI.',
+        'Desktop-backed vault access is not required on Agentbox.',
+      ),
+      pass(
+        'onepassword_environment_cli',
+        'Desktop Environment integration is not required on Agentbox.',
+      ),
+      pass(
+        'onepassword_environment_run',
+        'Desktop Environment authorization is not required on Agentbox.',
+      ),
+    );
+    return;
+  }
+
+  if (getCheck(checks, 'command_op')?.status === 'warn') {
+    checks.push(
+      warn(
+        'onepassword_cli_vault_access',
+        '1Password vault access was not checked because op is missing.',
+        'Install the optional 1Password CLI beta cask and configure desktop integration if needed.',
+      ),
+      warn(
+        'onepassword_environment_cli',
+        '1Password Environment support was not checked because op is missing.',
+        'Install the optional 1Password CLI beta cask if Environment access is needed.',
+      ),
+      warn(
+        'onepassword_environment_run',
+        '1Password Environment authorization was not checked because op is missing.',
+        'Install and configure 1Password Environment access if needed.',
       ),
     );
     return;
@@ -691,60 +614,42 @@ async function appendOnePasswordVaultAccessCheck(checks, env, deps) {
     checks.push(
       Array.isArray(vaults) && vaults.length > 0
         ? pass('onepassword_cli_vault_access', `1Password CLI can list ${vaults.length} vault(s).`)
-        : fail(
+        : warn(
             'onepassword_cli_vault_access',
             '1Password CLI cannot list vaults for a signed-in account.',
-            'Open 1Password, sign in, unlock it, enable Developer > Integrate with 1Password CLI, then rerun op vault list.',
+            'Open and unlock 1Password, enable CLI integration, then rerun op vault list.',
           ),
     );
   } catch (error) {
-    const formattedError = formatOnePasswordCommandError(error);
-    checks.push(
-      fail('onepassword_cli_vault_access', formattedError.message, formattedError.remediation),
-    );
+    const formatted = formatOnePasswordCommandError(error);
+    checks.push(warn('onepassword_cli_vault_access', formatted.message, formatted.remediation));
   }
-}
 
-async function appendOnePasswordEnvironmentChecks(checks, env, deps) {
   let environmentCliSupported = false;
-
-  if (getCheck(checks, 'command_op')?.status === 'fail') {
+  try {
+    await deps.execFile('op', ['environment', 'read', '--help'], {
+      env: commandEnvWithoutOnePasswordTokenFallbacks(env),
+    });
+    environmentCliSupported = true;
     checks.push(
-      fail(
+      pass('onepassword_environment_cli', '1Password CLI supports 1Password Environments.'),
+    );
+  } catch {
+    checks.push(
+      warn(
         'onepassword_environment_cli',
-        '1Password Environment CLI support could not be checked because op is missing.',
-        'Install the 1Password CLI beta cask from the Brewfile, then rerun op environment read --help.',
+        '1Password Environment CLI support is unavailable.',
+        `Install or update to 1Password CLI beta ${MINIMUM_ONEPASSWORD_ENVIRONMENT_CLI_VERSION} or newer.`,
       ),
     );
-  } else {
-    try {
-      await deps.execFile('op', ['environment', 'read', '--help'], {
-        env: commandEnvWithoutOnePasswordTokenFallbacks(env),
-      });
-      environmentCliSupported = true;
-      checks.push(
-        pass(
-          'onepassword_environment_cli',
-          '1Password CLI supports reading values from 1Password Environments.',
-        ),
-      );
-    } catch {
-      checks.push(
-        fail(
-          'onepassword_environment_cli',
-          '1Password Environment CLI support check failed.',
-          `Install or update to 1Password CLI beta ${MINIMUM_ONEPASSWORD_ENVIRONMENT_CLI_VERSION} or newer through cask "1password-cli@beta".`,
-        ),
-      );
-    }
   }
 
   if (!environmentCliSupported) {
     checks.push(
-      fail(
+      warn(
         'onepassword_environment_run',
-        '1Password Environment readiness could not be checked because Environment CLI support is missing.',
-        `Install or update to 1Password CLI beta ${MINIMUM_ONEPASSWORD_ENVIRONMENT_CLI_VERSION} or newer through cask "1password-cli@beta", then rerun the readiness helper.`,
+        '1Password Environment authorization was not checked because CLI support is unavailable.',
+        'Install the 1Password CLI beta and configure Environment access if needed.',
       ),
     );
     return;
@@ -762,75 +667,71 @@ async function appendOnePasswordEnvironmentChecks(checks, env, deps) {
         '-e',
         ONEPASSWORD_ENVIRONMENT_VALIDATION_SCRIPT,
       ],
-      {
-        env: commandEnvWithoutOnePasswordTokenFallbacks(env),
-      },
+      { env: commandEnvWithoutOnePasswordTokenFallbacks(env) },
     );
     checks.push(checkOnePasswordEnvironmentRun(JSON.parse(stdout)));
-  } catch (error) {
-    if (error instanceof SyntaxError) {
-      checks.push(
-        fail(
-          'onepassword_environment_run',
-          '1Password Environment readiness output was not parseable JSON.',
-          'Rerun the readiness helper after confirming the readiness Environment is accessible through 1Password Developer.',
-        ),
-      );
-      return;
-    }
-
-    const formattedError = formatOnePasswordEnvironmentCommandError(error);
+  } catch {
     checks.push(
-      fail('onepassword_environment_run', formattedError.message, formattedError.remediation),
+      warn(
+        'onepassword_environment_run',
+        '1Password Environment authorization check failed.',
+        'Confirm desktop integration and readiness Environment access if protected resources are needed.',
+      ),
     );
   }
 }
 
-async function appendOnePasswordChecks(checks, agentboxHost, env, deps) {
+function tailscaleRemediation(agentboxHost) {
+  return agentboxHost
+    ? 'Run the Agentbox health report and repair its managed tailscaled service if network access is needed.'
+    : 'Open Tailscale and connect this machine to the tanaab.dev tailnet if network access is needed.';
+}
+
+function checkTailscaleStatus(status, agentboxHost) {
+  const issues = [];
+  if (!status || typeof status !== 'object') {
+    issues.push('status output was not a JSON object');
+  } else {
+    if (status.BackendState !== 'Running') issues.push('backend is not running');
+    if (status.Self?.Online !== true) issues.push('local node is not online');
+    if (status.Self?.InNetworkMap !== true) issues.push('local node is not in the network map');
+    if (!Array.isArray(status.TailscaleIPs) || status.TailscaleIPs.length === 0) {
+      issues.push('no Tailscale IPs are assigned');
+    }
+    if (status.CurrentTailnet?.Name !== EXPECTED_TAILNET_NAME) {
+      issues.push(`tailnet is "${String(status.CurrentTailnet?.Name ?? 'missing')}"`);
+    }
+  }
+
+  return issues.length === 0
+    ? pass('tailscale_status', `Tailscale is running on the ${EXPECTED_TAILNET_NAME} tailnet.`)
+    : warn(
+        'tailscale_status',
+        `Tailscale is not ready: ${issues.join('; ')}.`,
+        tailscaleRemediation(agentboxHost),
+      );
+}
+
+async function appendTailscaleChecks(checks, agentboxHost, deps) {
+  checks.push(await optionalCommandCheck('tailscale', tailscaleRemediation(agentboxHost), deps));
+
   if (agentboxHost) {
     checks.push(
-      pass(
-        'onepassword_cli_vault_access',
-        'Desktop-backed 1Password vault access is not required on an Agentbox host.',
-      ),
-      pass(
-        'onepassword_environment_cli',
-        '1Password Environment desktop integration is not required on an Agentbox host.',
-      ),
-      pass(
-        'onepassword_environment_run',
-        '1Password Environment authorization is not required on an Agentbox host.',
-      ),
+      (await deps.commandExists('tailscaled'))
+        ? pass('command_tailscaled', 'Optional Agentbox tailscaled command is available.')
+        : warn(
+            'command_tailscaled',
+            'Agentbox tailscaled is not available on PATH.',
+            tailscaleRemediation(true),
+          ),
     );
-    return;
   }
 
-  await appendOnePasswordVaultAccessCheck(checks, env, deps);
-  await appendOnePasswordEnvironmentChecks(checks, env, deps);
-}
-
-async function appendAgentboxTailscaledCheck(checks, agentboxHost, deps) {
-  if (!agentboxHost) {
-    return;
-  }
-
-  checks.push(
-    (await deps.commandExists('tailscaled'))
-      ? pass('command_tailscaled', 'Command "tailscaled" is available for the Agentbox runtime.')
-      : fail(
-          'command_tailscaled',
-          'Command "tailscaled" is not available on PATH for the Agentbox runtime.',
-          'Rerun Agentbox so its Homebrew tailscale formula and managed tailscaled service are installed.',
-        ),
-  );
-}
-
-async function appendTailscaleStatusCheck(checks, agentboxHost, deps) {
-  if (getCheck(checks, 'command_tailscale')?.status === 'fail') {
+  if (getCheck(checks, 'command_tailscale')?.status === 'warn') {
     checks.push(
-      fail(
+      warn(
         'tailscale_status',
-        'Tailscale status could not be checked because tailscale is missing.',
+        'Tailscale status was not checked because the tailscale command is missing.',
         tailscaleRemediation(agentboxHost),
       ),
     );
@@ -840,20 +741,14 @@ async function appendTailscaleStatusCheck(checks, agentboxHost, deps) {
   try {
     const { stdout } = await deps.execFile('tailscale', ['status', '--json']);
     checks.push(checkTailscaleStatus(JSON.parse(stdout), agentboxHost));
-  } catch (error) {
-    if (error instanceof SyntaxError) {
-      checks.push(
-        fail(
-          'tailscale_status',
-          'Tailscale status output was not parseable JSON.',
-          tailscaleRemediation(agentboxHost),
-        ),
-      );
-      return;
-    }
-
-    const formattedError = formatTailscaleCommandError(error, agentboxHost);
-    checks.push(fail('tailscale_status', formattedError.message, formattedError.remediation));
+  } catch {
+    checks.push(
+      warn(
+        'tailscale_status',
+        'Tailscale status check failed.',
+        tailscaleRemediation(agentboxHost),
+      ),
+    );
   }
 }
 
@@ -861,16 +756,52 @@ function appendTokenFallbackCheck(checks, env) {
   const presentTokenKeys = onePasswordTokenEnvKeys(env);
   checks.push(
     presentTokenKeys.length === 0
-      ? pass(
-          'bootstrap_token_env',
-          'No 1Password token fallback environment variables are present.',
-        )
+      ? pass('bootstrap_token_env', 'No 1Password token fallback variables are present.')
       : warn(
           'bootstrap_token_env',
-          `1Password token fallback environment variable(s) are still set: ${presentTokenKeys.join(', ')}.`,
-          'Unset 1Password token fallback environment variables so readiness does not rely on persistent token material.',
+          `1Password token fallback variable(s) are still set: ${presentTokenKeys.join(', ')}.`,
+          'Unset persistent 1Password token fallback variables when they are no longer needed.',
         ),
   );
+}
+
+async function appendCodexPluginCheck(checks, repoRoot, homeDir, deps) {
+  const linkPath = path.join(homeDir, '.codex', 'plugins', 'piroplugin');
+  const info = await pathInfo(linkPath, deps);
+  if (!info?.isSymbolicLink?.()) {
+    checks.push(
+      fail(
+        'codex_piroplugin_link',
+        '~/.codex/plugins/piroplugin is missing or is not a symbolic link.',
+        'Rerun https://boot.pirog.me/boot.sh or bun run ai:sync from the me checkout.',
+      ),
+    );
+    return;
+  }
+
+  try {
+    const [actualTarget, expectedTarget] = await Promise.all([
+      deps.realpath(linkPath),
+      deps.realpath(repoRoot),
+    ]);
+    checks.push(
+      actualTarget === expectedTarget
+        ? pass('codex_piroplugin_link', 'piroplugin is linked to the current me checkout.')
+        : fail(
+            'codex_piroplugin_link',
+            `piroplugin resolves to ${actualTarget}, expected ${expectedTarget}.`,
+            'Rerun https://boot.pirog.me/boot.sh or bun run ai:sync from the current me checkout.',
+          ),
+    );
+  } catch {
+    checks.push(
+      fail(
+        'codex_piroplugin_link',
+        'piroplugin link target could not be resolved.',
+        'Rerun https://boot.pirog.me/boot.sh or bun run ai:sync from the current me checkout.',
+      ),
+    );
+  }
 }
 
 /**
@@ -881,10 +812,13 @@ function appendTokenFallbackCheck(checks, env) {
  */
 export async function checkMachine(options = {}) {
   const deps = {
+    access: defaultAccess,
     commandExists: defaultCommandExists,
     execFile: defaultExecFile,
     lstat: defaultLstat,
     readFile: defaultReadFile,
+    readdir: defaultReaddir,
+    realpath: defaultRealpath,
     stat: defaultStat,
     ...(options.deps ?? {}),
   };
@@ -894,19 +828,18 @@ export async function checkMachine(options = {}) {
   const checks = [];
   const agentboxHost = await agentboxHostInstalled(deps);
 
-  checks.push(await commandCheck('brew', deps));
-  await appendBrewfileChecks(checks, repoRoot, deps);
+  checks.push(await requiredCommandCheck('brew', deps));
+  await appendHomebrewWritabilityCheck(checks, deps);
+  await appendBrewfileChecks(checks, repoRoot, agentboxHost, deps);
   await appendRequiredCommandChecks(checks, deps);
-  await appendNodeRuntimeChecks(checks, deps);
-  await appendStowedLinkChecks(checks, DOTFILE_LINKS, homeDir, deps);
+  await appendNodeRuntimeCheck(checks, deps);
+  await appendDotfileChecks(checks, repoRoot, homeDir, deps);
   await appendVimJanusRuntimeCheck(checks, homeDir, deps);
   await appendGeneratedConfigCheck(checks, homeDir, deps);
-  await appendAppPresenceChecks(checks, agentboxHost, deps);
   await appendOnePasswordChecks(checks, agentboxHost, env, deps);
-  await appendAgentboxTailscaledCheck(checks, agentboxHost, deps);
-  await appendTailscaleStatusCheck(checks, agentboxHost, deps);
+  await appendTailscaleChecks(checks, agentboxHost, deps);
   appendTokenFallbackCheck(checks, env);
-  await appendStowedLinkChecks(checks, CODEX_PLUGIN_LINKS, homeDir, deps);
+  await appendCodexPluginCheck(checks, repoRoot, homeDir, deps);
 
   return {
     ok: !checks.some((check) => check.status === 'fail'),

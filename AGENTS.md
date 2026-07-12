@@ -143,41 +143,41 @@ This is directional guidance, not an expansion of the current public contract:
 - For protected resources, prefer native Codex connectors. When no native connector exists, wrap
   access with `op run --environment zsstdfqknicwfv5glv76gd6tue` instead of committed `.env` files,
   persistent shell secrets, or local token fallbacks.
-- On standard workstations, local readiness probes must prove desktop-app-backed 1Password access.
-  On detected Agentbox hosts, treat the 1Password desktop, vault, and Environment checks as not
-  required while continuing to require the beta `op` CLI and retaining token-fallback warnings.
+- On standard workstations, report desktop-app-backed 1Password access as an optional readiness
+  capability. On detected Agentbox hosts, treat the 1Password desktop, vault, and Environment
+  checks as not required while retaining token-fallback warnings.
   Strip 1Password service account, connect, session, and bootstrap token variables from any `op`
   subprocesses that do run.
-- On detected Agentbox hosts, require `tailscaled` plus the existing `tailscale status --json`
-  tailnet gate instead of requiring `Tailscale.app`. Do not duplicate Agentbox launchd, Serve,
-  OpenClaw, or complete host-health checks inside `piro-me-readiness`.
+- On detected Agentbox hosts, report `tailscaled` plus `tailscale status --json` as optional
+  readiness capabilities instead of requiring `Tailscale.app`. Do not duplicate Agentbox launchd,
+  Serve, OpenClaw, or complete host-health checks inside `piro-me-readiness`.
 - The readiness skill may run its bundled read-only local helper unsandboxed by default because it
   verifies 1Password and Tailscale desktop or daemon readiness. Do not extend that default to
   unrelated commands, setup, installation, tests, release validation, or machine administration.
 - Keep README readiness content limited to human bootstrap or manual setup and a brief pointer to
   `$piro-me-readiness`. Keep maintenance policy here and runtime procedure in
   `skills/me-readiness/SKILL.md`.
-- Update readiness only when a skill changes a stable machine prerequisite: a Brewfile dependency,
-  repo-owned dotfile, manual app/auth/network step, Codex plugin install or link, or connector
-  identity requirement.
+- Keep readiness capability-based: Homebrew write access, every Brewfile formula, required core
+  commands, complete repo-owned dotfiles, generated Codex config, `piroplugin`, and GitHub identity
+  are hard requirements. Brewfile casks, Janus, 1Password, Tailscale, and monday are warnings.
 - Update the owning source first, then readiness only when the prerequisite is stable, repo-owned,
   read-only, and machine-verifiable:
-  - Brew packages belong in `Brewfile`; use the `packages` bucket only for required declarations and
-    commands.
-  - Repo-owned configuration belongs under `dotfiles/**`; use `dotfiles` only for installed or
-    generated surfaces.
+  - Brew packages belong in `Brewfile`; discover formulas and casks from that file instead of
+    duplicating package lists in readiness.
+  - Repo-owned configuration belongs under `dotfiles/**`; discover top-level Stow packages and
+    verify the complete installed layout with a read-only simulation.
   - Human app, auth, and network setup belongs in the README checklist; use `manual_apps` only when a
     local read-only probe can verify it.
   - Plugin install and link layout belongs in plugin or dotfile sources; use `codex_plugins` only for
     installed surfaces.
   - GitHub and monday connector identities belong in skill runtime guidance, not
-    `check-machine.js`.
+    `check-machine.js`; GitHub is required and monday is advisory.
 - Use only these helper buckets:
-  - `homebrew`: Homebrew command availability.
-  - `packages`: Brewfile declarations and required command availability.
-  - `dotfiles`: repo-owned stowed files and generated local configuration.
-  - `manual_apps`: installed apps and read-only app, auth, or network readiness that Brewfile cannot
-    fully establish.
+  - `homebrew`: Homebrew command availability and effective write access.
+  - `packages`: installed Brewfile formulas, optional casks, required commands, and runtime versions.
+  - `dotfiles`: complete repo-owned Stow state and generated local configuration.
+  - `manual_apps`: optional read-only app, auth, or network capabilities that Brewfile cannot fully
+    establish.
   - `codex_plugins`: local Codex plugin links and install surfaces owned by this repository.
 
 ## Examples And Leia

@@ -1,6 +1,6 @@
 ---
 name: piro-me-readiness
-description: Pirobased workflow to verify that a bootstrapped me machine is ready for Codex work as pirog.
+description: Pirobased workflow to verify that a bootstrapped me macOS profile has its required core capabilities and report optional service and Codex integration readiness.
 license: MIT
 metadata:
   type: workflow
@@ -15,35 +15,34 @@ metadata:
 
 ## Overview
 
-Use this skill only to verify that the current `me` checkout and macOS user profile are ready for
-Codex work as `pirog`. It checks the repo-owned machine setup, manually configured app
-readiness, Codex plugin links, and read-only Codex connector identities. It does not configure
-tokens, run setup, manage environments, perform GitHub or monday work, or validate releases.
-When the `pirog` profile is installed on an Agentbox host, the local probe recognizes Agentbox's
-managed `tailscaled` runtime and does not require desktop-backed 1Password integration.
+Use this skill to verify that the current `me` checkout and interactive macOS profile are ready for
+supported work as `pirog`. Core machine capabilities and required Codex integration determine
+readiness. Optional applications, 1Password access, Tailscale connectivity, the Janus runtime, and
+the monday connector produce warnings without making the whole profile unready.
+
+The skill is read-only. It does not install packages, restow files, configure tokens, repair
+services, mutate connector data, or validate the Agentbox product.
 
 ## When to Use
 
-- Run after `boot.sh` and the README manual setup checklist have completed.
-- Run before relying on Codex plugin skills, GitHub connector actions, monday connector actions,
-  1Password-backed local setup, or Tailscale network access.
-- Run when moving this `me` environment to a new interactive macOS user profile.
+- Run after `boot.sh` when preparing or auditing an interactive `pirog` macOS profile.
+- Run before relying on the repo-owned dotfiles, `piroplugin`, or the GitHub connector identity.
+- Run when optional 1Password, Tailscale, application, or monday readiness should be reported
+  alongside the required core profile.
 
 ## When Not to Use
 
-- Do not use this skill to validate the Agentbox product, its OpenClaw runner, or robot-user
-  readiness. It may validate the interactive `pirog` profile installed on an Agentbox host.
-- Do not use this skill to configure GitHub tokens, write runtime env files, configure 1Password
-  shell plugins, or provision secrets.
-- Do not use this skill to mutate GitHub or monday data, post readiness updates, run setup, run
-  release validation, or perform general machine administration.
+- Do not use this skill to configure or repair the machine; report remediation instead.
+- Do not use it to validate Agentbox launchd, Serve, OpenClaw, or complete host health.
+- Do not use it for token management, GitHub or monday mutations, releases, Leia, or general
+  machine administration.
 
 ## Preconditions
 
 - Work from the `me` checkout at `/Users/pirog/tanaab/me`.
-- The user should have completed the README manual setup checklist first.
-- The GitHub and monday app connectors must be available in the active Codex session for connector
-  validation.
+- Run after the user has intentionally bootstrapped the profile with `boot.sh`.
+- The GitHub connector must be available in the active Codex session for the required identity
+  check. The monday connector is optional and may be reported as a warning.
 
 ## Workflow
 
@@ -53,145 +52,120 @@ managed `tailscaled` runtime and does not require desktop-backed 1Password integ
    bun ./skills/me-readiness/scripts/check-machine.js
    ```
 
-   This helper is read-only, strips 1Password token fallback environment variables from `op`
-   subprocesses, and intentionally verifies local desktop/daemon services such as 1Password and
-   Tailscale. The unsandboxed default is specific to this bundled helper and should not be treated
-   as permission to run unrelated repo commands unsandboxed.
+   The helper is read-only. It checks effective Homebrew writability, queries installed formulas
+   and casks, simulates the complete GNU Stow layout, inspects local files and links, and probes
+   optional desktop or daemon services. It strips 1Password token fallback variables from every
+   `op` subprocess.
 
-   If a local permission prompt appears during this helper run, tell the user it is expected for
-   1Password or Tailscale desktop readiness on a standard workstation. Denying the prompt may make
-   readiness fail. Detected Agentbox hosts do not run the desktop-backed 1Password probes.
+   If unsandboxed access is unavailable, run the helper sandboxed and describe Homebrew,
+   1Password, or Tailscale access failures as potentially sandbox-limited. Do not generalize the
+   helper's unsandboxed allowance to unrelated commands.
 
-   If unsandboxed access is denied or unavailable, run the helper sandboxed. If that sandboxed run
-   fails only on retryable local desktop or daemon access checks, report those checks as unresolved
-   local access failures and explain that an unsandboxed read-only run is needed for an authoritative
-   local readiness result.
+2. Parse the JSON report in dependency order. Every check has one bucket:
+   - `homebrew`: Homebrew availability and effective write access.
+   - `packages`: every Brewfile formula, optional Brewfile casks, required commands, and the
+     Homebrew `node@24` runtime.
+   - `dotfiles`: complete Stow simulation, optional Janus runtime, and generated Codex config.
+   - `manual_apps`: optional 1Password and Tailscale capabilities plus token-fallback warnings.
+   - `codex_plugins`: the installed `piroplugin` link and its target checkout.
 
-2. Parse the JSON output and summarize each `fail` and `warn` check with its `remediation` text.
-   The helper emits checks in dependency order and every check includes one stable `bucket`:
-   `homebrew`, `packages`, `dotfiles`, `manual_apps`, then `codex_plugins`.
+   A `fail` makes local readiness false. A `warn` records an incomplete optional capability while
+   keeping local readiness true. Report every failure and warning with its remediation.
 
-   Bucket meanings:
-   - `homebrew`: Homebrew command availability.
-   - `packages`: Brewfile declarations and required command availability.
-   - `dotfiles`: repo-owned stowed files and generated local config readiness.
-   - `manual_apps`: installed apps and local app/auth/network readiness.
-   - `codex_plugins`: local Codex plugin links or plugin install surfaces owned by this repo.
-
-   The bucket order is intentional: package manager availability comes before package contracts,
-   package contracts come before dotfile checks, dotfiles come before manual app readiness, and
-   app readiness comes before Codex plugin and connector identity.
-
-3. Discover the GitHub connector tools. If unavailable, report that the user should enable the
-   GitHub app in Codex and confirm the GitHub app connection before rerunning readiness.
-
-4. Run a read-only GitHub identity probe with the authenticated user login/profile tool. Require
-   both:
+3. Discover the GitHub connector tools and run a read-only authenticated identity probe. This is a
+   required Codex integration. Require both:
    - GitHub login `pirog`
    - GitHub user ID `713424`
 
-5. Discover the monday connector tools. If unavailable, report that the user should enable the
-   monday.com app in Codex and confirm the monday app connection before rerunning readiness.
+   Missing tools, failed authentication, or an identity mismatch make the final result not ready.
 
-6. Run a read-only monday identity probe with `list_users_and_teams(getMe=true)`. Require both:
+4. Discover the monday connector tools and, when available, run
+   `list_users_and_teams(getMe=true)`. Expect:
    - monday user ID `71211606`
    - monday user name `Michael Pirog`
 
-7. If connector identity fails, report that the user should reauthorize the relevant Codex app
-   connector as `Michael Pirog` and confirm the app is connected to the correct account.
+   Missing tools, failed authentication, or an identity mismatch are warnings. Do not mutate
+   monday data.
 
-8. Close with a concise readiness summary:
-   - ready: no local failures and both connector identities matched
-   - ready with warnings: no local failures, warnings present, and both connector identities matched
-   - not ready: any local failure or connector identity mismatch
+5. Report the final result:
+   - `🟢 Ready`: local helper has no failures or warnings and GitHub identity matches.
+   - `🟡 Ready with warnings`: local helper has no failures, GitHub identity matches, and one or
+     more optional local or monday checks warn.
+   - `🔴 Not ready`: any local helper check fails or the GitHub identity check fails.
 
-   Use this report format: put the final status first as `🟢 Ready`, `🟡 Ready with warnings`,
-   or `🔴 Not ready`, then include a status list for these surfaces. Use `✅` for passing
-   surfaces, `⚠️` for warning surfaces, and `❌` for failing surfaces:
+   Group the summary by meaning rather than treating Codex as the machine's source of truth:
 
    ```markdown
-   🟢 **Ready**
+   🟡 **Ready with warnings**
 
-   - ✅ Homebrew
-   - ✅ Packages and Brewfile contract
+   Core profile
+
+   - ✅ Homebrew and write access
+   - ✅ Brewfile formulas and required commands
    - ✅ Dotfiles
-   - ✅ 1Password app and CLI vault access
-   - ✅ 1Password Environment
-   - ✅ Tailscale tailnet
-   - ✅ Codex plugin links
-   - ✅ GitHub connector: `pirog` / `713424`
-   - ✅ monday connector: `Michael Pirog` / `71211606`
 
-   Local access note: sandboxed helper could not reach local desktop services, but the unsandboxed read-only retry passed.
+   Required Codex integration
+
+   - ✅ Generated Codex config and piroplugin
+   - ✅ GitHub connector: `pirog` / `713424`
+
+   Optional capabilities
+
+   - ⚠️ Brewfile casks
+   - ✅ 1Password
+   - ✅ Tailscale
+   - ⚠️ monday connector
    ```
 
-   On a detected Agentbox host, report the 1Password surfaces as not required and describe the
-   Tailscale surface as the managed `tailscaled` runtime plus tailnet status. Do not substitute the
-   full Agentbox health report for this skill's local checks.
-
-   If any surface fails or warns, mark it with `❌` or `⚠️` and list only the failed or warning
-   checks below the status list with their remediation text. Include `Local access note` only when
-   the sandboxed and unsandboxed helper results differ.
+   On Agentbox, describe `1password` and `tailscale-app` as intentional cask skips, desktop-backed
+   1Password checks as not required, and Tailscale as the optional managed `tailscaled` runtime.
 
 ## Checkpoints
 
-- Do not mutate GitHub or monday data during readiness. No issues, PRs, update posts, item edits,
-  or browser/computer automation fallback.
-- Do not print tokens, secret values, raw environment contents, or raw command stderr that may
-  contain sensitive data.
-- Do not add readiness checks for general environment values, token provisioning, GitHub/monday task
-  automation, setup mutation, release builds, or Leia. The only Environment value this skill may
-  verify is the hashed readiness authorization sentinel.
-- Do not add a new helper check id without assigning it to one of the five allowed local buckets.
-- Treat `op vault list --format json` as the standard-workstation 1Password readiness gate because
-  it proves the app is unlocked and integrated enough for authenticated CLI access. Do not run the
-  desktop-backed vault or Environment probes on a detected Agentbox host; continue to require the
-  beta `op` command and keep token-fallback warnings.
-- Treat `op environment read --help` and `op run --environment zsstdfqknicwfv5glv76gd6tue` as the
-  local protected-resource fallback readiness gate. The helper must verify only the hashed
-  readiness authorization sentinel and must not print or commit the sentinel value.
-- Treat `tailscale status --json` as the local Tailscale readiness gate. Require the local node to
-  be running, online, present in the network map, assigned a Tailscale IP, and connected to
-  `tanaab.dev`. Peer pings are troubleshooting tools, not readiness gates.
-- Treat the README as human setup guidance. Use the helper JSON and connector probes as the
-  machine-readable source of readiness truth.
-- Run only the bundled readiness helper unsandboxed by default. Do not generalize that default to
-  tests, setup commands, package managers, release validation, or other repo commands.
-- If the sandboxed helper only fails on retryable local desktop or daemon access and the
-  unsandboxed read-only retry passes, base the final readiness status on the unsandboxed result.
-  Report the sandboxed failures as a local access note, not as readiness failures.
-- Follow the root `AGENTS.md` readiness maintenance policy when deciding whether future repo or
-  skill changes should update this readiness skill.
+- Treat Homebrew availability and effective write access as hard requirements. Test writability;
+  do not infer it from directory ownership alone.
+- Discover all `brew` and `cask` entries from the current Brewfile. Missing formulas fail;
+  missing applicable casks warn.
+- Require `brew`, `bun`, `curl`, `git`, `stow`, and `zsh` on `PATH`. Resolve
+  `$(brew --prefix node@24)/bin/node` directly and require major version 24 or newer; do not fail
+  because the invoking process inherited a different Node on `PATH`.
+- Discover every top-level package under `dotfiles/` and use a read-only Stow simulation. Any
+  missing link or conflict fails readiness.
+- Keep generated Codex config and the `piroplugin` link to the current checkout as required
+  integration surfaces.
+- Treat the Janus runtime, 1Password CLI/vault/Environment access, Tailscale command/connectivity,
+  Agentbox `tailscaled`, and monday identity as optional warnings.
+- Treat the GitHub connector identity as required.
+- Never print token values, raw environment contents, or the 1Password authorization sentinel.
+- Do not mutate GitHub or monday data and do not fall back to browser or computer automation.
 
 ## Completion Criteria
 
-- The helper JSON was parsed successfully.
-- Every local `fail` or `warn` was reported with a remediation step.
-- Every helper check included a known bucket and bucket order matched the dependency order.
-- On a standard workstation, 1Password Environment readiness either proved
-  `op run --environment` access to the readiness Environment or reported the setup mismatch without
-  printing the authorization sentinel. On a detected Agentbox host, the report marked desktop
-  1Password and Environment integration as not required.
-- The GitHub connector either matched login `pirog` and ID `713424` or the setup mismatch was
-  reported.
-- The monday connector either matched `Michael Pirog` ID `71211606` or the setup mismatch was
-  reported.
+- The helper returned parseable JSON and every check used a known bucket.
+- Every local failure or warning was reported with remediation.
+- All formulas and dotfile packages were discovered from their owning source instead of duplicated
+  in the helper.
+- GitHub identity matched `pirog` / `713424`, or the final result was not ready.
+- monday identity matched `Michael Pirog` / `71211606`, or the mismatch was reported as a warning.
+- The final result distinguished core profile, required Codex integration, and optional
+  capabilities.
 
 ## Bundled Resources
 
-- [`scripts/check-machine.js`](./scripts/check-machine.js): local read-only machine readiness probe
-  CLI wrapper that emits deterministic JSON.
-- [`scripts/check-machine-lib.js`](./scripts/check-machine-lib.js): tested local helper library used
-  by the CLI wrapper.
+- [`scripts/check-machine.js`](./scripts/check-machine.js): read-only local probe CLI that emits
+  deterministic JSON.
+- [`scripts/check-machine-lib.js`](./scripts/check-machine-lib.js): tested helper library for
+  Homebrew, package, dotfile, optional service, and plugin checks.
 
 ## Validation
 
-- Confirm the local helper output is parseable JSON.
-- Confirm every `warn` and `fail` local check includes remediation.
-- Confirm every helper check includes a known bucket.
-- Confirm local helper checks stay within the five allowed buckets and do not print or commit
-  Environment values.
-- Confirm 1Password Environment validation strips token fallback env vars from `op` subprocesses.
-- Confirm GitHub validation used a read-only authenticated identity probe and performed no
-  mutations.
-- Confirm monday validation used `list_users_and_teams(getMe=true)` and performed no mutations.
+- Confirm missing formulas, required commands, incomplete Stow state, generated config, and the
+  `piroplugin` target produce failures.
+- Confirm missing casks, Janus, 1Password, Tailscale, Agentbox `tailscaled`, and monday produce only
+  warnings.
+- Confirm Node 24 and newer pass while older versions fail.
+- Confirm Agentbox cask exceptions require the same executable-script and plist markers as
+  `boot.sh`.
+- Confirm every warning and failure includes remediation and no token value or authorization
+  sentinel is printed.
+- Confirm GitHub and monday validation remain read-only.
