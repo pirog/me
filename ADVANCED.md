@@ -9,39 +9,18 @@ Start with the [README](./README.md) for the primary setup path.
 ### Dependencies
 
 [`Brewfile`](./Brewfile) is the source of truth for the base machine inventory.
-
-Applications:
-
-- 1Password
-- the beta 1Password CLI required for 1Password Environments
-- Codex CLI and the Codex desktop app
-- the Tailscale desktop app
-
-Command-line tools and runtimes:
-
-- Bun from the trusted `oven-sh/bun` tap
-- curl, Git, GitHub CLI, ImageMagick, jq, GNU Stow, and Zsh
-- Node.js 24
-- Python 3.14
-
 Bootbox installs or repairs the core prerequisites before `me` applies the complete Brewfile.
 
 #### Agentbox Hosts
 
-`me` recognizes an installed Agentbox host only when both
-`/opt/tanaab/agentbox/bin/health.sh` and
-`/Library/LaunchDaemons/dev.tanaab.agentbox.health.plist` are present. A source checkout under
-`~/tanaab` is not sufficient.
+On a host already configured by [Agentbox](https://github.com/tanaabased/agentbox), `me`
+automatically skips these desktop casks from the Brewfile:
 
-On a detected Agentbox host, the final Brewfile apply merges `tailscale-app` and `1password` into
-Homebrew Bundle's inherited `HOMEBREW_BUNDLE_CASK_SKIP` value. This leaves Agentbox's
-formula-backed `tailscaled` runtime in control and avoids installing desktop-only 1Password. The
-`1password-cli@beta` cask remains required because `piroboot` uses `op` with the supplied service
-account token for SSH-key retrieval.
+- `1password`
+- `tailscale-app`
 
-If the Homebrew `tailscale` formula is already installed without the complete Agentbox markers,
-`me` still skips `tailscale-app` to avoid Homebrew's formula/cask conflict. Automatic Agentbox
-detection assumes Agentbox is installed before `me`.
+The beta 1Password CLI remains installed for service-account-backed SSH-key retrieval, while
+Agentbox keeps its formula-backed Tailscale runtime in control.
 
 ### Dotfiles
 
