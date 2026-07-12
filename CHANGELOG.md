@@ -1,5 +1,12 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+- Added published `/llms.txt` metadata and an advanced configuration reference.
+- Removed public `--me` and `PIROME_ME` source selection from `boot.sh`.
+- Updated `boot.sh` to resolve explicit, source-relative, existing, or SSH-cloned `@pirog/me` payloads.
+- Updated detected Agentbox hosts to skip desktop 1Password and Tailscale casks and use daemon-aware readiness.
+- Updated portable Codex defaults to use `gpt-5.6`.
+- Updated the `oven-sh/bun` tap to trust its formula.
+
 ## v1.0.0-beta.6 - [June 3, 2026](https://github.com/pirog/me/releases/tag/v1.0.0-beta.6)
 
 - Added `l337` and `l338` Codex pet profiles.

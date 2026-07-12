@@ -39,6 +39,10 @@ function parseToml(content) {
       current[key] = rawValue === 'true';
     } else if (/^".*"$/.test(rawValue)) {
       current[key] = JSON.parse(rawValue);
+    } else if (/^\[.*\]$/.test(rawValue)) {
+      current[key] = JSON.parse(rawValue);
+    } else if (/^-?\d+(?:\.\d+)?$/.test(rawValue)) {
+      current[key] = Number(rawValue);
     } else {
       current[key] = rawValue;
     }
@@ -65,27 +69,17 @@ async function sync(paths) {
 }
 
 describe('lib/codex-config-sync', () => {
-  it('should accept the repo-owned shared Codex config', async () => {
+  it('should round-trip the repo-owned shared Codex config', async () => {
     const sharedConfigPath = path.join(REPO_ROOT, 'dotfiles', 'ai', '.codex', 'config.shared.toml');
-    const sharedConfig = parseToml(await readFile(sharedConfigPath, 'utf8'));
+    const sharedContent = await readFile(sharedConfigPath, 'utf8');
+    const sharedConfig = parseToml(sharedContent);
+    const paths = await tempConfigPaths();
+    await writeFile(paths.sharedPath, sharedContent);
 
-    validatePortableSharedConfig(sharedConfig, sharedConfigPath);
-    assert.deepEqual(sharedConfig, {
-      commit_attribution: '',
-      features: {
-        fast_mode: true,
-        memories: true,
-        multi_agent: true,
-      },
-      file_opener: 'vscode',
-      memories: {
-        disable_on_external_context: true,
-      },
-      model: 'gpt-5.5',
-      model_reasoning_effort: 'xhigh',
-      personality: 'pragmatic',
-      service_tier: 'fast',
-    });
+    await sync(paths);
+
+    const generatedConfig = parseToml(await readFile(paths.outputPath, 'utf8'));
+    assert.deepEqual(generatedConfig, sharedConfig);
   });
 
   it('should generate config from shared settings only', async () => {
@@ -101,13 +95,13 @@ describe('lib/codex-config-sync', () => {
     assert.match(content, /\[features\]\nmemories = true/);
   });
 
-  it('should let local config override shared defaults', async () => {
+  it('should merge non-overlapping keys from shared and local tables', async () => {
     const paths = await tempConfigPaths();
     await writeFile(
       paths.sharedPath,
       'personality = "pragmatic"\n\n[features]\nmemories = true\nmulti_agent = true\n',
     );
-    await writeFile(paths.localPath, '[features]\nmulti_agent = false\n');
+    await writeFile(paths.localPath, '[features]\ncomputer_use = true\n');
 
     await sync(paths);
 
@@ -120,10 +114,28 @@ describe('lib/codex-config-sync', () => {
         'personality = "pragmatic"',
         '',
         '[features]',
+        'computer_use = true',
         'memories = true',
-        'multi_agent = false',
+        'multi_agent = true',
         '',
       ].join('\n'),
+    );
+  });
+
+  it('should reject exact shared and local key collisions', async () => {
+    const paths = await tempConfigPaths();
+    await writeFile(
+      paths.sharedPath,
+      'personality = "pragmatic"\n\n[features]\nmulti_agent = true\n',
+    );
+    await writeFile(
+      paths.localPath,
+      'personality = "friendly"\n\n[features]\nmulti_agent = false\n',
+    );
+
+    await assert.rejects(
+      sync(paths),
+      /config\.local\.toml must not override settings from .*config\.shared\.toml[\s\S]*personality[\s\S]*features\.multi_agent/,
     );
   });
 
