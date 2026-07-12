@@ -1,20 +1,6 @@
 # FINAL THINGS
 
-- @tanaabased/bootbox
-  - badges and readme changes?
-  - [![Netlify Status](https://api.netlify.com/api/v1/badges/a0a7d3ee-3e74-4ecf-99ca-a952163b889e/deploy-status)](https://app.netlify.com/projects/tanaab-bootbox-sh/deploys)
-  - homebrew -> a one-user or one-admin system
-
 - @pirog/me
-  - update based on agentbox|emori work?
-
-  - add codex cli/codex/openclaw?
-  - add warp?
-  - add vscode?
-  - add google chrome?
-
-  - add agentbox plugin?
-
   - themes
     - codex
     - warp
@@ -23,6 +9,8 @@
     - vscode?
     - vim settings?
     - TUI theme?
+
+  - add agentbox plugin to marketplace?
 
   - remote management and authorized keys?
   - review sudo stuff? do we really need it? always run as admin?
@@ -73,6 +61,7 @@
 
 - @lando/leia
   - fix JS literals
+  - ESM?
   - update canon guidance
 
 - @tanaabased/emori
