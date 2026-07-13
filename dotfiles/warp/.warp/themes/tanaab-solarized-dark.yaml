@@ -5,7 +5,9 @@ name: Tanaab Solarized Dark
 accent: '#00c88a'
 cursor: '#748a81'
 background: '#002d45'
-foreground: '#82a3b3'
+# Original subdued foreground: '#82a3b3'
+# Brighter foreground: '#ddebe8'
+foreground: '#adc1b8'
 details: darker
 terminal_colors:
   normal:
