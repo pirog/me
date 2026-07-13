@@ -1,4 +1,4 @@
-# Tanaab for Visual Studio Code
+# Tanaab-based themes for Visual Studio Code
 
 Tanaab is a complete Visual Studio Code color theme family built around the Tanaab green, pink,
 gold, blue, and cyan palette.

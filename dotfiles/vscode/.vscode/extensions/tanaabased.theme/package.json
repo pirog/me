@@ -1,7 +1,8 @@
 {
   "name": "theme",
-  "displayName": "Tanaab",
-  "description": "Full Tanaab color themes for Visual Studio Code.",
+  "displayName": "Tanaab-based themes",
+  "description": "Full Tanaab-based color themes for Visual Studio Code.",
+  "icon": "images/icon.png",
   "version": "0.0.1",
   "publisher": "tanaabased",
   "author": "Mike Pirog @pirog",
