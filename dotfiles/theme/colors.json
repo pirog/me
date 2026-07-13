@@ -26,7 +26,7 @@
         "selection": "#064a37",
         "selectionInactive": "#263a34",
         "focus": "#00c88a",
-        "cursor": "#00c88a",
+        "cursor": "#748a81",
         "link": "#00c88a",
         "linkHover": "#e25292"
       },
@@ -73,17 +73,17 @@
       },
       "terminal": {
         "normal": {
-          "black": "#0a1210",
+          "black": "#31433d",
           "red": "#ff667d",
           "green": "#00c88a",
           "yellow": "#ffb000",
           "blue": "#5ab0ff",
-          "magenta": "#db2777",
+          "magenta": "#e03a83",
           "cyan": "#38d7d0",
           "white": "#adc1b8"
         },
         "bright": {
-          "black": "#52675e",
+          "black": "#748a81",
           "red": "#ff8c9c",
           "green": "#33d3a1",
           "yellow": "#ffc333",
@@ -117,7 +117,7 @@
         "selection": "#f0c2d6",
         "selectionInactive": "#e4d9de",
         "focus": "#9c1c55",
-        "cursor": "#db2777",
+        "cursor": "#70857b",
         "link": "#9c1c55",
         "linkHover": "#b51f66"
       },
