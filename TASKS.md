@@ -2,19 +2,9 @@
 
 - @pirog/me
   - themes
-    - codex
-    - warp
-      remove OHMYZSH?
-      warp settings in dotfile?
     - vscode?
-    - vim settings?
-    - TUI theme?
 
   - add agentbox plugin to marketplace?
-
-  - remote management and authorized keys?
-  - review sudo stuff? do we really need it? always run as admin?
-  - ips for pirobook and tanaabbook?
 
   - shouldnt i just run @pirog/me?
 
@@ -142,6 +132,7 @@
   - markdown files for agents?
     - https://github.com/okineadev/vitepress-plugin-llms
   - accent colors
+  - add theme files so for example they show up in VSCODE?
 
   - ELEMENTS
     - form page and lock down presentation?
