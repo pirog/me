@@ -1,5 +1,6 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+- Added a `warp` dotpkg for file-backed terminal settings.
 - Added published `/llms.txt` metadata and an advanced configuration reference.
 - Removed Oh My Zsh and Powerlevel10k from the personal shell profile.
 - Removed public `--me` and `PIROME_ME` source selection from `boot.sh`.
