@@ -139,6 +139,8 @@ This is directional guidance, not an expansion of the current public contract:
   `bun run codex:validate`, `bun run codex:check`, and `bun run codex:sync`.
 - Treat `dotfiles/ai` as a separate Stow-owned surface. Use `bun run ai:sync` for home-directory
   restow work, not for plugin cache refreshes.
+- Keep `dotfiles/ai/.agents/plugins/marketplace.json` plugin entries sorted first by category, with
+  `Pirobased` before `Tanaab-based`, and then alphabetically by plugin name within each category.
 - Treat `$piro-me-readiness` as read-only verification of this checkout and macOS user profile. It
   must not become setup, token management, environment management, GitHub or monday automation,
   release, Leia, or general machine administration.
