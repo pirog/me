@@ -185,5 +185,19 @@
         }
       }
     }
+  },
+  "variants": {
+    "solarized": {
+      "base": {
+        "base03": "#002d45",
+        "base02": "#003851",
+        "base01": "#437086",
+        "base00": "#517d94",
+        "base0": "#7196a8",
+        "base1": "#82a3b3",
+        "base2": "#ddebe8",
+        "base3": "#ecf9f6"
+      }
+    }
   }
 }

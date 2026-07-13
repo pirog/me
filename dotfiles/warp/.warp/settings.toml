@@ -14,7 +14,7 @@ match_notebook_to_monospace_font_size = true
 enabled = true
 
 [appearance.themes]
-theme = { custom = { name = "Tanaab Dark", path = "tanaab-dark.yaml" } }
+theme = { custom = { name = "Tanaab Solarized Dark", path = "tanaab-solarized-dark.yaml" } }
 system_theme = false
 
 [appearance.full_screen_apps]
