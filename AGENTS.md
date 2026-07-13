@@ -161,7 +161,7 @@ This is directional guidance, not an expansion of the current public contract:
   `skills/me-readiness/SKILL.md`.
 - Keep readiness capability-based: Homebrew write access, every Brewfile formula, required core
   commands, complete repo-owned dotfiles, generated Codex config, `piroplugin`, and GitHub identity
-  are hard requirements. Brewfile casks, Janus, 1Password, Tailscale, and monday are warnings.
+  are hard requirements. Brewfile casks, 1Password, Tailscale, and monday are warnings.
 - Update the owning source first, then readiness only when the prerequisite is stable, repo-owned,
   read-only, and machine-verifiable:
   - Brew packages belong in `Brewfile`; discover formulas and casks from that file instead of

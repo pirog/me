@@ -57,7 +57,6 @@ const CHECK_BUCKET_BY_ID = new Map([
   ]),
   ['node_version', 'packages'],
   ['dotfiles_stowed', 'dotfiles'],
-  ['vim_janus_runtime', 'dotfiles'],
   ['codex_generated_config', 'dotfiles'],
   ['command_op', 'manual_apps'],
   ['onepassword_cli_vault_access', 'manual_apps'],
@@ -471,31 +470,6 @@ async function appendDotfileChecks(checks, repoRoot, homeDir, deps) {
   }
 }
 
-async function appendVimJanusRuntimeCheck(checks, homeDir, deps) {
-  const janusRuntimePath = path.join(homeDir, '.vim', 'janus', 'vim');
-  const requiredFiles = [
-    path.join(janusRuntimePath, 'core', 'before', 'plugin', 'janus.vim'),
-    path.join(janusRuntimePath, 'core', 'plugins.vim'),
-  ];
-  const missing = [];
-
-  for (const requiredFile of requiredFiles) {
-    if (!(await pathInfo(requiredFile, deps))) {
-      missing.push(requiredFile);
-    }
-  }
-
-  checks.push(
-    missing.length === 0
-      ? pass('vim_janus_runtime', 'Janus runtime exists at ~/.vim/janus/vim.')
-      : warn(
-          'vim_janus_runtime',
-          `Optional Janus runtime is incomplete: ${missing.join(', ')}.`,
-          'Restore the Janus runtime at ~/.vim/janus/vim before relying on the Vim profile.',
-        ),
-  );
-}
-
 async function appendGeneratedConfigCheck(checks, homeDir, deps) {
   const generatedConfigPath = path.join(homeDir, '.codex', 'config.toml');
   try {
@@ -834,7 +808,6 @@ export async function checkMachine(options = {}) {
   await appendRequiredCommandChecks(checks, deps);
   await appendNodeRuntimeCheck(checks, deps);
   await appendDotfileChecks(checks, repoRoot, homeDir, deps);
-  await appendVimJanusRuntimeCheck(checks, homeDir, deps);
   await appendGeneratedConfigCheck(checks, homeDir, deps);
   await appendOnePasswordChecks(checks, agentboxHost, env, deps);
   await appendTailscaleChecks(checks, agentboxHost, deps);

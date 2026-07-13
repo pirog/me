@@ -35,11 +35,15 @@ Agentbox keeps its formula-backed Tailscale runtime in control.
 - [`ssh`](./dotfiles/ssh): SSH configuration and public-key material.
 - [`theme`](./dotfiles/theme): low-level portable Tanaab color palette for application-specific
   theme assets.
-- [`vim`](./dotfiles/vim): Vim wrapper and customization files. The Janus runtime remains an
-  external dependency expected at `~/.vim/janus/vim`.
+- [`vim`](./dotfiles/vim): self-contained Vim configuration with native packages and a
+  terminal-driven Tanaab theme.
 - [`warp`](./dotfiles/warp): file-backed Warp terminal settings and Tanaab and Tanaab Solarized
   dark and light themes.
 - [`zsh`](./dotfiles/zsh): framework-free Zsh environment, history, completion, and fallback prompt.
+
+The Vim profile uses native runtime packages and maps its `tanaab` colorscheme onto the terminal's
+ANSI palette, allowing it to follow the active Tanaab Warp theme without a separate Vim theme
+selection or external runtime.
 
 ### Codex Plugin And Skills
 

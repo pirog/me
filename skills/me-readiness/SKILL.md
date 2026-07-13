@@ -17,8 +17,8 @@ metadata:
 
 Use this skill to verify that the current `me` checkout and interactive macOS profile are ready for
 supported work as `pirog`. Core machine capabilities and required Codex integration determine
-readiness. Optional applications, 1Password access, Tailscale connectivity, the Janus runtime, and
-the monday connector produce warnings without making the whole profile unready.
+readiness. Optional applications, 1Password access, Tailscale connectivity, and the monday
+connector produce warnings without making the whole profile unready.
 
 The skill is read-only. It does not install packages, restow files, configure tokens, repair
 services, mutate connector data, or validate the Agentbox product.
@@ -65,7 +65,7 @@ services, mutate connector data, or validate the Agentbox product.
    - `homebrew`: Homebrew availability and effective write access.
    - `packages`: every Brewfile formula, optional Brewfile casks, required commands, and the
      Homebrew `node@24` runtime.
-   - `dotfiles`: complete Stow simulation, optional Janus runtime, and generated Codex config.
+   - `dotfiles`: complete Stow simulation and generated Codex config.
    - `manual_apps`: optional 1Password and Tailscale capabilities plus token-fallback warnings.
    - `codex_plugins`: the installed `piroplugin` link and its target checkout.
 
@@ -133,8 +133,8 @@ services, mutate connector data, or validate the Agentbox product.
   missing link or conflict fails readiness.
 - Keep generated Codex config and the `piroplugin` link to the current checkout as required
   integration surfaces.
-- Treat the Janus runtime, 1Password CLI/vault/Environment access, Tailscale command/connectivity,
-  Agentbox `tailscaled`, and monday identity as optional warnings.
+- Treat 1Password CLI/vault/Environment access, Tailscale command/connectivity, Agentbox
+  `tailscaled`, and monday identity as optional warnings.
 - Treat the GitHub connector identity as required.
 - Never print token values, raw environment contents, or the 1Password authorization sentinel.
 - Do not mutate GitHub or monday data and do not fall back to browser or computer automation.
@@ -161,7 +161,7 @@ services, mutate connector data, or validate the Agentbox product.
 
 - Confirm missing formulas, required commands, incomplete Stow state, generated config, and the
   `piroplugin` target produce failures.
-- Confirm missing casks, Janus, 1Password, Tailscale, Agentbox `tailscaled`, and monday produce only
+- Confirm missing casks, 1Password, Tailscale, Agentbox `tailscaled`, and monday produce only
   warnings.
 - Confirm Node 24 and newer pass while older versions fail.
 - Confirm Agentbox cask exceptions require the same executable-script and plist markers as

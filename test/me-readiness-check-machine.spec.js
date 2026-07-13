@@ -41,6 +41,7 @@ const DEFAULT_BREWFILE = [
   'brew "node@24"',
   'brew "python@3.14"',
   'brew "stow"',
+  'brew "vim"',
   'brew "zsh"',
   'brew "oven-sh/bun/bun"',
 ].join('\n');
@@ -53,6 +54,7 @@ const DEFAULT_FORMULAS = [
   'node@24',
   'python@3.14',
   'stow',
+  'vim',
   'zsh',
   'oven-sh/bun/bun',
 ];
@@ -68,10 +70,6 @@ const DEFAULT_CASKS = [
   'warp',
 ];
 const DOTFILE_PACKAGES = ['ai', 'git', 'ssh', 'vim', 'zsh'];
-
-function homePath(...segments) {
-  return path.join(HOME_DIR, ...segments);
-}
 
 function makeFileInfo({ executable = false, file = true, symbolicLink = false } = {}) {
   return {
@@ -117,7 +115,6 @@ function makeDeps({
   execCalls,
   installedCasks = DEFAULT_CASKS,
   installedFormulas = DEFAULT_FORMULAS,
-  janusReady = true,
   nodeVersion = 'v24.11.1',
   opError = false,
   pluginTarget = REPO_ROOT,
@@ -132,11 +129,6 @@ function makeDeps({
   const caskSet = new Set(installedCasks);
   const formulaSet = new Set(installedFormulas);
   const unwritable = new Set(unwritablePaths);
-  const janusFiles = new Set([
-    homePath('.vim', 'janus', 'vim', 'core', 'before', 'plugin', 'janus.vim'),
-    homePath('.vim', 'janus', 'vim', 'core', 'plugins.vim'),
-  ]);
-
   return {
     access(targetPath) {
       if (unwritable.has(targetPath)) {
@@ -205,9 +197,6 @@ function makeDeps({
       }
       if (targetPath === PLUGIN_LINK) {
         return makeFileInfo({ symbolicLink: true });
-      }
-      if (janusReady && janusFiles.has(targetPath)) {
-        return makeFileInfo();
       }
       throw new Error(`missing: ${targetPath}`);
     },
@@ -355,13 +344,6 @@ describe('skills/me-readiness/scripts/check-machine-lib', () => {
     assert.equal(findCheck(report, 'dotfiles_stowed').status, 'fail');
   });
 
-  it('treats the external Janus runtime as optional', async () => {
-    const report = await runCheck({ janusReady: false });
-
-    assert.equal(report.ok, true);
-    assert.equal(findCheck(report, 'vim_janus_runtime').status, 'warn');
-  });
-
   it('keeps generated Codex configuration and piroplugin as hard requirements', async () => {
     const missingConfig = await runCheck({ configExists: false });
     const wrongPlugin = await runCheck({ pluginTarget: '/tmp/other-me' });
@@ -445,7 +427,6 @@ describe('skills/me-readiness/scripts/check-machine-lib', () => {
       configExists: false,
       installedCasks: [],
       installedFormulas: [],
-      janusReady: false,
       stowOutput: 'LINK: .zshrc',
       tailscaleError: true,
       unwritablePaths: [HOMEBREW_CACHE],
