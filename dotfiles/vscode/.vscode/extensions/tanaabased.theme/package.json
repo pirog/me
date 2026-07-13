@@ -1,0 +1,58 @@
+{
+  "name": "theme",
+  "displayName": "Tanaab",
+  "description": "Full Tanaab color themes for Visual Studio Code.",
+  "version": "0.0.1",
+  "publisher": "tanaabased",
+  "author": "Mike Pirog @pirog",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tanaabased/theme.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tanaabased/theme/issues/new/choose"
+  },
+  "homepage": "https://github.com/tanaabased/theme",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Themes"
+  ],
+  "keywords": [
+    "tanaab",
+    "theme",
+    "color-theme",
+    "dark-theme",
+    "light-theme",
+    "solarized"
+  ],
+  "extensionKind": [
+    "ui"
+  ],
+  "contributes": {
+    "themes": [
+      {
+        "label": "Tanaab Dark",
+        "uiTheme": "vs-dark",
+        "path": "./themes/tanaab-dark-color-theme.json"
+      },
+      {
+        "label": "Tanaab Light",
+        "uiTheme": "vs",
+        "path": "./themes/tanaab-light-color-theme.json"
+      },
+      {
+        "label": "Tanaab Solarized Dark",
+        "uiTheme": "vs-dark",
+        "path": "./themes/tanaab-solarized-dark-color-theme.json"
+      },
+      {
+        "label": "Tanaab Solarized Light",
+        "uiTheme": "vs",
+        "path": "./themes/tanaab-solarized-light-color-theme.json"
+      }
+    ]
+  }
+}

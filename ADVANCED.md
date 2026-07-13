@@ -37,6 +37,8 @@ Agentbox keeps its formula-backed Tailscale runtime in control.
   theme assets.
 - [`vim`](./dotfiles/vim): self-contained Vim configuration with native packages and a
   terminal-driven Tanaab theme.
+- [`vscode`](./dotfiles/vscode): cleaned Visual Studio Code user settings and the local
+  `tanaabased.theme` extension with Tanaab and Tanaab Solarized dark and light variants.
 - [`warp`](./dotfiles/warp): file-backed Warp terminal settings and Tanaab and Tanaab Solarized
   dark and light themes.
 - [`zsh`](./dotfiles/zsh): framework-free Zsh environment, history, completion, and fallback prompt.

@@ -1,0 +1,21 @@
+{
+  "editor.cursorStyle": "block",
+  "editor.detectIndentation": true,
+  "editor.fontFamily": "'Meslo LG M DZ for Powerline', Menlo, Monaco, 'Courier New', monospace",
+  "editor.fontSize": 16,
+  "editor.insertSpaces": true,
+  "editor.minimap.renderCharacters": false,
+  "editor.multiCursorLimit": 30000,
+  "editor.renderWhitespace": "trailing",
+  "editor.rulers": [80, 120],
+  "editor.tabSize": 2,
+  "explorer.confirmDragAndDrop": false,
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "prettier.requireConfig": true,
+  "prettier.singleQuote": true,
+  "prettier.useEditorConfig": false,
+  "terminal.integrated.defaultProfile.osx": "zsh",
+  "workbench.colorTheme": "Tanaab Dark"
+}

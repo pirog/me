@@ -3,8 +3,7 @@
 - @pirog/me
   - themes
     - vscode?
-
-  - add agentbox plugin to marketplace?
+      - tanaab-based
 
   - shouldnt i just run @pirog/me?
 
