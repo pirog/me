@@ -1,0 +1,189 @@
+{
+  "name": "Tanaab",
+  "schemaVersion": 1,
+  "defaultMode": "dark",
+  "modes": {
+    "dark": {
+      "brand": {
+        "primary": "#00c88a",
+        "primaryLight": "#33d3a1",
+        "primaryDark": "#008f64",
+        "secondary": "#db2777",
+        "secondaryLight": "#e25292",
+        "secondaryDark": "#9c1c55",
+        "accent": "#ffb000",
+        "accentLight": "#ffc333",
+        "accentDark": "#b67e00"
+      },
+      "ui": {
+        "background": "#0a1210",
+        "foreground": "#e6f0eb",
+        "foregroundMuted": "#adc1b8",
+        "foregroundSubtle": "#748a81",
+        "surface": "#101a18",
+        "surfaceRaised": "#16221f",
+        "border": "#31433d",
+        "selection": "#064a37",
+        "selectionInactive": "#263a34",
+        "focus": "#00c88a",
+        "cursor": "#00c88a",
+        "link": "#00c88a",
+        "linkHover": "#e25292"
+      },
+      "status": {
+        "info": "#5ab0ff",
+        "success": "#33d3a1",
+        "warning": "#ffb000",
+        "error": "#ff667d"
+      },
+      "syntax": {
+        "plain": "#e6f0eb",
+        "comment": "#748a81",
+        "punctuation": "#adc1b8",
+        "variable": "#e6f0eb",
+        "constant": "#ffc333",
+        "number": "#ffc333",
+        "string": "#33d3a1",
+        "keyword": "#e25292",
+        "operator": "#adc1b8",
+        "function": "#00c88a",
+        "type": "#5ab0ff",
+        "property": "#38d7d0",
+        "tag": "#e25292",
+        "attribute": "#ffb000",
+        "regexp": "#c7a0ff",
+        "escape": "#ffc333",
+        "markupHeading": "#00c88a",
+        "markupLink": "#5ab0ff",
+        "invalid": "#ff667d",
+        "diff": {
+          "added": {
+            "foreground": "#33d3a1",
+            "background": "#12372c"
+          },
+          "removed": {
+            "foreground": "#ff667d",
+            "background": "#3a1821"
+          },
+          "modified": {
+            "foreground": "#ffc333",
+            "background": "#392c10"
+          }
+        }
+      },
+      "terminal": {
+        "normal": {
+          "black": "#0a1210",
+          "red": "#ff667d",
+          "green": "#00c88a",
+          "yellow": "#ffb000",
+          "blue": "#5ab0ff",
+          "magenta": "#db2777",
+          "cyan": "#38d7d0",
+          "white": "#adc1b8"
+        },
+        "bright": {
+          "black": "#52675e",
+          "red": "#ff8c9c",
+          "green": "#33d3a1",
+          "yellow": "#ffc333",
+          "blue": "#83c6ff",
+          "magenta": "#e25292",
+          "cyan": "#68e4df",
+          "white": "#e6f0eb"
+        }
+      }
+    },
+    "light": {
+      "brand": {
+        "primary": "#db2777",
+        "primaryLight": "#e25292",
+        "primaryDark": "#9c1c55",
+        "secondary": "#00c88a",
+        "secondaryLight": "#33d3a1",
+        "secondaryDark": "#008f64",
+        "accent": "#ffb000",
+        "accentLight": "#ffc333",
+        "accentDark": "#b67e00"
+      },
+      "ui": {
+        "background": "#f6fbf9",
+        "foreground": "#102018",
+        "foregroundMuted": "#52675e",
+        "foregroundSubtle": "#5f746a",
+        "surface": "#edf5f1",
+        "surfaceRaised": "#ffffff",
+        "border": "#b8cbc2",
+        "selection": "#f0c2d6",
+        "selectionInactive": "#e4d9de",
+        "focus": "#9c1c55",
+        "cursor": "#db2777",
+        "link": "#9c1c55",
+        "linkHover": "#b51f66"
+      },
+      "status": {
+        "info": "#0069b8",
+        "success": "#007a56",
+        "warning": "#8a5f00",
+        "error": "#b4233c"
+      },
+      "syntax": {
+        "plain": "#102018",
+        "comment": "#5f746a",
+        "punctuation": "#52675e",
+        "variable": "#102018",
+        "constant": "#8a5f00",
+        "number": "#8a5f00",
+        "string": "#007a56",
+        "keyword": "#9c1c55",
+        "operator": "#52675e",
+        "function": "#007a56",
+        "type": "#0069b8",
+        "property": "#087a82",
+        "tag": "#9c1c55",
+        "attribute": "#8a5f00",
+        "regexp": "#6f42c1",
+        "escape": "#9a4d00",
+        "markupHeading": "#9c1c55",
+        "markupLink": "#0069b8",
+        "invalid": "#b4233c",
+        "diff": {
+          "added": {
+            "foreground": "#007a56",
+            "background": "#d6f2e8"
+          },
+          "removed": {
+            "foreground": "#b4233c",
+            "background": "#f8dfe4"
+          },
+          "modified": {
+            "foreground": "#8a5f00",
+            "background": "#f6e9c8"
+          }
+        }
+      },
+      "terminal": {
+        "normal": {
+          "black": "#102018",
+          "red": "#b4233c",
+          "green": "#007a56",
+          "yellow": "#8a5f00",
+          "blue": "#0069b8",
+          "magenta": "#9c1c55",
+          "cyan": "#087a82",
+          "white": "#d7e3dd"
+        },
+        "bright": {
+          "black": "#70857b",
+          "red": "#d13c53",
+          "green": "#008f64",
+          "yellow": "#b67e00",
+          "blue": "#2387d8",
+          "magenta": "#db2777",
+          "cyan": "#159aa3",
+          "white": "#ffffff"
+        }
+      }
+    }
+  }
+}
