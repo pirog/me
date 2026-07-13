@@ -33,7 +33,8 @@ Agentbox keeps its formula-backed Tailscale runtime in control.
 - [`hyperdrive`](./dotfiles/hyperdrive): Hyperdrive application configuration.
 - [`lando`](./dotfiles/lando): Lando configuration.
 - [`ssh`](./dotfiles/ssh): SSH configuration and public-key material.
-- [`theme`](./dotfiles/theme): Tanaab light and dark theme assets.
+- [`theme`](./dotfiles/theme): low-level portable Tanaab color palette for application-specific
+  theme assets.
 - [`vim`](./dotfiles/vim): Vim wrapper and customization files. The Janus runtime remains an
   external dependency expected at `~/.vim/janus/vim`.
 - [`zsh`](./dotfiles/zsh): shell and prompt configuration.

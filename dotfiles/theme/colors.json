@@ -171,7 +171,7 @@
           "blue": "#0069b8",
           "magenta": "#9c1c55",
           "cyan": "#087a82",
-          "white": "#d7e3dd"
+          "white": "#52675e"
         },
         "bright": {
           "black": "#70857b",
@@ -181,7 +181,7 @@
           "blue": "#2387d8",
           "magenta": "#db2777",
           "cyan": "#159aa3",
-          "white": "#ffffff"
+          "white": "#5f746a"
         }
       }
     }

@@ -45,6 +45,8 @@ This is directional guidance, not an expansion of the current public contract:
 - `Brewfile`: Homebrew package and application inventory, including the canonical `tailscale-app`
   desktop cask used outside Agentbox hosts.
 - `dotfiles/*`: top-level GNU Stow packages applied to `$HOME`.
+- `dotfiles/theme/colors.json`: lowest-level portable Tanaab color palette and source of truth for
+  application-specific theme assets.
 - `.codex-plugin/`, `.mcp.json`, `assets/`, `bin/`, `lib/`, `skills/`, and `utils/`:
   `piroplugin` package inputs and local Codex tooling.
 - `README.md`: primary setup and usage entrypoint; `ADVANCED.md`: installed components, complete
