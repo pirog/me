@@ -255,6 +255,12 @@ The Codex configuration under `dotfiles/ai` uses three layers:
   notifications, marketplace paths, plugin cache paths, and other machine-specific values.
 - `~/.codex/config.toml` is generated from the shared and local inputs; do not edit it directly.
 
+Custom Codex TUI syntax themes live under `dotfiles/ai/.codex/themes/`. Tanaab Solarized Dark is the
+default and preserves ANSI syntax colors from the active terminal palette while supplying its own
+Warp-matched diff backgrounds. When using Tanaab Dark, Tanaab Light, or Tanaab Solarized Light,
+switch `[tui].theme` to `ansi` so Codex follows the active Warp palette without applying those
+dark-specific fills.
+
 Local configuration may add settings alongside shared tables, but it may not override an exact key
 owned by the shared file.
 
