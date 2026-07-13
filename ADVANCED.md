@@ -37,7 +37,7 @@ Agentbox keeps its formula-backed Tailscale runtime in control.
   theme assets.
 - [`vim`](./dotfiles/vim): Vim wrapper and customization files. The Janus runtime remains an
   external dependency expected at `~/.vim/janus/vim`.
-- [`zsh`](./dotfiles/zsh): shell and prompt configuration.
+- [`zsh`](./dotfiles/zsh): framework-free Zsh environment, history, completion, and fallback prompt.
 
 ### Codex Plugin And Skills
 

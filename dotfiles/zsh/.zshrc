@@ -1,49 +1,31 @@
-# Enable Powerlevel10k instant prompt. Keep this close to the top of ~/.zshrc.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
 # Some terminal apps launch interactive non-login shells, which skip ~/.zprofile.
-if [[ -z "${HOMEBREW_PREFIX:-}" ]]; then
-  if [[ -x /opt/homebrew/bin/brew ]]; then
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-  elif [[ -x /usr/local/bin/brew ]]; then
-    eval "$(/usr/local/bin/brew shellenv)"
-  elif command -v brew >/dev/null 2>&1; then
-    eval "$(brew shellenv)"
-  fi
-fi
+[[ -r "$HOME/.config/zsh/homebrew.zsh" ]] && source "$HOME/.config/zsh/homebrew.zsh"
 
-export ZSH="$HOME/.oh-my-zsh"
-ZSH_THEME="powerlevel10k/powerlevel10k"
-plugins=(git zsh-autosuggestions)
-
-source "$ZSH/oh-my-zsh.sh"
-
-[[ ! -f "$HOME/.p10k.zsh" ]] || source "$HOME/.p10k.zsh"
-
-if [[ -r "$HOME/.oh-my-zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
-  source "$HOME/.oh-my-zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-elif [[ -r "${ZSH_CUSTOM:-$ZSH/custom}/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
-  source "${ZSH_CUSTOM:-$ZSH/custom}/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-fi
-
-export PATH="$HOME/.lando/bin:$PATH"
-
-if [[ -s "$HOME/.bun/_bun" ]]; then
-  source "$HOME/.bun/_bun"
-fi
-
+# Command search path. Zsh keeps the path array and PATH in sync.
+typeset -U path PATH
 export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
 
-if [[ -d "$HOME/.docker/completions" ]]; then
-  fpath=("$HOME/.docker/completions" $fpath)
+[[ -d "$HOME/.lando/bin" ]] && path=("$HOME/.lando/bin" $path)
+[[ -d "$BUN_INSTALL/bin" ]] && path=("$BUN_INSTALL/bin" $path)
+if [[ -n "${HOMEBREW_PREFIX:-}" && -d "$HOMEBREW_PREFIX/opt/node@24/bin" ]]; then
+  path=("$HOMEBREW_PREFIX/opt/node@24/bin" $path)
 fi
+
+# Persistent history without a shell framework.
+HISTFILE="$HOME/.zsh_history"
+HISTSIZE=50000
+SAVEHIST=10000
+setopt append_history extended_history hist_ignore_dups hist_ignore_space share_history
+
+# Completions supplied by local tools.
+[[ -s "$HOME/.bun/_bun" ]] && source "$HOME/.bun/_bun"
+[[ -d "$HOME/.docker/completions" ]] && fpath=("$HOME/.docker/completions" $fpath)
 
 autoload -Uz compinit
-compinit
+_zsh_cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
+mkdir -p "$_zsh_cache_dir"
+compinit -d "$_zsh_cache_dir/zcompdump-${ZSH_VERSION}"
+unset _zsh_cache_dir
 
-if [[ -n "${HOMEBREW_PREFIX:-}" && -d "${HOMEBREW_PREFIX}/opt/node@24/bin" ]]; then
-  export PATH="${HOMEBREW_PREFIX}/opt/node@24/bin:$PATH"
-fi
+# Warp can replace this with its native prompt; other terminals retain a useful default.
+PROMPT='%n@%m %1~ %# '
