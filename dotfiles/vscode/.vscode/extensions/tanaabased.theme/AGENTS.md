@@ -21,6 +21,11 @@ repository root guidance.
 - Prefer shared semantic additions under `ui`, `status`, `syntax`, `diff`, or `terminal`. Add a
   VS Code-specific palette section only when a useful color concept is genuinely application-only
   and cannot be expressed as a shared role without distorting the portable contract.
+- Preserve the `schemaVersion: 2` separation between portable syntax roles and mode-level diff
+  roles. Syntax markup owns inserted, deleted, and changed token colors; `modes.<mode>.diff` owns
+  workbench diff foregrounds and backgrounds. Keep opacity application-specific by deriving alpha
+  variants from canonical RGB values rather than adding translucent colors to the portable syntax
+  contract.
 
 ## Reference Hierarchy
 

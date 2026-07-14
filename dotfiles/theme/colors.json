@@ -1,6 +1,6 @@
 {
   "name": "Tanaab",
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "defaultMode": "dark",
   "modes": {
     "dark": {
@@ -37,38 +37,60 @@
         "error": "#ff667d"
       },
       "syntax": {
-        "plain": "#e6f0eb",
-        "comment": "#748a81",
-        "punctuation": "#adc1b8",
-        "variable": "#e6f0eb",
-        "constant": "#ffc333",
-        "number": "#ffc333",
-        "string": "#33d3a1",
+        "plain": "#bcd9df",
+        "comment": "#8f9fa4",
+        "punctuation": "#8f9fa4",
+        "structural": "#ddebe8",
+        "variable": "#bcd9df",
+        "constant": "#bcd9df",
+        "boolean": "#ffc333",
+        "number": "#8f9fa4",
+        "string": "#38d7d0",
+        "structuredString": "#bcd9df",
         "keyword": "#e25292",
-        "operator": "#adc1b8",
-        "function": "#00c88a",
-        "type": "#5ab0ff",
-        "property": "#38d7d0",
-        "tag": "#e25292",
-        "attribute": "#ffb000",
-        "regexp": "#c7a0ff",
+        "operator": "#8f9fa4",
+        "valueDeclaration": "#33d3a1",
+        "controlFlow": "#33d3a1",
+        "callableDeclaration": "#e25292",
+        "typeDeclaration": "#e25292",
+        "moduleConstruction": "#e25292",
+        "callable": "#82a3b3",
+        "type": "#82a3b3",
+        "property": "#ddebe8",
+        "tag": "#82a3b3",
+        "attribute": "#33d3a1",
+        "regexp": "#38d7d0",
+        "parameter": "#ffc333",
         "escape": "#ffc333",
-        "markupHeading": "#00c88a",
-        "markupLink": "#5ab0ff",
-        "invalid": "#ff667d",
-        "diff": {
-          "added": {
-            "foreground": "#33d3a1",
-            "background": "#12372c"
+        "important": "#ffc333",
+        "markup": {
+          "headingPrimary": "#ffc333",
+          "headingSecondary": "#00c88a",
+          "listMarker": "#38d7d0",
+          "quote": "#8f9fa4",
+          "link": "#38d7d0",
+          "code": {
+            "foreground": "#ddebe8",
+            "background": "#0a1210"
           },
-          "removed": {
-            "foreground": "#ff667d",
-            "background": "#3a1821"
-          },
-          "modified": {
-            "foreground": "#ffc333",
-            "background": "#392c10"
-          }
+          "inserted": "#33d3a1",
+          "deleted": "#ff667d",
+          "changed": "#ffc333"
+        },
+        "invalid": "#ff667d"
+      },
+      "diff": {
+        "added": {
+          "foreground": "#33d3a1",
+          "background": "#12372c"
+        },
+        "removed": {
+          "foreground": "#ff667d",
+          "background": "#3a1821"
+        },
+        "modified": {
+          "foreground": "#ffc333",
+          "background": "#392c10"
         }
       },
       "terminal": {
@@ -128,38 +150,60 @@
         "error": "#b4233c"
       },
       "syntax": {
-        "plain": "#102018",
-        "comment": "#5f746a",
-        "punctuation": "#52675e",
-        "variable": "#102018",
-        "constant": "#8a5f00",
-        "number": "#8a5f00",
-        "string": "#007a56",
-        "keyword": "#9c1c55",
-        "operator": "#52675e",
-        "function": "#007a56",
-        "type": "#0069b8",
-        "property": "#087a82",
-        "tag": "#9c1c55",
-        "attribute": "#8a5f00",
-        "regexp": "#6f42c1",
-        "escape": "#9a4d00",
-        "markupHeading": "#9c1c55",
-        "markupLink": "#0069b8",
-        "invalid": "#b4233c",
-        "diff": {
-          "added": {
-            "foreground": "#007a56",
-            "background": "#d6f2e8"
+        "plain": "#273238",
+        "comment": "#597788",
+        "punctuation": "#536269",
+        "structural": "#536269",
+        "variable": "#273238",
+        "constant": "#273238",
+        "boolean": "#8a5f00",
+        "number": "#597788",
+        "string": "#38d7d0",
+        "structuredString": "#273238",
+        "keyword": "#33d3a1",
+        "operator": "#536269",
+        "valueDeclaration": "#e25292",
+        "controlFlow": "#e25292",
+        "callableDeclaration": "#33d3a1",
+        "typeDeclaration": "#33d3a1",
+        "moduleConstruction": "#33d3a1",
+        "callable": "#517d94",
+        "type": "#517d94",
+        "property": "#536269",
+        "tag": "#517d94",
+        "attribute": "#e25292",
+        "regexp": "#38d7d0",
+        "parameter": "#ffc333",
+        "escape": "#ffc333",
+        "important": "#8a5f00",
+        "markup": {
+          "headingPrimary": "#ffc333",
+          "headingSecondary": "#db2777",
+          "listMarker": "#38d7d0",
+          "quote": "#597788",
+          "link": "#087a82",
+          "code": {
+            "foreground": "#536269",
+            "background": "#bcd9df"
           },
-          "removed": {
-            "foreground": "#b4233c",
-            "background": "#f8dfe4"
-          },
-          "modified": {
-            "foreground": "#8a5f00",
-            "background": "#f6e9c8"
-          }
+          "inserted": "#33d3a1",
+          "deleted": "#ff667d",
+          "changed": "#ffc333"
+        },
+        "invalid": "#ff667d"
+      },
+      "diff": {
+        "added": {
+          "foreground": "#007a56",
+          "background": "#d6f2e8"
+        },
+        "removed": {
+          "foreground": "#b4233c",
+          "background": "#f8dfe4"
+        },
+        "modified": {
+          "foreground": "#8a5f00",
+          "background": "#f6e9c8"
         }
       },
       "terminal": {
