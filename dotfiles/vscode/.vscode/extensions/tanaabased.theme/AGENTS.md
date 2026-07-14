@@ -159,8 +159,11 @@ most identifiers on the shared neutral syntax ramp. Use chromatic roles as small
 - Shared muted neutral for generic assignment, comparison, logical, arithmetic, and arrow operators.
 - Cyan for strings and regular expressions in programming languages, while keeping JSON, YAML, and
   TOML strings neutral.
-- Yellow for function parameter declarations, escapes, and sparse markup landmarks rather than
-  routine properties or numbers.
+- Yellow for booleans, function parameter declarations, escapes, and `!important` style
+  declarations rather than routine markup attributes, properties, numbers, or flags such as
+  `!default`.
+- Muted neutral for numeric literals so they remain legible without competing with semantic
+  landmarks.
 - Muted neutral italics for comments.
 
 Keep JavaScript documentation blocks monochrome. Prose remains muted neutral italics; JSDoc tags
@@ -172,8 +175,27 @@ distribution of colors.
 
 In the light syntax layer, reverse the dark lexical green and pink landmarks: value declarations and
 structural control flow use pink, while callable or type declarations, module or construction
-keywords, and tags use green. Apply the same priority rotation to sparse Markdown heading landmarks,
-but preserve universal semantic colors such as green inserted markup.
+keywords use green. Apply the same priority rotation to sparse Markdown heading landmarks, but
+preserve universal semantic colors such as green inserted markup.
+
+For Vue single-file components, let embedded JavaScript or TypeScript inherit the shared programming
+roles. Treat component and SFC wrapper tag names like subdued callable names, render them at 50%
+opacity so prose or values remain dominant, and style their angle-bracket punctuation like structural
+brackets. Directive and ordinary attribute names plus their shorthand markers use the active mode
+primary, while `v-if` or `v-for` follow ordinary structural control flow. Keep interpolation
+delimiters subdued like brackets while their expressions inherit
+programming roles. In embedded styles, keep property names on the neutral property ramp, use the
+active mode primary for selectors, keep structural braces or function parentheses subdued, and
+reserve yellow for `!important` while `!default` follows the ordinary keyword role.
+
+For shell scripts, map grammar-specific scopes back to the shared programming roles. Structural
+control flow such as `if`, `then`, `for`, `do`, `case`, and `return` follows the control-flow role.
+Function declaration names follow the callable declaration role, while commands, builtins, and
+function calls retain the subdued callable color. Value declarations such as `local` and `declare`
+follow JavaScript value-declaration keywords; variables remain neutral, positional parameters use
+yellow, strings and patterns use cyan, and numbers use the muted numeric neutral. Keep grouping,
+test, subshell, and parameter-expansion punctuation subdued like JavaScript brackets. Apply the
+normal dark/light green and pink priority rotation to these roles.
 
 ## Syntax Development Workflow
 
@@ -222,7 +244,18 @@ rules; that is the primary test that the generic layer is working.
 Markdown may use stronger structural landmarks because headings and list markers are sparse. In
 Solarized Dark, use bright accent yellow for complete level-one headings, primary green for complete
 level-two through level-six headings, and a small cyan cue for list markers. Bold and italic text
-should inherit its surrounding foreground rather than introducing another chromatic role.
+should inherit its surrounding foreground rather than introducing another chromatic role. Use cyan
+for links. Render inline backtick code as neutral text on an obviously darker neutral surface. Give
+fenced code the same darker surface while allowing its contents to inherit embedded language
+syntax. Markdown tables may use that same darker token surface. A pure color theme cannot create a
+full-width source-editor region behind a fenced block or table; that requires active editor
+decorations, so keep the proof-of-concept extension declarative.
+
+Keep JSON and YAML keys on one neutral property role regardless of nesting. In TOML, treat bracketed
+table and array-table headers as structural: their names, dots, and brackets share the subdued
+bracket color. Use yellow for booleans and a muted neutral for numbers across structured data. The
+bundled JSON grammar groups `true`, `false`, and `null` under one literal scope, so keep that JSON
+literal family together rather than pretending the theme can distinguish their text.
 
 For Solarized variants, use the complete Solarized neutral ramp from `variants.solarized.base` for
 backgrounds, surfaces, dividers, and neutral workbench text. Do not use the background ramp to fork

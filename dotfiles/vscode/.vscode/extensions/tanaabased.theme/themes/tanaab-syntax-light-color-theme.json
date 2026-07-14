@@ -31,9 +31,20 @@
         "punctuation.definition.block",
         "punctuation.definition.array",
         "punctuation.definition.parameters",
+        "punctuation.definition.arguments.shell",
         "punctuation.definition.binding-pattern",
+        "punctuation.definition.group.shell",
+        "punctuation.definition.interpolation",
+        "punctuation.definition.logical-expression.shell",
+        "punctuation.definition.subshell.single.shell",
+        "punctuation.definition.tag",
+        "punctuation.definition.variable.shell",
         "punctuation.section.block",
+        "punctuation.section.bracket.curly.variable.begin.shell",
+        "punctuation.section.bracket.curly.variable.end.shell",
         "punctuation.section.brackets",
+        "punctuation.section.property-list",
+        "punctuation.section.function",
         "meta.brace.round",
         "meta.brace.curly",
         "meta.brace.square"
@@ -92,10 +103,24 @@
       }
     },
     {
-      "name": "Light constants and numbers",
+      "name": "Light constants and literals",
       "scope": ["constant", "constant.numeric", "constant.language", "variable.other.constant"],
       "settings": {
         "foreground": "#273238"
+      }
+    },
+    {
+      "name": "Light booleans",
+      "scope": ["constant.language.boolean", "constant.language.json"],
+      "settings": {
+        "foreground": "#8a5f00"
+      }
+    },
+    {
+      "name": "Light numbers",
+      "scope": ["constant.numeric"],
+      "settings": {
+        "foreground": "#597788"
       }
     },
     {
@@ -125,6 +150,13 @@
       }
     },
     {
+      "name": "Light shell function declarations",
+      "scope": ["entity.name.function.shell"],
+      "settings": {
+        "foreground": "#33d3a1"
+      }
+    },
+    {
       "name": "Light Ruby DSL calls",
       "scope": [
         "source.ruby support.function",
@@ -143,6 +175,13 @@
       }
     },
     {
+      "name": "Light style property names",
+      "scope": ["support.type.property-name"],
+      "settings": {
+        "foreground": "#536269"
+      }
+    },
+    {
       "name": "Light structured data keys",
       "scope": [
         "support.type.property-name.json",
@@ -156,11 +195,54 @@
       }
     },
     {
+      "name": "Light TOML table headers",
+      "scope": [
+        "support.type.property-name.table.toml",
+        "support.type.property-name.array.toml",
+        "punctuation.definition.table.toml",
+        "punctuation.definition.array.table.toml",
+        "punctuation.separator.dot.toml"
+      ],
+      "settings": {
+        "foreground": "#53626966"
+      }
+    },
+    {
       "name": "Light Markdown quotes",
       "scope": ["markup.quote.markdown", "punctuation.definition.quote.begin.markdown"],
       "settings": {
         "foreground": "#597788",
         "fontStyle": "italic"
+      }
+    },
+    {
+      "name": "Light Markdown inline code",
+      "scope": ["markup.inline.raw"],
+      "settings": {
+        "foreground": "#536269",
+        "background": "#bcd9df"
+      }
+    },
+    {
+      "name": "Light Markdown fenced code background",
+      "scope": ["markup.fenced_code.block.markdown", "markup.raw.block.markdown"],
+      "settings": {
+        "background": "#bcd9df"
+      }
+    },
+    {
+      "name": "Light Markdown table background",
+      "scope": ["markup.table.markdown"],
+      "settings": {
+        "background": "#bcd9df"
+      }
+    },
+    {
+      "name": "Light links",
+      "scope": ["markup.underline.link", "string.other.link"],
+      "settings": {
+        "foreground": "#087a82",
+        "fontStyle": "underline"
       }
     },
     {
@@ -173,6 +255,13 @@
     {
       "name": "Light value declarations and storage words",
       "scope": ["storage.type"],
+      "settings": {
+        "foreground": "#e25292"
+      }
+    },
+    {
+      "name": "Light shell value declarations",
+      "scope": ["storage.modifier.local.shell", "storage.modifier.declare.shell"],
       "settings": {
         "foreground": "#e25292"
       }
@@ -207,6 +296,13 @@
       }
     },
     {
+      "name": "Light shell control flow",
+      "scope": ["source.shell keyword.control"],
+      "settings": {
+        "foreground": "#e25292"
+      }
+    },
+    {
       "name": "Light module and construction keywords",
       "scope": [
         "keyword.control.import",
@@ -224,9 +320,23 @@
     },
     {
       "name": "Light tags",
-      "scope": ["entity.name.tag", "punctuation.definition.tag"],
+      "scope": ["entity.name.tag"],
       "settings": {
-        "foreground": "#33d3a1"
+        "foreground": "#517d9480"
+      }
+    },
+    {
+      "name": "Light attributes",
+      "scope": ["entity.other.attribute-name", "punctuation.attribute-shorthand"],
+      "settings": {
+        "foreground": "#e25292"
+      }
+    },
+    {
+      "name": "Light important style declarations",
+      "scope": ["keyword.other.important.css", "keyword.other.important.scss"],
+      "settings": {
+        "foreground": "#8a5f00"
       }
     },
     {

@@ -30,9 +30,20 @@
         "punctuation.definition.block",
         "punctuation.definition.array",
         "punctuation.definition.parameters",
+        "punctuation.definition.arguments.shell",
         "punctuation.definition.binding-pattern",
+        "punctuation.definition.group.shell",
+        "punctuation.definition.interpolation",
+        "punctuation.definition.logical-expression.shell",
+        "punctuation.definition.subshell.single.shell",
+        "punctuation.definition.tag",
+        "punctuation.definition.variable.shell",
         "punctuation.section.block",
+        "punctuation.section.bracket.curly.variable.begin.shell",
+        "punctuation.section.bracket.curly.variable.end.shell",
         "punctuation.section.brackets",
+        "punctuation.section.property-list",
+        "punctuation.section.function",
         "meta.brace.round",
         "meta.brace.curly",
         "meta.brace.square"
@@ -51,6 +62,13 @@
     {
       "name": "Value declarations and storage words",
       "scope": ["storage.type"],
+      "settings": {
+        "foreground": "#33d3a1"
+      }
+    },
+    {
+      "name": "Shell value declarations",
+      "scope": ["storage.modifier.local.shell", "storage.modifier.declare.shell"],
       "settings": {
         "foreground": "#33d3a1"
       }
@@ -113,6 +131,13 @@
       }
     },
     {
+      "name": "Shell control flow",
+      "scope": ["source.shell keyword.control"],
+      "settings": {
+        "foreground": "#33d3a1"
+      }
+    },
+    {
       "name": "Module and construction keywords",
       "scope": [
         "keyword.control.import",
@@ -157,10 +182,24 @@
       }
     },
     {
-      "name": "Constants and numbers",
+      "name": "Constants and literals",
       "scope": ["constant", "constant.numeric", "constant.language", "variable.other.constant"],
       "settings": {
         "foreground": "#bcd9df"
+      }
+    },
+    {
+      "name": "Booleans",
+      "scope": ["constant.language.boolean", "constant.language.json"],
+      "settings": {
+        "foreground": "#ffc333"
+      }
+    },
+    {
+      "name": "Numbers",
+      "scope": ["constant.numeric"],
+      "settings": {
+        "foreground": "#8f9fa4"
       }
     },
     {
@@ -218,6 +257,13 @@
       }
     },
     {
+      "name": "Shell function declarations",
+      "scope": ["entity.name.function.shell"],
+      "settings": {
+        "foreground": "#e25292"
+      }
+    },
+    {
       "name": "Ruby DSL calls",
       "scope": [
         "source.ruby support.function",
@@ -236,15 +282,29 @@
       }
     },
     {
-      "name": "Tags",
-      "scope": ["entity.name.tag", "punctuation.definition.tag"],
+      "name": "Style property names",
+      "scope": ["support.type.property-name"],
       "settings": {
-        "foreground": "#e25292"
+        "foreground": "#ddebe8"
+      }
+    },
+    {
+      "name": "Tags",
+      "scope": ["entity.name.tag"],
+      "settings": {
+        "foreground": "#82a3b380"
       }
     },
     {
       "name": "Attributes",
-      "scope": ["entity.other.attribute-name"],
+      "scope": ["entity.other.attribute-name", "punctuation.attribute-shorthand"],
+      "settings": {
+        "foreground": "#33d3a1"
+      }
+    },
+    {
+      "name": "Important style declarations",
+      "scope": ["keyword.other.important.css", "keyword.other.important.scss"],
       "settings": {
         "foreground": "#ffc333"
       }
@@ -260,6 +320,19 @@
       ],
       "settings": {
         "foreground": "#ddebe8"
+      }
+    },
+    {
+      "name": "TOML table headers",
+      "scope": [
+        "support.type.property-name.table.toml",
+        "support.type.property-name.array.toml",
+        "punctuation.definition.table.toml",
+        "punctuation.definition.array.table.toml",
+        "punctuation.separator.dot.toml"
+      ],
+      "settings": {
+        "foreground": "#ddebe866"
       }
     },
     {
@@ -317,16 +390,31 @@
     },
     {
       "name": "Markdown inline code",
-      "scope": ["markup.inline.raw", "markup.fenced_code.block.markdown"],
+      "scope": ["markup.inline.raw"],
       "settings": {
-        "foreground": "#38d7d0"
+        "foreground": "#ddebe8",
+        "background": "#0a1210"
+      }
+    },
+    {
+      "name": "Markdown fenced code background",
+      "scope": ["markup.fenced_code.block.markdown", "markup.raw.block.markdown"],
+      "settings": {
+        "background": "#0a1210"
+      }
+    },
+    {
+      "name": "Markdown table background",
+      "scope": ["markup.table.markdown"],
+      "settings": {
+        "background": "#0a1210"
       }
     },
     {
       "name": "Links",
       "scope": ["markup.underline.link", "string.other.link"],
       "settings": {
-        "foreground": "#5ab0ff",
+        "foreground": "#38d7d0",
         "fontStyle": "underline"
       }
     },
