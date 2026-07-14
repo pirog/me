@@ -58,6 +58,11 @@ Use the active mode's primary for a small number of important interactive cues. 
 semantic and come from that mode's `syntax` object; do not rotate syntax meanings independently of
 the canonical mapping.
 
+Treat one shared syntax palette as the target across all four variants, with theme-specific
+background and workbench surface ramps providing the mode distinction. During incremental review,
+keep the two dark variants' `tokenColors` identical; bring the light variants onto that same mapping
+in a later focused pass rather than changing all four without visual review.
+
 Each theme must continue to cover:
 
 - Workbench and editor UI colors.
@@ -113,31 +118,38 @@ neutral hierarchy first and chromatic emphasis second.
   point. Untracked files may use the mode primary; modified files should use a subdued or
   translucent accent. Use canonical RGB values with an alpha channel for workbench overlays and
   decorations when opacity improves hierarchy.
-- Treat yellow/gold as an accent, not a default syntax foreground. Use it selectively for numbers,
-  constants, escapes, warnings, modified states, and narrow markup or attribute roles.
-- Treat cyan as a secondary accent suited to properties, structured-data keys, parameters, and
-  informational detail. It should support the primary green/pink relationship rather than compete
-  with it.
+- Treat yellow/gold as an accent, not a default syntax foreground. Use it selectively for function
+  parameter declarations, escapes, warnings, modified states, and narrow markup or attribute roles.
+- Treat cyan as a secondary accent suited to programming-language strings, regular expressions,
+  sparse structured cues, and informational detail. Keep routine properties, object keys, braces,
+  and square brackets on the shared light neutral so cyan supports the primary green/pink
+  relationship rather than competing with it.
 - Keep punctuation, operators, brackets, and delimiters neutral unless an active interaction needs
   emphasis.
-- Do not rainbow-color bracket-pair depths. Render all normal bracket depths with the same neutral
-  punctuation color. Use a restrained selection fill and one mode-appropriate highlight only for
-  the currently matched pair; reserve error red for unexpected brackets.
+- Do not rainbow-color bracket-pair depths. Render all normal bracket depths with the same light
+  neutral and reserve error red for unexpected brackets. In the two dark variants, do not add a
+  background fill or border to the currently matched pair; the bracket glyphs provide enough cue.
 - Keep focus visible without relying on a hard saturated rectangle. Prefer muted borders, subtle
   fills, or a localized primary indicator appropriate to the control.
-- In Solarized variants, use a translucent mode-primary overlay for selections, matching words,
-  bracket matches, and similar editor interactions. Do not use the opaque dark-mode selection fill
-  as a Solarized interaction color.
+- In Solarized variants, use a translucent mode-primary overlay for selections, matching words, and
+  similar editor interactions. Bracket matches remain fill- and border-free. Do not use the opaque
+  dark-mode selection fill as a Solarized interaction color.
 
 For syntax, preserve the scratchpad's role hierarchy without reproducing its color density. Across
 both dark variants, keep variables, properties, function names, types, constants, punctuation, and
-most identifiers on the active neutral ramp. Use the chromatic roles as small lexical landmarks:
+most identifiers on the shared neutral syntax ramp. Use chromatic roles as small lexical landmarks:
 
-- Cyan for declaration and storage words such as `const`, `let`, `var`, `function`, and `class`.
+- Green for declaration and storage words such as `const`, `let`, `var`, `function`, and `class`.
 - Pink for control-flow keywords, imports or exports, and operators.
-- Green for strings in programming languages, while keeping JSON, YAML, and TOML strings neutral.
-- Yellow for declared parameters and escapes rather than every parameter reference or number.
+- Cyan for strings and regular expressions in programming languages, while keeping JSON, YAML, and
+  TOML strings neutral.
+- Yellow for function parameter declarations, escapes, and sparse markup landmarks rather than
+  routine properties or numbers.
 - Muted neutral italics for comments.
+
+Keep JavaScript documentation blocks monochrome. Prose remains muted neutral italics; JSDoc tags
+such as `@param` and `@returns` use the light neutral in bold; types, parameter names, and default
+annotations use the same light neutral without introducing another hue.
 
 A source file should read primarily as text with intentional color landmarks, not as an even
 distribution of colors.
@@ -148,9 +160,9 @@ level-two through level-six headings, and a small cyan cue for list markers. Bol
 should inherit its surrounding foreground rather than introducing another chromatic role.
 
 For Solarized variants, use the complete Solarized neutral ramp from `variants.solarized.base` for
-backgrounds, surfaces, dividers, neutral text, and the majority of syntax roles. Use the corresponding
-dark or light Tanaab chromatic roles as sparse landmarks and keep the canonical terminal roles rather
-than introducing a separate chromatic palette.
+backgrounds, surfaces, dividers, and neutral workbench text. Do not use the background ramp to fork
+the shared syntax palette. Keep the canonical terminal roles rather than introducing a separate
+chromatic palette.
 
 ## Generation Direction
 
