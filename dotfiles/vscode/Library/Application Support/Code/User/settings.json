@@ -17,5 +17,5 @@
   "prettier.singleQuote": true,
   "prettier.useEditorConfig": false,
   "terminal.integrated.defaultProfile.osx": "zsh",
-  "workbench.colorTheme": "Tanaab Dark"
+  "workbench.colorTheme": "Tanaab Solarized Dark"
 }

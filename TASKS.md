@@ -1,10 +1,6 @@
 # FINAL THINGS
 
 - @pirog/me
-  - themes
-    - vscode?
-      - tanaab-based
-
   - shouldnt i just run @pirog/me?
 
   - issue MGMT STUFF ASAP?
@@ -24,6 +20,7 @@
     - openclaw update|not?
     - OPENCLAW_MDNS_HOSTNAME
     - end of flow should be more concise with link to run full command?
+    - get/save token value
 
   - add to codex via phone?
 
@@ -131,7 +128,7 @@
   - markdown files for agents?
     - https://github.com/okineadev/vitepress-plugin-llms
   - accent colors
-  - add theme files so for example they show up in VSCODE?
+  - move pirog/me themes over here and add symlinks in dot/packages?
 
   - ELEMENTS
     - form page and lock down presentation?
