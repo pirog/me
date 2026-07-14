@@ -1,0 +1,258 @@
+{
+  "$schema": "vscode://schemas/color-theme",
+  "name": "Tanaab Shared Light Syntax",
+  "include": "./tanaab-syntax-color-theme.json",
+  "semanticHighlighting": false,
+  "tokenColors": [
+    {
+      "name": "Light default syntax",
+      "settings": {
+        "foreground": "#273238"
+      }
+    },
+    {
+      "name": "Light comments",
+      "scope": ["comment", "punctuation.definition.comment"],
+      "settings": {
+        "foreground": "#597788",
+        "fontStyle": "italic"
+      }
+    },
+    {
+      "name": "Light punctuation",
+      "scope": ["punctuation", "meta.brace", "meta.delimiter"],
+      "settings": {
+        "foreground": "#536269"
+      }
+    },
+    {
+      "name": "Light structural brackets",
+      "scope": [
+        "punctuation.definition.block",
+        "punctuation.definition.array",
+        "punctuation.definition.parameters",
+        "punctuation.definition.binding-pattern",
+        "punctuation.section.block",
+        "punctuation.section.brackets",
+        "meta.brace.round",
+        "meta.brace.curly",
+        "meta.brace.square"
+      ],
+      "settings": {
+        "foreground": "#53626966"
+      }
+    },
+    {
+      "name": "Light JSDoc annotations",
+      "scope": [
+        "entity.name.type.instance.jsdoc",
+        "variable.other.jsdoc",
+        "constant.language.access-type.jsdoc",
+        "constant.language.symbol-type.jsdoc",
+        "comment.block.documentation source.embedded.ts"
+      ],
+      "settings": {
+        "foreground": "#536269"
+      }
+    },
+    {
+      "name": "Light JSDoc tags",
+      "scope": ["storage.type.class.jsdoc", "punctuation.definition.block.tag.jsdoc"],
+      "settings": {
+        "foreground": "#536269",
+        "fontStyle": "bold"
+      }
+    },
+    {
+      "name": "Light operators and function arrows",
+      "scope": ["keyword.operator", "keyword.other.unit", "storage.type.function.arrow"],
+      "settings": {
+        "foreground": "#536269"
+      }
+    },
+    {
+      "name": "Light variables",
+      "scope": ["variable", "identifier"],
+      "settings": {
+        "foreground": "#273238"
+      }
+    },
+    {
+      "name": "Light properties",
+      "scope": [
+        "variable.other.property",
+        "variable.other.object.property",
+        "support.variable.property",
+        "meta.object-literal.key",
+        "meta.object.member",
+        "meta.property.object"
+      ],
+      "settings": {
+        "foreground": "#536269"
+      }
+    },
+    {
+      "name": "Light constants and numbers",
+      "scope": ["constant", "constant.numeric", "constant.language", "variable.other.constant"],
+      "settings": {
+        "foreground": "#273238"
+      }
+    },
+    {
+      "name": "Light structured data strings",
+      "scope": ["source.json string", "source.yaml string", "source.toml string"],
+      "settings": {
+        "foreground": "#273238"
+      }
+    },
+    {
+      "name": "Light functions and methods",
+      "scope": [
+        "entity.name.function",
+        "support.function",
+        "meta.function-call",
+        "variable.function"
+      ],
+      "settings": {
+        "foreground": "#517d94"
+      }
+    },
+    {
+      "name": "Light function declarations",
+      "scope": ["entity.name.function"],
+      "settings": {
+        "foreground": "#517d94"
+      }
+    },
+    {
+      "name": "Light Ruby DSL calls",
+      "scope": [
+        "source.ruby support.function",
+        "source.ruby variable.function",
+        "source.ruby meta.function-call"
+      ],
+      "settings": {
+        "foreground": "#517d94"
+      }
+    },
+    {
+      "name": "Light types and classes",
+      "scope": ["entity.name.type", "entity.name.class", "support.type", "support.class"],
+      "settings": {
+        "foreground": "#517d94"
+      }
+    },
+    {
+      "name": "Light structured data keys",
+      "scope": [
+        "support.type.property-name.json",
+        "support.type.property-name.yaml",
+        "support.type.property-name.toml",
+        "entity.name.tag.yaml",
+        "meta.mapping.key"
+      ],
+      "settings": {
+        "foreground": "#536269"
+      }
+    },
+    {
+      "name": "Light Markdown quotes",
+      "scope": ["markup.quote.markdown", "punctuation.definition.quote.begin.markdown"],
+      "settings": {
+        "foreground": "#597788",
+        "fontStyle": "italic"
+      }
+    },
+    {
+      "name": "Light keywords",
+      "scope": ["keyword"],
+      "settings": {
+        "foreground": "#33d3a1"
+      }
+    },
+    {
+      "name": "Light value declarations and storage words",
+      "scope": ["storage.type"],
+      "settings": {
+        "foreground": "#e25292"
+      }
+    },
+    {
+      "name": "Light callable and type declaration keywords",
+      "scope": [
+        "storage.type.function",
+        "storage.type.class",
+        "storage.type.interface",
+        "storage.type.enum",
+        "storage.type.struct",
+        "storage.modifier"
+      ],
+      "settings": {
+        "foreground": "#33d3a1"
+      }
+    },
+    {
+      "name": "Light structural control flow",
+      "scope": [
+        "keyword.control.conditional",
+        "keyword.control.loop",
+        "keyword.control.flow",
+        "keyword.control.switch",
+        "keyword.control.trycatch",
+        "keyword.control.with",
+        "keyword.control.default"
+      ],
+      "settings": {
+        "foreground": "#e25292"
+      }
+    },
+    {
+      "name": "Light module and construction keywords",
+      "scope": [
+        "keyword.control.import",
+        "keyword.control.export",
+        "keyword.control.from",
+        "keyword.control.as",
+        "keyword.control.require",
+        "keyword.control.new",
+        "keyword.operator.new",
+        "keyword.operator.expression.import"
+      ],
+      "settings": {
+        "foreground": "#33d3a1"
+      }
+    },
+    {
+      "name": "Light tags",
+      "scope": ["entity.name.tag", "punctuation.definition.tag"],
+      "settings": {
+        "foreground": "#33d3a1"
+      }
+    },
+    {
+      "name": "Light Markdown secondary headings",
+      "scope": [
+        "heading.2.markdown",
+        "heading.3.markdown",
+        "heading.4.markdown",
+        "heading.5.markdown",
+        "heading.6.markdown",
+        "heading.2.markdown punctuation.definition.heading.markdown",
+        "heading.3.markdown punctuation.definition.heading.markdown",
+        "heading.4.markdown punctuation.definition.heading.markdown",
+        "heading.5.markdown punctuation.definition.heading.markdown",
+        "heading.6.markdown punctuation.definition.heading.markdown",
+        "heading.2.markdown entity.name.section.markdown",
+        "heading.3.markdown entity.name.section.markdown",
+        "heading.4.markdown entity.name.section.markdown",
+        "heading.5.markdown entity.name.section.markdown",
+        "heading.6.markdown entity.name.section.markdown",
+        "markup.heading.setext.2.markdown"
+      ],
+      "settings": {
+        "foreground": "#db2777",
+        "fontStyle": "bold"
+      }
+    }
+  ]
+}

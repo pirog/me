@@ -45,7 +45,8 @@ Maintain these four contributed themes and keep their manifest labels, file name
 `uiTheme` values aligned:
 
 - `Tanaab Dark`: the Slate neutral ramp with dark-mode chromatic, diff, and terminal ANSI roles.
-- `Tanaab Light`: `modes.light` UI, syntax, diff, and terminal roles.
+- `Tanaab Light`: the Slate neutral ramp in reverse for workbench surfaces and text, with
+  `modes.light` chromatic, diff, and terminal roles.
 - `Tanaab Solarized Dark`: the Solarized neutral ramp with dark-mode chromatic roles.
 - `Tanaab Solarized Light`: the Solarized neutral ramp with light-mode chromatic roles.
 
@@ -54,16 +55,19 @@ The brand primary and secondary roles intentionally rotate by mode:
 - Dark mode uses green as primary and pink as secondary.
 - Light mode uses pink as primary and green as secondary.
 
-Use the active mode's primary for a small number of important interactive cues. Syntax roles remain
-semantic and come from that mode's `syntax` object; do not rotate syntax meanings independently of
-the canonical mapping.
+Use the active mode's primary for a small number of important interactive cues. Lexical syntax roles
+rotate the green and pink landmarks with the mode: dark uses green for value declarations and
+control flow with pink for callable, type, module, and construction keywords; light reverses those
+two role groups. Universal semantic colors such as inserted, deleted, diagnostic, and source-control
+states do not rotate with the brand priority.
 
-Treat one shared syntax palette as the target across all four variants, with theme-specific
-background and workbench surface ramps providing the mode distinction. During incremental review,
-keep the two dark variants inherited from `themes/tanaab-syntax-color-theme.json`; bring the light
-variants onto that same scope model in a later focused pass rather than changing all four without
-visual review. VS Code theme files do not provide palette variables, so light-mode neutral overrides
-are acceptable when the shared dark neutral foregrounds do not provide sufficient contrast.
+Treat one shared syntax role model as the target across all four variants, with theme-specific
+background and workbench surface ramps providing the mode distinction. The dark variants inherit
+`themes/tanaab-syntax-color-theme.json`; the light variants inherit
+`themes/tanaab-syntax-light-color-theme.json`, which layers only the neutral-ramp overrides needed
+for light-background contrast over the shared syntax file. VS Code theme files do not provide
+palette variables, so keep those overrides focused on neutral roles instead of forking chromatic
+semantics.
 
 Each theme must continue to cover:
 
@@ -116,6 +120,10 @@ neutral hierarchy first and chromatic emphasis second.
   buttons, extension install buttons, the selected Activity Bar indicator, and verified-publisher
   icons. A nearby hover state may use the canonical lighter primary. Keep these treatments compact
   so they balance, rather than compete with, secondary-pink notification badges.
+- In light mode, preserve the rotated brand relationship: use the canonical bright pink for compact
+  actions, links, selected Activity Bar indicators, and verified-publisher icons, while green is
+  reserved for notification and count badges. Use a dark badge foreground so the bright green
+  remains legible.
 - Keep source-control decorations semantically distinct without making every changed file a focal
   point. Untracked files may use the mode primary; modified files should use a subdued or
   translucent accent. Use canonical RGB values with an alpha channel for workbench overlays and
@@ -162,11 +170,18 @@ annotations use the same light neutral without introducing another hue.
 A source file should read primarily as text with intentional color landmarks, not as an even
 distribution of colors.
 
+In the light syntax layer, reverse the dark lexical green and pink landmarks: value declarations and
+structural control flow use pink, while callable or type declarations, module or construction
+keywords, and tags use green. Apply the same priority rotation to sparse Markdown heading landmarks,
+but preserve universal semantic colors such as green inserted markup.
+
 ## Syntax Development Workflow
 
 Treat `themes/tanaab-syntax-color-theme.json` as the shared, generic-first TextMate syntax layer.
-The two dark workbench themes inherit it with `include` and must not carry duplicate `tokenColors`
-arrays. Keep semantic highlighting disabled in those themes while TextMate scopes are authoritative.
+The two dark workbench themes inherit it directly. The two light workbench themes inherit
+`themes/tanaab-syntax-light-color-theme.json`, which in turn inherits the shared layer and overrides
+only neutral roles. Workbench themes must not carry duplicate `tokenColors` arrays. Keep semantic
+highlighting disabled while these TextMate scopes are authoritative.
 
 Develop syntax as a role-first, fixture-driven loop rather than completing independent language
 themes and attempting to merge them afterward:
