@@ -14,6 +14,11 @@ fast_mode = true
 [memories]
 disable_on_external_context = true
 
+[tui]
+# Use `ansi` with Tanaab Dark, Tanaab Light, or Tanaab Solarized Light.
+# theme = "ansi"
+theme = "tanaab-solarized-dark"
+
 [desktop]
 appearanceTheme = "system"
 appearanceLightCodeThemeId = "codex"

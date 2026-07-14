@@ -45,6 +45,8 @@ This is directional guidance, not an expansion of the current public contract:
 - `Brewfile`: Homebrew package and application inventory, including the canonical `tailscale-app`
   desktop cask used outside Agentbox hosts.
 - `dotfiles/*`: top-level GNU Stow packages applied to `$HOME`.
+- `dotfiles/theme/colors.json`: lowest-level portable Tanaab color palette and source of truth for
+  application-specific theme assets.
 - `.codex-plugin/`, `.mcp.json`, `assets/`, `bin/`, `lib/`, `skills/`, and `utils/`:
   `piroplugin` package inputs and local Codex tooling.
 - `README.md`: primary setup and usage entrypoint; `ADVANCED.md`: installed components, complete
@@ -137,6 +139,8 @@ This is directional guidance, not an expansion of the current public contract:
   `bun run codex:validate`, `bun run codex:check`, and `bun run codex:sync`.
 - Treat `dotfiles/ai` as a separate Stow-owned surface. Use `bun run ai:sync` for home-directory
   restow work, not for plugin cache refreshes.
+- Keep `dotfiles/ai/.agents/plugins/marketplace.json` plugin entries sorted first by category, with
+  `Pirobased` before `Tanaab-based`, and then alphabetically by plugin name within each category.
 - Treat `$piro-me-readiness` as read-only verification of this checkout and macOS user profile. It
   must not become setup, token management, environment management, GitHub or monday automation,
   release, Leia, or general machine administration.
@@ -159,7 +163,7 @@ This is directional guidance, not an expansion of the current public contract:
   `skills/me-readiness/SKILL.md`.
 - Keep readiness capability-based: Homebrew write access, every Brewfile formula, required core
   commands, complete repo-owned dotfiles, generated Codex config, `piroplugin`, and GitHub identity
-  are hard requirements. Brewfile casks, Janus, 1Password, Tailscale, and monday are warnings.
+  are hard requirements. Brewfile casks, 1Password, Tailscale, and monday are warnings.
 - Update the owning source first, then readiness only when the prerequisite is stable, repo-owned,
   read-only, and machine-verifiable:
   - Brew packages belong in `Brewfile`; discover formulas and casks from that file instead of

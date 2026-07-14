@@ -1,0 +1,27 @@
+# Solarized's CIELAB lightness ramp, transformed around Tanaab's fixed ANSI anchors.
+# Chromatic ANSI colors remain fixed to dotfiles/theme/colors.json modes.light.
+name: Tanaab Solarized Light
+accent: '#db2777'
+cursor: '#70857b'
+background: '#ecf9f6'
+foreground: '#437086'
+details: lighter
+terminal_colors:
+  normal:
+    black: '#102018'
+    red: '#ff667d'
+    green: '#00c88a'
+    yellow: '#ffb000'
+    blue: '#5ab0ff'
+    magenta: '#e03a83'
+    cyan: '#38d7d0'
+    white: '#52675e'
+  bright:
+    black: '#70857b'
+    red: '#ff8c9c'
+    green: '#33d3a1'
+    yellow: '#ffc333'
+    blue: '#83c6ff'
+    magenta: '#e25292'
+    cyan: '#68e4df'
+    white: '#5f746a'

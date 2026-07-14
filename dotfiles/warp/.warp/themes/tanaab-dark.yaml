@@ -1,0 +1,26 @@
+# Slate backgrounds from variants.slate.base with modes.dark chromatic roles.
+name: Tanaab Dark
+accent: '#00c88a'
+cursor: '#748a81'
+background: '#273238'
+foreground: '#e6f0eb'
+details: darker
+terminal_colors:
+  normal:
+    black: '#283944'
+    red: '#ff667d'
+    green: '#00c88a'
+    yellow: '#ffb000'
+    blue: '#5ab0ff'
+    magenta: '#e03a83'
+    cyan: '#38d7d0'
+    white: '#adc1b8'
+  bright:
+    black: '#748a81'
+    red: '#ff8c9c'
+    green: '#33d3a1'
+    yellow: '#ffc333'
+    blue: '#83c6ff'
+    magenta: '#e25292'
+    cyan: '#68e4df'
+    white: '#e6f0eb'

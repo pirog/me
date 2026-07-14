@@ -1,0 +1,30 @@
+# Solarized's CIELAB lightness ramp, transformed around Tanaab's fixed ANSI anchors.
+# Chromatic ANSI colors remain fixed to dotfiles/theme/colors.json modes.dark.
+# ANSI black uses variants.solarized.base.base02 as the first raised surface.
+name: Tanaab Solarized Dark
+accent: '#00c88a'
+cursor: '#748a81'
+background: '#002d45'
+# Original subdued foreground: '#82a3b3'
+# Brighter foreground: '#ddebe8'
+foreground: '#adc1b8'
+details: darker
+terminal_colors:
+  normal:
+    black: '#003851'
+    red: '#ff667d'
+    green: '#00c88a'
+    yellow: '#ffb000'
+    blue: '#5ab0ff'
+    magenta: '#e03a83'
+    cyan: '#38d7d0'
+    white: '#adc1b8'
+  bright:
+    black: '#748a81'
+    red: '#ff8c9c'
+    green: '#33d3a1'
+    yellow: '#ffc333'
+    blue: '#83c6ff'
+    magenta: '#e25292'
+    cyan: '#68e4df'
+    white: '#e6f0eb'

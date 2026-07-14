@@ -1,40 +1,46 @@
 # FINAL THINGS
 
 - @pirog/me
-  - themes
-    - codex
-    - warp
-      remove OHMYZSH?
-      warp settings in dotfile?
-    - vscode?
-    - vim settings?
-    - TUI theme?
-
-  - add agentbox plugin to marketplace?
-
-  - remote management and authorized keys?
-  - review sudo stuff? do we really need it? always run as admin?
-  - ips for pirobook and tanaabbook?
-
   - shouldnt i just run @pirog/me?
+  - blog like pirog skill
 
+- @tanaabased/canon
   - issue MGMT STUFF ASAP?
     - milestone creation
     - issue creation|triage|etc
     - labels|fields|etc?
-  - blog like pirog skill
-  - repo setup skills
+
+  - repo setup/standardization skills
     - normal settings
     - branch protection
     - add tanabot 2 repo w write access
     - suggest 3 good tags skill
     - verify repo / repo audit
+    - skill to autotag repos
+
+  - org standardizer?
+    - list of repo tags
+
+  - fixes
+    - release skill should always be against main unless explicitly said otherwise
+    - js skills should work for ts as well?
+
+  - longer term
+    - "keeper of the faith"
+      - some kind of tanaab-coach/advisor skill?
+      - a brand enforcer skill (better as separate agent now?)
+    - adoption of schema|error|cli frameworks?
+    - organizatinal model for leia tests eg inputs|defaults|feature-x?
+    - commit behavior?
+      - if you have a list of things to do then commit one per list item
+      - message syntax and formatting?
 
 - @tanaabased/agentbox
   - verify
     - openclaw update|not?
     - OPENCLAW_MDNS_HOSTNAME
     - end of flow should be more concise with link to run full command?
+    - get/save token value
 
   - add to codex via phone?
 
@@ -142,6 +148,7 @@
   - markdown files for agents?
     - https://github.com/okineadev/vitepress-plugin-llms
   - accent colors
+  - move pirog/me themes over here and add symlinks in dot/packages?
 
   - ELEMENTS
     - form page and lock down presentation?
@@ -187,28 +194,6 @@
 - @tanaabased/bootbox
   - warning if keys exist?
   - make into bun cli as well?
-
-- @tanaabased/canon
-  - some kind of tanaab-coach/advisor skill?
-  - a brand enforcer skill (better as agent now?)
-  - vscode theme and shiki and warp styles?
-  - issue manager|author?
-  - work on issue skill?
-  - milestone creator w/ monday syncher?
-  - milestone form idea
-  - repo standardization?
-  - THEME stuff for fun?
-  - release skill should always be against main unless explicitly said otherwise
-  - skill to autotag repos
-  - list of repo tags
-  - js skills should work for ts as well?
-  - adoption of schema|error|cli frameworks?
-  - organizatinal model for leia tests eg inputs|defaults|feature-x?
-  - leia handling of ${} envvar brackets?
-    - maybe should just add support in @lando/leia?
-  - commit behavior?
-    - if you have a list of things to do then commit one per list item
-    - message syntax and formatting?
 
 - @tanaabased/website
   - rebase on THEME

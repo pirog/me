@@ -1,7 +1,12 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+- Added a `warp` dotpkg with file-backed settings and Tanaab and Tanaab Solarized dark and light
+  themes. [#32](https://github.com/pirog/me/pull/32)
 - Added published `/llms.txt` metadata and an advanced configuration reference.
+- Removed Oh My Zsh and Powerlevel10k from the personal shell profile. [#32](https://github.com/pirog/me/pull/32)
 - Removed public `--me` and `PIROME_ME` source selection from `boot.sh`.
+- Replaced the external Janus Vim runtime with Homebrew Vim and a self-contained terminal-native
+  Tanaab profile. [#32](https://github.com/pirog/me/pull/32)
 - Updated `boot.sh` to resolve explicit, source-relative, existing, or SSH-cloned `@pirog/me` payloads.
 - Updated detected Agentbox hosts to skip desktop 1Password and Tailscale casks and use daemon-aware readiness.
 - Updated portable Codex defaults to use `gpt-5.6`.

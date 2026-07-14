@@ -33,10 +33,19 @@ Agentbox keeps its formula-backed Tailscale runtime in control.
 - [`hyperdrive`](./dotfiles/hyperdrive): Hyperdrive application configuration.
 - [`lando`](./dotfiles/lando): Lando configuration.
 - [`ssh`](./dotfiles/ssh): SSH configuration and public-key material.
-- [`theme`](./dotfiles/theme): Tanaab light and dark theme assets.
-- [`vim`](./dotfiles/vim): Vim wrapper and customization files. The Janus runtime remains an
-  external dependency expected at `~/.vim/janus/vim`.
-- [`zsh`](./dotfiles/zsh): shell and prompt configuration.
+- [`theme`](./dotfiles/theme): low-level portable Tanaab color palette for application-specific
+  theme assets.
+- [`vim`](./dotfiles/vim): self-contained Vim configuration with native packages and a
+  terminal-driven Tanaab theme.
+- [`vscode`](./dotfiles/vscode): cleaned Visual Studio Code user settings and the local
+  `tanaabased.theme` extension with Tanaab and Tanaab Solarized dark and light variants.
+- [`warp`](./dotfiles/warp): file-backed Warp terminal settings and Tanaab and Tanaab Solarized
+  dark and light themes.
+- [`zsh`](./dotfiles/zsh): framework-free Zsh environment, history, completion, and fallback prompt.
+
+The Vim profile uses native runtime packages and maps its `tanaab` colorscheme onto the terminal's
+ANSI palette, allowing it to follow the active Tanaab Warp theme without a separate Vim theme
+selection or external runtime.
 
 ### Codex Plugin And Skills
 
@@ -247,6 +256,12 @@ The Codex configuration under `dotfiles/ai` uses three layers:
 - `~/.codex/config.local.toml` is machine-owned and contains project trust, local paths,
   notifications, marketplace paths, plugin cache paths, and other machine-specific values.
 - `~/.codex/config.toml` is generated from the shared and local inputs; do not edit it directly.
+
+Custom Codex TUI syntax themes live under `dotfiles/ai/.codex/themes/`. Tanaab Solarized Dark is the
+default and preserves ANSI syntax colors from the active terminal palette while supplying its own
+Warp-matched diff backgrounds. When using Tanaab Dark, Tanaab Light, or Tanaab Solarized Light,
+switch `[tui].theme` to `ansi` so Codex follows the active Warp palette without applying those
+dark-specific fills.
 
 Local configuration may add settings alongside shared tables, but it may not override an exact key
 owned by the shared file.
