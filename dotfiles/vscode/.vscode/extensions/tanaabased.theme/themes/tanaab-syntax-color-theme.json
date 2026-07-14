@@ -25,17 +25,20 @@
       }
     },
     {
-      "name": "Braces and square brackets",
+      "name": "Structural brackets",
       "scope": [
         "punctuation.definition.block",
         "punctuation.definition.array",
+        "punctuation.definition.parameters",
+        "punctuation.definition.binding-pattern",
         "punctuation.section.block",
         "punctuation.section.brackets",
+        "meta.brace.round",
         "meta.brace.curly",
         "meta.brace.square"
       ],
       "settings": {
-        "foreground": "#ddebe8"
+        "foreground": "#ddebe866"
       }
     },
     {
@@ -46,10 +49,24 @@
       }
     },
     {
-      "name": "Storage",
-      "scope": ["storage.type", "storage.modifier"],
+      "name": "Value declarations and storage words",
+      "scope": ["storage.type"],
       "settings": {
         "foreground": "#33d3a1"
+      }
+    },
+    {
+      "name": "Callable and type declaration keywords",
+      "scope": [
+        "storage.type.function",
+        "storage.type.class",
+        "storage.type.interface",
+        "storage.type.enum",
+        "storage.type.struct",
+        "storage.modifier"
+      ],
+      "settings": {
+        "foreground": "#e25292"
       }
     },
     {
@@ -74,8 +91,8 @@
       }
     },
     {
-      "name": "Operators",
-      "scope": ["keyword.operator", "keyword.other.unit"],
+      "name": "Operators and function arrows",
+      "scope": ["keyword.operator", "keyword.other.unit", "storage.type.function.arrow"],
       "settings": {
         "foreground": "#8f9fa4"
       }
@@ -190,14 +207,14 @@
         "variable.function"
       ],
       "settings": {
-        "foreground": "#ddebe8"
+        "foreground": "#82a3b3"
       }
     },
     {
       "name": "Function declarations",
       "scope": ["entity.name.function"],
       "settings": {
-        "foreground": "#ddebe8"
+        "foreground": "#82a3b3"
       }
     },
     {
@@ -208,14 +225,14 @@
         "source.ruby meta.function-call"
       ],
       "settings": {
-        "foreground": "#ddebe8"
+        "foreground": "#82a3b3"
       }
     },
     {
       "name": "Types and classes",
       "scope": ["entity.name.type", "entity.name.class", "support.type", "support.class"],
       "settings": {
-        "foreground": "#bcd9df"
+        "foreground": "#82a3b3"
       }
     },
     {

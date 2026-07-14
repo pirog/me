@@ -141,9 +141,13 @@ For syntax, preserve the scratchpad's role hierarchy without reproducing its col
 both dark variants, keep variables, properties, function names, types, constants, punctuation, and
 most identifiers on the shared neutral syntax ramp. Use chromatic roles as small lexical landmarks:
 
-- Green for declaration and storage words such as `const`, `let`, `var`, `function`, and `class`,
-  plus structural control flow such as conditionals, loops, `return`, and `try` or `catch`.
-- Pink for secondary module and construction markers such as `import`, `export`, `from`, and `new`.
+- Green for value declaration and storage words such as `const`, `let`, and `var`, plus structural
+  control flow such as conditionals, loops, `return`, and `try` or `catch`.
+- Pink for callable and type declaration words such as `function` and `class`, declaration modifiers
+  such as `async`, `static`, and `extends`, and module or construction markers such as `import`,
+  `export`, `from`, and `new`.
+- Subdued blue-gray for callable names, calls, constructors, types, and classes. Keep this role close
+  to the neutral ramp so it separates identifiers without becoming a third primary accent.
 - Shared muted neutral for generic assignment, comparison, logical, arithmetic, and arrow operators.
 - Cyan for strings and regular expressions in programming languages, while keeping JSON, YAML, and
   TOML strings neutral.
