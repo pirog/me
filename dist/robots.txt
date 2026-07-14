@@ -3,4 +3,5 @@ Disallow: /
 Sitemap: https://boot.pirog.me/sitemap.xml
 Host: https://boot.pirog.me
 Allow: /boot.sh
+Allow: /llms.txt
 Allow: /sitemap.xml

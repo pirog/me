@@ -1,5 +1,7 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+## v1.0.0-beta.7 - [July 14, 2026](https://github.com/pirog/me/releases/tag/v1.0.0-beta.7)
+
 ### Breaking Changes
 
 - Removed the external Janus runtime requirement in favor of a self-contained Homebrew Vim profile. [#32](https://github.com/pirog/me/pull/32)
