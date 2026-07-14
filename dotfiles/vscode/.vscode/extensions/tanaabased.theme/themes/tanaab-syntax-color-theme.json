@@ -19,7 +19,14 @@
     },
     {
       "name": "Punctuation",
-      "scope": ["punctuation", "meta.brace", "meta.delimiter"],
+      "scope": [
+        "punctuation",
+        "meta.brace",
+        "meta.delimiter",
+        "keyword.operator",
+        "keyword.other.unit",
+        "storage.type.function.arrow"
+      ],
       "settings": {
         "foreground": "#8f9fa4"
       }
@@ -44,9 +51,7 @@
         "punctuation.section.brackets",
         "punctuation.section.property-list",
         "punctuation.section.function",
-        "meta.brace.round",
-        "meta.brace.curly",
-        "meta.brace.square"
+        "meta.brace"
       ],
       "settings": {
         "foreground": "#ddebe866"
@@ -61,14 +66,7 @@
     },
     {
       "name": "Value declarations and storage words",
-      "scope": ["storage.type"],
-      "settings": {
-        "foreground": "#33d3a1"
-      }
-    },
-    {
-      "name": "Shell value declarations",
-      "scope": ["storage.modifier.local.shell", "storage.modifier.declare.shell"],
+      "scope": ["storage.type", "storage.modifier.local.shell", "storage.modifier.declare.shell"],
       "settings": {
         "foreground": "#33d3a1"
       }
@@ -81,7 +79,16 @@
         "storage.type.interface",
         "storage.type.enum",
         "storage.type.struct",
-        "storage.modifier"
+        "storage.modifier",
+        "entity.name.function.shell",
+        "keyword.control.import",
+        "keyword.control.export",
+        "keyword.control.from",
+        "keyword.control.as",
+        "keyword.control.require",
+        "keyword.control.new",
+        "keyword.operator.new",
+        "keyword.operator.expression.import"
       ],
       "settings": {
         "foreground": "#e25292"
@@ -109,13 +116,6 @@
       }
     },
     {
-      "name": "Operators and function arrows",
-      "scope": ["keyword.operator", "keyword.other.unit", "storage.type.function.arrow"],
-      "settings": {
-        "foreground": "#8f9fa4"
-      }
-    },
-    {
       "name": "Structural control flow",
       "scope": [
         "keyword.control.conditional",
@@ -124,33 +124,11 @@
         "keyword.control.switch",
         "keyword.control.trycatch",
         "keyword.control.with",
-        "keyword.control.default"
+        "keyword.control.default",
+        "source.shell keyword.control"
       ],
       "settings": {
         "foreground": "#33d3a1"
-      }
-    },
-    {
-      "name": "Shell control flow",
-      "scope": ["source.shell keyword.control"],
-      "settings": {
-        "foreground": "#33d3a1"
-      }
-    },
-    {
-      "name": "Module and construction keywords",
-      "scope": [
-        "keyword.control.import",
-        "keyword.control.export",
-        "keyword.control.from",
-        "keyword.control.as",
-        "keyword.control.require",
-        "keyword.control.new",
-        "keyword.operator.new",
-        "keyword.operator.expression.import"
-      ],
-      "settings": {
-        "foreground": "#e25292"
       }
     },
     {
@@ -168,14 +146,20 @@
       }
     },
     {
-      "name": "Properties",
+      "name": "Properties and structured keys",
       "scope": [
         "variable.other.property",
         "variable.other.object.property",
         "support.variable.property",
         "meta.object-literal.key",
         "meta.object.member",
-        "meta.property.object"
+        "meta.property.object",
+        "support.type.property-name",
+        "support.type.property-name.json",
+        "support.type.property-name.yaml",
+        "support.type.property-name.toml",
+        "entity.name.tag.yaml",
+        "meta.mapping.key"
       ],
       "settings": {
         "foreground": "#ddebe8"
@@ -217,13 +201,6 @@
       }
     },
     {
-      "name": "Ruby strings",
-      "scope": ["source.ruby string", "source.ruby string.quoted"],
-      "settings": {
-        "foreground": "#38d7d0"
-      }
-    },
-    {
       "name": "String escapes",
       "scope": ["constant.character.escape", "constant.character.format.placeholder"],
       "settings": {
@@ -238,54 +215,19 @@
       }
     },
     {
-      "name": "Functions and methods",
+      "name": "Callable and type identifiers",
       "scope": [
         "entity.name.function",
         "support.function",
         "meta.function-call",
-        "variable.function"
+        "variable.function",
+        "entity.name.type",
+        "entity.name.class",
+        "support.type",
+        "support.class"
       ],
       "settings": {
         "foreground": "#82a3b3"
-      }
-    },
-    {
-      "name": "Function declarations",
-      "scope": ["entity.name.function"],
-      "settings": {
-        "foreground": "#82a3b3"
-      }
-    },
-    {
-      "name": "Shell function declarations",
-      "scope": ["entity.name.function.shell"],
-      "settings": {
-        "foreground": "#e25292"
-      }
-    },
-    {
-      "name": "Ruby DSL calls",
-      "scope": [
-        "source.ruby support.function",
-        "source.ruby variable.function",
-        "source.ruby meta.function-call"
-      ],
-      "settings": {
-        "foreground": "#82a3b3"
-      }
-    },
-    {
-      "name": "Types and classes",
-      "scope": ["entity.name.type", "entity.name.class", "support.type", "support.class"],
-      "settings": {
-        "foreground": "#82a3b3"
-      }
-    },
-    {
-      "name": "Style property names",
-      "scope": ["support.type.property-name"],
-      "settings": {
-        "foreground": "#ddebe8"
       }
     },
     {
@@ -307,19 +249,6 @@
       "scope": ["keyword.other.important.css", "keyword.other.important.scss"],
       "settings": {
         "foreground": "#ffc333"
-      }
-    },
-    {
-      "name": "Structured data keys",
-      "scope": [
-        "support.type.property-name.json",
-        "support.type.property-name.yaml",
-        "support.type.property-name.toml",
-        "entity.name.tag.yaml",
-        "meta.mapping.key"
-      ],
-      "settings": {
-        "foreground": "#ddebe8"
       }
     },
     {
@@ -455,7 +384,7 @@
     },
     {
       "name": "Invalid",
-      "scope": ["invalid", "invalid.illegal"],
+      "scope": ["invalid"],
       "settings": {
         "foreground": "#ff667d",
         "fontStyle": "underline"

@@ -63,11 +63,15 @@ states do not rotate with the brand priority.
 
 Treat one shared syntax role model as the target across all four variants, with theme-specific
 background and workbench surface ramps providing the mode distinction. The dark variants inherit
+`themes/tanaab-dark-workbench-base.json`, which inherits
 `themes/tanaab-syntax-color-theme.json`; the light variants inherit
-`themes/tanaab-syntax-light-color-theme.json`, which layers only the neutral-ramp overrides needed
-for light-background contrast over the shared syntax file. VS Code theme files do not provide
-palette variables, so keep those overrides focused on neutral roles instead of forking chromatic
-semantics.
+`themes/tanaab-light-workbench-base.json`, which inherits
+`themes/tanaab-syntax-light-color-theme.json`. The light syntax layer adds only the overrides needed
+for light-background contrast and the intentional green-pink role rotation over the shared syntax
+file. Keep each workbench base limited to the colors that are identical across its Slate and
+Solarized variants, and keep each contributed theme limited to variant-specific overrides. VS Code
+theme files do not provide palette variables, so do not duplicate identical mode-level workbench
+colors in both final variants.
 
 Each theme must continue to cover:
 
@@ -200,10 +204,17 @@ normal dark/light green and pink priority rotation to these roles.
 ## Syntax Development Workflow
 
 Treat `themes/tanaab-syntax-color-theme.json` as the shared, generic-first TextMate syntax layer.
-The two dark workbench themes inherit it directly. The two light workbench themes inherit
-`themes/tanaab-syntax-light-color-theme.json`, which in turn inherits the shared layer and overrides
-only neutral roles. Workbench themes must not carry duplicate `tokenColors` arrays. Keep semantic
-highlighting disabled while these TextMate scopes are authoritative.
+The dark workbench base inherits it directly. The light syntax layer inherits the shared layer, and
+the light workbench base inherits the light syntax layer. Workbench themes must not carry duplicate
+`tokenColors` arrays. Keep semantic highlighting disabled while these TextMate scopes are
+authoritative.
+
+Group selectors by semantic role rather than by language or by the color they happen to share. Add
+grammar-specific selectors such as shell scopes to the existing value-declaration, control-flow,
+callable, property, or punctuation rule when their meaning matches. Do not retain a language-named
+rule that produces the same settings as an existing generic rule. Preserve explicit neutral
+variable and constant rules when they override a broader parent scope, such as strings around shell
+arguments or expansions; matching the default foreground does not by itself make a rule redundant.
 
 Develop syntax as a role-first, fixture-driven loop rather than completing independent language
 themes and attempting to merge them afterward:
@@ -287,8 +298,10 @@ chromatic palette.
 
 For theme or manifest changes, run the narrowest applicable checks:
 
-- Parse `package.json` and all four theme files as JSON.
+- Parse `package.json` and every syntax, workbench-base, and contributed theme file as JSON.
 - Verify every manifest theme path exists and its label and light/dark type match the theme file.
+- Resolve every include chain and verify each contributed theme still produces its complete expected
+  workbench and TextMate configuration.
 - Verify theme color literals trace to `dotfiles/theme/colors.json`, allowing alpha suffixes.
 - Run Prettier on the touched JSON and Markdown files and run `git diff --check`.
 - Restow the `vscode` package when new files are added so file-level Stow links are created.
