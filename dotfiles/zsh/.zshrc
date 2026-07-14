@@ -17,15 +17,5 @@ HISTSIZE=50000
 SAVEHIST=10000
 setopt append_history extended_history hist_ignore_dups hist_ignore_space share_history
 
-# Completions supplied by local tools.
-[[ -s "$HOME/.bun/_bun" ]] && source "$HOME/.bun/_bun"
-[[ -d "$HOME/.docker/completions" ]] && fpath=("$HOME/.docker/completions" $fpath)
-
-autoload -Uz compinit
-_zsh_cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
-mkdir -p "$_zsh_cache_dir"
-compinit -d "$_zsh_cache_dir/zcompdump-${ZSH_VERSION}"
-unset _zsh_cache_dir
-
 # Warp can replace this with its native prompt; other terminals retain a useful default.
 PROMPT='%n@%m %1~ %# '

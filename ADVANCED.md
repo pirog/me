@@ -35,7 +35,7 @@ Bootbox installs or repairs the core prerequisites before `me` applies the compl
   `tanaabased.theme` extension with Tanaab and Tanaab Solarized dark and light variants.
 - [`warp`](./dotfiles/warp): file-backed Warp terminal settings and Tanaab and Tanaab Solarized
   dark and light themes.
-- [`zsh`](./dotfiles/zsh): framework-free Zsh environment, history, completion, and fallback prompt.
+- [`zsh`](./dotfiles/zsh): framework-free Zsh environment, history, and fallback prompt.
 
 The Vim profile uses native runtime packages and maps its `tanaab` colorscheme onto the terminal's
 ANSI palette, allowing it to follow the active Tanaab Warp theme without separate light and dark
