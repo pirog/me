@@ -187,6 +187,18 @@
     }
   },
   "variants": {
+    "slate": {
+      "base": {
+        "base03": "#273238",
+        "base02": "#283944",
+        "base01": "#536269",
+        "base00": "#597788",
+        "base0": "#8f9fa4",
+        "base1": "#bcd9df",
+        "base2": "#ddebe8",
+        "base3": "#ecf9f6"
+      }
+    },
     "solarized": {
       "base": {
         "base03": "#002d45",

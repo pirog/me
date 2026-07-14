@@ -1,13 +1,13 @@
-# Derived from dotfiles/theme/colors.json modes.dark.
+# Slate backgrounds from variants.slate.base with modes.dark chromatic roles.
 name: Tanaab Dark
 accent: '#00c88a'
 cursor: '#748a81'
-background: '#0a1210'
+background: '#273238'
 foreground: '#e6f0eb'
 details: darker
 terminal_colors:
   normal:
-    black: '#31433d'
+    black: '#283944'
     red: '#ff667d'
     green: '#00c88a'
     yellow: '#ffb000'
