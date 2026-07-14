@@ -60,8 +60,10 @@ the canonical mapping.
 
 Treat one shared syntax palette as the target across all four variants, with theme-specific
 background and workbench surface ramps providing the mode distinction. During incremental review,
-keep the two dark variants' `tokenColors` identical; bring the light variants onto that same mapping
-in a later focused pass rather than changing all four without visual review.
+keep the two dark variants inherited from `themes/tanaab-syntax-color-theme.json`; bring the light
+variants onto that same scope model in a later focused pass rather than changing all four without
+visual review. VS Code theme files do not provide palette variables, so light-mode neutral overrides
+are acceptable when the shared dark neutral foregrounds do not provide sufficient contrast.
 
 Each theme must continue to cover:
 
@@ -139,8 +141,10 @@ For syntax, preserve the scratchpad's role hierarchy without reproducing its col
 both dark variants, keep variables, properties, function names, types, constants, punctuation, and
 most identifiers on the shared neutral syntax ramp. Use chromatic roles as small lexical landmarks:
 
-- Green for declaration and storage words such as `const`, `let`, `var`, `function`, and `class`.
-- Pink for control-flow keywords, imports or exports, and operators.
+- Green for declaration and storage words such as `const`, `let`, `var`, `function`, and `class`,
+  plus structural control flow such as conditionals, loops, `return`, and `try` or `catch`.
+- Pink for secondary module and construction markers such as `import`, `export`, `from`, and `new`.
+- Shared muted neutral for generic assignment, comparison, logical, arithmetic, and arrow operators.
 - Cyan for strings and regular expressions in programming languages, while keeping JSON, YAML, and
   TOML strings neutral.
 - Yellow for function parameter declarations, escapes, and sparse markup landmarks rather than
@@ -153,6 +157,48 @@ annotations use the same light neutral without introducing another hue.
 
 A source file should read primarily as text with intentional color landmarks, not as an even
 distribution of colors.
+
+## Syntax Development Workflow
+
+Treat `themes/tanaab-syntax-color-theme.json` as the shared, generic-first TextMate syntax layer.
+The two dark workbench themes inherit it with `include` and must not carry duplicate `tokenColors`
+arrays. Keep semantic highlighting disabled in those themes while TextMate scopes are authoritative.
+
+Develop syntax as a role-first, fixture-driven loop rather than completing independent language
+themes and attempting to merge them afterward:
+
+1. Describe the intended semantic role, such as a parameter declaration, structural control-flow
+   keyword, module keyword, property, string, or documentation tag.
+2. Use **Developer: Inspect Editor Tokens and Scopes** in VS Code to identify the actual TextMate
+   scopes emitted for a representative token.
+3. Add or adjust the broadest appropriate generic scope in the shared syntax file.
+4. Check that rule against at least one contrasting fixture before considering it stable.
+5. Add a language-qualified selector only when a grammar reuses or omits generic scopes in a way
+   that would make the broad rule incorrect elsewhere.
+
+Use this fixture progression to broaden coverage without creating a section for every language:
+
+1. JavaScript and TypeScript for declarations, parameters, control flow, modules, strings,
+   comments, and JSDoc.
+2. Vue for HTML templates, embedded JavaScript, attributes, and component CSS.
+3. Standalone HTML and CSS for markup and styling scopes outside Vue embedding.
+4. Shell for commands, variables, quoting, substitutions, and control flow from a substantially
+   different grammar.
+5. JSON, YAML, and TOML for structured-data keys, values, punctuation, and neutral strings.
+6. Markdown for headings, prose, lists, links, quotes, and fenced code.
+
+Classify each mismatch before editing:
+
+- Same role and standard scope: change the shared generic rule.
+- Same role but a different grammar scope: broaden the shared rule's selector list.
+- Same scope with a genuinely different meaning: add a narrow, named language exception.
+- A contrast problem caused by the workbench background: adjust or override the affected variant;
+  do not fork the semantic role.
+
+Every language-specific exception must be named for its intent and supported by a fixture that
+demonstrates why a generic rule is insufficient. Periodically remove redundant exceptions when a
+broader rule now covers them. A new language should look coherent before it receives any dedicated
+rules; that is the primary test that the generic layer is working.
 
 Markdown may use stronger structural landmarks because headings and list markers are sparse. In
 Solarized Dark, use bright accent yellow for complete level-one headings, primary green for complete
