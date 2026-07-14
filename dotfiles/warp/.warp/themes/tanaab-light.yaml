@@ -1,9 +1,9 @@
-# Derived from dotfiles/theme/colors.json modes.light.
+# Slate neutrals from variants.slate.base with modes.light chromatic and ANSI roles.
 name: Tanaab Light
 accent: '#db2777'
-cursor: '#70857b'
-background: '#f6fbf9'
-foreground: '#102018'
+cursor: '#8f9fa4'
+background: '#ecf9f6'
+foreground: '#273238'
 details: lighter
 terminal_colors:
   normal:
