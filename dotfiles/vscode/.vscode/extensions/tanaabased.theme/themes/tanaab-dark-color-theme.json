@@ -61,6 +61,8 @@
     "tab.unfocusedActiveBorderTop": "#53626900",
     "editor.background": "#273238",
     "editor.foreground": "#bcd9df",
+    "editor.findMatchForeground": "#bcd9df",
+    "editor.findMatchHighlightForeground": "#ffffff",
     "editorCursor.foreground": "#8f9fa4",
     "editorLineNumber.foreground": "#597788",
     "editorLineNumber.activeForeground": "#bcd9df",
