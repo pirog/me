@@ -6,17 +6,22 @@
 
 At a high level, `me` delegates core bootstrap work to Bootbox, installs applications and runtimes from its Brewfile, applies personal dotfile packages to the current user's home directory, installs 1Password-backed SSH keys, optionally materializes explicitly selected `@tanaabased` repositories, and prepares local links for checkouts that declare themselves as Codex plugins.
 
-When an installed Agentbox runtime is detected, `me` automatically leaves Agentbox's formula-backed `tailscaled` runtime in control and skips the 1Password and Tailscale desktop casks while retaining the beta 1Password CLI used for service-account-backed bootstrap work.
+The portable palette in `dotfiles/theme/colors.json` anchors coordinated themes for Codex TUI, Vim, Visual Studio Code, and Warp.
+
+When an installed `agentbox` runtime is detected, `me` leaves `agentbox`'s formula-backed `tailscaled` runtime in control and skips the 1Password and Tailscale desktop casks while retaining the beta 1Password CLI used for service-account-backed bootstrap work. Any host with the Homebrew `tailscale` formula also skips the conflicting `tailscale-app` cask.
+
+After bootstrap, `$piro-me-readiness` provides read-only verification of the checkout, macOS profile, Codex plugin links, and optional app-backed capabilities.
 
 This repository targets the `pirog` workstation profile. Generic bootstrap behavior belongs in Bootbox, while headless host setup, SSH hardening, remote access, and service supervision belong in `agentbox`.
 
-The advanced reference covers installed components, the complete option and environment-variable contract, checkout behavior, and Codex configuration and plugin sync.
+The advanced reference covers installed components, `agentbox` host behavior, post-bootstrap setup, the complete option and environment-variable contract, checkout behavior, and Codex configuration and plugin sync.
 
 ## Primary Resources
 
 - [Hosted bootstrap](https://boot.pirog.me/boot.sh): The generated shell entrypoint for bootstrapping the machine profile.
-- [README source](https://raw.githubusercontent.com/pirog/me/main/README.md): Main quickstart, usage, manual setup checklist, verification, and project links.
-- [Advanced source](https://raw.githubusercontent.com/pirog/me/main/ADVANCED.md): Installed components, full configuration reference, checkout behavior, and Codex sync details.
+- [README source](https://raw.githubusercontent.com/pirog/me/main/README.md): Main quickstart, common usage, post-bootstrap pointers, and project links.
+- [Advanced source](https://raw.githubusercontent.com/pirog/me/main/ADVANCED.md): Installed components, host-specific and post-bootstrap behavior, full configuration reference, checkout behavior, and Codex sync details.
+- [Changelog source](https://raw.githubusercontent.com/pirog/me/main/CHANGELOG.md): Current unreleased changes and published release history.
 - [GitHub repository](https://github.com/pirog/me): Source code, canonical documentation, workflows, plugin assets, and Leia examples.
 - [Releases](https://github.com/pirog/me/releases): Published versions and `piroplugin` archives.
 - [Issues](https://github.com/pirog/me/issues): Bug reports, regressions, and feature requests.

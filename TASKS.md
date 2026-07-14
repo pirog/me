@@ -2,38 +2,8 @@
 
 - @pirog/me
   - shouldnt i just run @pirog/me?
+  - openclaw theme?
   - blog like pirog skill
-
-- @tanaabased/canon
-  - issue MGMT STUFF ASAP?
-    - milestone creation
-    - issue creation|triage|etc
-    - labels|fields|etc?
-
-  - repo setup/standardization skills
-    - normal settings
-    - branch protection
-    - add tanabot 2 repo w write access
-    - suggest 3 good tags skill
-    - verify repo / repo audit
-    - skill to autotag repos
-
-  - org standardizer?
-    - list of repo tags
-
-  - fixes
-    - release skill should always be against main unless explicitly said otherwise
-    - js skills should work for ts as well?
-
-  - longer term
-    - "keeper of the faith"
-      - some kind of tanaab-coach/advisor skill?
-      - a brand enforcer skill (better as separate agent now?)
-    - adoption of schema|error|cli frameworks?
-    - organizatinal model for leia tests eg inputs|defaults|feature-x?
-    - commit behavior?
-      - if you have a list of things to do then commit one per list item
-      - message syntax and formatting?
 
 - @tanaabased/agentbox
   - verify
@@ -64,6 +34,38 @@
     - caddy install
     - install and configure needed openclaw plugins eg agent-os?
     - make this into a bun binary?
+
+- @tanaabased/canon
+  - issue MGMT STUFF ASAP?
+    - milestone creation
+    - issue creation|triage|etc
+    - labels|fields|etc?
+
+  - repo setup/standardization skills
+    - normal settings
+    - branch protection
+    - add tanabot 2 repo w write access
+    - suggest 3 good tags skill
+    - verify repo / repo audit
+    - skill to autotag repos
+
+  - org standardizer?
+    - list of repo tags
+
+  - fixes
+    - release skill should always be against main unless explicitly said otherwise
+    - release authors should include docs relaignment pass
+    - js skills should work for ts as well?
+
+  - longer term
+    - "keeper of the faith"
+      - some kind of tanaab-coach/advisor skill?
+      - a brand enforcer skill (better as separate agent now?)
+    - adoption of schema|error|cli frameworks?
+    - organizatinal model for leia tests eg inputs|defaults|feature-x?
+    - commit behavior?
+      - if you have a list of things to do then commit one per list item
+      - message syntax and formatting?
 
 - @lando/leia
   - fix JS literals

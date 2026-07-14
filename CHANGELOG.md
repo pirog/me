@@ -1,16 +1,30 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
-- Added a `warp` dotpkg with file-backed settings and Tanaab and Tanaab Solarized dark and light
-  themes. [#32](https://github.com/pirog/me/pull/32)
-- Added published `/llms.txt` metadata and an advanced configuration reference.
+### Breaking Changes
+
+- Removed the external Janus runtime requirement in favor of a self-contained Homebrew Vim profile. [#32](https://github.com/pirog/me/pull/32)
 - Removed Oh My Zsh and Powerlevel10k from the personal shell profile. [#32](https://github.com/pirog/me/pull/32)
-- Removed public `--me` and `PIROME_ME` source selection from `boot.sh`.
-- Replaced the external Janus Vim runtime with Homebrew Vim and a self-contained terminal-native
-  Tanaab profile. [#32](https://github.com/pirog/me/pull/32)
-- Updated `boot.sh` to resolve explicit, source-relative, existing, or SSH-cloned `@pirog/me` payloads.
-- Updated detected Agentbox hosts to skip desktop 1Password and Tailscale casks and use daemon-aware readiness.
-- Updated portable Codex defaults to use `gpt-5.6`.
-- Updated the `oven-sh/bun` tap to trust its formula.
+- Removed public `--me` and `PIROME_ME` payload selection; `boot.sh` now resolves the checkout automatically. [#30](https://github.com/pirog/me/pull/30)
+
+### New Features
+
+- Added automatic `me` payload materialization, safe refresh, and repeatable `--tanaab` repository checkout and plugin-link reconciliation. [#30](https://github.com/pirog/me/pull/30)
+- Added file-backed Warp settings with Tanaab and Solarized dark and light themes. [#32](https://github.com/pirog/me/pull/32)
+- Added a portable Tanaab palette and matching Codex TUI theme. [#32](https://github.com/pirog/me/pull/32)
+- Added a VS Code dotpkg with four complete Tanaab UI and syntax themes. [#32](https://github.com/pirog/me/pull/32)
+
+### Bug Fixes
+
+- Fixed Codex config sync to reject local overrides that would silently shadow shared settings. [#30](https://github.com/pirog/me/pull/30)
+- Fixed Codex theme serialization to preserve empty font tables.
+- Fixed hosted bootstrap confirmation through piped invocations by reading from `/dev/tty`. [#30](https://github.com/pirog/me/pull/30)
+- Fixed `me` bootstrap on `agentbox` hosts to skip conflicting desktop casks and recognize daemon-backed Tailscale readiness. [#30](https://github.com/pirog/me/pull/30)
+
+### Improvements
+
+- Updated Codex defaults with `gpt-5.6`, shared desktop appearance preferences, Tanaab chrome colors, and v2 pet sprites.
+- Updated the Homebrew inventory with a trusted Bun tap plus Codex, Chrome, OpenClaw, Tailscale, VS Code, Vim, and Warp. [#26](https://github.com/pirog/me/pull/26) [#30](https://github.com/pirog/me/pull/30) [#32](https://github.com/pirog/me/pull/32)
+- Updated published documentation with `/llms.txt` metadata and an `ADVANCED.md` configuration reference.
 
 ## v1.0.0-beta.6 - [June 3, 2026](https://github.com/pirog/me/releases/tag/v1.0.0-beta.6)
 

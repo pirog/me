@@ -1,8 +1,9 @@
 # Advanced
 
-This reference covers the installed machine profile, the complete public `piroboot` configuration
-surface, normal checkout behavior, and the separate Codex configuration and plugin sync workflows.
-Start with the [README](./README.md) for the primary setup path.
+This reference covers the installed machine profile, host-specific behavior, post-bootstrap setup,
+the complete public `piroboot` configuration surface, normal checkout behavior, and the separate
+Codex configuration and plugin sync workflows. Start with the [README](./README.md) for the primary
+setup path.
 
 ## What Gets Installed
 
@@ -11,16 +12,9 @@ Start with the [README](./README.md) for the primary setup path.
 [`Brewfile`](./Brewfile) is the source of truth for the base machine inventory.
 Bootbox installs or repairs the core prerequisites before `me` applies the complete Brewfile.
 
-#### Agentbox Hosts
-
-On a host already configured by [Agentbox](https://github.com/tanaabased/agentbox), `me`
-automatically skips these desktop casks from the Brewfile:
-
-- `1password`
-- `tailscale-app`
-
-The beta 1Password CLI remains installed for service-account-backed SSH-key retrieval, while
-Agentbox keeps its formula-backed Tailscale runtime in control.
+> [!NOTE]
+> Dependency behavior differs on `agentbox` and formula-backed Tailscale hosts. See
+> [`agentbox` Hosts](#agentbox-hosts).
 
 ### Dotfiles
 
@@ -44,8 +38,8 @@ Agentbox keeps its formula-backed Tailscale runtime in control.
 - [`zsh`](./dotfiles/zsh): framework-free Zsh environment, history, completion, and fallback prompt.
 
 The Vim profile uses native runtime packages and maps its `tanaab` colorscheme onto the terminal's
-ANSI palette, allowing it to follow the active Tanaab Warp theme without a separate Vim theme
-selection or external runtime.
+ANSI palette, allowing it to follow the active Tanaab Warp theme without separate light and dark
+Vim theme selections or an external runtime.
 
 ### Codex Plugin And Skills
 
@@ -59,9 +53,9 @@ The repository is packaged as `piroplugin` through
   repository-local skills.
 
 Broader shared canon skills come from the paired `tanaab` plugin. The `ai` dotfile package installs
-the `piroplugin` link and publishes the local `Pirostore` marketplace. Tanaab checkouts that contain
-`.codex-plugin/plugin.json` receive generated local source links; installation and enablement still
-happen separately through Codex.
+the `piroplugin` source link and publishes the local `Pirostore` marketplace. Tanaab checkouts that
+contain `.codex-plugin/plugin.json` receive generated local source links. These links expose local
+plugin sources; every plugin still requires explicit installation and enablement through Codex.
 
 ### Tanaab Repositories
 
@@ -78,6 +72,60 @@ piroboot \
 Existing selected checkouts are fast-forwarded only when doing so is safe. Plugin-link detection is
 separate and examines verified existing `@tanaabased` checkouts on every run, even when no new
 repositories are selected.
+
+## `agentbox` Hosts
+
+`me` treats a machine as an installed [`agentbox`](https://github.com/tanaabased/agentbox) host only
+when both `/opt/tanaab/agentbox/bin/health.sh` and
+`/Library/LaunchDaemons/dev.tanaab.agentbox.health.plist` are present. A source checkout alone does
+not mark the machine as an `agentbox` host.
+
+On a detected host, the final `me` Brewfile apply preserves inherited Homebrew Bundle cask skips and
+also skips:
+
+- `1password`
+- `tailscale-app`
+
+The beta `1password-cli@beta` cask remains installed for service-account-backed SSH-key retrieval,
+while `agentbox` keeps its formula-backed `tailscaled` runtime in control. Any host that already has
+the Homebrew `tailscale` formula also skips `tailscale-app`, even without the complete `agentbox`
+marker pair, so the formula and desktop cask never conflict.
+
+## Post-Bootstrap Setup
+
+Complete these app-backed steps after bootstrap.
+
+### 1Password
+
+These desktop-app steps are not required on a detected `agentbox` host.
+
+- Open 1Password, sign in, and unlock it.
+- Enable Developer > Integrate with 1Password CLI.
+- Enable Developer > Show 1Password Developer experience.
+- Use the Brewfile-provided beta 1Password CLI; 1Password Environments require beta CLI support.
+- Confirm `op` can access the signed-in account with a read-only check such as `op vault list`.
+
+### Tailscale
+
+Detected `agentbox` hosts and workstations with the Homebrew `tailscale` formula use their existing
+`tailscaled` runtime instead of `Tailscale.app`.
+
+- When using the desktop app, open Tailscale, sign in, and connect this machine to the `tanaab.dev`
+  tailnet.
+- Confirm `tailscale status --json` reports the local node as running and online.
+
+### Codex
+
+- Open the Brewfile-provided Codex desktop app and sign in.
+- Install `piroplugin` from `Pirostore`. If Canon was selected, install `tanaab` as well.
+- Connect the GitHub app connector as `pirog`.
+- Connect the monday.com app connector as `Michael Pirog` for this `me` environment.
+
+### Verification
+
+After completing the checklist, ask Codex to run `$piro-me-readiness`. Readiness may trigger macOS,
+Codex, or 1Password permission prompts while it verifies local desktop-app access; approve those
+prompts only when you intentionally requested the check.
 
 ## Configuration Reference
 

@@ -43,14 +43,15 @@ This is directional guidance, not an expansion of the current public contract:
 
 - `boot.sh`: shipped shell entrypoint and main bootstrap surface.
 - `Brewfile`: Homebrew package and application inventory, including the canonical `tailscale-app`
-  desktop cask used outside Agentbox hosts.
+  desktop cask used outside `agentbox` hosts.
 - `dotfiles/*`: top-level GNU Stow packages applied to `$HOME`.
 - `dotfiles/theme/colors.json`: lowest-level portable Tanaab color palette and source of truth for
   application-specific theme assets.
 - `.codex-plugin/`, `.mcp.json`, `assets/`, `bin/`, `lib/`, `skills/`, and `utils/`:
   `piroplugin` package inputs and local Codex tooling.
-- `README.md`: primary setup and usage entrypoint; `ADVANCED.md`: installed components, complete
-  configuration reference, checkout behavior, and Codex sync details.
+- `README.md`: primary setup and usage entrypoint; `ADVANCED.md`: installed components,
+  host-specific behavior, post-bootstrap setup, complete configuration reference, checkout
+  behavior, and Codex sync details.
 - `examples/**/README.md`: Leia-backed executable CI contracts.
 - `site/llms.txt`, `scripts/build-dist.js`, and `netlify.toml`: hosted bootstrap and metadata
   publishing sources.
@@ -115,15 +116,15 @@ This is directional guidance, not an expansion of the current public contract:
   a plugin.
 - Preserve the wrapper-side Bootbox apply phase that uses the resolved payload's root `Brewfile` and
   top-level `dotfiles/*` package directories on the default `$HOME` target.
-- Treat a machine as an installed Agentbox host only when both
+- Treat a machine as an installed `agentbox` host only when both
   `/opt/tanaab/agentbox/bin/health.sh` and
   `/Library/LaunchDaemons/dev.tanaab.agentbox.health.plist` are present. Do not infer the host role
   from a source checkout.
-- On detected Agentbox hosts, preserve inherited Homebrew Bundle cask skips and add `tailscale-app`
-  plus `1password` only for the final `me` Brewfile apply. Keep `1password-cli@beta` installed for
-  service-account-backed SSH-key retrieval.
+- On detected `agentbox` hosts, preserve inherited Homebrew Bundle cask skips and add
+  `tailscale-app` plus `1password` to the final `me` Brewfile apply's cask-skip list. Keep
+  `1password-cli@beta` installed for service-account-backed SSH-key retrieval.
 - Skip `tailscale-app` when the Homebrew `tailscale` formula is already installed, even when the
-  complete Agentbox marker pair is absent, so the formula/cask conflict is never reintroduced.
+  complete `agentbox` marker pair is absent, so the formula/cask conflict is never reintroduced.
 - Keep planning output aligned with execution order: core remediation, SSH handling, `me` payload
   materialization or safe refresh, selected Tanaab repository materialization or safe refresh,
   local plugin-link reconciliation, then the `me` apply step.
@@ -148,19 +149,19 @@ This is directional guidance, not an expansion of the current public contract:
   access with `op run --environment zsstdfqknicwfv5glv76gd6tue` instead of committed `.env` files,
   persistent shell secrets, or local token fallbacks.
 - On standard workstations, report desktop-app-backed 1Password access as an optional readiness
-  capability. On detected Agentbox hosts, treat the 1Password desktop, vault, and Environment
+  capability. On detected `agentbox` hosts, treat the 1Password desktop, vault, and Environment
   checks as not required while retaining token-fallback warnings.
   Strip 1Password service account, connect, session, and bootstrap token variables from any `op`
   subprocesses that do run.
-- On detected Agentbox hosts, report `tailscaled` plus `tailscale status --json` as optional
-  readiness capabilities instead of requiring `Tailscale.app`. Do not duplicate Agentbox launchd,
-  Serve, OpenClaw, or complete host-health checks inside `piro-me-readiness`.
+- On detected `agentbox` hosts, report `tailscaled` plus `tailscale status --json` as optional
+  readiness capabilities instead of requiring `Tailscale.app`. Do not duplicate `agentbox`
+  launchd, Serve, OpenClaw, or complete host-health checks inside `piro-me-readiness`.
 - The readiness skill may run its bundled read-only local helper unsandboxed by default because it
   verifies 1Password and Tailscale desktop or daemon readiness. Do not extend that default to
   unrelated commands, setup, installation, tests, release validation, or machine administration.
-- Keep README readiness content limited to human bootstrap or manual setup and a brief pointer to
-  `$piro-me-readiness`. Keep maintenance policy here and runtime procedure in
-  `skills/me-readiness/SKILL.md`.
+- Keep README readiness content limited to the human bootstrap path and brief pointers to
+  `ADVANCED.md` post-bootstrap setup and `$piro-me-readiness`. Keep maintenance policy here and
+  runtime procedure in `skills/me-readiness/SKILL.md`.
 - Keep readiness capability-based: Homebrew write access, every Brewfile formula, required core
   commands, complete repo-owned dotfiles, generated Codex config, `piroplugin`, and GitHub identity
   are hard requirements. Brewfile casks, 1Password, Tailscale, and monday are warnings.
@@ -170,8 +171,8 @@ This is directional guidance, not an expansion of the current public contract:
     duplicating package lists in readiness.
   - Repo-owned configuration belongs under `dotfiles/**`; discover top-level Stow packages and
     verify the complete installed layout with a read-only simulation.
-  - Human app, auth, and network setup belongs in the README checklist; use `manual_apps` only when a
-    local read-only probe can verify it.
+  - Human app, auth, and network setup belongs in the `ADVANCED.md` post-bootstrap checklist; use
+    `manual_apps` only when a local read-only probe can verify it.
   - Plugin install and link layout belongs in plugin or dotfile sources; use `codex_plugins` only for
     installed surfaces.
   - GitHub and monday connector identities belong in skill runtime guidance, not
