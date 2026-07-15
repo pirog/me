@@ -1,41 +1,37 @@
-# FINAL THINGS
+# TASKS
 
-- @pirog/me
-  - shouldnt i just run @pirog/me?
-  - openclaw theme?
-  - blog like pirog skill
+## FINAL MANUAL TAZKZ
 
 - @tanaabased/agentbox
-  - verify
-    - openclaw update|not?
-    - OPENCLAW_MDNS_HOSTNAME
-    - end of flow should be more concise with link to run full command?
-    - get/save token value
-
-  - add to codex via phone?
-
-  - openclaw theme?
-
   - codex plugin?
-    - revisit plugin installation/upgrade etc
-    - CODEX_LOCAL_DEBUG=true
-
-  - openclaw agentbox plugin?
+    - skill to run/install agentbox
+    - tanaab mode?
     - check health and propose remediation?
+    - configure source vs binary?
+    - config file?
+    - codex refresh scripts?
+    - revist metadata?
 
-  - need to install @tanaabased/agent-system globally once we have it?
+- @tanaabased/emori
+  - standardize name on "Wan"?
+  - remove agentbox setup setuff
+  - actual onboarding?
+    - channels
+    - brave search API
 
-  - longer term
-    - hub netlify site on get.tanaab.sh (or elsewhere)
-      - use a product catalog .yaml to generate needed metadata files?
-    - milestone -> rework as a bun CLI?
-    - with tailscale serve we cannot use \*.tanaab.net addresses yet/
-    - make script for ubuntu LTS?
-    - caddy install
-    - install and configure needed openclaw plugins eg agent-os?
-    - make this into a bun binary?
+  - commit workspace stuff and do initial config pass
+
+  - agents.md prefer CLI tools eg `gh`
+    - add this into the BOOT.md check? check 1password access?
+
+  - discord/imessage
+  - backup memories?
+  - automate emori improvements?
+  - some plugins to install for her?
 
 - @tanaabased/canon
+  - js skills should work for ts as well?
+
   - issue MGMT STUFF ASAP?
     - milestone creation
     - issue creation|triage|etc
@@ -52,10 +48,38 @@
   - org standardizer?
     - list of repo tags
 
+## ISSUES 2 ADD
+
+- @tanaab/goals?
+  - place for "hidden" tickets and goal setting?
+  - better name?
+
+- @pirog/me
+  - issues
+    - add github known hosts
+    - blog like pirog skill
+    - $me-readiness should actually be like $me-setup, $me-update and $me-doctor?
+
+- @tanaabased/agentbox
+  - openclaw agentbox plugin?
+  - add openclaw app via phone?
+
+  - need to install @tanaabased/agent-system globally once we have it?
+
+  - longer term
+    - make this into a bun binary?
+    - hub netlify site on get.tanaab.sh (or elsewhere)
+      - use a product catalog .yaml to generate needed metadata files?
+    - milestone -> rework as a bun CLI?
+    - with tailscale serve we cannot use \*.tanaab.net addresses yet/
+    - make script for ubuntu LTS?
+    - caddy install
+    - install and configure needed openclaw plugins eg agent-os?
+
+- @tanaabased/canon
   - fixes
     - release skill should always be against main unless explicitly said otherwise
     - release authors should include docs relaignment pass
-    - js skills should work for ts as well?
 
   - longer term
     - "keeper of the faith"
@@ -71,22 +95,6 @@
   - fix JS literals
   - ESM?
   - update canon guidance
-
-- @tanaabased/emori
-  - remove agentbox setup setuff
-  - actual onboarding?
-    - channels
-    - brave search API
-
-  - commit workspace stuff and do initial config pass
-
-  - agents.md prefer CLI tools eg `gh`
-    - add this into the BOOT.md check? check 1password access?
-
-  - discord/imessage
-  - backup memories?
-  - automate emori improvements?
-  - some plugins to install for her?
 
 - @tanaabased/agent-system?
   - plugin installation?
