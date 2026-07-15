@@ -1,2 +1,2 @@
-# Login shells initialize Homebrew before interactive shell setup.
-[[ -r "$HOME/.config/zsh/homebrew.zsh" ]] && source "$HOME/.config/zsh/homebrew.zsh"
+# Login shells initialize the shared command environment before interactive shell setup.
+[[ -r "$HOME/.config/zsh/path.zsh" ]] && source "$HOME/.config/zsh/path.zsh"
