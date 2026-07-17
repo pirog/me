@@ -2,12 +2,6 @@
 
 ## FINAL MANUAL TAZKZ
 
-- @tanaabased/agentbox
-  - codex plugin?
-    - .tool-versions?
-    - codex refresh cache scripts?
-    - revist metadata?
-
 - @tanaabased/emori
   - WORKSPACE
     - identity.md
@@ -26,11 +20,20 @@
     - discord/imessage
     - backup stuff memories?
 
-  - automate emori improvements?
-  - some plugins to install for her?
-  - @tanaab/canon and openclaw skills?
+  - manual agent.yaml setup?
+    - automate emori improvements?
+    - some plugins to install for her?
+    - @tanaab/canon and openclaw skills?
+    - backup system?
+    - local postgres?
+
+- @pirog/me
+  - work-on-issue skill?
 
 - @tanaabased/canon
+  - release skill should always be against main unless explicitly said otherwise
+  - release authors should include docs relaignment pass
+
   - js skills should work for ts as well?
 
   - issue MGMT STUFF ASAP?
@@ -61,6 +64,7 @@
     - add github known hosts
     - blog like pirog skill
     - $me-readiness should actually be like $me-setup, $me-update and $me-doctor?
+      - should also follow the "narrow remediation" path in `agentbox`
 
 - @tanaabased/agentbox
   - openclaw agentbox plugin?
@@ -79,10 +83,6 @@
     - install and configure needed openclaw plugins eg agent-os?
 
 - @tanaabased/canon
-  - fixes
-    - release skill should always be against main unless explicitly said otherwise
-    - release authors should include docs relaignment pass
-
   - longer term
     - "keeper of the faith"
       - some kind of tanaab-coach/advisor skill?
@@ -99,6 +99,7 @@
   - update canon guidance
 
 - @tanaabased/agent-system?
+  - @tanaabased/config-system?
   - plugin installation?
   - dependencies eg `gh`?
   - personal workspace?
@@ -194,6 +195,7 @@
   - llms?
 
 - @tanaabased/\*
+  - bump to latest bun
   - spin off our codex-cache-refresh dev flow tools?
   - create @tanaabased/codex-plugin-validator-action@v1
   - update all scripts that are fundamentally complex to bun cli?
