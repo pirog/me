@@ -67,6 +67,7 @@
       - should also follow the "narrow remediation" path in `agentbox`
 
 - @tanaabased/agentbox
+  - healthcheck without sudo?
   - openclaw agentbox plugin?
   - add openclaw app via phone?
 
