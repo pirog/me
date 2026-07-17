@@ -4,30 +4,31 @@
 
 - @tanaabased/agentbox
   - codex plugin?
-    - skill to run/install agentbox
-    - tanaab mode?
-    - check health and propose remediation?
-    - configure source vs binary?
-    - config file?
-    - codex refresh scripts?
+    - .tool-versions?
+    - codex refresh cache scripts?
     - revist metadata?
 
 - @tanaabased/emori
-  - standardize name on "Wan"?
-  - remove agentbox setup setuff
+  - WORKSPACE
+    - identity.md
+    - soul.md
+    - user.md
+
+    - agents.md prefer CLI tools eg `gh`
+    - AGENTS.md optimization
+    - bootstrap.md.template?
+    - starting memory?
+
   - actual onboarding?
     - channels
     - brave search API
+    - memories?
+    - discord/imessage
+    - backup stuff memories?
 
-  - commit workspace stuff and do initial config pass
-
-  - agents.md prefer CLI tools eg `gh`
-    - add this into the BOOT.md check? check 1password access?
-
-  - discord/imessage
-  - backup memories?
   - automate emori improvements?
   - some plugins to install for her?
+  - @tanaab/canon and openclaw skills?
 
 - @tanaabased/canon
   - js skills should work for ts as well?
@@ -47,6 +48,7 @@
 
   - org standardizer?
     - list of repo tags
+    - goals ands stuff?
 
 ## ISSUES 2 ADD
 
@@ -127,29 +129,6 @@
   - agent templates to see a repo
 - @tanaabased/github-notification-channel
 
-- @tanaabased/\*
-  - update all scripts that are fundamentally complex to bun cli?
-  - catch all email routing and AI triage?
-  - cli plugin installation now available in codex
-  - known_hosts for github?
-  - hosted scripts with better macos.sh and unsupported.sh routing?
-  - stdin -> script ruins NONINTERACTIVE for all hosted scripts!
-  - refresh on readme structure wrt pics and badges
-  - add similar badges + circle pic?
-  - get emori to rework our repos for improved guidance on CLI usage and llms.txt?
-  - pictures and badges inc netlify (use connector?) as needed
-  - llm.txts
-  - usage quickstart with bash -s
-  - bun trusting
-  - document personal agentbox cli example?
-  - falsey shoudl include skip?
-  - github known hosts for scripts that ssh clone eg pirog/me
-  - run bootbox in --quiet mode for all wrapper scripts
-  - helper tags for repos with similar flows?
-    - canon list of tags?
-    - bootbox
-    - hosted-scripts
-
 - @tanaabased/component-playground
   - migrate tms one
     - decouple styling
@@ -213,3 +192,28 @@
 - @tanaabased/template-netscript
   - AGENTS.md starter
   - llms?
+
+- @tanaabased/\*
+  - spin off our codex-cache-refresh dev flow tools?
+  - create @tanaabased/codex-plugin-validator-action@v1
+  - update all scripts that are fundamentally complex to bun cli?
+  - catch all email routing and AI triage?
+  - cli plugin installation now available in codex
+  - known_hosts for github?
+  - hosted scripts with better macos.sh and unsupported.sh routing?
+  - stdin -> script ruins NONINTERACTIVE for all hosted scripts!
+  - refresh on readme structure wrt pics and badges
+  - add similar badges + circle pic?
+  - get emori to rework our repos for improved guidance on CLI usage and llms.txt?
+  - pictures and badges inc netlify (use connector?) as needed
+  - llm.txts
+  - usage quickstart with bash -s
+  - bun trusting
+  - document personal agentbox cli example?
+  - falsey shoudl include skip?
+  - github known hosts for scripts that ssh clone eg pirog/me
+  - run bootbox in --quiet mode for all wrapper scripts
+  - helper tags for repos with similar flows?
+    - canon list of tags?
+    - bootbox
+    - hosted-scripts
