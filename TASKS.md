@@ -3,34 +3,31 @@
 ## FINAL MANUAL TAZKZ
 
 - @tanaabased/emori
-  - WORKSPACE
-    - identity.md
-    - soul.md
-    - user.md
-
-    - agents.md prefer CLI tools eg `gh`
-    - AGENTS.md optimization
-    - bootstrap.md.template?
-    - starting memory?
-
   - actual onboarding?
-    - channels
-    - brave search API
-    - memories?
-    - discord/imessage
-    - backup stuff memories?
+    - summarize steps taken?
+      - brewfile
+        - brew install steipete/tap/imsg
 
-  - manual agent.yaml setup?
-    - automate emori improvements?
-    - some plugins to install for her?
-    - @tanaab/canon and openclaw skills?
-    - backup system?
-    - local postgres?
+    - tanaab?
+    - github_token integration?
+    - recommendations
+
+    - changelog
+    - release
+
+    - heartbeat setup?
+    - doctor recommendations?
+    - configure voice?
 
 - @pirog/me
-  - work-on-issue skill?
+  - spin up openclaw on machine?
+  - MODEL L3-37 openclaw
+  - openclaw dev plugin and scaffolding?
 
 - @tanaabased/canon
+  - openclaw plugin
+  - work-on-issue skill?
+
   - release skill should always be against main unless explicitly said otherwise
   - release authors should include docs relaignment pass
 
@@ -55,6 +52,23 @@
 
 ## ISSUES 2 ADD
 
+- @tanaabased/emori
+  - brave search API?
+  - discord
+  - manual agent.yaml setup?
+  - skill audit and trim?
+  - automate emori improvements?
+  - some plugins to install for her?
+  - @tanaab/canon and openclaw skills?
+  - backup system?
+  - local postgres?
+  - memories?
+  - memory diffs
+  - backup stuff memories?
+
+  - other issues/goals
+    - bootstrap.md.template?
+
 - @tanaab/goals?
   - place for "hidden" tickets and goal setting?
   - better name?
@@ -67,7 +81,6 @@
       - should also follow the "narrow remediation" path in `agentbox`
 
 - @tanaabased/agentbox
-  - healthcheck without sudo?
   - openclaw agentbox plugin?
   - add openclaw app via phone?
 
@@ -100,6 +113,7 @@
   - update canon guidance
 
 - @tanaabased/agent-system?
+  - remove ~/.ssh/id_emori & ~/.ssh/config when we can
   - @tanaabased/config-system?
   - plugin installation?
   - dependencies eg `gh`?
