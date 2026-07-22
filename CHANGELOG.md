@@ -1,5 +1,6 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+- Added `Brewfile.openclaw` as an opt-in OpenClaw app and CLI profile, removing OpenClaw from the default bootstrap.
 - Fixed Zsh startup on hosts with insecure completion paths by removing unused shell-managed completions.
 
 ## v1.0.0-beta.7 - [July 14, 2026](https://github.com/pirog/me/releases/tag/v1.0.0-beta.7)

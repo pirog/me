@@ -12,6 +12,19 @@ setup path.
 [`Brewfile`](./Brewfile) is the source of truth for the base machine inventory.
 Bootbox installs or repairs the core prerequisites before `me` applies the complete Brewfile.
 
+[`Brewfile.openclaw`](./Brewfile.openclaw) is an opt-in extension for local OpenClaw plugin
+development. It installs the Homebrew `openclaw-cli` formula, which owns its Node dependency, and
+tracks the native app while allowing the browser to remain the development UI. Apply it manually
+from this checkout after the base profile is bootstrapped:
+
+```sh
+brew bundle --file Brewfile.openclaw
+```
+
+The optional bundle is not applied by `boot.sh` or checked by `$piro-me-readiness`. It installs
+dependencies only; onboarding, workspace creation, gateway daemon installation, and credential
+configuration remain separate, intentional steps.
+
 > [!NOTE]
 > Dependency behavior differs on `agentbox` and formula-backed Tailscale hosts. See
 > [`agentbox` Hosts](#agentbox-hosts).

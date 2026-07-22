@@ -113,6 +113,16 @@ bun run test
 bun run lint
 ```
 
+OpenClaw plugin development uses a separate, opt-in dependency profile. After bootstrapping the base
+machine profile, install its Homebrew-managed CLI and native app from this checkout:
+
+```sh
+brew bundle --file Brewfile.openclaw
+```
+
+The bundle installs dependencies only. It does not onboard OpenClaw, create a workspace, install a
+gateway daemon, or configure credentials; the browser remains a valid UI for development.
+
 See [ADVANCED.md#codex-configuration-and-plugin-sync](./ADVANCED.md#codex-configuration-and-plugin-sync)
 for the separate `ai:sync` and `codex:*` workflows.
 
