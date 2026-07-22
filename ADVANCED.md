@@ -22,7 +22,7 @@ brew bundle --file Brewfile.openclaw
 ```
 
 The optional bundle is not applied by `boot.sh` or checked by `$piro-me-readiness`. It installs
-dependencies only; onboarding, workspace creation, gateway daemon installation, and credential
+dependencies only; agent registration, identity import, gateway daemon installation, and credential
 configuration remain separate, intentional steps.
 
 > [!NOTE]

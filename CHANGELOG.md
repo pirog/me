@@ -1,5 +1,6 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+- Added a pre-seeded OpenClaw development workspace for `tanaabot` (`MODEL L3-37`).
 - Added `Brewfile.openclaw` as an opt-in OpenClaw app and CLI profile, removing OpenClaw from the default bootstrap.
 - Fixed Zsh startup on hosts with insecure completion paths by removing unused shell-managed completions.
 

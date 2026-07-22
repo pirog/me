@@ -18,6 +18,37 @@ dotfiles/ai/.codex/config.local.toml
 dotfiles/ai/.codex/config.toml
 dotfiles/ai/.codex/plugins/*
 
+# Private OpenClaw context
+/MEMORY.md
+/DREAMS.md
+/memory/
+/BOOTSTRAP.md
+/.private/
+/.scratch/
+/.worktrees/
+
+# OpenClaw runtime state
+/.openclaw/
+/openclaw.json
+/auth-profiles.json
+/codex-home/
+/credentials/
+/sessions/
+
+# Secrets and credentials
+**/.env
+**/.env.*
+!**/.env.example
+**/.secrets*
+!**/.secrets.example
+**/secrets/
+**/secrets.*
+!**/secrets.example
+**/*.key
+**/*.pem
+**/id_*
+!**/id_*.pub
+
 # Logs
 *.log
 logs
