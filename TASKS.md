@@ -3,29 +3,16 @@
 ## FINAL MANUAL TAZKZ
 
 - @tanaabased/emori
-  - actual onboarding?
-    - summarize steps taken?
-      - brewfile
-        - brew install steipete/tap/imsg
-
-    - tanaab?
-    - github_token integration?
-    - recommendations
-
-    - changelog
-    - release
-
-    - heartbeat setup?
-    - doctor recommendations?
-    - configure voice?
+  - tanaab?
+  - github_token integration?
 
 - @pirog/me
   - spin up openclaw on machine?
-  - MODEL L3-37 openclaw
-  - openclaw dev plugin and scaffolding?
+  - dev plugin?
 
 - @tanaabased/canon
-  - openclaw plugin
+  - openclaw plugin?
+    - knows how to inject issue mgtm from assigned issue?
   - work-on-issue skill?
 
   - release skill should always be against main unless explicitly said otherwise
