@@ -19,6 +19,7 @@
   - release authors should include docs relaignment pass
 
   - js skills should work for ts as well?
+  - openclaw plugin skill?
 
   - issue MGMT STUFF ASAP?
     - milestone creation
