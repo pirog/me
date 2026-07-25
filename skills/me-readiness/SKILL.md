@@ -9,6 +9,14 @@ metadata:
     - pirog
     - workflow
     - validation
+  openclaw:
+    emoji: '🩺'
+    homepage: https://github.com/pirog/me/tree/main/skills/me-readiness
+    os:
+      - darwin
+    requires:
+      bins:
+        - bun
 ---
 
 # Me Readiness

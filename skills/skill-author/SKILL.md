@@ -9,6 +9,12 @@ metadata:
     - pirog
     - meta
     - skills
+  openclaw:
+    emoji: '🛠️'
+    homepage: https://github.com/pirog/me/tree/main/skills/skill-author
+    requires:
+      bins:
+        - bun
 ---
 
 # Skill Author
