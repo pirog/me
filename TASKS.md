@@ -2,13 +2,15 @@
 
 ## FINAL MANUAL TAZKZ
 
+- @tanaabased/openclaw-dev
+  -
+
 - @tanaabased/emori
   - tanaab?
   - github_token integration?
 
 - @pirog/me
-  - spin up openclaw on machine?
-  - dev plugin?
+  - node 26?
 
 - @tanaabased/canon
   - openclaw plugin?
