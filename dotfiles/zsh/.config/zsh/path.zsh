@@ -14,8 +14,9 @@ user_paths=()
 if [[ -n "${HOMEBREW_PREFIX:-}" && -d "$HOMEBREW_PREFIX/opt/node@24/bin" ]]; then
   user_paths+=("$HOMEBREW_PREFIX/opt/node@24/bin")
 fi
-[[ -d "$BUN_INSTALL/bin" ]] && user_paths+=("$BUN_INSTALL/bin")
 [[ -d "$HOME/.lando/bin" ]] && user_paths+=("$HOME/.lando/bin")
 
 path=($user_paths $path)
+path=(${path:#"$BUN_INSTALL/bin"})
+[[ -d "$BUN_INSTALL/bin" ]] && path+=("$BUN_INSTALL/bin")
 unset user_paths
