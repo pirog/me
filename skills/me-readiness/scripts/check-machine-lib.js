@@ -55,6 +55,8 @@ const CHECK_BUCKET_BY_ID = new Map([
     `command_${command}`,
     'packages',
   ]),
+  ['bun_homebrew', 'packages'],
+  ['bun_version', 'packages'],
   ['node_version', 'packages'],
   ['dotfiles_stowed', 'dotfiles'],
   ['codex_generated_config', 'dotfiles'],
@@ -367,6 +369,67 @@ async function appendRequiredCommandChecks(checks, deps) {
   for (const command of REQUIRED_COMMANDS.filter((entry) => entry !== 'brew')) {
     checks.push(await requiredCommandCheck(command, deps));
   }
+}
+
+async function appendBunRuntimeChecks(checks, repoRoot, runtimeExecutable, runtimeVersion, deps) {
+  if (getCheck(checks, 'command_brew')?.status === 'fail') {
+    checks.push(
+      fail(
+        'bun_homebrew',
+        'The running Bun executable could not be verified as Homebrew-managed because brew is missing.',
+        'Install Homebrew and the Bun formula from the Brewfile.',
+      ),
+    );
+  } else {
+    try {
+      const { stdout: prefixOutput } = await deps.execFile('brew', ['--prefix', 'oven-sh/bun/bun']);
+      const homebrewExecutable = await deps.realpath(path.join(prefixOutput.trim(), 'bin', 'bun'));
+      const runningExecutable = await deps.realpath(runtimeExecutable);
+      checks.push(
+        runningExecutable === homebrewExecutable
+          ? pass('bun_homebrew', `Readiness is running Homebrew Bun at ${runningExecutable}.`)
+          : fail(
+              'bun_homebrew',
+              `Readiness is running Bun at ${runningExecutable}, expected Homebrew Bun at ${homebrewExecutable}.`,
+              'Ensure /opt/homebrew/bin precedes ~/.bun/bin on PATH.',
+            ),
+      );
+    } catch {
+      checks.push(
+        fail(
+          'bun_homebrew',
+          'The running Bun executable or Homebrew Bun formula path could not be resolved.',
+          'Install or repair the Homebrew Bun formula and ensure it is first on PATH.',
+        ),
+      );
+    }
+  }
+
+  const versionPath = path.join(repoRoot, '.bun-version');
+  let expectedVersion;
+
+  try {
+    expectedVersion = (await deps.readFile(versionPath, 'utf8')).trim();
+  } catch {
+    checks.push(
+      fail(
+        'bun_version',
+        `.bun-version was not readable at ${versionPath}.`,
+        'Restore the me checkout and its Bun version pin.',
+      ),
+    );
+    return;
+  }
+
+  checks.push(
+    runtimeVersion === expectedVersion
+      ? pass('bun_version', `Readiness is running with pinned Bun ${runtimeVersion}.`)
+      : fail(
+          'bun_version',
+          `Readiness is running with Bun ${runtimeVersion || 'unknown'}, expected ${expectedVersion || 'an exact version'} from .bun-version.`,
+          'Upgrade the Homebrew Bun formula and ensure /opt/homebrew/bin precedes ~/.bun/bin on PATH.',
+        ),
+  );
 }
 
 async function appendNodeRuntimeCheck(checks, deps) {
@@ -799,6 +862,8 @@ export async function checkMachine(options = {}) {
   const env = options.env ?? process.env;
   const homeDir = options.homeDir ?? os.homedir();
   const repoRoot = options.repoRoot ?? DEFAULT_REPO_ROOT;
+  const runtimeExecutable = options.runtimeExecutable ?? process.execPath;
+  const runtimeVersion = options.runtimeVersion ?? globalThis.Bun?.version ?? '';
   const checks = [];
   const agentboxHost = await agentboxHostInstalled(deps);
 
@@ -806,6 +871,7 @@ export async function checkMachine(options = {}) {
   await appendHomebrewWritabilityCheck(checks, deps);
   await appendBrewfileChecks(checks, repoRoot, agentboxHost, deps);
   await appendRequiredCommandChecks(checks, deps);
+  await appendBunRuntimeChecks(checks, repoRoot, runtimeExecutable, runtimeVersion, deps);
   await appendNodeRuntimeCheck(checks, deps);
   await appendDotfileChecks(checks, repoRoot, homeDir, deps);
   await appendGeneratedConfigCheck(checks, homeDir, deps);
