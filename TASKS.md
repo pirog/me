@@ -2,26 +2,40 @@
 
 ## FINAL MANUAL TAZKZ
 
-- @tanaabased/openclaw-dev
-  -
+- @pirog/me
+  - add metadata support for this in "create-skill"?
+  - release?
+
+- @tanaabased/canon
+  - openclaw pluginify?
+    - add metadata support for this in "create-skill"?
+
+  - release skill should always be against main unless explicitly said otherwise
+
+  - improve readme design wrt advanced?
+
+  - js skills should work for ts as well?
+    - must go into src but still allow top level bin and scripts?
+
+  - optimizer pathway?
+    - release authors should include docs/standardizer relaignment pass?
+    - refactor plugins to be more dense? eg repo author -> repo standardizer?
+    - refactor plugins with more and better defined "modes" (incliding optimize)
+    - optimizer meta wrapper or prompt?
+      - see /prompts?
+
+- @tanaabased/openclaw-devguard
+  - develop
+
+- @tanaabased/openclaw-agent-system
+  - create
 
 - @tanaabased/emori
   - tanaab?
   - github_token integration?
 
-- @pirog/me
-  - node 26?
-
 - @tanaabased/canon
-  - openclaw plugin?
-    - knows how to inject issue mgtm from assigned issue?
   - work-on-issue skill?
-
-  - release skill should always be against main unless explicitly said otherwise
-  - release authors should include docs relaignment pass
-
-  - js skills should work for ts as well?
-  - openclaw plugin skill?
 
   - issue MGMT STUFF ASAP?
     - milestone creation
@@ -39,6 +53,10 @@
   - org standardizer?
     - list of repo tags
     - goals ands stuff?
+
+- @pirog/me
+  - node 26?
+  - repeat the Homebrew/Bun optimization pass on `pirobookx`: audit and remove any obsolete `/usr/local` Homebrew installation, prefer `/opt/homebrew` Bun, and verify the pinned version through readiness
 
 ## ISSUES 2 ADD
 
