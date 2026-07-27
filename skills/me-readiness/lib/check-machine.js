@@ -13,9 +13,22 @@ import path from 'node:path';
 import { promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
 
+import evaluateOnePasswordEnvironmentRun from '../utils/evaluate-one-password-environment-run.js';
+import evaluateTailscaleStatus from '../utils/evaluate-tailscale-status.js';
+import findOnePasswordTokenEnvKeys, {
+  ONEPASSWORD_TOKEN_ENV_KEYS,
+} from '../utils/find-one-password-token-env-keys.js';
+import formatOnePasswordCommandError from '../utils/format-one-password-command-error.js';
+import parseBrewfileEntries from '../utils/parse-brewfile-entries.js';
+import stripStowSimulationNoise from '../utils/strip-stow-simulation-noise.js';
+import withoutOnePasswordTokenFallbacks from '../utils/without-one-password-token-fallbacks.js';
+
+export { default as formatReport } from '../utils/format-readiness-report.js';
+export { ONEPASSWORD_TOKEN_ENV_KEYS };
+
 const execFileAsync = promisify(execFileCallback);
-const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
-const DEFAULT_REPO_ROOT = path.resolve(SCRIPT_DIR, '..', '..', '..');
+const LIB_DIR = path.dirname(fileURLToPath(import.meta.url));
+const DEFAULT_REPO_ROOT = path.resolve(LIB_DIR, '..', '..', '..');
 const PRIVATE_CONFIG_MODE = 0o600;
 const EXPECTED_TAILNET_NAME = 'tanaab.dev';
 const MINIMUM_NODE_MAJOR_VERSION = 24;
@@ -29,13 +42,6 @@ export const AGENTBOX_HEALTH_SCRIPT_PATH = '/opt/tanaab/agentbox/bin/health.sh';
 export const AGENTBOX_HEALTH_PLIST_PATH = '/Library/LaunchDaemons/dev.tanaab.agentbox.health.plist';
 export const EXPECTED_ONEPASSWORD_ENVIRONMENT_ID = 'zsstdfqknicwfv5glv76gd6tue';
 export const REQUIRED_COMMANDS = ['brew', 'bun', 'curl', 'git', 'stow', 'zsh'];
-export const ONEPASSWORD_TOKEN_ENV_KEYS = [
-  'PIROME_OP_TOKEN',
-  'TANAAB_OP_TOKEN',
-  'OP_SERVICE_ACCOUNT_TOKEN',
-  'OP_CONNECT_TOKEN',
-  'OP_SESSION',
-];
 export const CHECK_BUCKET_ORDER = Object.freeze([
   'homebrew',
   'packages',
@@ -55,6 +61,8 @@ const CHECK_BUCKET_BY_ID = new Map([
     `command_${command}`,
     'packages',
   ]),
+  ['bun_homebrew', 'packages'],
+  ['bun_version', 'packages'],
   ['node_version', 'packages'],
   ['dotfiles_stowed', 'dotfiles'],
   ['codex_generated_config', 'dotfiles'],
@@ -105,39 +113,6 @@ function formatMode(mode) {
   return `0${(mode & 0o777).toString(8)}`;
 }
 
-function formatErrorDetail(error) {
-  const stderr = typeof error?.stderr === 'string' ? error.stderr : '';
-  const message = error instanceof Error ? error.message : String(error ?? '');
-  return (stderr || message).replace(/\s+/g, ' ').trim();
-}
-
-function stripStowSimulationNoise(output) {
-  return output
-    .split(/\r?\n/)
-    .filter((line) => line.trim() !== 'WARNING: in simulation mode so not modifying filesystem.')
-    .join('\n')
-    .trim();
-}
-
-function parseBrewfileEntries(brewfile) {
-  const formulas = [];
-  const casks = [];
-
-  for (const line of brewfile.split(/\r?\n/)) {
-    const formula = line.match(/^\s*brew\s+["']([^"']+)["']/)?.[1];
-    const cask = line.match(/^\s*cask\s+["']([^"']+)["']/)?.[1];
-
-    if (formula && !formulas.includes(formula)) {
-      formulas.push(formula);
-    }
-    if (cask && !casks.includes(cask)) {
-      casks.push(cask);
-    }
-  }
-
-  return { casks, formulas };
-}
-
 async function defaultCommandExists(command) {
   try {
     await execFileAsync('which', [command], { timeout: 5000 });
@@ -163,20 +138,6 @@ async function pathInfo(targetPath, deps) {
   } catch {
     return null;
   }
-}
-
-function onePasswordTokenEnvKeys(env) {
-  return Object.keys(env).filter(
-    (key) => ONEPASSWORD_TOKEN_ENV_KEYS.includes(key) || key.startsWith('OP_SESSION_'),
-  );
-}
-
-function commandEnvWithoutOnePasswordTokenFallbacks(env) {
-  const commandEnv = { ...env };
-  for (const key of onePasswordTokenEnvKeys(env)) {
-    delete commandEnv[key];
-  }
-  return commandEnv;
 }
 
 async function requiredCommandCheck(command, deps) {
@@ -369,6 +330,67 @@ async function appendRequiredCommandChecks(checks, deps) {
   }
 }
 
+async function appendBunRuntimeChecks(checks, repoRoot, runtimeExecutable, runtimeVersion, deps) {
+  if (getCheck(checks, 'command_brew')?.status === 'fail') {
+    checks.push(
+      fail(
+        'bun_homebrew',
+        'The running Bun executable could not be verified as Homebrew-managed because brew is missing.',
+        'Install Homebrew and the Bun formula from the Brewfile.',
+      ),
+    );
+  } else {
+    try {
+      const { stdout: prefixOutput } = await deps.execFile('brew', ['--prefix', 'oven-sh/bun/bun']);
+      const homebrewExecutable = await deps.realpath(path.join(prefixOutput.trim(), 'bin', 'bun'));
+      const runningExecutable = await deps.realpath(runtimeExecutable);
+      checks.push(
+        runningExecutable === homebrewExecutable
+          ? pass('bun_homebrew', `Readiness is running Homebrew Bun at ${runningExecutable}.`)
+          : fail(
+              'bun_homebrew',
+              `Readiness is running Bun at ${runningExecutable}, expected Homebrew Bun at ${homebrewExecutable}.`,
+              'Ensure /opt/homebrew/bin precedes ~/.bun/bin on PATH.',
+            ),
+      );
+    } catch {
+      checks.push(
+        fail(
+          'bun_homebrew',
+          'The running Bun executable or Homebrew Bun formula path could not be resolved.',
+          'Install or repair the Homebrew Bun formula and ensure it is first on PATH.',
+        ),
+      );
+    }
+  }
+
+  const versionPath = path.join(repoRoot, '.bun-version');
+  let expectedVersion;
+
+  try {
+    expectedVersion = (await deps.readFile(versionPath, 'utf8')).trim();
+  } catch {
+    checks.push(
+      fail(
+        'bun_version',
+        `.bun-version was not readable at ${versionPath}.`,
+        'Restore the me checkout and its Bun version pin.',
+      ),
+    );
+    return;
+  }
+
+  checks.push(
+    runtimeVersion === expectedVersion
+      ? pass('bun_version', `Readiness is running with pinned Bun ${runtimeVersion}.`)
+      : fail(
+          'bun_version',
+          `Readiness is running with Bun ${runtimeVersion || 'unknown'}, expected ${expectedVersion || 'an exact version'} from .bun-version.`,
+          'Upgrade the Homebrew Bun formula and ensure /opt/homebrew/bin precedes ~/.bun/bin on PATH.',
+        ),
+  );
+}
+
 async function appendNodeRuntimeCheck(checks, deps) {
   if (getCheck(checks, 'command_brew')?.status === 'fail') {
     checks.push(
@@ -495,43 +517,6 @@ async function appendGeneratedConfigCheck(checks, homeDir, deps) {
   }
 }
 
-function checkOnePasswordEnvironmentRun(result) {
-  if (!result || typeof result !== 'object') {
-    return warn(
-      'onepassword_environment_run',
-      '1Password Environment readiness output was not a JSON object.',
-      'Confirm the readiness Environment is accessible through 1Password Developer.',
-    );
-  }
-  if (result.present !== true || result.matches !== true) {
-    return warn(
-      'onepassword_environment_run',
-      result.present === true
-        ? `${READINESS_AUTHORIZATION_CODE_KEY} did not match the expected readiness sentinel.`
-        : `${READINESS_AUTHORIZATION_CODE_KEY} was not provided by the 1Password Environment.`,
-      'Confirm the readiness Environment contains the expected authorization sentinel.',
-    );
-  }
-  return pass(
-    'onepassword_environment_run',
-    '1Password Environment provided the expected readiness authorization sentinel.',
-  );
-}
-
-function formatOnePasswordCommandError(error) {
-  const detail = formatErrorDetail(error);
-  return /couldn'?t connect to the 1Password desktop app/i.test(detail)
-    ? {
-        message: '1Password CLI could not connect to the desktop app from this process.',
-        remediation:
-          'If this was sandboxed, rerun readiness with unsandboxed local access. Otherwise open and unlock 1Password and enable CLI integration.',
-      }
-    : {
-        message: '1Password CLI vault access check failed.',
-        remediation: 'Open and unlock 1Password, enable CLI integration, then rerun op vault list.',
-      };
-}
-
 async function appendOnePasswordChecks(checks, agentboxHost, env, deps) {
   checks.push(
     await optionalCommandCheck(
@@ -582,7 +567,7 @@ async function appendOnePasswordChecks(checks, agentboxHost, env, deps) {
 
   try {
     const { stdout } = await deps.execFile('op', ['vault', 'list', '--format', 'json'], {
-      env: commandEnvWithoutOnePasswordTokenFallbacks(env),
+      env: withoutOnePasswordTokenFallbacks(env),
     });
     const vaults = JSON.parse(stdout);
     checks.push(
@@ -602,7 +587,7 @@ async function appendOnePasswordChecks(checks, agentboxHost, env, deps) {
   let environmentCliSupported = false;
   try {
     await deps.execFile('op', ['environment', 'read', '--help'], {
-      env: commandEnvWithoutOnePasswordTokenFallbacks(env),
+      env: withoutOnePasswordTokenFallbacks(env),
     });
     environmentCliSupported = true;
     checks.push(
@@ -641,9 +626,14 @@ async function appendOnePasswordChecks(checks, agentboxHost, env, deps) {
         '-e',
         ONEPASSWORD_ENVIRONMENT_VALIDATION_SCRIPT,
       ],
-      { env: commandEnvWithoutOnePasswordTokenFallbacks(env) },
+      { env: withoutOnePasswordTokenFallbacks(env) },
     );
-    checks.push(checkOnePasswordEnvironmentRun(JSON.parse(stdout)));
+    checks.push(
+      makeCheck({
+        id: 'onepassword_environment_run',
+        ...evaluateOnePasswordEnvironmentRun(JSON.parse(stdout), READINESS_AUTHORIZATION_CODE_KEY),
+      }),
+    );
   } catch {
     checks.push(
       warn(
@@ -659,31 +649,6 @@ function tailscaleRemediation(agentboxHost) {
   return agentboxHost
     ? 'Run the Agentbox health report and repair its managed tailscaled service if network access is needed.'
     : 'Open Tailscale and connect this machine to the tanaab.dev tailnet if network access is needed.';
-}
-
-function checkTailscaleStatus(status, agentboxHost) {
-  const issues = [];
-  if (!status || typeof status !== 'object') {
-    issues.push('status output was not a JSON object');
-  } else {
-    if (status.BackendState !== 'Running') issues.push('backend is not running');
-    if (status.Self?.Online !== true) issues.push('local node is not online');
-    if (status.Self?.InNetworkMap !== true) issues.push('local node is not in the network map');
-    if (!Array.isArray(status.TailscaleIPs) || status.TailscaleIPs.length === 0) {
-      issues.push('no Tailscale IPs are assigned');
-    }
-    if (status.CurrentTailnet?.Name !== EXPECTED_TAILNET_NAME) {
-      issues.push(`tailnet is "${String(status.CurrentTailnet?.Name ?? 'missing')}"`);
-    }
-  }
-
-  return issues.length === 0
-    ? pass('tailscale_status', `Tailscale is running on the ${EXPECTED_TAILNET_NAME} tailnet.`)
-    : warn(
-        'tailscale_status',
-        `Tailscale is not ready: ${issues.join('; ')}.`,
-        tailscaleRemediation(agentboxHost),
-      );
 }
 
 async function appendTailscaleChecks(checks, agentboxHost, deps) {
@@ -714,7 +679,15 @@ async function appendTailscaleChecks(checks, agentboxHost, deps) {
 
   try {
     const { stdout } = await deps.execFile('tailscale', ['status', '--json']);
-    checks.push(checkTailscaleStatus(JSON.parse(stdout), agentboxHost));
+    checks.push(
+      makeCheck({
+        id: 'tailscale_status',
+        ...evaluateTailscaleStatus(JSON.parse(stdout), {
+          expectedTailnetName: EXPECTED_TAILNET_NAME,
+          remediation: tailscaleRemediation(agentboxHost),
+        }),
+      }),
+    );
   } catch {
     checks.push(
       warn(
@@ -727,7 +700,7 @@ async function appendTailscaleChecks(checks, agentboxHost, deps) {
 }
 
 function appendTokenFallbackCheck(checks, env) {
-  const presentTokenKeys = onePasswordTokenEnvKeys(env);
+  const presentTokenKeys = findOnePasswordTokenEnvKeys(env);
   checks.push(
     presentTokenKeys.length === 0
       ? pass('bootstrap_token_env', 'No 1Password token fallback variables are present.')
@@ -799,6 +772,8 @@ export async function checkMachine(options = {}) {
   const env = options.env ?? process.env;
   const homeDir = options.homeDir ?? os.homedir();
   const repoRoot = options.repoRoot ?? DEFAULT_REPO_ROOT;
+  const runtimeExecutable = options.runtimeExecutable ?? process.execPath;
+  const runtimeVersion = options.runtimeVersion ?? globalThis.Bun?.version ?? '';
   const checks = [];
   const agentboxHost = await agentboxHostInstalled(deps);
 
@@ -806,6 +781,7 @@ export async function checkMachine(options = {}) {
   await appendHomebrewWritabilityCheck(checks, deps);
   await appendBrewfileChecks(checks, repoRoot, agentboxHost, deps);
   await appendRequiredCommandChecks(checks, deps);
+  await appendBunRuntimeChecks(checks, repoRoot, runtimeExecutable, runtimeVersion, deps);
   await appendNodeRuntimeCheck(checks, deps);
   await appendDotfileChecks(checks, repoRoot, homeDir, deps);
   await appendGeneratedConfigCheck(checks, homeDir, deps);
@@ -818,8 +794,4 @@ export async function checkMachine(options = {}) {
     ok: !checks.some((check) => check.status === 'fail'),
     checks,
   };
-}
-
-export function formatReport(report) {
-  return `${JSON.stringify(report, null, 2)}\n`;
 }

@@ -10,7 +10,7 @@ import {
   REQUIRED_COMMANDS,
   checkMachine,
   formatReport,
-} from '../skills/me-readiness/scripts/check-machine-lib.js';
+} from '../lib/check-machine.js';
 
 const HOME_DIR = '/Users/tester';
 const REPO_ROOT = '/repo/me';
@@ -20,8 +20,13 @@ const CONFIG_PATH = path.join(HOME_DIR, '.codex', 'config.toml');
 const HOMEBREW_PREFIX = '/opt/homebrew';
 const HOMEBREW_CELLAR = '/opt/homebrew/Cellar';
 const HOMEBREW_CACHE = '/Users/tester/Library/Caches/Homebrew';
+const BUN_PREFIX = '/opt/homebrew/opt/bun';
+const BUN_PATH = path.join(BUN_PREFIX, 'bin', 'bun');
+const BUN_REAL_PATH = '/opt/homebrew/Cellar/bun/1.3.14/bin/bun';
+const LEGACY_BUN_PATH = path.join(HOME_DIR, '.bun', 'bin', 'bun');
 const NODE_PREFIX = '/opt/homebrew/opt/node@24';
 const NODE_PATH = path.join(NODE_PREFIX, 'bin', 'node');
+const BUN_VERSION_PATH = path.join(REPO_ROOT, '.bun-version');
 
 const DEFAULT_BREWFILE = [
   'cask "1password"',
@@ -29,7 +34,6 @@ const DEFAULT_BREWFILE = [
   'cask "codex"',
   'cask "codex-app"',
   'cask "google-chrome"',
-  'cask "openclaw"',
   'cask "tailscale-app"',
   'cask "visual-studio-code"',
   'cask "warp"',
@@ -64,7 +68,6 @@ const DEFAULT_CASKS = [
   'codex',
   'codex-app',
   'google-chrome',
-  'openclaw',
   'tailscale-app',
   'visual-studio-code',
   'warp',
@@ -106,6 +109,7 @@ function makeDeps({
   agentbox = false,
   agentboxHealthExecutable = true,
   brewfile = DEFAULT_BREWFILE,
+  bunVersion = '1.3.14',
   commands = [...REQUIRED_COMMANDS, 'op', 'tailscale'],
   configExists = true,
   configMode = 0o100600,
@@ -144,6 +148,9 @@ function makeDeps({
       if (command === 'brew') {
         if (args[0] === '--prefix' && args[1] === 'node@24') {
           return { stdout: `${NODE_PREFIX}\n` };
+        }
+        if (args[0] === '--prefix' && args[1] === 'oven-sh/bun/bun') {
+          return { stdout: `${BUN_PREFIX}\n` };
         }
         if (args[0] === '--prefix') return { stdout: `${HOMEBREW_PREFIX}\n` };
         if (args[0] === '--cellar') return { stdout: `${HOMEBREW_CELLAR}\n` };
@@ -201,8 +208,9 @@ function makeDeps({
       throw new Error(`missing: ${targetPath}`);
     },
     readFile(targetPath) {
-      assert.equal(targetPath, path.join(REPO_ROOT, 'Brewfile'));
-      return brewfile;
+      if (targetPath === path.join(REPO_ROOT, 'Brewfile')) return brewfile;
+      if (targetPath === BUN_VERSION_PATH && bunVersion !== null) return `${bunVersion}\n`;
+      throw new Error(`missing: ${targetPath}`);
     },
     readdir(targetPath, options) {
       assert.equal(targetPath, DOTFILES_ROOT);
@@ -210,6 +218,8 @@ function makeDeps({
       return dotfilePackages.map(makeDirectoryEntry);
     },
     realpath(targetPath) {
+      if (targetPath === BUN_PATH || targetPath === BUN_REAL_PATH) return BUN_REAL_PATH;
+      if (targetPath === LEGACY_BUN_PATH) return LEGACY_BUN_PATH;
       if (targetPath === PLUGIN_LINK) return pluginTarget;
       if (targetPath === REPO_ROOT) return REPO_ROOT;
       throw new Error(`unexpected realpath: ${targetPath}`);
@@ -228,6 +238,8 @@ async function runCheck(options = {}) {
     env: options.env ?? {},
     homeDir: HOME_DIR,
     repoRoot: REPO_ROOT,
+    runtimeExecutable: options.runtimeExecutable ?? BUN_REAL_PATH,
+    runtimeVersion: options.runtimeVersion ?? '1.3.14',
   });
 }
 
@@ -237,7 +249,7 @@ function findCheck(report, id) {
   return check;
 }
 
-describe('skills/me-readiness/scripts/check-machine-lib', () => {
+describe('skills/me-readiness/lib/check-machine', () => {
   it('reports ready when core profile and Codex integration checks pass', async () => {
     const report = await runCheck();
 
@@ -298,6 +310,31 @@ describe('skills/me-readiness/scripts/check-machine-lib', () => {
 
     assert.equal(report.ok, false);
     assert.equal(findCheck(report, 'command_bun').status, 'fail');
+  });
+
+  it('should require the running Bun version to match .bun-version', async () => {
+    const current = await runCheck();
+    const stale = await runCheck({ runtimeVersion: '1.3.13' });
+    const missingPin = await runCheck({ bunVersion: null });
+
+    assert.equal(findCheck(current, 'bun_version').status, 'pass');
+    assert.match(findCheck(current, 'bun_version').message, /1\.3\.14/);
+    assert.equal(findCheck(stale, 'bun_version').status, 'fail');
+    assert.match(findCheck(stale, 'bun_version').message, /expected 1\.3\.14/);
+    assert.equal(findCheck(missingPin, 'bun_version').status, 'fail');
+    assert.equal(stale.ok, false);
+    assert.equal(missingPin.ok, false);
+  });
+
+  it('should require the running Bun executable to come from Homebrew', async () => {
+    const current = await runCheck();
+    const legacy = await runCheck({ runtimeExecutable: LEGACY_BUN_PATH });
+
+    assert.equal(findCheck(current, 'bun_homebrew').status, 'pass');
+    assert.match(findCheck(current, 'bun_homebrew').message, /Homebrew Bun/);
+    assert.equal(findCheck(legacy, 'bun_homebrew').status, 'fail');
+    assert.match(findCheck(legacy, 'bun_homebrew').message, new RegExp(LEGACY_BUN_PATH));
+    assert.equal(legacy.ok, false);
   });
 
   it('accepts Node 24 or newer and rejects older Node', async () => {

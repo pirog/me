@@ -2,8 +2,8 @@
 
 This reference covers the installed machine profile, host-specific behavior, post-bootstrap setup,
 the complete public `piroboot` configuration surface, normal checkout behavior, and the separate
-Codex configuration and plugin sync workflows. Start with the [README](./README.md) for the primary
-setup path.
+Codex configuration, plugin sync, and OpenClaw plugin-development workflows. Start with the
+[README](./README.md) for the primary setup path.
 
 ## What Gets Installed
 
@@ -11,6 +11,12 @@ setup path.
 
 [`Brewfile`](./Brewfile) is the source of truth for the base machine inventory.
 Bootbox installs or repairs the core prerequisites before `me` applies the complete Brewfile.
+
+[`Brewfile.openclaw`](./Brewfile.openclaw) is an opt-in extension for local OpenClaw plugin
+development. It installs the Homebrew `openclaw-cli` formula, which owns its Node dependency, and
+tracks the native app while allowing the browser to remain the development UI. The optional bundle
+is not applied by `boot.sh` or checked by `$piro-me-readiness`. See
+[OpenClaw Plugin Development](#openclaw-plugin-development) for its manual install and setup flow.
 
 > [!NOTE]
 > Dependency behavior differs on `agentbox` and formula-backed Tailscale hosts. See
@@ -339,3 +345,66 @@ bun run codex:sync
 
 After a plugin cache refresh, restart Codex when the current app session does not pick up the changed
 plugin assets automatically.
+
+## OpenClaw Plugin Development
+
+This checkout is the pre-seeded workspace for OpenClaw's default `main` agent, using the public
+`MODEL L3-37` and `tanaabot` identity. This flow intentionally claims the default OpenClaw profile;
+do not reuse it on a machine where that profile already owns another workspace. OpenClaw runtime
+configuration, OAuth credentials, and sessions stay in OpenClaw's local state outside this
+repository. The native app is optional; the browser Control UI is the expected development
+interface.
+
+### Install
+
+```sh
+# install the optional openclaw development dependencies.
+cd /Users/pirog/tanaab/me
+brew bundle --file Brewfile.openclaw
+```
+
+### Onboard
+
+```sh
+# configure the default main agent for local openai oauth development.
+openclaw onboard \
+  --flow quickstart \
+  --workspace "$PWD" \
+  --mode local \
+  --auth-choice openai \
+  --gateway-port 18789 \
+  --gateway-bind loopback \
+  --tailscale off \
+  --no-install-daemon \
+  --skip-health \
+  --skip-bootstrap \
+  --skip-channels \
+  --skip-skills \
+  --skip-hooks \
+  --skip-search \
+  --skip-ui
+```
+
+```sh
+# synchronize the tracked identity into openclaw's ui metadata.
+openclaw agents set-identity --workspace "$PWD" --from-identity
+```
+
+### Run
+
+```sh
+# start a loopback-only gateway in the foreground.
+openclaw gateway run --bind loopback --port 18789
+```
+
+```sh
+# verify the gateway and open the browser control ui.
+openclaw gateway health --port 18789
+openclaw dashboard
+```
+
+Press `Ctrl-C` in the Gateway terminal to stop development. Subsequent sessions require only the
+foreground Gateway command and, when wanted, `openclaw dashboard`; onboarding and identity sync are
+first-time steps. See the official [OpenAI provider](https://docs.openclaw.ai/providers/openai),
+[onboarding](https://docs.openclaw.ai/cli/onboard), and
+[Gateway CLI](https://docs.openclaw.ai/cli/gateway) references.

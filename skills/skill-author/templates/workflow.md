@@ -1,19 +1,20 @@
 ---
 template_type: workflow
 default_category_tag: operations
+default_openclaw_emoji: '🔁'
+optional_top_level_headings:
+  - '## Optimization'
 ---
-
 ---
-
 name: {{skill_id}}
 description: {{description}}
 license: {{license}}
 metadata:
-type: {{type}}
-owner: {{owner}}
-tags:
+  type: {{type}}
+  owner: {{owner}}
+  tags:
 {{metadata_tags_yaml}}
-
+{{openclaw_metadata_yaml}}
 ---
 
 # {{display_name}}
@@ -54,6 +55,16 @@ tags:
 
 - Define what finished looks like before closing the task.
 - List the signals or artifacts that prove the workflow is complete.
+
+## Optimization
+
+Use the shared operation lenses—**keep**, **reconcile**, **deduplicate**, **consolidate/merge**, **split**, **extract**, **move**, **tighten**, and **remove**—only where they fit this workflow; do not manufacture changes to satisfy the list.
+
+- **Inspect:** Inventory the current preconditions, sequence, checkpoints, handoffs, and completion evidence for this operational surface.
+- **Compare:** Evaluate the observed workflow against its durable contract, including contradictory steps, duplicated paths, overloaded stages, misplaced responsibilities, and obsolete handoffs; classify unsupported paths as not applicable.
+- **Recommend:** Preserve aligned stages; reconcile conflicting paths; and prioritize justified deduplication, consolidation, splitting, extraction, movement, tightening, or removal.
+- **Apply:** After explicit authorization, change the smallest coherent part of the sequence while preserving required approvals and external boundaries.
+- **Verify:** Re-run the relevant checkpoints and confirm the documented completion criteria prove the optimized workflow is complete.
 
 ## Bundled Resources
 

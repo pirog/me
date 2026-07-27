@@ -2,53 +2,42 @@
 
 ## FINAL MANUAL TAZKZ
 
+- @tanaabased/openclaw-devguard
+  - scaffold
+  - develop
+  - openclaw plugin author?
+
+- @tanaabased/openclaw-agent-system
+  - create
+  - scaffold
+  - get basic envvar loading
+
 - @tanaabased/emori
-  - actual onboarding?
-    - summarize steps taken?
-      - brewfile
-        - brew install steipete/tap/imsg
-
-    - tanaab?
-    - github_token integration?
-    - recommendations
-
-    - changelog
-    - release
-
-    - heartbeat setup?
-    - doctor recommendations?
-    - configure voice?
-
-- @pirog/me
-  - spin up openclaw on machine?
-  - MODEL L3-37 openclaw
-  - openclaw dev plugin and scaffolding?
+  - get canon
+  - get initial agent-system for ENVVARS support
 
 - @tanaabased/canon
-  - openclaw plugin
   - work-on-issue skill?
-
-  - release skill should always be against main unless explicitly said otherwise
-  - release authors should include docs relaignment pass
-
-  - js skills should work for ts as well?
+  - issue lifecyle docs?
 
   - issue MGMT STUFF ASAP?
     - milestone creation
     - issue creation|triage|etc
     - labels|fields|etc?
 
-  - repo setup/standardization skills
-    - normal settings
-    - branch protection
-    - add tanabot 2 repo w write access
-    - suggest 3 good tags skill
-    - verify repo / repo audit
-    - skill to autotag repos
+  - project author skill
+    - suggest 3 good tags skill?
+    - skill to autotag repos?
 
   - org standardizer?
     - list of repo tags
     - goals ands stuff?
+
+  - add AGENTS.md to project optimization?
+
+- @pirog/me
+  - node 26?
+  - repeat the Homebrew/Bun optimization pass on `pirobookx`: audit and remove any obsolete `/usr/local` Homebrew installation, prefer `/opt/homebrew` Bun, and verify the pinned version through readiness
 
 ## ISSUES 2 ADD
 
@@ -80,9 +69,11 @@
     - $me-readiness should actually be like $me-setup, $me-update and $me-doctor?
       - should also follow the "narrow remediation" path in `agentbox`
 
+- @tanaabased/codex-tools?
+  - codex-sync?
+
 - @tanaabased/agentbox
   - openclaw agentbox plugin?
-  - add openclaw app via phone?
 
   - need to install @tanaabased/agent-system globally once we have it?
 

@@ -9,3 +9,6 @@ setopt append_history extended_history hist_ignore_dups hist_ignore_space share_
 
 # Warp can replace this with its native prompt; other terminals retain a useful default.
 PROMPT='%n@%m %1~ %# '
+
+# OpenClaw Completion
+[ -f "/Users/pirog/.openclaw/completions/openclaw.zsh" ] && source "/Users/pirog/.openclaw/completions/openclaw.zsh"

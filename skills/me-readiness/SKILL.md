@@ -9,6 +9,14 @@ metadata:
     - pirog
     - workflow
     - validation
+  openclaw:
+    emoji: '🩺'
+    homepage: https://github.com/pirog/me/tree/main/skills/me-readiness
+    os:
+      - darwin
+    requires:
+      bins:
+        - bun
 ---
 
 # Me Readiness
@@ -53,9 +61,9 @@ services, mutate connector data, or validate the Agentbox product.
    ```
 
    The helper is read-only. It checks effective Homebrew writability, queries installed formulas
-   and casks, simulates the complete GNU Stow layout, inspects local files and links, and probes
-   optional desktop or daemon services. It strips 1Password token fallback variables from every
-   `op` subprocess.
+   and casks, verifies that the running Bun comes from Homebrew and matches `.bun-version`, simulates
+   the complete GNU Stow layout, inspects local files and links, and probes optional desktop or daemon
+   services. It strips 1Password token fallback variables from every `op` subprocess.
 
    If unsandboxed access is unavailable, run the helper sandboxed and describe Homebrew,
    1Password, or Tailscale access failures as potentially sandbox-limited. Do not generalize the
@@ -126,7 +134,8 @@ services, mutate connector data, or validate the Agentbox product.
   do not infer it from directory ownership alone.
 - Discover all `brew` and `cask` entries from the current Brewfile. Missing formulas fail;
   missing applicable casks warn.
-- Require `brew`, `bun`, `curl`, `git`, `stow`, and `zsh` on `PATH`. Resolve
+- Require `brew`, `bun`, `curl`, `git`, `stow`, and `zsh` on `PATH`. Require the Bun process running
+  readiness to resolve to the Homebrew formula and match the exact `.bun-version` pin. Resolve
   `$(brew --prefix node@24)/bin/node` directly and require major version 24 or newer; do not fail
   because the invoking process inherited a different Node on `PATH`.
 - Discover every top-level package under `dotfiles/` and use a read-only Stow simulation. Any
@@ -154,8 +163,11 @@ services, mutate connector data, or validate the Agentbox product.
 
 - [`scripts/check-machine.js`](./scripts/check-machine.js): read-only local probe CLI that emits
   deterministic JSON.
-- [`scripts/check-machine-lib.js`](./scripts/check-machine-lib.js): tested helper library for
-  Homebrew, package, dotfile, optional service, and plugin checks.
+- [`lib/check-machine.js`](./lib/check-machine.js): stateful probe orchestration across Homebrew,
+  packages, dotfiles, optional services, and plugin checks.
+- [`utils/`](./utils/): deterministic parsing, environment filtering, status evaluation, and report
+  formatting units.
+- [`test/`](./test/): flat direct utility specs plus end-to-end readiness orchestration coverage.
 
 ## Validation
 
@@ -163,6 +175,8 @@ services, mutate connector data, or validate the Agentbox product.
   `piroplugin` target produce failures.
 - Confirm missing casks, 1Password, Tailscale, Agentbox `tailscaled`, and monday produce only
   warnings.
+- Confirm Homebrew Bun with the exact pin passes while a non-Homebrew executable, another version,
+  or an unreadable version fails.
 - Confirm Node 24 and newer pass while older versions fail.
 - Confirm Agentbox cask exceptions require the same executable-script and plist markers as
   `boot.sh`.

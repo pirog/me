@@ -23,6 +23,8 @@ jobs:
           bun-version-file: .bun-version
       - name: Install dependencies
         run: bun install --frozen-lockfile --ignore-scripts
+      - name: Validate Codex plugin
+        run: bun run codex:validate
       - name: Prepare release-shaped build
         uses: tanaabased/prepare-release-action@v1
         with:
