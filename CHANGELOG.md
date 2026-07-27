@@ -1,10 +1,19 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
-- Added a pre-seeded OpenClaw development workspace for `tanaabot` (`MODEL L3-37`).
-- Added `Brewfile.openclaw` as an opt-in OpenClaw app and CLI profile, removing OpenClaw from the default bootstrap.
-- Fixed Bun resolution and readiness checks to require the exact Homebrew-managed `1.3.14` runtime.
+### New Features
+
+- Added a pre-seeded OpenClaw development workspace for `tanaabot` (`MODEL L3-37`). [#33](https://github.com/pirog/me/pull/33)
+- Added `Brewfile.openclaw` as an opt-in OpenClaw app and CLI profile, removing OpenClaw from the default bootstrap. [#33](https://github.com/pirog/me/pull/33)
+
+### Bug Fixes
+
+- Fixed Bun resolution and readiness checks to require the exact Homebrew-managed `1.3.14` runtime. [#33](https://github.com/pirog/me/pull/33)
 - Fixed Zsh startup on hosts with insecure completion paths by removing unused shell-managed completions.
-- Updated `piro-skill-author` with optimization and portfolio-review guidance for existing skill collections.
+
+### Developer Improvements
+
+- Refactored `aisync`, `codexsync`, `$piro-me-readiness`, and `piro-skill-author` into scoped modules with focused unit coverage. [#33](https://github.com/pirog/me/pull/33)
+- Updated `piro-skill-author` to generate OpenClaw metadata and optimize existing skills and skill portfolios. [#33](https://github.com/pirog/me/pull/33)
 
 ## v1.0.0-beta.7 - [July 14, 2026](https://github.com/pirog/me/releases/tag/v1.0.0-beta.7)
 
