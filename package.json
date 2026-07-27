@@ -1,7 +1,7 @@
 {
   "name": "@pirog/me",
   "description": "Bootstrap script and release tooling for pirog.me.",
-  "version": "1.0.0-beta.7",
+  "version": "1.0.0-beta.8",
   "author": "Mike Pirog @pirog",
   "license": "MIT",
   "repository": "https://github.com/pirog/me",

@@ -1,5 +1,7 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+## v1.0.0-beta.8 - [July 27, 2026](https://github.com/pirog/me/releases/tag/v1.0.0-beta.8)
+
 ### New Features
 
 - Added a pre-seeded OpenClaw development workspace for `tanaabot` (`MODEL L3-37`). [#33](https://github.com/pirog/me/pull/33)
