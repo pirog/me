@@ -29,7 +29,7 @@ its Codex plugin bundle.
 - `dotfiles/theme/colors.json` is the lowest-level portable color source for application themes.
 - `.codex-plugin/`, plugin source directories, `package.json`, and the Codex sync implementation own
   the `piroplugin` package and managed cache surface.
-- `skills/me-readiness/` and `test/me-readiness-check-machine.spec.js` own readiness behavior.
+- `skills/me-readiness/` and `skills/me-readiness/test/check-machine.spec.js` own readiness behavior.
 - `IDENTITY.md`, `SOUL.md`, `USER.md`, `TOOLS.md`, and `HEARTBEAT.md` own the tracked OpenClaw
   development-agent context.
 - `README.md` is the primary setup entrypoint. `ADVANCED.md` owns complete configuration,

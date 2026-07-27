@@ -2,57 +2,38 @@
 
 ## FINAL MANUAL TAZKZ
 
-- @pirog/me
-  - add metadata support for this in "create-skill"?
-  - release?
-
-- @tanaabased/canon
-  - openclaw pluginify?
-    - add metadata support for this in "create-skill"?
-
-  - release skill should always be against main unless explicitly said otherwise
-
-  - improve readme design wrt advanced?
-
-  - js skills should work for ts as well?
-    - must go into src but still allow top level bin and scripts?
-
-  - optimizer pathway?
-    - release authors should include docs/standardizer relaignment pass?
-    - refactor plugins to be more dense? eg repo author -> repo standardizer?
-    - refactor plugins with more and better defined "modes" (incliding optimize)
-    - optimizer meta wrapper or prompt?
-      - see /prompts?
-
 - @tanaabased/openclaw-devguard
+  - scaffold
   - develop
+  - openclaw plugin author?
 
 - @tanaabased/openclaw-agent-system
   - create
+  - scaffold
+  - get basic envvar loading
 
 - @tanaabased/emori
-  - tanaab?
-  - github_token integration?
+  - get canon
+  - get initial agent-system for ENVVARS support
 
 - @tanaabased/canon
   - work-on-issue skill?
+  - issue lifecyle docs?
 
   - issue MGMT STUFF ASAP?
     - milestone creation
     - issue creation|triage|etc
     - labels|fields|etc?
 
-  - repo setup/standardization skills
-    - normal settings
-    - branch protection
-    - add tanabot 2 repo w write access
-    - suggest 3 good tags skill
-    - verify repo / repo audit
-    - skill to autotag repos
+  - project author skill
+    - suggest 3 good tags skill?
+    - skill to autotag repos?
 
   - org standardizer?
     - list of repo tags
     - goals ands stuff?
+
+  - add AGENTS.md to project optimization?
 
 - @pirog/me
   - node 26?
@@ -88,9 +69,11 @@
     - $me-readiness should actually be like $me-setup, $me-update and $me-doctor?
       - should also follow the "narrow remediation" path in `agentbox`
 
+- @tanaabased/codex-tools?
+  - codex-sync?
+
 - @tanaabased/agentbox
   - openclaw agentbox plugin?
-  - add openclaw app via phone?
 
   - need to install @tanaabased/agent-system globally once we have it?
 
