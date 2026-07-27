@@ -17,7 +17,16 @@ const AUXILIARY_DOCS = [
   'INSTALLATION_GUIDE.md',
   'QUICK_REFERENCE.md',
 ];
-const OPTIONAL_RESOURCE_NAMES = ['templates', 'assets', 'references', 'scripts'];
+const OPTIONAL_RESOURCE_NAMES = [
+  'bin',
+  'lib',
+  'scripts',
+  'utils',
+  'test',
+  'templates',
+  'assets',
+  'references',
+];
 const KEBAB_CASE_ID_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const KEBAB_CASE_HELPER_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*(\.[a-z0-9]+)?$/;
 const OPENCLAW_REQUIREMENT_LIST_KEYS = ['bins', 'anyBins', 'env', 'config'];
@@ -1145,7 +1154,10 @@ function buildManualChecks({ expectedType }) {
     'Check that the skill owns one narrow, concrete surface.',
     'Check that OpenClaw requirements describe only real runtime dependencies of the generated skill.',
     'Check that bundled resources stay local unless they clearly pass the hoist test for repo-root canon.',
+    'Check that skill-owned JavaScript and tests live at their nearest owner and that command entrypoints remain thin.',
     'Check that any repo-root resources referenced by the skill still earn hoisted status through proven reuse, repo-wide contract status, or standalone human value.',
+    'Check that `Optimization` is tailored to persistent alignment work or intentionally omitted for incident-specific, event-specific, or execution-only workflows.',
+    "Check that any retained `Optimization` section names the owned surface's highest-value concrete compliance checks.",
     'Check that bulk standardization preserved the skill purpose unless a behavioral rewrite was requested.',
   ];
 

@@ -129,11 +129,28 @@ describe('skills/skill-author scaffolding', () => {
       const generated = await createGeneratedSkill({ slug: `${type}-probe`, type });
       tempRoots.push(generated.tempRoot);
       const openClaw = await readGeneratedOpenClawMetadata(generated.skillDir);
+      const skillContent = await readFile(path.join(generated.skillDir, 'SKILL.md'), 'utf8');
 
       assert.equal(openClaw.emoji, expectedEmoji);
       assert.equal(openClaw.homepage, undefined);
       assert.equal(openClaw.requires, undefined);
+      assert.match(skillContent, /\n## Optimization\n/);
     }
+  });
+
+  it('should allow execution-only skills to omit the optional Optimization facet', async () => {
+    const generated = await createGeneratedSkill({ slug: 'execution-only', type: 'workflow' });
+    tempRoots.push(generated.tempRoot);
+    const skillPath = path.join(generated.skillDir, 'SKILL.md');
+    const originalContent = await readFile(skillPath, 'utf8');
+    const executionOnlyContent = originalContent.replace(
+      /\n## Optimization\n[\s\S]*?(?=\n## Bundled Resources\n)/,
+      '',
+    );
+    await writeFile(skillPath, executionOnlyContent, 'utf8');
+
+    const validation = await validateGeneratedSkill(generated.skillDir, 'workflow');
+    assert.equal(validation.exitCode, 0, validation.output);
   });
 
   it('should derive plugin skill homepages and honor explicit presentation overrides', async () => {

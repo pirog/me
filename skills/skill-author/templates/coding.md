@@ -2,6 +2,8 @@
 template_type: coding
 default_category_tag: implementation
 default_openclaw_emoji: '💻'
+optional_top_level_headings:
+  - '## Optimization'
 ---
 ---
 name: {{skill_id}}
@@ -70,6 +72,16 @@ metadata:
 - Describe the default GitHub Actions validation path for the owned code surface when GHA is the standard CI mechanism.
 - Include one canonical mechanism and one minimal example only when it materially shapes the skill.
 - Do not widen this section into full workflow-topology ownership.
+
+## Optimization
+
+Use the shared operation lenses—**keep**, **reconcile**, **deduplicate**, **consolidate/merge**, **split**, **extract**, **move**, **tighten**, and **remove**—only where they fit this code surface; do not manufacture changes to satisfy the list.
+
+- **Inspect:** Inventory the existing implementation, owning scopes, public behavior, documentation, tests, and CI for this code surface.
+- **Compare:** Evaluate the observed surface against repository-local patterns and linked coding canon, including contradictions, duplicated logic, overloaded modules, misplaced code, dead paths, and unsupported layers.
+- **Recommend:** Preserve aligned behavior; reconcile conflicting representations; and prioritize justified deduplication, consolidation, splitting, extraction, movement, tightening, or removal.
+- **Apply:** After explicit authorization, make the smallest coherent code change; avoid style-only refactors, forced utility extraction, and unrequested language migration.
+- **Verify:** Run the narrowest relevant tests, lint, type-check, build, or smoke checks, then re-inspect the changed surface for remaining drift.
 
 ## Bundled Resources
 
