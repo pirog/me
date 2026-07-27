@@ -50,19 +50,3 @@ export function renderCliHelp({ usage, summary, options, environmentVariables = 
   }
   return lines.join('\n');
 }
-
-function formatList(title, items) {
-  return items.length === 0
-    ? `${title}: none`
-    : `${title}:\n${items.map((item) => `- ${item}`).join('\n')}`;
-}
-
-export function formatValidationReport(result) {
-  return [
-    `skill: ${result.skillDir}`,
-    `status: ${result.errors.length === 0 ? 'ok' : 'failed'}`,
-    formatList('errors', result.errors),
-    formatList('warnings', result.warnings),
-    formatList('manual_checks', result.manualChecks),
-  ].join('\n');
-}

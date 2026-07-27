@@ -2,68 +2,40 @@
 /* eslint-disable no-console */
 
 import { validateSkillDir } from '../lib/skill-validator.js';
-import { bold, dim, formatValidationReport, renderCliHelp } from '../utils/skill-cli.js';
+import formatSkillValidationReport from '../utils/format-skill-validation-report.js';
+import parseValidateSkillArgs from '../utils/parse-validate-skill-args.js';
+import { bold, dim, renderCliHelp } from '../utils/skill-cli.js';
 
-function usage(code = 0) {
-  console.log(
-    renderCliHelp({
-      usage: `Usage: ${bold('validate-skill.js')} ${dim('--skill-dir <path> [options]')}`,
-      summary:
-        'Validate a canon skill directory against references/skill-standard.md and the canonical local full templates owned by piro-skill-author.',
-      options: [
-        '  --skill-dir <path>      skill directory to validate',
-        '  --type <type>           expected type override',
-        '  -h, --help              show this message',
-      ],
-    }),
-  );
-  process.exit(code);
-}
-
-function parseArgs(argv) {
-  const parsed = {};
-
-  for (let index = 0; index < argv.length; index += 1) {
-    const arg = argv[index];
-
-    if (arg === '-h' || arg === '--help') {
-      usage(0);
-    }
-
-    if (!arg.startsWith('--')) {
-      throw new Error(`Positional arguments are not supported: ${arg}`);
-    }
-
-    const value = argv[index + 1];
-    if (!value || value.startsWith('--')) {
-      throw new Error(`Missing value for ${arg}`);
-    }
-
-    const key = arg.slice(2).replace(/-([a-z])/g, (_, char) => char.toUpperCase());
-    parsed[key] = value;
-    index += 1;
-  }
-
-  return parsed;
+function renderUsage() {
+  return renderCliHelp({
+    usage: `Usage: ${bold('validate-skill.js')} ${dim('--skill-dir <path> [options]')}`,
+    summary:
+      'Validate a canon skill directory against references/skill-standard.md and the canonical local full templates owned by piro-skill-author.',
+    options: [
+      '  --skill-dir <path>      skill directory to validate',
+      '  --type <type>           expected type override',
+      '  -h, --help              show this message',
+    ],
+  });
 }
 
 async function main() {
-  const options = parseArgs(process.argv.slice(2));
-  const skillDir = String(options.skillDir ?? '').trim();
-
-  if (!skillDir) {
-    throw new Error('Skill directory is required.');
+  const options = parseValidateSkillArgs(process.argv.slice(2));
+  if (options.help) {
+    console.log(renderUsage());
+    return;
   }
 
-  const result = await validateSkillDir(skillDir, {
-    expectedType: options.type,
-  });
+  const skillDir = String(options.skillDir ?? '').trim();
+  if (!skillDir) throw new Error('Skill directory is required.');
 
-  console.log(formatValidationReport(result));
-  process.exit(result.errors.length === 0 ? 0 : 1);
+  const result = await validateSkillDir(skillDir, { expectedType: options.type });
+  console.log(formatSkillValidationReport(result));
+  process.exitCode = result.errors.length === 0 ? 0 : 1;
 }
 
 main().catch((error) => {
   console.error(error instanceof Error ? error.message : String(error));
-  usage(1);
+  console.error(renderUsage());
+  process.exitCode = 1;
 });

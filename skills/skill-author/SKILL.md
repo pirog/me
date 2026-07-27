@@ -149,9 +149,10 @@ Use this skill when the skill itself is the artifact being created, standardized
 - [./scripts/init-skill.js](./scripts/init-skill.js): deterministic scaffolder for canonical full templates
 - [./scripts/validate-skill.js](./scripts/validate-skill.js): validation entrypoint for skill directories
 - [./lib/skill-contract.js](./lib/skill-contract.js): canonical type, template, naming, and bundled-asset contract
+- [./lib/skill-scaffolder.js](./lib/skill-scaffolder.js): deterministic skill creation and post-write validation workflow
 - [./lib/skill-validator.js](./lib/skill-validator.js): skill-directory validation orchestration
-- [./utils/](./utils/): independently testable parsing, ordering, scaffolding, and CLI helpers
-- [./test/skill-author.spec.js](./test/skill-author.spec.js): skill-local scaffolding and validation coverage
+- [./utils/](./utils/): independently testable parsing, ordering, rendering, naming, validation, and CLI helpers
+- [./test/](./test/): flat direct utility specs plus scaffolding and validation integration coverage
 
 ## Validation
 

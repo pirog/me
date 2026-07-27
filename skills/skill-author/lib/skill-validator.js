@@ -4,6 +4,7 @@ import extractRelativeMarkdownLinks from '../utils/extract-relative-markdown-lin
 import hasOrderedSkillSections from '../utils/has-ordered-skill-sections.js';
 import parseOpenAiSkillMetadata from '../utils/parse-openai-skill-metadata.js';
 import parseFrontmatter from '../utils/parse-skill-frontmatter.js';
+import validateOpenClawMetadata from '../utils/validate-openclaw-metadata.js';
 import {
   CANON_DESCRIPTION_PREFIX,
   CANON_SKILL_BRAND_COLOR,
@@ -35,8 +36,6 @@ const OPTIONAL_RESOURCE_NAMES = [
   'references',
 ];
 const KEBAB_CASE_HELPER_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*(\.[a-z0-9]+)?$/;
-const OPENCLAW_REQUIREMENT_LIST_KEYS = ['bins', 'anyBins', 'env', 'config'];
-const OPENCLAW_SUPPORTED_OS = new Set(['darwin', 'linux', 'win32']);
 const RELATIONSHIP_SECTION_HEADING = '## Relationship to Other Skills';
 
 const REQUIRED_FRONTMATTER_FIELDS = [
@@ -128,100 +127,6 @@ function normalizeLowercaseString(value) {
   return value.trim().toLowerCase() || null;
 }
 
-function normalizeString(value) {
-  if (typeof value !== 'string') {
-    return null;
-  }
-
-  return value.trim() || null;
-}
-
-function isHttpUrl(value) {
-  const normalized = normalizeString(value);
-  if (!normalized) {
-    return false;
-  }
-
-  try {
-    const parsed = new URL(normalized);
-    return ['http:', 'https:'].includes(parsed.protocol);
-  } catch {
-    return false;
-  }
-}
-
-function validateStringList(value, fieldPath, errors) {
-  if (!Array.isArray(value) || value.length === 0) {
-    errors.push(`${fieldPath} must be a non-empty list of strings when present.`);
-    return;
-  }
-
-  if (value.some((entry) => typeof entry !== 'string' || !entry.trim())) {
-    errors.push(`${fieldPath} must contain only non-empty strings.`);
-  }
-}
-
-function validateOpenClawMetadata(metadata, errors, warnings) {
-  if (!metadata || !Object.hasOwn(metadata, 'openclaw')) {
-    return;
-  }
-
-  const openClaw = metadata.openclaw;
-  if (!openClaw || typeof openClaw !== 'object' || Array.isArray(openClaw)) {
-    errors.push('SKILL.md frontmatter metadata.openclaw must be a mapping.');
-    return;
-  }
-
-  if (!normalizeString(openClaw.emoji)) {
-    errors.push('SKILL.md frontmatter metadata.openclaw.emoji must be a non-empty string.');
-  }
-
-  if (Object.hasOwn(openClaw, 'homepage')) {
-    if (!isHttpUrl(openClaw.homepage)) {
-      errors.push('SKILL.md frontmatter metadata.openclaw.homepage must be an HTTP(S) URL.');
-    }
-  } else {
-    warnings.push('Add metadata.openclaw.homepage when the skill has a stable public URL.');
-  }
-
-  if (Object.hasOwn(openClaw, 'os')) {
-    validateStringList(openClaw.os, 'metadata.openclaw.os', errors);
-    if (
-      Array.isArray(openClaw.os) &&
-      openClaw.os.some((platform) => !OPENCLAW_SUPPORTED_OS.has(platform))
-    ) {
-      errors.push('metadata.openclaw.os may contain only darwin, linux, or win32.');
-    }
-  }
-
-  if (Object.hasOwn(openClaw, 'always') && !['true', 'false'].includes(String(openClaw.always))) {
-    errors.push('metadata.openclaw.always must be `true` or `false` when present.');
-  }
-
-  if (Object.hasOwn(openClaw, 'primaryEnv') && !normalizeString(openClaw.primaryEnv)) {
-    errors.push('metadata.openclaw.primaryEnv must be a non-empty string when present.');
-  }
-
-  if (Object.hasOwn(openClaw, 'requires')) {
-    const requirements = openClaw.requires;
-    if (!requirements || typeof requirements !== 'object' || Array.isArray(requirements)) {
-      errors.push('metadata.openclaw.requires must be a mapping when present.');
-    } else {
-      for (const key of OPENCLAW_REQUIREMENT_LIST_KEYS) {
-        if (Object.hasOwn(requirements, key)) {
-          validateStringList(requirements[key], `metadata.openclaw.requires.${key}`, errors);
-        }
-      }
-    }
-  }
-
-  if (Object.hasOwn(openClaw, 'install')) {
-    if (!Array.isArray(openClaw.install) || openClaw.install.length === 0) {
-      errors.push('metadata.openclaw.install must be a non-empty list when present.');
-    }
-  }
-}
-
 function normalizeTagList(tags) {
   if (!Array.isArray(tags)) {
     return null;
@@ -276,7 +181,11 @@ function validateFrontmatter({ frontmatter, requestedType, errors, warnings }) {
     errors.push("SKILL.md frontmatter 'metadata' must be a mapping.");
   } else {
     pushMissingFieldErrors(metadata, REQUIRED_METADATA_FIELDS, errors);
-    validateOpenClawMetadata(metadata, errors, warnings);
+    if (Object.hasOwn(metadata, 'openclaw')) {
+      const openClawFindings = validateOpenClawMetadata(metadata.openclaw);
+      errors.push(...openClawFindings.errors);
+      warnings.push(...openClawFindings.warnings);
+    }
   }
 
   const rawDeclaredType = metadata?.type;

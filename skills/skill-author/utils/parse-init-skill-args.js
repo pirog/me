@@ -1,0 +1,36 @@
+/**
+ * Parses the internal skill scaffolder command arguments.
+ *
+ * @param {string[]} argv Raw argument tokens.
+ * @param {string} defaultOutputDir Default skill parent directory.
+ * @returns {object} Parsed options.
+ */
+export default function parseInitSkillArgs(argv, defaultOutputDir) {
+  const parsed = { outputDir: defaultOutputDir, type: 'generic' };
+
+  for (let index = 0; index < argv.length; index += 1) {
+    const arg = argv[index];
+    if (arg === '-h' || arg === '--help') {
+      parsed.help = true;
+      continue;
+    }
+    if (arg === '--force') {
+      parsed.force = true;
+      continue;
+    }
+    if (!arg.startsWith('--')) {
+      throw new Error(`Positional arguments are not supported: ${arg}`);
+    }
+
+    const value = argv[index + 1];
+    if (!value || value.startsWith('--')) {
+      throw new Error(`Missing value for ${arg}`);
+    }
+
+    const key = arg.slice(2).replace(/-([a-z])/g, (_, char) => char.toUpperCase());
+    parsed[key] = value;
+    index += 1;
+  }
+
+  return parsed;
+}

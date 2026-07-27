@@ -1,7 +1,8 @@
 #!/usr/bin/env bun
 
-import { runAiSync, buildAiSyncHelp } from '../lib/ai-sync.js';
+import { runAiSync } from '../lib/ai-sync.js';
 import { createCli } from '../lib/bun-cli-support.js';
+import buildAiSyncHelp from '../utils/build-ai-sync-help.js';
 
 const cli = createCli(import.meta.url);
 

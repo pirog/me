@@ -163,9 +163,11 @@ services, mutate connector data, or validate the Agentbox product.
 
 - [`scripts/check-machine.js`](./scripts/check-machine.js): read-only local probe CLI that emits
   deterministic JSON.
-- [`lib/check-machine.js`](./lib/check-machine.js): probe orchestration and deterministic Homebrew,
-  package, dotfile, optional service, and plugin checks.
-- [`test/check-machine.spec.js`](./test/check-machine.spec.js): skill-local direct readiness coverage.
+- [`lib/check-machine.js`](./lib/check-machine.js): stateful probe orchestration across Homebrew,
+  packages, dotfiles, optional services, and plugin checks.
+- [`utils/`](./utils/): deterministic parsing, environment filtering, status evaluation, and report
+  formatting units.
+- [`test/`](./test/): flat direct utility specs plus end-to-end readiness orchestration coverage.
 
 ## Validation
 
