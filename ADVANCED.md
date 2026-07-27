@@ -390,6 +390,19 @@ openclaw onboard \
 openclaw agents set-identity --workspace "$PWD" --from-identity
 ```
 
+### Optional UI
+
+```sh
+# set the tanaab green control ui accent.
+openclaw config set ui.seamColor '#00c88a'
+
+# set the tracked assistant avatar.
+openclaw config set ui.assistant.avatar "data:image/png;base64,$(base64 < assets/tanaabot-small.png | tr -d '\n')"
+
+# copy the browser-local pirog profile command for the control ui console.
+printf 'localStorage.setItem("openclaw.control.user.v1", "{\"name\":\"PIROG\",\"avatar\":\"data:image/jpeg;base64,%s\"}"); location.reload();\n' "$(base64 < assets/pirog-small.jpg | tr -d '\n')" | pbcopy
+```
+
 ### Run
 
 ```sh
