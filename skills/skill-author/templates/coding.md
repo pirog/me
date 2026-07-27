@@ -1,6 +1,7 @@
 ---
 template_type: coding
 default_category_tag: implementation
+default_openclaw_emoji: '💻'
 ---
 ---
 name: {{skill_id}}
@@ -11,6 +12,7 @@ metadata:
   owner: {{owner}}
   tags:
 {{metadata_tags_yaml}}
+{{openclaw_metadata_yaml}}
 ---
 
 # {{display_name}}

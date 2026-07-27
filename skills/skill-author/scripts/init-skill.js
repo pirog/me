@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /* eslint-disable no-console */
 
-import { copyFile, mkdir, rm, stat, writeFile } from 'node:fs/promises';
+import { copyFile, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import {
   CANON_SKILL_BRAND_COLOR,
@@ -18,11 +18,13 @@ import {
   getSkillType,
   inferCategoryTag,
   isKebabCaseId,
+  makeOpenClawHomepage,
   makeDefaultPrompt,
   makeShortDescription,
   normalizePirobasedDescription,
   renderCliHelp,
   renderMetadataTagsYaml,
+  renderOpenClawMetadataYaml,
   renderTemplate,
   stripSkillPrefix,
   validateSkillDir,
@@ -41,6 +43,8 @@ function usage(code = 0) {
         '  --display-name <name>   human-readable skill display name',
         '  --description <text>    skill description text',
         '  --prompt <text>         default prompt for agents/openai.yaml',
+        '  --openclaw-emoji <emoji>      OpenClaw display emoji override',
+        '  --openclaw-homepage <url>     OpenClaw public skill URL override',
         `  --output-dir <path>     parent directory for generated skills ${dim(`[default: ${SKILLS_ROOT_DIR}]`)}`,
         '  --force                 overwrite an existing generated skill directory',
         '  -h, --help              show this message',
@@ -120,6 +124,19 @@ async function exists(targetPath) {
   }
 }
 
+async function deriveOpenClawHomepage(pluginManifestPath, pluginRoot, skillDir) {
+  if (!(await exists(pluginManifestPath))) {
+    return null;
+  }
+
+  try {
+    const manifest = JSON.parse(await readFile(pluginManifestPath, 'utf8'));
+    return makeOpenClawHomepage(manifest.repository, path.relative(pluginRoot, skillDir));
+  } catch {
+    return null;
+  }
+}
+
 function makeOpenAiYaml({ displayName, shortDescription, defaultPrompt }) {
   return `interface:
   display_name: ${quoteYaml(displayName)}
@@ -194,11 +211,23 @@ async function main() {
 
   const tags = [CANON_SKILL_OWNER, type, categoryTag];
   const validationTargetDir = path.resolve(options.outputDir ?? SKILLS_ROOT_DIR);
-  const pluginRootPath = path.resolve(validationTargetDir, '..', '.codex-plugin', 'plugin.json');
-  const folderName = (await exists(pluginRootPath)) ? stripSkillPrefix(skillId) : skillId;
+  const pluginRoot = path.resolve(validationTargetDir, '..');
+  const pluginManifestPath = path.join(pluginRoot, '.codex-plugin', 'plugin.json');
+  const pluginContained = await exists(pluginManifestPath);
+  const folderName = pluginContained ? stripSkillPrefix(skillId) : skillId;
   const skillDir = path.resolve(validationTargetDir, folderName);
   const agentsDir = path.join(skillDir, 'agents');
   const assetsDir = path.join(skillDir, 'assets');
+  const openClawHomepageOverride = String(options.openclawHomepage ?? '').trim();
+  const openClawHomepage =
+    openClawHomepageOverride ||
+    (pluginContained
+      ? await deriveOpenClawHomepage(pluginManifestPath, pluginRoot, skillDir)
+      : null);
+  const openClawMetadataYaml = renderOpenClawMetadataYaml({
+    emoji: String(options.openclawEmoji ?? '').trim() || typeDefinition.defaultOpenClawEmoji,
+    homepage: openClawHomepage,
+  });
 
   if ((await exists(skillDir)) && !options.force) {
     throw new Error(`Skill directory already exists: ${skillDir}`);
@@ -216,6 +245,7 @@ async function main() {
     display_name: displayName,
     license: CANON_SKILL_LICENSE,
     metadata_tags_yaml: renderMetadataTagsYaml(tags),
+    openclaw_metadata_yaml: openClawMetadataYaml,
     owner: CANON_SKILL_OWNER,
     skill_id: skillId,
     type,

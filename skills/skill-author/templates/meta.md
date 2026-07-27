@@ -1,19 +1,18 @@
 ---
 template_type: meta
 default_category_tag: skills
+default_openclaw_emoji: '🛠️'
 ---
-
 ---
-
 name: {{skill_id}}
 description: {{description}}
 license: {{license}}
 metadata:
-type: {{type}}
-owner: {{owner}}
-tags:
+  type: {{type}}
+  owner: {{owner}}
+  tags:
 {{metadata_tags_yaml}}
-
+{{openclaw_metadata_yaml}}
 ---
 
 # {{display_name}}

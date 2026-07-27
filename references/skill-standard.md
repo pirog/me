@@ -60,6 +60,20 @@ skill-folder/
 - `[manual]` `When to Use` and `When Not to Use` should describe a narrow, concrete owned surface.
 - `[warn]` Keep `metadata.tags` short. Prefer one category tag by default instead of a long keyword list.
 
+## Required OpenClaw Metadata
+
+- `[error]` Frontmatter `metadata.openclaw` must be a mapping.
+- `[error]` `metadata.openclaw.emoji` must be a non-empty string.
+- `[error]` Optional `metadata.openclaw.homepage` must be an HTTP(S) URL.
+- `[error]` Optional `metadata.openclaw.os` must be a non-empty list containing only `darwin`, `linux`, or `win32`.
+- `[error]` Optional `metadata.openclaw.always` must be a boolean.
+- `[error]` Optional `metadata.openclaw.primaryEnv` must be a non-empty string.
+- `[error]` Optional `metadata.openclaw.requires` must be a mapping. Its `bins`, `anyBins`, `env`, and `config` fields must be non-empty string lists when present.
+- `[error]` Optional `metadata.openclaw.install` must be a non-empty list.
+- `[warn]` Add `metadata.openclaw.homepage` when the skill has a stable public URL.
+- `[manual]` Add OpenClaw OS, binary, environment, config, and installer gates only for real runtime requirements of the skill.
+- `[manual]` Do not add `requires.bins: [bun]` merely because `piro-skill-author` uses Bun to scaffold or validate the skill.
+
 ## Required OpenAI Metadata
 
 - `[error]` `agents/openai.yaml` must contain `interface.display_name`, `interface.short_description`, `interface.default_prompt`, and `interface.brand_color`.

@@ -1,21 +1,20 @@
 ---
 template_type: integration
 default_category_tag: external-systems
+default_openclaw_emoji: '🔌'
 optional_top_level_headings:
   - '## Release Workflow'
 ---
-
 ---
-
 name: {{skill_id}}
 description: {{description}}
 license: {{license}}
 metadata:
-type: {{type}}
-owner: {{owner}}
-tags:
+  type: {{type}}
+  owner: {{owner}}
+  tags:
 {{metadata_tags_yaml}}
-
+{{openclaw_metadata_yaml}}
 ---
 
 # {{display_name}}

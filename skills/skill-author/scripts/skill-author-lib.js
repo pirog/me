@@ -20,6 +20,8 @@ const AUXILIARY_DOCS = [
 const OPTIONAL_RESOURCE_NAMES = ['templates', 'assets', 'references', 'scripts'];
 const KEBAB_CASE_ID_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const KEBAB_CASE_HELPER_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*(\.[a-z0-9]+)?$/;
+const OPENCLAW_REQUIREMENT_LIST_KEYS = ['bins', 'anyBins', 'env', 'config'];
+const OPENCLAW_SUPPORTED_OS = new Set(['darwin', 'linux', 'win32']);
 const RELATIONSHIP_SECTION_HEADING = '## Relationship to Other Skills';
 
 const REQUIRED_FRONTMATTER_FIELDS = [
@@ -37,6 +39,10 @@ const REQUIRED_METADATA_FIELDS = [
   { key: 'type', message: "SKILL.md frontmatter metadata must contain 'type'." },
   { key: 'owner', message: "SKILL.md frontmatter metadata must contain 'owner'." },
   { key: 'tags', message: "SKILL.md frontmatter metadata must contain 'tags'." },
+  {
+    key: 'openclaw',
+    message: "SKILL.md frontmatter metadata must contain 'openclaw'.",
+  },
 ];
 const REQUIRED_OPENAI_INTERFACE_KEYS = [
   'display_name',
@@ -159,7 +165,7 @@ function parseYamlBlock(rawBlock) {
   const lines = String(rawBlock ?? '').split('\n');
   const indentOf = (line) => line.match(/^ */)?.[0].length ?? 0;
   const listPattern = (indent) => new RegExp(`^\\s{${indent}}-\\s+(.+)$`);
-  const keyPattern = (indent) => new RegExp(`^\\s{${indent}}([a-z][a-z0-9_-]*):(.*)$`);
+  const keyPattern = (indent) => new RegExp(`^\\s{${indent}}([A-Za-z][A-Za-z0-9_-]*):(.*)$`);
 
   function parseList(startIndex, indent) {
     const items = [];
@@ -407,18 +413,22 @@ function buildTemplateDefinition(templateContent) {
   const { body, frontmatter } = splitLeadingFrontmatter(templateContent);
   const templateType = normalizeLowercaseString(frontmatter?.template_type);
   const defaultCategoryTag = normalizeLowercaseString(frontmatter?.default_category_tag);
+  const defaultOpenClawEmoji = normalizeString(frontmatter?.default_openclaw_emoji);
   const optionalTopLevelHeadings = Array.isArray(frontmatter?.optional_top_level_headings)
     ? frontmatter.optional_top_level_headings.map((heading) =>
         normalizeSectionHeading(String(heading).trim()),
       )
     : [];
 
-  if (!templateType || !defaultCategoryTag) {
-    throw new Error('Template metadata must include template_type and default_category_tag.');
+  if (!templateType || !defaultCategoryTag || !defaultOpenClawEmoji) {
+    throw new Error(
+      'Template metadata must include template_type, default_category_tag, and default_openclaw_emoji.',
+    );
   }
 
   return {
     defaultCategoryTag,
+    defaultOpenClawEmoji,
     id: templateType,
     optionalTopLevelHeadings,
     sectionOrder: extractTopLevelHeadings(body),
@@ -519,6 +529,73 @@ export function renderTemplate(template, replacements) {
 
 export function renderMetadataTagsYaml(tags) {
   return tags.map((tag) => `    - ${tag}`).join('\n');
+}
+
+/**
+ * Renders the generated OpenClaw presentation block without inventing runtime gates.
+ *
+ * @param {object} options OpenClaw presentation values for one generated skill.
+ * @param {string} options.emoji Non-empty emoji displayed by OpenClaw.
+ * @param {string | null | undefined} [options.homepage] Optional public skill URL.
+ * @returns {string} YAML lines indented for insertion beneath `metadata`.
+ * @throws {Error} When the emoji is empty or the homepage is not an HTTP(S) URL.
+ */
+export function renderOpenClawMetadataYaml({ emoji, homepage }) {
+  const normalizedEmoji = normalizeString(emoji);
+  const normalizedHomepage = normalizeString(homepage);
+
+  if (!normalizedEmoji) {
+    throw new Error('OpenClaw emoji must not be empty.');
+  }
+  if (normalizedHomepage && !isHttpUrl(normalizedHomepage)) {
+    throw new Error('OpenClaw homepage must be an HTTP(S) URL.');
+  }
+
+  const lines = ['  openclaw:', `    emoji: ${JSON.stringify(normalizedEmoji)}`];
+  if (normalizedHomepage) {
+    lines.push(`    homepage: ${JSON.stringify(normalizedHomepage)}`);
+  }
+
+  return lines.join('\n');
+}
+
+/**
+ * Builds a GitHub source URL for a plugin-contained generated skill.
+ *
+ * @param {string | {url?: string} | null | undefined} repository Plugin repository metadata.
+ * @param {string} relativeSkillPath Skill path relative to the plugin root.
+ * @returns {string | null} GitHub `main` source URL when it can be derived safely.
+ */
+export function makeOpenClawHomepage(repository, relativeSkillPath) {
+  const rawRepository = typeof repository === 'string' ? repository : repository?.url;
+  const normalizedPath = String(relativeSkillPath ?? '')
+    .split(path.sep)
+    .join('/')
+    .replace(/^\/+|\/+$/g, '');
+  let repositoryUrl = normalizeString(rawRepository);
+
+  if (!repositoryUrl || !normalizedPath) {
+    return null;
+  }
+
+  repositoryUrl = repositoryUrl
+    .replace(/^git\+/, '')
+    .replace(/^git@github\.com:/, 'https://github.com/')
+    .replace(/^ssh:\/\/git@github\.com\//, 'https://github.com/')
+    .replace(/\.git$/, '')
+    .replace(/\/$/, '');
+
+  try {
+    const parsedRepository = new URL(repositoryUrl);
+    if (parsedRepository.protocol !== 'https:' || parsedRepository.hostname !== 'github.com') {
+      return null;
+    }
+  } catch {
+    return null;
+  }
+
+  const encodedPath = normalizedPath.split('/').map(encodeURIComponent).join('/');
+  return `${repositoryUrl}/tree/main/${encodedPath}`;
 }
 
 export function inferCategoryTag({ description = '', displayName = '', slug = '', type = '' }) {
@@ -655,6 +732,100 @@ function normalizeLowercaseString(value) {
   return value.trim().toLowerCase() || null;
 }
 
+function normalizeString(value) {
+  if (typeof value !== 'string') {
+    return null;
+  }
+
+  return value.trim() || null;
+}
+
+function isHttpUrl(value) {
+  const normalized = normalizeString(value);
+  if (!normalized) {
+    return false;
+  }
+
+  try {
+    const parsed = new URL(normalized);
+    return ['http:', 'https:'].includes(parsed.protocol);
+  } catch {
+    return false;
+  }
+}
+
+function validateStringList(value, fieldPath, errors) {
+  if (!Array.isArray(value) || value.length === 0) {
+    errors.push(`${fieldPath} must be a non-empty list of strings when present.`);
+    return;
+  }
+
+  if (value.some((entry) => typeof entry !== 'string' || !entry.trim())) {
+    errors.push(`${fieldPath} must contain only non-empty strings.`);
+  }
+}
+
+function validateOpenClawMetadata(metadata, errors, warnings) {
+  if (!metadata || !Object.hasOwn(metadata, 'openclaw')) {
+    return;
+  }
+
+  const openClaw = metadata.openclaw;
+  if (!openClaw || typeof openClaw !== 'object' || Array.isArray(openClaw)) {
+    errors.push('SKILL.md frontmatter metadata.openclaw must be a mapping.');
+    return;
+  }
+
+  if (!normalizeString(openClaw.emoji)) {
+    errors.push('SKILL.md frontmatter metadata.openclaw.emoji must be a non-empty string.');
+  }
+
+  if (Object.hasOwn(openClaw, 'homepage')) {
+    if (!isHttpUrl(openClaw.homepage)) {
+      errors.push('SKILL.md frontmatter metadata.openclaw.homepage must be an HTTP(S) URL.');
+    }
+  } else {
+    warnings.push('Add metadata.openclaw.homepage when the skill has a stable public URL.');
+  }
+
+  if (Object.hasOwn(openClaw, 'os')) {
+    validateStringList(openClaw.os, 'metadata.openclaw.os', errors);
+    if (
+      Array.isArray(openClaw.os) &&
+      openClaw.os.some((platform) => !OPENCLAW_SUPPORTED_OS.has(platform))
+    ) {
+      errors.push('metadata.openclaw.os may contain only darwin, linux, or win32.');
+    }
+  }
+
+  if (Object.hasOwn(openClaw, 'always') && !['true', 'false'].includes(String(openClaw.always))) {
+    errors.push('metadata.openclaw.always must be `true` or `false` when present.');
+  }
+
+  if (Object.hasOwn(openClaw, 'primaryEnv') && !normalizeString(openClaw.primaryEnv)) {
+    errors.push('metadata.openclaw.primaryEnv must be a non-empty string when present.');
+  }
+
+  if (Object.hasOwn(openClaw, 'requires')) {
+    const requirements = openClaw.requires;
+    if (!requirements || typeof requirements !== 'object' || Array.isArray(requirements)) {
+      errors.push('metadata.openclaw.requires must be a mapping when present.');
+    } else {
+      for (const key of OPENCLAW_REQUIREMENT_LIST_KEYS) {
+        if (Object.hasOwn(requirements, key)) {
+          validateStringList(requirements[key], `metadata.openclaw.requires.${key}`, errors);
+        }
+      }
+    }
+  }
+
+  if (Object.hasOwn(openClaw, 'install')) {
+    if (!Array.isArray(openClaw.install) || openClaw.install.length === 0) {
+      errors.push('metadata.openclaw.install must be a non-empty list when present.');
+    }
+  }
+}
+
 function normalizeTagList(tags) {
   if (!Array.isArray(tags)) {
     return null;
@@ -709,6 +880,7 @@ function validateFrontmatter({ frontmatter, requestedType, errors, warnings }) {
     errors.push("SKILL.md frontmatter 'metadata' must be a mapping.");
   } else {
     pushMissingFieldErrors(metadata, REQUIRED_METADATA_FIELDS, errors);
+    validateOpenClawMetadata(metadata, errors, warnings);
   }
 
   const rawDeclaredType = metadata?.type;
@@ -971,6 +1143,7 @@ function buildManualChecks({ expectedType }) {
   const checks = [
     'Check that the description clearly says what the skill does and when to use it.',
     'Check that the skill owns one narrow, concrete surface.',
+    'Check that OpenClaw requirements describe only real runtime dependencies of the generated skill.',
     'Check that bundled resources stay local unless they clearly pass the hoist test for repo-root canon.',
     'Check that any repo-root resources referenced by the skill still earn hoisted status through proven reuse, repo-wide contract status, or standalone human value.',
     'Check that bulk standardization preserved the skill purpose unless a behavioral rewrite was requested.',

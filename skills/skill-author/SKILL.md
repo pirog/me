@@ -30,6 +30,7 @@ Use this skill when the skill itself is the artifact being created, standardized
 - Keep support material local unless it clearly passes the hoist test for repo-root canon.
 - For `coding` skills, define one owned code surface plus three lifecycle sections: `Documentation`, `Testing`, and `GitHub Actions Workflow`.
 - In plugin-contained skill trees, keep the `piro-` machine id in frontmatter and prompts while omitting that prefix from the skill folder name.
+- Generate `metadata.openclaw` presentation fields in `SKILL.md`; add eligibility gates only for real runtime dependencies of the generated skill.
 - If the reusable artifact is really a whole starter repository with committed structure, scripts, examples, and docs that users adopt wholesale, challenge whether it should be a repo template instead of a live skill.
 - When a skill implies durable, always-on repo policy, it may bundle `references/repo-agents-lines.md` as short copyable guidance for a target repo's `AGENTS.md`.
 
@@ -37,7 +38,7 @@ Use this skill when the skill itself is the artifact being created, standardized
 
 - Create a new skill from scratch.
 - Choose or refine a skill's `type`.
-- Standardize an existing skill's `SKILL.md`, `agents/openai.yaml`, naming, or `metadata.owner`.
+- Standardize an existing skill's `SKILL.md`, `metadata.openclaw`, `agents/openai.yaml`, naming, or `metadata.owner`.
 - Validate a newly created, standardized, or migrated skill directory.
 - Review whether skill support material should stay local or be hoisted under the shared hoist test.
 - Split a broad skill into narrower skills with clearer owned surfaces.
@@ -95,6 +96,8 @@ Use this skill when the skill itself is the artifact being created, standardized
 - Use [`./scripts/init-skill.js`](./scripts/init-skill.js) when the task is a clean scaffold.
 - Patch manually when the task is a partial migration or standardization pass.
 - Use [`./scripts/validate-skill.js`](./scripts/validate-skill.js) when the task is validation-only or when structural changes need objective confirmation.
+- Keep generated OpenClaw emoji and homepage metadata under `metadata.openclaw` in `SKILL.md`; do not put it in `agents/openai.yaml`.
+- Add `metadata.openclaw.requires`, `os`, `primaryEnv`, or installer hints only when the finished skill actually depends on them. The Bun-based authoring tool is not a Bun requirement for every generated skill.
 - Keep support material local by default.
 - Hoist only when the file is reused across live surfaces, is a repo-wide contract or tooling surface, or has standalone human value.
 - Review existing hoisted files with one meaningful live consumer for demotion.
@@ -123,6 +126,7 @@ Use this skill when the skill itself is the artifact being created, standardized
 - Confirm validation-only requests are handled by the same surface rather than a separate validator skill.
 - Confirm the surface is not better expressed as a repo template with the skill kept only as a thin discovery or adaptation layer, if needed.
 - Confirm any bundled repo `AGENTS.md` lines stay short, ambient, and worth copying into a project repo.
+- Confirm `metadata.openclaw` has useful presentation metadata and no invented runtime gates.
 - Confirm bundled resources stay local unless they clearly pass the hoist test.
 - Confirm any repo-root resources still justify being hoisted.
 - Run `validate-skill.js` and fix all `[error]` results before finishing.
