@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { execFile } from 'node:child_process';
 import path from 'node:path';
 import { promisify } from 'node:util';
+import packageJson from '../package.json' with { type: 'json' };
 
 const execFileAsync = promisify(execFile);
 const REPO_ROOT = path.resolve(import.meta.dirname, '..');
@@ -17,6 +18,6 @@ describe('bin/aisync', () => {
 
     assert.match(help.stdout, /^Usage: aisync \[options\]/);
     assert.match(help.stdout, /--no-codex-config/);
-    assert.equal(version.stdout.trim(), '1.0.0-beta.7');
+    assert.equal(version.stdout.trim(), packageJson.version);
   });
 });

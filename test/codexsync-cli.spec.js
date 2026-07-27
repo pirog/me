@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { execFile } from 'node:child_process';
 import path from 'node:path';
 import { promisify } from 'node:util';
+import packageJson from '../package.json' with { type: 'json' };
 
 const execFileAsync = promisify(execFile);
 const REPO_ROOT = path.resolve(import.meta.dirname, '..');
@@ -19,7 +20,7 @@ describe('bin/codexsync', () => {
 
     assert.match(help.stdout, /^Usage: codexsync <check\|validate\|sync> \[options\]/);
     assert.match(help.stdout, /Managed Paths/);
-    assert.equal(version.stdout.trim(), '1.0.0-beta.7');
+    assert.equal(version.stdout.trim(), packageJson.version);
   });
 
   it('should reject an unknown command with a nonzero exit status', async () => {
