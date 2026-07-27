@@ -1,13 +1,8 @@
 #!/usr/bin/env bun
 /* eslint-disable no-console */
 
-import {
-  bold,
-  dim,
-  formatValidationReport,
-  renderCliHelp,
-  validateSkillDir,
-} from './skill-author-lib.js';
+import { validateSkillDir } from '../lib/skill-validator.js';
+import { bold, dim, formatValidationReport, renderCliHelp } from '../utils/skill-cli.js';
 
 function usage(code = 0) {
   console.log(

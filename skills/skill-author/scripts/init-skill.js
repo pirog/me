@@ -9,26 +9,25 @@ import {
   CANON_SKILL_MACHINE_PREFIX_WITH_HYPHEN,
   CANON_SKILL_OWNER,
   SKILLS_ROOT_DIR,
-  bold,
-  dim,
   formatSkillTypeIds,
-  formatValidationReport,
   getBundledLargeIconPath,
   getBundledSmallIconPath,
   getSkillType,
-  inferCategoryTag,
   isKebabCaseId,
-  makeOpenClawHomepage,
+  renderMetadataTagsYaml,
+  stripSkillPrefix,
+} from '../lib/skill-contract.js';
+import { validateSkillDir } from '../lib/skill-validator.js';
+import {
+  inferCategoryTag,
   makeDefaultPrompt,
+  makeOpenClawHomepage,
   makeShortDescription,
   normalizePirobasedDescription,
-  renderCliHelp,
-  renderMetadataTagsYaml,
   renderOpenClawMetadataYaml,
   renderTemplate,
-  stripSkillPrefix,
-  validateSkillDir,
-} from './skill-author-lib.js';
+} from '../utils/skill-scaffolding.js';
+import { bold, dim, formatValidationReport, renderCliHelp } from '../utils/skill-cli.js';
 
 function usage(code = 0) {
   console.log(

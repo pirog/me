@@ -2,7 +2,7 @@
 
 import { fileURLToPath } from 'node:url';
 
-import { checkMachine, formatReport } from './check-machine-lib.js';
+import { checkMachine, formatReport } from '../lib/check-machine.js';
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const report = await checkMachine();

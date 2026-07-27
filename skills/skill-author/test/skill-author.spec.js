@@ -6,7 +6,7 @@ import path from 'node:path';
 import { promisify } from 'node:util';
 
 const execFileAsync = promisify(execFile);
-const REPO_ROOT = path.resolve(import.meta.dirname, '..');
+const REPO_ROOT = path.resolve(import.meta.dirname, '..', '..', '..');
 const INIT_SKILL_PATH = path.join(REPO_ROOT, 'skills', 'skill-author', 'scripts', 'init-skill.js');
 const VALIDATE_SKILL_PATH = path.join(
   REPO_ROOT,

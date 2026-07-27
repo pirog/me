@@ -14,8 +14,8 @@ import { promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
 
 const execFileAsync = promisify(execFileCallback);
-const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
-const DEFAULT_REPO_ROOT = path.resolve(SCRIPT_DIR, '..', '..', '..');
+const LIB_DIR = path.dirname(fileURLToPath(import.meta.url));
+const DEFAULT_REPO_ROOT = path.resolve(LIB_DIR, '..', '..', '..');
 const PRIVATE_CONFIG_MODE = 0o600;
 const EXPECTED_TAILNET_NAME = 'tanaab.dev';
 const MINIMUM_NODE_MAJOR_VERSION = 24;

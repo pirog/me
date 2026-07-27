@@ -10,7 +10,7 @@ import {
   REQUIRED_COMMANDS,
   checkMachine,
   formatReport,
-} from '../skills/me-readiness/scripts/check-machine-lib.js';
+} from '../lib/check-machine.js';
 
 const HOME_DIR = '/Users/tester';
 const REPO_ROOT = '/repo/me';
@@ -249,7 +249,7 @@ function findCheck(report, id) {
   return check;
 }
 
-describe('skills/me-readiness/scripts/check-machine-lib', () => {
+describe('skills/me-readiness/lib/check-machine', () => {
   it('reports ready when core profile and Codex integration checks pass', async () => {
     const report = await runCheck();
 
