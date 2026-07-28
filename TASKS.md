@@ -2,10 +2,20 @@
 
 ## FINAL MANUAL TAZKZ
 
-- @tanaabased/openclaw-devguard
-  - scaffold
-  - develop
-  - openclaw plugin author?
+- @tanaab/openclaw-devguard
+  - test:release vs release:test
+  - coloring?
+  - other commands?
+  - testing tool blocking?
+  - how do we config?
+
+  - readme
+    - config section?
+    - prod install
+    - clawhub
+    - badges
+
+  - clawhub?
 
 - @tanaabased/openclaw-agent-system
   - create
@@ -201,6 +211,7 @@
   - llms?
 
 - @tanaabased/\*
+  - change to @tanaab npm namespacing
   - bump to latest bun
   - spin off our codex-cache-refresh dev flow tools?
   - create @tanaabased/codex-plugin-validator-action@v1
