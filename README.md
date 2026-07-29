@@ -29,8 +29,8 @@ At a high level, `me`:
 - optionally clones or safely updates explicitly selected repositories from
   [`@tanaabased`](https://github.com/tanaabased)
 - applies coordinated Tanaab themes for Codex TUI, Vim, Visual Studio Code, and Warp
-- provides opt-in [OpenClaw plugin development tools](./ADVANCED.md#openclaw-plugin-development) and
-  a pre-seeded `MODEL L3-37` workspace
+- provides opt-in [OpenClaw plugin development tools](./OPENCLAW.md) and a pre-seeded `tanaabot`
+  (`MODEL L3-37`) workspace
 - stows `piroplugin`, Pirobased skills, shared Codex defaults, and local plugin source links
 
 For the complete installed-component inventory, see
@@ -96,8 +96,7 @@ refresh, and link-reconciliation behavior.
 > [`agentbox` Hosts](./ADVANCED.md#agentbox-hosts).
 
 Use [ADVANCED.md](./ADVANCED.md) for the full option and environment-variable reference, installed
-components, checkout behavior, post-bootstrap setup, Codex configuration and plugin sync, and
-OpenClaw plugin development.
+components, checkout behavior, post-bootstrap setup, and Codex configuration and plugin sync.
 
 ## After Bootstrap
 
@@ -117,8 +116,8 @@ bun run lint
 ```
 
 For OpenClaw plugin work, use the opt-in
-[OpenClaw Plugin Development](./ADVANCED.md#openclaw-plugin-development) flow. It keeps onboarding
-manual and runs the local Gateway in the foreground only.
+[OpenClaw Plugin Development](./OPENCLAW.md) flow. It creates a distinct `tanaabot` agent, keeps
+onboarding manual, and runs the local Gateway in the foreground only.
 
 See [ADVANCED.md#codex-configuration-and-plugin-sync](./ADVANCED.md#codex-configuration-and-plugin-sync)
 for the separate `ai:sync` and `codex:*` workflows.
