@@ -54,9 +54,8 @@ its Codex plugin bundle.
   shell secrets, or local token fallbacks.
 - Do not edit, regenerate, stage, or commit `dist/` during routine work. Change its source inputs and
   leave generated output to CI unless release-shaped verification is explicitly requested.
-- Treat `--help` as the public bootstrap contract. Check `README.md`, `ADVANCED.md`, `OPENCLAW.md`,
-  and affected examples when public options, environment variables, help, planning, or failure text
-  changes.
+- Treat `--help` as the public bootstrap contract. Check `README.md`, `ADVANCED.md`, and affected
+  examples when public options, environment variables, help, planning, or failure text changes.
 - Keep development and CI-only inputs hidden. Preserve `PIROME_*` as the public wrapper namespace
   and use `BOOTBOX_*` only for internal delegation.
 - Preserve the fixed Bootbox delegation, secret masking, child-environment isolation, and interactive
