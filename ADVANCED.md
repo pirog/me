@@ -13,9 +13,10 @@ setup path.
 Bootbox installs or repairs the core prerequisites before `me` applies the complete Brewfile.
 
 [`Brewfile.openclaw`](./Brewfile.openclaw) is an opt-in extension for local OpenClaw plugin
-development. It installs the Homebrew `openclaw-cli` formula, which owns its Node dependency, and
-tracks the native app while allowing the browser to remain the development UI. The optional bundle
-is not applied by `boot.sh` or checked by `$piro-me-readiness`. See
+development. It installs the Homebrew `openclaw-cli` formula, the npm-backed `clawhub` CLI, and the
+native app while allowing the browser to remain the development UI. The `openclaw-cli` formula owns
+the shared Node dependency. The optional bundle is not applied by `boot.sh` or checked by
+`$piro-me-readiness`. See
 [OpenClaw Plugin Development](./OPENCLAW.md) for its manual install and setup flow.
 
 > [!NOTE]

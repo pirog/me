@@ -1,3 +1,5 @@
 brew "openclaw-cli"
 
 cask "openclaw"
+
+npm "clawhub"
