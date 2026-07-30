@@ -3,30 +3,35 @@
 ## FINAL MANUAL TAZKZ
 
 - @tanaab/openclaw-devguard
-  - test:release vs release:test
-  - coloring?
-  - other commands?
-  - testing tool blocking?
-  - how do we config?
-
-  - readme
-    - config section?
-    - prod install
-    - clawhub
-    - badges
-
+  - optimizer x3
+  - changelog
+  - release 0.2.0
+  - do SPEC.md stuff
   - clawhub?
 
-- @tanaabased/openclaw-agent-system
+- @tanaab/agentbox
+  - project optimizer
+  - run on machine already provisioned?
+  - reset ui.assistatn stuff
+  - note that `main` should remain as the "default"
+  - seed a `main` workspace?
+
+- @tanaab/emori
+  - project optimizer
+  - unset emori as default
+  - reset default agent?
+  - get canon
+  - get initial agent-system for ENVVARS support
+
+- @tanaab/canon
+  - openclaw plugin author??
+
+- @tanaab/openclaw-agent-system
   - create
   - scaffold
   - get basic envvar loading
 
-- @tanaabased/emori
-  - get canon
-  - get initial agent-system for ENVVARS support
-
-- @tanaabased/canon
+- @tanaab/canon
   - work-on-issue skill?
   - issue lifecyle docs?
 
@@ -51,7 +56,7 @@
 
 ## ISSUES 2 ADD
 
-- @tanaabased/emori
+- @tanaab/emori
   - brave search API?
   - discord
   - manual agent.yaml setup?
@@ -79,11 +84,12 @@
     - $me-readiness should actually be like $me-setup, $me-update and $me-doctor?
       - should also follow the "narrow remediation" path in `agentbox`
 
-- @tanaabased/codex-tools?
+- @tanaab/codex-tools?
   - codex-sync?
 
-- @tanaabased/agentbox
+- @tanaab/agentbox
   - openclaw agentbox plugin?
+  - format:write fix
 
   - need to install @tanaabased/agent-system globally once we have it?
 
@@ -97,23 +103,23 @@
     - caddy install
     - install and configure needed openclaw plugins eg agent-os?
 
-- @tanaabased/canon
-  - longer term
-    - "keeper of the faith"
-      - some kind of tanaab-coach/advisor skill?
-      - a brand enforcer skill (better as separate agent now?)
-    - adoption of schema|error|cli frameworks?
-    - organizatinal model for leia tests eg inputs|defaults|feature-x?
-    - commit behavior?
-      - if you have a list of things to do then commit one per list item
-      - message syntax and formatting?
+- @tanaab/canon
+  - "keeper of the faith"
+    - some kind of tanaab-coach/advisor skill?
+    - a brand enforcer skill (better as separate agent now?)
+  - adoption of schema|error|cli frameworks?
+  - organizatinal model for leia tests eg inputs|defaults|feature-x?
+  - commit behavior?
+    - if you have a list of things to do then commit one per list item
+    - message syntax and formatting?
 
 - @lando/leia
   - fix JS literals
   - ESM?
   - update canon guidance
+  - Octal escape sequences are not allowed in template strings.
 
-- @tanaabased/agent-system?
+- @tanaab/openclaw-agent-system
   - remove ~/.ssh/id_emori & ~/.ssh/config when we can
   - @tanaabased/config-system?
   - plugin installation?
@@ -142,15 +148,15 @@
   - local mem0? podman for now or postgres directly
   - emori get issues to work on?
 
-- @tanaabased/<persona>-template
+- @tanaab/<persona>-template
   - agent templates to see a repo
 - @tanaabased/github-notification-channel
 
-- @tanaabased/component-playground
+- @tanaab/component-playground
   - migrate tms one
     - decouple styling
 
-- @tanaabased/theme
+- @tanaab/theme
   - markdown files for agents?
     - https://github.com/okineadev/vitepress-plugin-llms
   - accent colors
@@ -197,21 +203,21 @@
       - more padding
       - png kit
 
-- @tanaabased/bootbox
+- @tanaab/bootbox
   - warning if keys exist?
   - make into bun cli as well?
 
-- @tanaabased/website
+- @tanaab/website
   - rebase on THEME
   - get blog rolling
     - rss/etc
 
-- @tanaabased/template-netscript
+- @tanaab/template-netscript
   - AGENTS.md starter
   - llms?
 
-- @tanaabased/\*
-  - change to @tanaab npm namespacing
+- @tanaab/\*
+  - change to @tanaab npm namespacing via project optimizer
   - bump to latest bun
   - spin off our codex-cache-refresh dev flow tools?
   - create @tanaabased/codex-plugin-validator-action@v1
@@ -236,3 +242,6 @@
     - canon list of tags?
     - bootbox
     - hosted-scripts
+
+- @tanaab/utils
+- @tanaab/config-system
