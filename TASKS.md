@@ -2,30 +2,24 @@
 
 ## FINAL MANUAL TAZKZ
 
-- @tanaab/openclaw-devguard
-  - do SPEC.md stuff
-  - optimizer
-  - specs to issues
-  - changelog
-  - release 0.2.0
-  - clawhub?
-
-- @tanaab/agentbox
-  - project optimizer
-  - run on machine already provisioned?
-  - reset ui.assistatn stuff
-  - note that `main` should remain as the "default"
-  - seed a `main` workspace?
-
 - @tanaab/emori
-  - project optimizer
-  - unset emori as default
-  - reset default agent?
+  - emori fresh herself?
   - get canon
   - get initial agent-system for ENVVARS support
 
+- @tanaab/openclaw-devguard
+  - release first?
+  - clawhub?
+    - protected publishing setup/GHA
+
+  - changelog
+  - release 0.2.0
+
 - @tanaab/canon
   - openclaw plugin author??
+
+- @tanaab/me
+  - ensure tanaabot is non-main and non-default?
 
 - @tanaab/openclaw-agent-system
   - create
@@ -56,6 +50,9 @@
   - repeat the Homebrew/Bun optimization pass on `pirobookx`: audit and remove any obsolete `/usr/local` Homebrew installation, prefer `/opt/homebrew` Bun, and verify the pinned version through readiness
 
 ## ISSUES 2 ADD
+
+- @tanaab/openclaw-devguard
+  - spec to issues?
 
 - @tanaab/emori
   - brave search API?
@@ -158,6 +155,8 @@
     - decouple styling
 
 - @tanaab/theme
+  - codex terminal theme?
+  - update to latest default theme
   - markdown files for agents?
     - https://github.com/okineadev/vitepress-plugin-llms
   - accent colors
