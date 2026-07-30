@@ -3,10 +3,11 @@
 ## FINAL MANUAL TAZKZ
 
 - @tanaab/openclaw-devguard
-  - optimizer x3
+  - do SPEC.md stuff
+  - optimizer
+  - specs to issues
   - changelog
   - release 0.2.0
-  - do SPEC.md stuff
   - clawhub?
 
 - @tanaab/agentbox
