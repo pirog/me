@@ -2,29 +2,12 @@
 
 ## FINAL MANUAL TAZKZ
 
+- @tanaab/openclaw-agent-system
+  - get basic envvar loading
+
 - @tanaab/emori
-  - emori fresh herself?
   - get canon
   - get initial agent-system for ENVVARS support
-
-- @tanaab/openclaw-devguard
-  - release first?
-  - clawhub?
-    - protected publishing setup/GHA
-
-  - changelog
-  - release 0.2.0
-
-- @tanaab/canon
-  - openclaw plugin author??
-
-- @tanaab/me
-  - ensure tanaabot is non-main and non-default?
-
-- @tanaab/openclaw-agent-system
-  - create
-  - scaffold
-  - get basic envvar loading
 
 - @tanaab/canon
   - work-on-issue skill?
@@ -245,3 +228,5 @@
 
 - @tanaab/utils
 - @tanaab/config-system
+- @tanaab/actions?
+  - for reusable actions
