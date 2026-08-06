@@ -3,7 +3,25 @@
 ## FINAL MANUAL TAZKZ
 
 - @tanaab/openclaw-agent-system
-  - get basic envvar loading
+  - basic identity handling
+    - core ENVs and perhaps `bin` for shims?
+
+    - identity
+      - bash and zsh rc file loading via env var
+      - core env HOME, USER, PATH, etc
+      - non-interactive shell is what is used?
+
+    - env loading
+      - $ENVARS IN YAML
+      - .env file
+      - `op`
+
+    - `op` token via
+      - keychain
+      - fallback creds file/openclaw mechanism?
+
+    - `github` system
+    - `git` system
 
 - @tanaab/emori
   - get canon
