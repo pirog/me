@@ -4,24 +4,20 @@
 
 - @tanaab/openclaw-agent-system
   - basic identity handling
-    - core ENVs and perhaps `bin` for shims?
+    - `preprendPath`
 
-    - identity
-      - bash and zsh rc file loading via env var
-      - core env HOME, USER, PATH, etc
-      - non-interactive shell is what is used?
-
-    - env loading
-      - $ENVARS IN YAML
-      - .env file
-      - `op`
-
-    - `op` token via
-      - keychain
-      - fallback creds file/openclaw mechanism?
-
+    - core `tools`
+    - `id`
+      - setting via envvar?
     - `github` system
     - `git` system
+    - `gog` system
+
+    - install script stuff
+    - cron
+
+    - backups?
+    - memory?
 
 - @tanaab/emori
   - get canon
