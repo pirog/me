@@ -3,27 +3,37 @@
 ## FINAL MANUAL TAZKZ
 
 - @tanaab/openclaw-agent-system
+  - v0.2.1
+    - cleanup and general optimization?
+    - `worktree`
+      - separate scenario?
+      - optimize
+      - tools/git/readme
+      - agentId in auto branch?
+      - repo branch up to date?
+    - agents running tools as other agents via `as tool`?
 
-  - `git` system
-    - remove compat test?
+  - v0.3.0
+    - notification channel?
 
-  - try it out with tanaabot and emori?
-  - install script stuff
-
-  - docs
-    - agent tool api?
-    - ships with section
+  - v0.4.0
+    - install script stuff
 
   - `gog` system
 
   - cron
-  - backups?
+    - backups?
+    - memory?
 
   - `generic-tool` system?
 
-  - memory?
+  - docs
+    - ships with section?
+    - agent tool api?
 
 - @tanaab/emori
+  - setup needed devguard.json/agents.yaml/brewfile/install/etc
+  - try out agent system with emori?
   - get canon
   - get initial agent-system for ENVVARS support
 
@@ -119,6 +129,8 @@
   - Octal escape sequences are not allowed in template strings.
 
 - @tanaab/openclaw-agent-system
+  - public api
+  - git encrypted keys?
   - approval mechamism for operator invocaiton
   - remove ~/.ssh/id_emori & ~/.ssh/config when we can
   - @tanaabased/config-system?
@@ -249,3 +261,8 @@
 - @tanaab/config-system
 - @tanaab/actions?
   - for reusable actions
+  - release-npm
+  - release-clawhub
+  - release-github
+  - npm-pack
+  - ssh-key-gen
