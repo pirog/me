@@ -3,21 +3,25 @@
 ## FINAL MANUAL TAZKZ
 
 - @tanaab/openclaw-agent-system
-  - basic identity handling
-    - `preprendPath`
 
-    - core `tools`
-    - `id`
-      - setting via envvar?
-    - `github` system
-    - `git` system
-    - `gog` system
+  - `git` system
+    - remove compat test?
 
-    - install script stuff
-    - cron
+  - try it out with tanaabot and emori?
+  - install script stuff
 
-    - backups?
-    - memory?
+  - docs
+    - agent tool api?
+    - ships with section
+
+  - `gog` system
+
+  - cron
+  - backups?
+
+  - `generic-tool` system?
+
+  - memory?
 
 - @tanaab/emori
   - get canon
@@ -115,6 +119,7 @@
   - Octal escape sequences are not allowed in template strings.
 
 - @tanaab/openclaw-agent-system
+  - approval mechamism for operator invocaiton
   - remove ~/.ssh/id_emori & ~/.ssh/config when we can
   - @tanaabased/config-system?
   - plugin installation?
