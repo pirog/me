@@ -3,20 +3,11 @@
 ## FINAL MANUAL TAZKZ
 
 - @tanaab/openclaw-agent-system
-  - v0.2.1
-    - cleanup and general optimization?
-    - `worktree`
-      - separate scenario?
-      - optimize
-      - tools/git/readme
-      - agentId in auto branch?
-      - repo branch up to date?
-    - agents running tools as other agents via `as tool`?
-
   - v0.3.0
     - notification channel?
 
   - v0.4.0
+    - encrypted keys?
     - install script stuff
 
   - `gog` system
@@ -33,6 +24,8 @@
 
 - @tanaab/emori
   - setup needed devguard.json/agents.yaml/brewfile/install/etc
+  - never run as another agent?
+  - .vscode indexing
   - try out agent system with emori?
   - get canon
   - get initial agent-system for ENVVARS support

@@ -14,13 +14,14 @@ After bootstrap, `$piro-me-readiness` provides read-only verification of the che
 
 This repository targets the `pirog` workstation profile. Generic bootstrap behavior belongs in Bootbox, while headless host setup, SSH hardening, remote access, and service supervision belong in `agentbox`.
 
-The advanced reference covers installed components, `agentbox` host behavior, post-bootstrap setup, the complete option and environment-variable contract, checkout behavior, and Codex configuration and plugin sync.
+The advanced reference covers installed components, `agentbox` host behavior, post-bootstrap setup, the complete option and environment-variable contract, checkout behavior, and Codex configuration and plugin sync. The OpenClaw guide owns the opt-in local plugin-development workspace, its distinct `tanaabot` agent, Tanaab-based theming, and foreground Gateway workflow.
 
 ## Primary Resources
 
 - [Hosted bootstrap](https://boot.pirog.me/boot.sh): The generated shell entrypoint for bootstrapping the machine profile.
 - [README source](https://raw.githubusercontent.com/pirog/me/main/README.md): Main quickstart, common usage, post-bootstrap pointers, and project links.
 - [Advanced source](https://raw.githubusercontent.com/pirog/me/main/ADVANCED.md): Installed components, host-specific and post-bootstrap behavior, full configuration reference, checkout behavior, and Codex sync details.
+- [OpenClaw source](https://raw.githubusercontent.com/pirog/me/main/OPENCLAW.md): Opt-in local OpenClaw setup, `tanaabot` identity, Tanaab-based theming, Gateway operation, and verification.
 - [Changelog source](https://raw.githubusercontent.com/pirog/me/main/CHANGELOG.md): Current unreleased changes and published release history.
 - [GitHub repository](https://github.com/pirog/me): Source code, canonical documentation, workflows, plugin assets, and Leia examples.
 - [Releases](https://github.com/pirog/me/releases): Published versions and `piroplugin` archives.
