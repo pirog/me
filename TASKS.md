@@ -23,15 +23,15 @@
     - agent tool api?
 
 - @tanaab/emori
-  - setup needed devguard.json/agents.yaml/brewfile/install/etc
-  - never run as another agent?
-  - .vscode indexing
+  - get agent system
+
   - try out agent system with emori?
-  - get canon
-  - get initial agent-system for ENVVARS support
+    - setup needed devguard.json/agents.yaml/brewfile/install/etc
+    - .vscode indexing
+    - get canon
+    - get initial agent-system for ENVVARS support
 
 - @tanaab/canon
-  - work-on-issue skill?
   - issue lifecyle docs?
 
   - issue MGMT STUFF ASAP?
@@ -50,6 +50,7 @@
   - add AGENTS.md to project optimization?
 
 - @pirog/me
+  - work-on-issue skill?
   - node 26?
   - repeat the Homebrew/Bun optimization pass on `pirobookx`: audit and remove any obsolete `/usr/local` Homebrew installation, prefer `/opt/homebrew` Bun, and verify the pinned version through readiness
 
