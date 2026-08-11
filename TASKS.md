@@ -2,34 +2,39 @@
 
 ## FINAL MANUAL TAZKZ
 
+- @tanaab/emori
+  - run test pass on agent-system
+
 - @tanaab/openclaw-agent-system
+  v0.2.1
+  - clean up worktrees?
+  - uh on ask policy?
+
   - v0.3.0
     - notification channel?
+      - sanitize comments
+    - CLI coloring
+    - agent-system-init-config skill?
+    - docs
+    - what about guidance on completing an issue eg open PR etc?
+    - release
 
   - v0.4.0
     - encrypted keys?
     - install script stuff
+    - `gog` system
+    - docs
+    - release
 
-  - `gog` system
+  - `generic-tool` system?
 
   - cron
     - backups?
     - memory?
 
-  - `generic-tool` system?
-
   - docs
     - ships with section?
     - agent tool api?
-
-- @tanaab/emori
-  - get agent system
-
-  - try out agent system with emori?
-    - setup needed devguard.json/agents.yaml/brewfile/install/etc
-    - .vscode indexing
-    - get canon
-    - get initial agent-system for ENVVARS support
 
 - @tanaab/canon
   - issue lifecyle docs?
@@ -62,7 +67,6 @@
 - @tanaab/emori
   - brave search API?
   - discord
-  - manual agent.yaml setup?
   - skill audit and trim?
   - automate emori improvements?
   - some plugins to install for her?
@@ -72,6 +76,8 @@
   - memories?
   - memory diffs
   - backup stuff memories?
+
+  - incorporate log into memories system once we have backups?
 
   - other issues/goals
     - bootstrap.md.template?
