@@ -3,28 +3,20 @@
 ## FINAL MANUAL TAZKZ
 
 - @tanaab/emori
+  - try out notifications 0.3.0
+
+  - emori also text pirog when isuses are done?
   - remove emori from main pushing?
   - canon release
   - emori release
 
 - @tanaab/openclaw-agent-system
   - v0.3.0
-    - lifecycle tests
-      - rename?
-      - diag cleanup?
-
-    - docs
-
-    - emori test
+    - finalize release
     - release
 
-  - v0.3.1
-    - optimize
-      - specifically tests
-    - docs
-    - fixes
-
   - v0.4.0
+    - notes?
     - MVP2
     - sanitize comments
     - CLI coloring
@@ -65,17 +57,17 @@
         - persist the recommendation in a project or issue `recommended model` custom field?
     - labels|fields|etc?
 
-  - project author skill
-    - suggest 3 good tags skill?
-    - skill to autotag repos?
-
+  - add AGENTS.md to project optimization?
   - org standardizer?
     - list of repo tags
     - goals ands stuff?
 
-  - add AGENTS.md to project optimization?
+  - project author skill
+    - suggest 3 good tags skill?
+    - skill to autotag repos?
 
 - @pirog/me
+  - gh mobile?
   - work-on-issue skill?
   - node 26?
   - repeat the Homebrew/Bun optimization pass on `pirobookx`: audit and remove any obsolete `/usr/local` Homebrew installation, prefer `/opt/homebrew` Bun, and verify the pinned version through readiness
@@ -135,6 +127,7 @@
     - install and configure needed openclaw plugins eg agent-os?
 
 - @tanaab/canon
+  - scoring system?
   - openclaw plugin? native commands for issue management like /issue-optimize?
   - "keeper of the faith"
     - some kind of tanaab-coach/advisor skill?
