@@ -3,23 +3,36 @@
 ## FINAL MANUAL TAZKZ
 
 - @tanaab/emori
-  - run test pass on agent-system
+  - remove emori from main pushing?
+  - canon release
+  - emori release
 
 - @tanaab/openclaw-agent-system
-  v0.2.1
-  - clean up worktrees?
-  - uh on ask policy?
-
   - v0.3.0
-    - notification channel?
-      - sanitize comments
+    - lifecycle tests
+      - rename?
+      - diag cleanup?
+
+    - docs
+
+    - emori test
+    - release
+
+  - v0.3.1
+    - optimize
+      - specifically tests
+    - docs
+    - fixes
+
+  - v0.4.0
+    - MVP2
+    - sanitize comments
     - CLI coloring
     - agent-system-init-config skill?
     - docs
     - what about guidance on completing an issue eg open PR etc?
-    - release
 
-  - v0.4.0
+  - LATER
     - encrypted keys?
     - install script stuff
     - `gog` system
@@ -42,6 +55,14 @@
   - issue MGMT STUFF ASAP?
     - milestone creation
     - issue creation|triage|etc
+      - issue normalization and re-analysis surface
+        - dedicated issue normalizer/optimizer task, or create-issue modes for optimize, normalize, and recompute
+        - incorporate later diagnostics, feedback, and comments; rewrite the full description when needed
+        - normalize externally submitted issues to the canonical format
+      - model-routing research
+        - use the highest-capability model for issue analysis, creation, normalization, and recomputation
+        - recommend the lowest-capability model sufficient to implement each issue
+        - persist the recommendation in a project or issue `recommended model` custom field?
     - labels|fields|etc?
 
   - project author skill
@@ -65,6 +86,7 @@
   - spec to issues?
 
 - @tanaab/emori
+  - update avatar to not be a circle?
   - brave search API?
   - discord
   - skill audit and trim?
@@ -113,6 +135,7 @@
     - install and configure needed openclaw plugins eg agent-os?
 
 - @tanaab/canon
+  - openclaw plugin? native commands for issue management like /issue-optimize?
   - "keeper of the faith"
     - some kind of tanaab-coach/advisor skill?
     - a brand enforcer skill (better as separate agent now?)
