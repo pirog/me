@@ -2,30 +2,72 @@
 
 ## FINAL MANUAL TAZKZ
 
-- @tanaab/emori
-  - try out notifications 0.3.0
+- @tanaab/openclaw-agent-system
+  - v0.4.0
+    - intiial receipt cleanup
+    - @mention handling
+    - pr syncing?
+    - /operator-update
 
+    - failed task doctor warning cleanup?
+
+    - polish
+      - better formatting?
+        - note that it might reject markdown
+      - do we need first pirog message?
+      - last inbound in channel settings still has nothing
+
+    - clean up diag tests and release?
+
+- @tanaab/canon
+  - task MGMT STUFF
+  - what is deliverable?
+  - add all to optimizer?
+
+  - milestone management?
+  - issue decontructor?
+  - release
+
+- @tanaab/emori
+  - update goals?
   - emori also text pirog when isuses are done?
+  - iMessage me when no work left and bug me every few hours until i assign something?
+  - send me a report of work ready for review every morning?
+  - push back on irrelevant issues?
   - remove emori from main pushing?
-  - canon release
   - emori release
 
-- @tanaab/openclaw-agent-system
-  - v0.3.0
-    - finalize release
-    - release
+## ISSUES 2 ADD
 
-  - v0.4.0
-    - notes?
-    - MVP2
-    - sanitize comments
+- @tanaab/emori
+  - update avatar to not be a circle?
+  - brave search API?
+  - discord
+  - skill audit and trim?
+  - automate emori improvements?
+  - some plugins to install for her?
+  - backup system?
+  - local postgres?
+  - memories?
+  - memory diffs
+  - backup stuff memories?
+
+  - incorporate log into memories system once we have backups?
+
+  - other issues/goals
+    - bootstrap.md.template?
+
+- @tanaab/openclaw-agent-system
+  - v0.5.0
+    - other modes
+      - work
+      - auto
     - CLI coloring
     - agent-system-init-config skill?
     - docs
     - what about guidance on completing an issue eg open PR etc?
 
   - LATER
-    - encrypted keys?
     - install script stuff
     - `gog` system
     - docs
@@ -38,77 +80,48 @@
     - memory?
 
   - docs
-    - ships with section?
     - agent tool api?
 
+  - issue to model mapping?
+  - assigned to review support?
+  - git encrypted keys?
+  - API endpoints
+  - public api
+  - backups and scheduling
+    - setup creates cron job?
+  - local mem0? podman for now or postgres directly
+
 - @tanaab/canon
-  - issue lifecyle docs?
-
-  - issue MGMT STUFF ASAP?
-    - milestone creation
-    - issue creation|triage|etc
-      - issue normalization and re-analysis surface
-        - dedicated issue normalizer/optimizer task, or create-issue modes for optimize, normalize, and recompute
-        - incorporate later diagnostics, feedback, and comments; rewrite the full description when needed
-        - normalize externally submitted issues to the canonical format
-      - model-routing research
-        - use the highest-capability model for issue analysis, creation, normalization, and recomputation
-        - recommend the lowest-capability model sufficient to implement each issue
-        - persist the recommendation in a project or issue `recommended model` custom field?
-    - labels|fields|etc?
-
   - add AGENTS.md to project optimization?
-  - org standardizer?
-    - list of repo tags
-    - goals ands stuff?
-
   - project author skill
     - suggest 3 good tags skill?
     - skill to autotag repos?
+  - openclaw plugin? native commands for issue management like /issue-optimize?
+  - "keeper of the faith"
+    - some kind of tanaab-coach/advisor skill?
+    - a brand enforcer skill (better as separate agent now?)
+  - adoption of schema|error|cli frameworks?
 
 - @pirog/me
-  - gh mobile?
+  - "normalize" existing agent-system issues?
   - work-on-issue skill?
+  - issue to check "mergeable-work"
+  - gh mobile app
   - node 26?
-  - repeat the Homebrew/Bun optimization pass on `pirobookx`: audit and remove any obsolete `/usr/local` Homebrew installation, prefer `/opt/homebrew` Bun, and verify the pinned version through readiness
-
-## ISSUES 2 ADD
+  - add github known hosts
+  - blog like pirog skill
+  - $me-readiness should actually be like $me-setup, $me-update and $me-doctor?
+    - should also follow the "narrow remediation" path in `agentbox`
 
 - @tanaab/openclaw-devguard
   - spec to issues?
-
-- @tanaab/emori
-  - update avatar to not be a circle?
-  - brave search API?
-  - discord
-  - skill audit and trim?
-  - automate emori improvements?
-  - some plugins to install for her?
-  - @tanaab/canon and openclaw skills?
-  - backup system?
-  - local postgres?
-  - memories?
-  - memory diffs
-  - backup stuff memories?
-
-  - incorporate log into memories system once we have backups?
-
-  - other issues/goals
-    - bootstrap.md.template?
 
 - @tanaab/goals?
   - place for "hidden" tickets and goal setting?
   - better name?
 
-- @pirog/me
-  - issues
-    - add github known hosts
-    - blog like pirog skill
-    - $me-readiness should actually be like $me-setup, $me-update and $me-doctor?
-      - should also follow the "narrow remediation" path in `agentbox`
-
 - @tanaab/codex-tools?
-  - codex-sync?
+  - codex-sync utils?
 
 - @tanaab/agentbox
   - openclaw agentbox plugin?
@@ -126,59 +139,14 @@
     - caddy install
     - install and configure needed openclaw plugins eg agent-os?
 
-- @tanaab/canon
-  - scoring system?
-  - openclaw plugin? native commands for issue management like /issue-optimize?
-  - "keeper of the faith"
-    - some kind of tanaab-coach/advisor skill?
-    - a brand enforcer skill (better as separate agent now?)
-  - adoption of schema|error|cli frameworks?
-  - organizatinal model for leia tests eg inputs|defaults|feature-x?
-  - commit behavior?
-    - if you have a list of things to do then commit one per list item
-    - message syntax and formatting?
-
 - @lando/leia
   - fix JS literals
   - ESM?
   - update canon guidance
   - Octal escape sequences are not allowed in template strings.
 
-- @tanaab/openclaw-agent-system
-  - public api
-  - git encrypted keys?
-  - approval mechamism for operator invocaiton
-  - remove ~/.ssh/id_emori & ~/.ssh/config when we can
-  - @tanaabased/config-system?
-  - plugin installation?
-  - dependencies eg `gh`?
-  - personal workspace?
-    - plugin to make each agent invocation run in its own shell? load OP env this way?
-
-  - note you need to add ssh/signing keys to github first? or part of setup?
-  - tracking codex plugin installation? add to clawhub?
-  - `openclaw identity`
-  - agent identity
-  - agent add/remove/update/setup
-  - agent signing/ssh transport
-  - where are good places to store the OP_SA_TOKEN?
-    - environment directly
-    - .env file
-    - keychain?
-    - op-sdk could potentailly match agentids
-  - also endpoints for these?
-  - can openclaw plugins install other openclaw plugin or use them as deps
-    - could my agentid cli install needed plugins after setup?
-  - add humans as well?
-  - agents.yaml can basically be the plugin config
-  - backups and scheduling
-    - setup creates cron job?
-  - local mem0? podman for now or postgres directly
-  - emori get issues to work on?
-
 - @tanaab/<persona>-template
   - agent templates to see a repo
-- @tanaabased/github-notification-channel
 
 - @tanaab/component-playground
   - migrate tms one
@@ -249,7 +217,6 @@
 - @tanaab/\*
   - change to @tanaab npm namespacing via project optimizer
   - bump to latest bun
-  - spin off our codex-cache-refresh dev flow tools?
   - create @tanaabased/codex-plugin-validator-action@v1
   - update all scripts that are fundamentally complex to bun cli?
   - catch all email routing and AI triage?
@@ -274,6 +241,9 @@
     - hosted-scripts
 
 - @tanaab/utils
+  - audit which in core-next are worth it?
+    - merge?
+
 - @tanaab/config-system
 - @tanaab/actions?
   - for reusable actions
