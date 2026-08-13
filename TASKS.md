@@ -10,6 +10,7 @@
     - /operator-update
 
     - failed task doctor warning cleanup?
+    - active status?
 
     - polish
       - better formatting?
@@ -23,6 +24,7 @@
   - task MGMT STUFF
   - what is deliverable?
   - add all to optimizer?
+  - routing to `agent_system_github` tool?
 
   - milestone management?
   - issue decontructor?
