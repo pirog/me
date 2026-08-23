@@ -3,6 +3,7 @@
 - Removed the pre-seeded `tanaabot` OpenClaw identity and workspace while retaining the opt-in dependency bundle.
 - Renamed `$piro-me-readiness` to `$piro-me-doctor` and added grouped, versioned diagnostics with focused remediation.
 - Fixed the shared Codex default to use the ChatGPT-compatible `gpt-5.6-sol` model ID.
+- Added `$piro-work-on-task` for issue and same-repository pull-request planning in Codex-managed worktrees.
 
 ## v1.0.0-beta.8 - [July 27, 2026](https://github.com/pirog/me/releases/tag/v1.0.0-beta.8)
 

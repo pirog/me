@@ -1,9 +1,9 @@
 interface:
   display_name: 'Work on Task'
-  short_description: 'Pirobased issue assessment and Codex worktree plan.'
+  short_description: 'Pirobased issue and PR worktree planning.'
   icon_small: './assets/icon-small.svg'
   icon_large: './assets/icon-large.png'
   brand_color: '#db2777'
-  default_prompt: 'Use $piro-work-on-task with one GitHub issue URL or owner/repo#number to create a #NUMBER: ALL-CAPS Codex worktree task, explain the issue in user-centric terms, and produce a technical implementation plan before making changes.'
+  default_prompt: 'Use $piro-work-on-task with one GitHub issue or same-repository pull-request URL to resolve its saved Codex project, create a source-specific worktree task, assess the work in user-centric terms, and produce a technical plan before making changes.'
 policy:
   allow_implicit_invocation: false
