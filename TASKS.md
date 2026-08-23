@@ -3,16 +3,43 @@
 ## FINAL MANUAL TAZKZ
 
 - @tanaab/openclaw-agent-system
-  - v0.4.0
-    - notification channel rewrite
+  - v0.4.1
+    - optimize?
+    - event received cards ?
 
-    - test
+    - github markdown for response?
+    - message constraints?
 
-    - clean up diag tests and docs
-      - comment presentation in channel docs and AGENT-PRES.md
-      - try to break up tests more or make them more single focused?
+    - complete issue + work flow
+      - comment event flow
+        - mention person who assigned
+        - incoming comments link @agent to openclaw link or pic? and also add link to originating comment?
 
-    - release!
+      - issue assigned event flow
+        - mention person who assigned
+        - read through issue and codebase and generate plan/work/ask question
+
+      - PR event flow
+        - do work and end up with PR and link etc
+
+    - complete issue + plan flow
+      - plan mode need to be able to transition to work mode with plan prompt injection?
+    - complete auto flow
+    - send update to github command?
+
+    - optimize
+    - docs
+    - big test bucket repo?
+
+    - github_reply tool?
+      - can anyone run?
+
+  - v0.6.0
+    - model router
+    - CLI coloring
+    - agent-system-init-config skill?
+    - docs
+    - what about guidance on completing an issue eg open PR etc?
 
 - @tanaab/emori
   - continue testing notifications
@@ -48,29 +75,15 @@
     - bootstrap.md.template?
 
 - @tanaab/openclaw-agent-system
-  - v0.5.0
-    - last inbound in channel settings still has nothing
-    - use model to customize assignment reciept
-
+  - v0.7.0
+    - pr flow
+    - pr-review flow
     - pr link?
-    - cleanup task?
 
-    - `notifications refresh --json` has some stdout bleed #38
-
-    `/agent-system-update` doesnt work the way we wanted
+  - issues
     - investigate "legacy" issues do we need them still?
       - if so normalize them
       - otherwise remove them
-    - other modes
-      - work
-      - auto
-    - model router
-    - CLI coloring
-    - agent-system-init-config skill?
-    - docs
-    - what about guidance on completing an issue eg open PR etc?
-
-  - issues
     - install script stuff
     - `gog` system
     - `generic-tool` system?
