@@ -20,6 +20,8 @@ Use this file as the source of truth for canon skill validation.
 - `[error]` Outside a larger Codex plugin, the skill folder name must equal the generated machine id.
 - `[error]` Inside a larger Codex plugin, the skill folder name must equal the generated machine id with the leading `piro-` machine prefix removed.
 - `[error]` Strip an accidental duplicate `piro-` prefix before writing the final machine id.
+- `[manual]` Treat project management as a domain rather than a skill type. Use `integration` for one provider-backed mutation boundary and `workflow` for a fixed multi-object lifecycle.
+- `[manual]` Prefer domain-led names for project, task, project milestone, and release surfaces. Retain provider-led names when provider mechanics are the owned surface, and retain repository or repo when the technical container is the exact owner.
 
 ## Required Files
 
@@ -58,7 +60,9 @@ skill-folder/
 - `[error]` `metadata.tags` must include at least one additional kebab-case category tag beyond `owner` and `type`.
 - `[error]` Section order must match the selected type's canonical template order.
 - `[error]` Optional top-level sections declared by the canonical template may be omitted, but if present they must appear in the template's declared order.
-- `[error]` `coding` skills must include the canonical `Documentation`, `Testing`, and `GitHub Actions Workflow` lifecycle sections in template order.
+- `[error]` `coding` skills must include the canonical `Documentation`, `Testing`, and `GitHub Actions` sections in template order.
+- `[manual]` Retain the optional coding `Deployment` lifecycle only when one canonical delivery or publication mechanism materially shapes the owned code surface.
+- `[manual]` Keep `GitHub Actions` as a reference map from owned lifecycle sections to canonical workflow templates and `.github/workflows/*.yml` targets, not as a duplicate doctrine owner.
 - `[error]` Relative links in `SKILL.md` must resolve.
 - `[manual]` `description` should say both what the skill does and when to use it.
 - `[manual]` `When to Use` and `When Not to Use` should describe a narrow, concrete owned surface.
@@ -130,14 +134,17 @@ skill-folder/
 - `[warn]` A skill should own one concrete task surface.
 - `[warn]` Prefer a repo template over a live skill when the reusable artifact is a whole starter repository with committed structure, scripts, examples, and docs that users should adopt wholesale.
 - `[warn]` For `coding` skills, broad discovery language is acceptable only when it still funnels into one dominant implementation pattern.
-- `[warn]` For `coding` skills, multiple materially different documentation, direct-test, or GitHub Actions workflow mechanisms are a split signal unless they are minor flavor variations of one pattern.
+- `[warn]` For `coding` skills, multiple materially different documentation, direct-test, or deployment mechanisms are a split signal unless they are minor flavor variations of one pattern.
+- `[warn]` Do not embed complete copyable GitHub Actions YAML in a coding skill when it belongs in an owning template.
 - `[warn]` If a skill needs a routing matrix, broad arbitration rules, or heavy relationship language to stay understandable, split it.
 - `[warn]` Do not add `## Relationship to Other Skills` by default. If a skill needs that section to make sense, challenge the scope first.
 - `[warn]` Keep `SKILL.md` lean. Assume the agent is already capable and add only task-specific context that materially improves performance.
 - `[warn]` Prefer references for detailed facts, schemas, and long examples instead of stuffing them into `SKILL.md`.
 - `[warn]` Prefer scripts when deterministic reliability matters or the same code keeps being rewritten.
 - `[warn]` Keep bundled references one hop from `SKILL.md`; link to them directly instead of hiding them behind deeper navigation.
-- `[manual]` For `coding` skills, `Documentation`, `Testing`, and `GitHub Actions Workflow` should each describe one canonical mechanism and one minimal example when an example materially shapes the skill.
+- `[manual]` For `coding` skills, `Documentation` and `Testing` should each describe one canonical mechanism and one minimal example when an example materially shapes the skill.
+- `[manual]` When present, coding `Deployment` should own one canonical surface-local delivery mechanism and route independent workflow topology to its workflow owner.
+- `[manual]` Coding `GitHub Actions` sections should name canonical workflow targets and reference owned lifecycle sections without repeating their doctrine.
 - `[manual]` Check whether the skill mostly restates one repo template's structure, scripts, examples, and docs; if so, prefer the template as source of truth and keep only a thin discovery or adaptation skill if needed.
 - `[manual]` Check shebang and executable-bit alignment for skill-local `scripts/`, starter templates, and any `bin/` surfaces.
 - `[manual]` Optional `references/repo-agents-lines.md` should stay short, copyable, and scoped to always-on repo policy that should influence many tasks.

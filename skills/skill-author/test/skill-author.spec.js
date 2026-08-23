@@ -153,6 +153,28 @@ describe('skills/skill-author scaffolding', () => {
     assert.equal(validation.exitCode, 0, validation.output);
   });
 
+  it('should scaffold coding lifecycle and automation projection sections', async () => {
+    const generated = await createGeneratedSkill({ slug: 'coding-lifecycle', type: 'coding' });
+    tempRoots.push(generated.tempRoot);
+    const skillPath = path.join(generated.skillDir, 'SKILL.md');
+    const originalContent = await readFile(skillPath, 'utf8');
+
+    assert.match(originalContent, /\n## Documentation\n/);
+    assert.match(originalContent, /\n## Testing\n/);
+    assert.match(originalContent, /\n## Deployment\n/);
+    assert.match(originalContent, /\n## GitHub Actions\n/);
+    assert.doesNotMatch(originalContent, /\n## GitHub Actions Workflow\n/);
+
+    const withoutDeployment = originalContent.replace(
+      /\n## Deployment\n[\s\S]*?(?=\n## GitHub Actions\n)/,
+      '',
+    );
+    await writeFile(skillPath, withoutDeployment, 'utf8');
+
+    const validation = await validateGeneratedSkill(generated.skillDir, 'coding');
+    assert.equal(validation.exitCode, 0, validation.output);
+  });
+
   it('should derive plugin skill homepages and honor explicit presentation overrides', async () => {
     const derived = await createGeneratedSkill({
       pluginRepository: 'https://github.com/pirog/example.git',

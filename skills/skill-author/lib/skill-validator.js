@@ -465,8 +465,10 @@ function buildManualChecks({ expectedType }) {
       'Check that broad discovery language, if present, still funnels toward one dominant implementation pattern.',
       'Check that `Documentation` describes the canonical docs surface for the owned code path.',
       'Check that `Testing` describes one canonical direct-test mechanism with one minimal example.',
-      'Check that `GitHub Actions Workflow` describes one canonical GHA validation mechanism with one minimal example.',
-      'Check whether multiple materially different documentation, testing, or GitHub Actions mechanisms mean the skill should split.',
+      'Check that a retained `Deployment` section describes one canonical surface-local delivery mechanism and routes independent workflow topology to the workflow owner.',
+      'Check that `GitHub Actions` maps owned lifecycle sections to canonical workflow templates without duplicating doctrine or embedding complete workflow YAML.',
+      'Check that every mapped automation path names its canonical `.github/workflows/*.yml` target.',
+      'Check whether multiple materially different documentation, testing, or deployment mechanisms mean the skill should split.',
     );
   }
 
