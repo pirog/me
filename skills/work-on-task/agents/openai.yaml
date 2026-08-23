@@ -1,0 +1,9 @@
+interface:
+  display_name: 'Work on Task'
+  short_description: 'Pirobased GitHub issue to Codex worktree setup.'
+  icon_small: './assets/icon-small.svg'
+  icon_large: './assets/icon-large.png'
+  brand_color: '#db2777'
+  default_prompt: 'Use $piro-work-on-task with one GitHub issue URL or owner/repo#number to create a #NUMBER: ALL-CAPS Codex task and native worktree based on the numbered branch in the matching saved project, then stop after setup verification.'
+policy:
+  allow_implicit_invocation: false
