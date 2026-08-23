@@ -1,5 +1,7 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+- Removed the pre-seeded `tanaabot` OpenClaw identity and workspace while retaining the opt-in dependency bundle.
+
 ## v1.0.0-beta.8 - [July 27, 2026](https://github.com/pirog/me/releases/tag/v1.0.0-beta.8)
 
 ### New Features

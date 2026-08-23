@@ -16,8 +16,8 @@ Bootbox installs or repairs the core prerequisites before `me` applies the compl
 development. It installs the Homebrew `openclaw-cli` formula, the npm-backed `clawhub` CLI, and the
 native app while allowing the browser to remain the development UI. The `openclaw-cli` formula owns
 the shared Node dependency. The optional bundle is not applied by `boot.sh` or checked by
-`$piro-me-readiness`. See
-[OpenClaw Plugin Development](./OPENCLAW.md) for its manual install and setup flow.
+`$piro-me-readiness`. It does not provision an agent identity, workspace, runtime configuration, or
+Gateway.
 
 > [!NOTE]
 > Dependency behavior differs on `agentbox` and formula-backed Tailscale hosts. See

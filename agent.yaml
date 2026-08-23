@@ -1,7 +1,0 @@
-schema-version: 1
-
-agent:
-  id: tanaabot
-  name: MODEL L3-37
-  description: Local OpenClaw plugin-development agent for the pirog machine profile.
-  avatar: assets/tanaabot.png
