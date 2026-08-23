@@ -3,46 +3,42 @@
 ## FINAL MANUAL TAZKZ
 
 - @tanaab/openclaw-agent-system
-  - v0.4.1
-    - optimize?
-    - event received cards ?
-
-    - github markdown for response?
-    - message constraints?
-
+  - v0.5.0
     - complete issue + work flow
-      - comment event flow
-        - mention person who assigned
-        - incoming comments link @agent to openclaw link or pic? and also add link to originating comment?
-
       - issue assigned event flow
-        - mention person who assigned
-        - read through issue and codebase and generate plan/work/ask question
+        - list of receipt responses
+        - ask as many questions as needed to make a plan but one by one
+        - plan should include the agent's own explanation of the issue, it should be user-centric
 
-      - PR event flow
+      - link session to open PR? separate event? metadata for PR?
         - do work and end up with PR and link etc
 
     - complete issue + plan flow
       - plan mode need to be able to transition to work mode with plan prompt injection?
     - complete auto flow
+    - complete freeform (eg awaiting instructions) mode
+
     - send update to github command?
+      - reconcile local discussion and github and push update
 
     - optimize
     - docs
     - big test bucket repo?
 
+  - v0.6.0
     - github_reply tool?
       - can anyone run?
-
-  - v0.6.0
     - model router
+    - place to inject notification instructions eg filtering by goals
     - CLI coloring
     - agent-system-init-config skill?
+      - make sure we always audit whether this is up to date? agents.md
     - docs
     - what about guidance on completing an issue eg open PR etc?
 
 - @tanaab/emori
   - continue testing notifications
+  - emori choose her emoji
 
   - update goals?
     - finish fleshing out our canon/agent-system/emori/me repos
@@ -125,15 +121,15 @@
   - adoption of schema|error|cli frameworks?
 
 - @pirog/me
-  - "normalize" existing agent-system issues?
   - work-on-issue skill?
   - issue to check "mergeable-work"
-  - gh mobile app
+
   - node 26?
   - add github known hosts
   - blog like pirog skill
   - $me-readiness should actually be like $me-setup, $me-update and $me-doctor?
     - should also follow the "narrow remediation" path in `agentbox`
+  - "normalize" existing agent-system issues?
 
 - @tanaab/codex-tools?
   - codex-sync utils?
