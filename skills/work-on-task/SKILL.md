@@ -63,8 +63,13 @@ the skill does not add a parallel helper script or worktree manager.
 - Use the native GitHub connector to confirm that its current login is `pirog`, then fetch the source
   read-only. Stop if the connector is unavailable, the identity differs, or the source is not open.
 - For a pull request, require its base and head repository to normalize to the same `owner/repo`, a
-  non-empty head branch and head commit, and `pirog` to have push access to that repository. Stop on
-  a fork or uncertain push routing rather than adding a remote or guessing a destination.
+  non-empty head branch and head commit, and `pirog` to have push access to that repository. Before
+  the head branch appears in any command, refspec, task field, task prompt, or later push guidance,
+  compare it as data against the exact shell-safe allowlist `^[A-Za-z0-9][A-Za-z0-9._/-]*$`. Reject
+  `$`, backticks, quotes, whitespace, shell metacharacters, and any other non-matching character
+  without constructing a command from the value. Then require the allowlisted value to pass Git
+  ref-format validation and use only that validated branch downstream. Stop on a fork, unsafe or
+  invalid branch, or uncertain push routing rather than adding a remote or guessing a destination.
 - Require one saved local Codex project whose Git `origin` normalizes to the source's exact base
   `owner/repo`. A matching label or directory basename alone is insufficient.
 - Require that project to be reported as a Git repository. Use the setup handoff on zero exact
@@ -162,19 +167,29 @@ the skill does not add a parallel helper script or worktree manager.
    assessment and plan or questions for further instructions.
    ```
 
-8. For a pull request, refresh its exact same-repository head ref before task creation. Run this in
-   the selected project's local checkout, substituting only the trusted head branch:
+8. For a pull request, validate its head branch before using it anywhere downstream. First compare
+   the raw value semantically against `^[A-Za-z0-9][A-Za-z0-9._/-]*$` without placing it in a shell
+   command. Stop if it does not match. After that allowlist succeeds, require Git ref-format validity:
 
    ```sh
-   git fetch --no-tags origin "refs/heads/<head-branch>:refs/remotes/origin/<head-branch>"
+   git check-ref-format --branch "<allowlisted-head-branch>"
    ```
 
-   Verify that `refs/remotes/origin/<head-branch>` equals the GitHub-reported head commit. Stop on a
-   fetch failure or mismatch. Then create a new Codex task against the selected project with:
+   Stop on failure. Treat the result as `<validated-head-branch>` and use only that value in later
+   commands, refspecs, task fields, prompts, verification, and push guidance. Then refresh the exact
+   same-repository head ref in the selected project's local checkout:
+
+   ```sh
+   git fetch --no-tags origin "refs/heads/<validated-head-branch>:refs/remotes/origin/<validated-head-branch>"
+   ```
+
+   Verify that `refs/remotes/origin/<validated-head-branch>` equals the GitHub-reported head commit.
+   Stop on a fetch failure or mismatch. Then create a new Codex task against the selected project
+   with:
 
    - the PR-number-prefixed all-caps brief description as its explicit title;
    - a native `worktree` environment;
-   - `refs/remotes/origin/<head-branch>` as its existing starting ref;
+   - `refs/remotes/origin/<validated-head-branch>` as its existing starting ref;
    - missing-ref behavior left as an error rather than creating a branch;
    - no model or reasoning override.
 
@@ -190,8 +205,8 @@ the skill does not add a parallel helper script or worktree manager.
 
    First confirm that this task is running in the <owner/repo> saved project, in a Codex-managed
    worktree whose detached HEAD equals pull-request head commit <head-commit> from branch
-   <head-branch>. Then assess the pull request by reading its bounded GitHub context and inspecting
-   only the relevant code, tests, and documentation in the prepared worktree.
+   <validated-head-branch>. Then assess the pull request by reading its bounded GitHub context and
+   inspecting only the relevant code, tests, and documentation in the prepared worktree.
 
    Respond with exactly `## Assessment`, then `## Review`, followed by either `## Plan` or
    `## Questions`.
@@ -215,8 +230,9 @@ the skill does not add a parallel helper script or worktree manager.
 
    If a later explicit user request authorizes implementation in this task, keep the work on this
    pull request. Re-fetch and confirm the remote head before changes, commit from the detached
-   worktree, and push without force to `HEAD:refs/heads/<head-branch>`. Stop if the remote branch has
-   advanced or the push is not a fast-forward. Do not create another branch or pull request.
+   worktree, and push without force to `HEAD:refs/heads/<validated-head-branch>`. Stop if the remote
+   branch has advanced or the push is not a fast-forward. Do not create another branch or pull
+   request.
    ```
 
 10. Treat task creation as non-blocking. If Codex returns a ready task id, report it. If worktree
@@ -230,7 +246,7 @@ the skill does not add a parallel helper script or worktree manager.
 
 12. Verify read-only that the ready task's worktree uses the expected repository origin. For an
     issue, require its `HEAD` commit to equal `refs/heads/<derived-branch>`. For a pull request,
-    require its `HEAD` commit to equal both `refs/remotes/origin/<head-branch>` and the
+    require its `HEAD` commit to equal both `refs/remotes/origin/<validated-head-branch>` and the
     GitHub-reported head commit. Accept detached `HEAD` as normal. A missing ref, mismatched commit,
     or mismatched origin is failed setup; report the evidence without repairing Git state or creating
     another task.
@@ -269,6 +285,10 @@ the skill does not add a parallel helper script or worktree manager.
   number plus the lowercase kebab-case form of the same description.
 - A pull-request title is `PR #<pr-number>: <UPPERCASE BRIEF DESCRIPTION>`. Its worktree starts at
   the exact fetched head commit without creating a branch.
+- A pull-request head branch matches `^[A-Za-z0-9][A-Za-z0-9._/-]*$`, passes Git ref-format
+  validation, and is the only branch value used downstream. Unsafe-but-Git-valid characters such as
+  `$`, backticks, quotes, whitespace, and shell metacharacters are rejected before command
+  construction.
 - Codex, rather than repo code or raw `git worktree`, owns worktree creation.
 - The worktree may be detached, but its starting commit must equal the selected issue branch or
   pull-request head ref and, for a pull request, the GitHub-reported head commit.
@@ -285,6 +305,8 @@ the skill does not add a parallel helper script or worktree manager.
   title read back exactly in the source-kind-specific format.
 - An issue worktree begins at its exact derived branch commit. A pull-request worktree begins at the
   exact fetched and GitHub-reported head commit. Detached `HEAD` is normal for both.
+- A pull request with an unsafe or Git-invalid head branch is rejected before its branch appears in
+  a command, refspec, task field, task prompt, or push guidance, and no task or ref is created.
 - An issue task produced `## Assessment` plus `## Plan` or `## Questions`. A pull-request task also
   produced `## Review` between them.
 - Apart from the issue branch or refreshed PR remote-tracking ref and the new task/worktree,
@@ -311,6 +333,10 @@ the skill does not add a parallel helper script or worktree manager.
   `PR #<number>: <UPPERCASE BRIEF DESCRIPTION>` title, exact remote head ref and commit, native
   detached worktree, `## Assessment` / `## Review` / `## Plan` or `## Questions`, and absence of
   file changes or GitHub writes during the initial turn.
+- Prove branch-boundary behavior by confirming an ordinary value such as `pirog-skills-9` passes the
+  shell-safe allowlist and Git ref-format validation, while values containing `$`, command
+  substitution, backticks, quotes, whitespace, or other shell metacharacters are rejected before
+  command construction even when Git would otherwise accept the ref name.
 - Prove later direct push-back only with a disposable pull request and separate explicit
-  authorization. Confirm a normal fast-forward `HEAD:refs/heads/<head-branch>` push updates the
-  existing PR without creating another branch or PR.
+  authorization. Confirm a normal fast-forward `HEAD:refs/heads/<validated-head-branch>` push
+  updates the existing PR without creating another branch or PR.
