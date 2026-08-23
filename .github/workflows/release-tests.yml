@@ -35,6 +35,7 @@ jobs:
             bun run build
             version-injector dist/boot.sh --style sh --version "${{ env.STAMPED_VERSION }}"
             version-injector .codex-plugin/plugin.json --style json --version "${{ env.STAMPED_VERSION }}"
+            bun run format:write
       - name: Verify prepared formatting
         run: bun run format:check
       - name: Verify stamped release entrypoint
