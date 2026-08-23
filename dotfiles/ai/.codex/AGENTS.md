@@ -51,6 +51,13 @@
 - Prefer shipped scripts, references, and templates over re-deriving large blocks of guidance from memory.
 - Keep the active context small and relevant to the work at hand.
 
+## Task Author Execution
+
+- On this profile, invoke Tanaab Task Author scripts through the stable
+  `/Users/pirog/.codex/plugins/tanaab/skills/task-author/scripts/` path, start Bun directly with
+  `--input -`, and deliver request JSON through the execution session's standard input so the
+  narrow approval rule matches. Never embed task content in a shell pipeline or command arguments.
+
 ## monday Connector
 
 - For monday.com board, item, update, workspace, or CRM work, prefer the monday app connector over browser or desktop automation unless the user explicitly asks for browser/computer use.

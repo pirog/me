@@ -1,0 +1,21 @@
+prefix_rule(
+    pattern = [
+        "bun",
+        [
+            "/Users/pirog/.codex/plugins/tanaab/skills/task-author/scripts/draft-task.js",
+            "/Users/pirog/.codex/plugins/tanaab/skills/task-author/scripts/create-task.js",
+            "/Users/pirog/.codex/plugins/tanaab/skills/task-author/scripts/update-task.js",
+            "/Users/pirog/.codex/plugins/tanaab/skills/task-author/scripts/migrate-fallback.js",
+        ],
+        "--input",
+        "-",
+    ],
+    decision = "allow",
+    justification = "Run the digest-gated Tanaab Task Author with request data supplied through stdin.",
+    match = [
+        "bun /Users/pirog/.codex/plugins/tanaab/skills/task-author/scripts/draft-task.js --input -",
+        "bun /Users/pirog/.codex/plugins/tanaab/skills/task-author/scripts/create-task.js --input -",
+        "bun /Users/pirog/.codex/plugins/tanaab/skills/task-author/scripts/update-task.js --input -",
+        "bun /Users/pirog/.codex/plugins/tanaab/skills/task-author/scripts/migrate-fallback.js --input -",
+    ],
+)
