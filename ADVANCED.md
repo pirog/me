@@ -58,6 +58,9 @@ The repository is packaged as `piroplugin` through
   machine.
 - [`piro-skill-author`](./skills/skill-author/): creates, standardizes, and validates Pirobased
   repository-local skills.
+- [`piro-work-on-task`](./skills/work-on-task/): opens one GitHub issue in a Codex-managed
+  worktree task, produces a user-centered assessment, and prepares a technical implementation plan
+  before changes begin.
 
 Broader shared canon skills come from the paired `tanaab` plugin. The `ai` dotfile package installs
 the `piroplugin` source link and publishes the local `Pirostore` marketplace. Tanaab checkouts that
