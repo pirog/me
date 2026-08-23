@@ -7,7 +7,7 @@ const OPTIONS = {
   remediation: 'Connect Tailscale.',
 };
 
-describe('skills/me-readiness/utils/evaluate-tailscale-status', () => {
+describe('skills/me-doctor/utils/evaluate-tailscale-status', () => {
   it('should pass a complete online status on the expected tailnet', () => {
     assert.deepEqual(
       evaluateTailscaleStatus(

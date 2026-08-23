@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 
 import findOnePasswordTokenEnvKeys from '../utils/find-one-password-token-env-keys.js';
 
-describe('skills/me-readiness/utils/find-one-password-token-env-keys', () => {
+describe('skills/me-doctor/utils/find-one-password-token-env-keys', () => {
   it('should identify known token and account-scoped session keys', () => {
     assert.deepEqual(
       findOnePasswordTokenEnvKeys({

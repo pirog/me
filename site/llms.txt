@@ -10,7 +10,7 @@ The portable palette in `dotfiles/theme/colors.json` anchors coordinated themes 
 
 When an installed `agentbox` runtime is detected, `me` leaves `agentbox`'s formula-backed `tailscaled` runtime in control and skips the 1Password and Tailscale desktop casks while retaining the beta 1Password CLI used for service-account-backed bootstrap work. Any host with the Homebrew `tailscale` formula also skips the conflicting `tailscale-app` cask.
 
-After bootstrap, `$piro-me-readiness` provides read-only verification of the checkout, macOS profile, Codex plugin links, and optional app-backed capabilities.
+After bootstrap, `$piro-me-doctor` provides read-only diagnosis of the checkout, macOS profile, Codex plugin links, and optional app-backed capabilities.
 
 This repository targets the `pirog` workstation profile. Generic bootstrap behavior belongs in Bootbox, while headless host setup, SSH hardening, remote access, and service supervision belong in `agentbox`.
 

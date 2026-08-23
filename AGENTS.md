@@ -14,7 +14,7 @@ its Codex plugin bundle.
 - Keep generic bootstrap behavior in Bootbox. Headless setup, SSH hardening, remote-login policy,
   service supervision, and production OpenClaw hosting belong in `agentbox`.
 - Keep setup, token management, connector mutations, releases, Leia, and unrelated machine
-  administration outside the readiness skill.
+  administration outside Me Doctor.
 
 ## Sources Of Truth
 
@@ -24,7 +24,8 @@ its Codex plugin bundle.
 - `dotfiles/theme/colors.json` is the lowest-level portable color source for application themes.
 - `.codex-plugin/`, plugin source directories, `package.json`, and the Codex sync implementation own
   the `piroplugin` package and managed cache surface.
-- `skills/me-readiness/` and `skills/me-readiness/test/check-machine.spec.js` own readiness behavior.
+- `skills/me-doctor/` and `skills/me-doctor/test/check-machine.spec.js` own profile diagnostic
+  behavior.
 - `README.md` is the primary setup entrypoint. `ADVANCED.md` owns complete configuration,
   host-specific behavior, post-bootstrap setup, checkout behavior, and Codex sync details.
 - `examples/**/README.md` are Leia-backed executable CI contracts. Read `examples/AGENTS.md` before
@@ -65,9 +66,9 @@ its Codex plugin bundle.
   reports cache drift, use `bun run codex:sync` and rerun the check.
 - Use `bun run ai:sync` only to generate and restow the live Stow-owned AI surface under
   `dotfiles/ai`; it is separate from plugin-cache sync.
-- Treat `$piro-me-readiness` as read-only verification. Read its `SKILL.md` before changing or using
-  it, and keep setup, repair, credential management, connector mutations, and Agentbox or OpenClaw
-  host health outside it.
+- Treat `$piro-me-doctor` as read-only diagnosis. Read its `SKILL.md` before changing or using it,
+  and keep setup, repair, credential management, connector mutations, and Agentbox or OpenClaw host
+  health outside it.
 
 ## Shared Issue Flow
 

@@ -13,6 +13,10 @@ import path from 'node:path';
 import { promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
 
+import buildDoctorReport, {
+  DOCTOR_GROUP_ORDER,
+  getDoctorCheckDefinition,
+} from '../utils/build-doctor-report.js';
 import evaluateOnePasswordEnvironmentRun from '../utils/evaluate-one-password-environment-run.js';
 import evaluateTailscaleStatus from '../utils/evaluate-tailscale-status.js';
 import findOnePasswordTokenEnvKeys, {
@@ -23,7 +27,7 @@ import parseBrewfileEntries from '../utils/parse-brewfile-entries.js';
 import stripStowSimulationNoise from '../utils/strip-stow-simulation-noise.js';
 import withoutOnePasswordTokenFallbacks from '../utils/without-one-password-token-fallbacks.js';
 
-export { default as formatReport } from '../utils/format-readiness-report.js';
+export { default as formatReport } from '../utils/format-doctor-report.js';
 export { ONEPASSWORD_TOKEN_ENV_KEYS };
 
 const execFileAsync = promisify(execFileCallback);
@@ -42,48 +46,13 @@ export const AGENTBOX_HEALTH_SCRIPT_PATH = '/opt/tanaab/agentbox/bin/health.sh';
 export const AGENTBOX_HEALTH_PLIST_PATH = '/Library/LaunchDaemons/dev.tanaab.agentbox.health.plist';
 export const EXPECTED_ONEPASSWORD_ENVIRONMENT_ID = 'zsstdfqknicwfv5glv76gd6tue';
 export const REQUIRED_COMMANDS = ['brew', 'bun', 'curl', 'git', 'stow', 'zsh'];
-export const CHECK_BUCKET_ORDER = Object.freeze([
-  'homebrew',
-  'packages',
-  'dotfiles',
-  'manual_apps',
-  'codex_plugins',
-]);
+export const CHECK_BUCKET_ORDER = DOCTOR_GROUP_ORDER;
 
 const AGENTBOX_SKIPPED_CASKS = new Set(['1password', 'tailscale-app']);
-const CHECK_BUCKET_BY_ID = new Map([
-  ['command_brew', 'homebrew'],
-  ['homebrew_writable', 'homebrew'],
-  ['brewfile_readable', 'packages'],
-  ['brewfile_formulas_installed', 'packages'],
-  ['brewfile_casks_installed', 'packages'],
-  ...REQUIRED_COMMANDS.filter((command) => command !== 'brew').map((command) => [
-    `command_${command}`,
-    'packages',
-  ]),
-  ['bun_homebrew', 'packages'],
-  ['bun_version', 'packages'],
-  ['node_version', 'packages'],
-  ['dotfiles_stowed', 'dotfiles'],
-  ['codex_generated_config', 'dotfiles'],
-  ['command_op', 'manual_apps'],
-  ['onepassword_cli_vault_access', 'manual_apps'],
-  ['onepassword_environment_cli', 'manual_apps'],
-  ['onepassword_environment_run', 'manual_apps'],
-  ['command_tailscale', 'manual_apps'],
-  ['command_tailscaled', 'manual_apps'],
-  ['tailscale_status', 'manual_apps'],
-  ['bootstrap_token_env', 'manual_apps'],
-  ['codex_piroplugin_link', 'codex_plugins'],
-]);
 const CHECK_STATUSES = new Set(['pass', 'warn', 'fail']);
 
 function makeCheck({ id, message, remediation, status }) {
-  const bucket = CHECK_BUCKET_BY_ID.get(id);
-
-  if (!bucket) {
-    throw new Error(`No readiness bucket assigned for check ${id}.`);
-  }
+  const bucket = getDoctorCheckDefinition(id).group;
 
   if (!CHECK_STATUSES.has(status)) {
     throw new Error(`Unsupported readiness status ${status}.`);
@@ -752,10 +721,10 @@ async function appendCodexPluginCheck(checks, repoRoot, homeDir, deps) {
 }
 
 /**
- * Runs the read-only local readiness checks and returns the stable helper report.
+ * Runs the read-only local profile checks and returns the stable Me Doctor report.
  *
  * @param {object} [options] Runtime overrides and test seams for filesystem, command, and env access.
- * @returns {Promise<{ok: boolean, checks: Array<object>}>} Readiness report shaped as `{ ok, checks }`.
+ * @returns {Promise<object>} Versioned, grouped diagnostic report.
  */
 export async function checkMachine(options = {}) {
   const deps = {
@@ -790,8 +759,10 @@ export async function checkMachine(options = {}) {
   appendTokenFallbackCheck(checks, env);
   await appendCodexPluginCheck(checks, repoRoot, homeDir, deps);
 
-  return {
-    ok: !checks.some((check) => check.status === 'fail'),
-    checks,
-  };
+  return buildDoctorReport(checks, {
+    kind: 'live',
+    repoRoot,
+    homeDir,
+    agentboxHost,
+  });
 }

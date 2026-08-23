@@ -1,0 +1,124 @@
+{
+  "command_brew": {
+    "kind": "reconcile",
+    "summary": "Restore Homebrew through the supported `piroboot` workflow, then rerun the Doctor.",
+    "requiresConfirmation": true
+  },
+  "homebrew_writable": {
+    "kind": "investigate",
+    "summary": "Inspect Homebrew with `brew doctor`, repair access for the current macOS user, then rerun the Doctor.",
+    "requiresConfirmation": true
+  },
+  "brewfile_readable": {
+    "kind": "reconcile",
+    "summary": "Restore the `me` checkout and its Brewfile through the supported bootstrap workflow.",
+    "requiresConfirmation": true
+  },
+  "brewfile_formulas_installed": {
+    "kind": "reconcile",
+    "summary": "Rerun `piroboot` to install the required Brewfile formulas.",
+    "requiresConfirmation": true
+  },
+  "brewfile_casks_installed": {
+    "kind": "manual",
+    "summary": "Rerun `piroboot` or install only the optional applications wanted on this machine.",
+    "requiresConfirmation": true
+  },
+  "command_bun": {
+    "kind": "reconcile",
+    "summary": "Rerun `piroboot` to restore the Homebrew-managed Bun runtime.",
+    "requiresConfirmation": true
+  },
+  "command_curl": {
+    "kind": "reconcile",
+    "summary": "Rerun `piroboot` to restore the required curl formula.",
+    "requiresConfirmation": true
+  },
+  "command_git": {
+    "kind": "reconcile",
+    "summary": "Rerun `piroboot` to restore the required Git formula.",
+    "requiresConfirmation": true
+  },
+  "command_stow": {
+    "kind": "reconcile",
+    "summary": "Rerun `piroboot` to restore GNU Stow.",
+    "requiresConfirmation": true
+  },
+  "command_zsh": {
+    "kind": "reconcile",
+    "summary": "Rerun `piroboot` to restore the required Zsh formula.",
+    "requiresConfirmation": true
+  },
+  "bun_homebrew": {
+    "kind": "reconcile",
+    "summary": "Restore the Homebrew Bun formula and put `/opt/homebrew/bin` before legacy Bun paths.",
+    "requiresConfirmation": true
+  },
+  "bun_version": {
+    "kind": "reconcile",
+    "summary": "Update the Homebrew Bun formula to the exact version pinned by `.bun-version`.",
+    "requiresConfirmation": true
+  },
+  "node_version": {
+    "kind": "reconcile",
+    "summary": "Install or repair the Homebrew `node@24` formula from the Brewfile.",
+    "requiresConfirmation": true
+  },
+  "dotfiles_stowed": {
+    "kind": "investigate",
+    "summary": "Resolve reported Stow conflicts, then rerun `piroboot`; use `bun run ai:sync` only for the `ai` package.",
+    "requiresConfirmation": true
+  },
+  "codex_generated_config": {
+    "kind": "reconcile",
+    "summary": "Regenerate the private Codex configuration from this checkout.",
+    "command": "bun run ai:sync",
+    "requiresConfirmation": true
+  },
+  "command_op": {
+    "kind": "manual",
+    "summary": "Install the optional 1Password CLI beta only when protected-resource access is needed.",
+    "requiresConfirmation": true
+  },
+  "onepassword_cli_vault_access": {
+    "kind": "manual",
+    "summary": "Unlock 1Password, enable CLI integration, and verify the intended signed-in account.",
+    "requiresConfirmation": false
+  },
+  "onepassword_environment_cli": {
+    "kind": "manual",
+    "summary": "Install a 1Password CLI beta with Environments support when that optional access is needed.",
+    "requiresConfirmation": true
+  },
+  "onepassword_environment_run": {
+    "kind": "manual",
+    "summary": "Confirm desktop integration and authorize the expected 1Password Environment when protected access is needed.",
+    "requiresConfirmation": false
+  },
+  "command_tailscale": {
+    "kind": "manual",
+    "summary": "Restore the machine's intended Tailscale app or managed Agentbox runtime when tailnet access is needed.",
+    "requiresConfirmation": true
+  },
+  "command_tailscaled": {
+    "kind": "manual",
+    "summary": "Use Agentbox Doctor to diagnose its managed `tailscaled` runtime when tailnet access is needed.",
+    "requiresConfirmation": false
+  },
+  "tailscale_status": {
+    "kind": "manual",
+    "summary": "Connect the intended Tailscale runtime to the `tanaab.dev` tailnet, or hand Agentbox service health to Agentbox Doctor.",
+    "requiresConfirmation": true
+  },
+  "bootstrap_token_env": {
+    "kind": "manual",
+    "summary": "Unset persistent 1Password token fallback variables after bootstrap no longer needs them.",
+    "requiresConfirmation": true
+  },
+  "codex_piroplugin_link": {
+    "kind": "reconcile",
+    "summary": "Regenerate the local AI surface and relink `piroplugin` to the current checkout.",
+    "command": "bun run ai:sync",
+    "requiresConfirmation": true
+  }
+}

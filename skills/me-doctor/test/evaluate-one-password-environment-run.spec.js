@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 
 import evaluateOnePasswordEnvironmentRun from '../utils/evaluate-one-password-environment-run.js';
 
-describe('skills/me-readiness/utils/evaluate-one-password-environment-run', () => {
+describe('skills/me-doctor/utils/evaluate-one-password-environment-run', () => {
   it('should pass only the expected present and matching sentinel result', () => {
     assert.deepEqual(
       evaluateOnePasswordEnvironmentRun(

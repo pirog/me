@@ -249,11 +249,23 @@ function findCheck(report, id) {
   return check;
 }
 
-describe('skills/me-readiness/lib/check-machine', () => {
+describe('skills/me-doctor/lib/check-machine', () => {
   it('reports ready when core profile and Codex integration checks pass', async () => {
     const report = await runCheck();
 
     assert.equal(report.ok, true);
+    assert.equal(report.schemaVersion, 1);
+    assert.equal(report.status, 'ready');
+    assert.deepEqual(report.source, {
+      agentboxHost: false,
+      homeDir: HOME_DIR,
+      kind: 'live',
+      repoRoot: REPO_ROOT,
+    });
+    assert.equal(report.summary.failed, 0);
+    assert.equal(report.summary.warnings, 0);
+    assert.deepEqual(report.issues, []);
+    assert.deepEqual(report.warnings, []);
     assert.deepEqual([...new Set(report.checks.map((check) => check.status))], ['pass']);
   });
 
@@ -273,8 +285,13 @@ describe('skills/me-readiness/lib/check-machine', () => {
     const check = findCheck(report, 'brewfile_formulas_installed');
 
     assert.equal(report.ok, false);
+    assert.equal(report.status, 'not_ready');
     assert.equal(check.status, 'fail');
     assert.match(check.message, /imagemagick/);
+    assert.equal(
+      report.issues.find((issue) => issue.key === check.id)?.remediation.kind,
+      'reconcile',
+    );
   });
 
   it('treats missing Brewfile casks as warnings', async () => {
@@ -284,9 +301,11 @@ describe('skills/me-readiness/lib/check-machine', () => {
     const check = findCheck(report, 'brewfile_casks_installed');
 
     assert.equal(report.ok, true);
+    assert.equal(report.status, 'warning');
     assert.equal(check.status, 'warn');
     assert.match(check.message, /google-chrome/);
     assert.match(check.message, /warp/);
+    assert.ok(report.warnings.some((warning) => warning.key === check.id));
   });
 
   it('excludes intentional Agentbox cask skips', async () => {
@@ -454,6 +473,10 @@ describe('skills/me-readiness/lib/check-machine', () => {
     const indexes = report.checks.map((check) => CHECK_BUCKET_ORDER.indexOf(check.bucket));
 
     assert.deepEqual([...new Set(report.checks.map((check) => check.bucket))], CHECK_BUCKET_ORDER);
+    assert.deepEqual(
+      report.groups.map((group) => group.id),
+      CHECK_BUCKET_ORDER,
+    );
     for (let index = 1; index < indexes.length; index += 1) {
       assert.ok(indexes[index] >= indexes[index - 1]);
     }
@@ -473,6 +496,14 @@ describe('skills/me-readiness/lib/check-machine', () => {
     for (const check of report.checks.filter((entry) => entry.status !== 'pass')) {
       assert.equal(typeof check.remediation, 'string', check.id);
       assert.notEqual(check.remediation.trim(), '', check.id);
+    }
+
+    for (const diagnostic of [...report.issues, ...report.warnings]) {
+      assert.ok(
+        ['command', 'investigate', 'manual', 'reconcile'].includes(diagnostic.remediation.kind),
+      );
+      assert.equal(typeof diagnostic.remediation.summary, 'string');
+      assert.equal(typeof diagnostic.remediation.requiresConfirmation, 'boolean');
     }
   });
 });

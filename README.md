@@ -101,7 +101,7 @@ components, checkout behavior, post-bootstrap setup, and Codex configuration and
 ## After Bootstrap
 
 Complete the app-backed steps in [Post-Bootstrap Setup](./ADVANCED.md#post-bootstrap-setup), then ask
-Codex to run `$piro-me-readiness` for read-only verification of the resulting machine profile.
+Codex to run `$piro-me-doctor` for read-only diagnosis of the resulting machine profile.
 
 ## Development
 
