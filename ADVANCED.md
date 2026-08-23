@@ -56,11 +56,14 @@ The repository is packaged as `piroplugin` through
 - [`piro-me-doctor`](./skills/me-doctor/): diagnoses the checkout, macOS profile, desktop-backed
   1Password access, Tailscale, Codex plugin links, and connector identities without changing the
   machine.
-- [`piro-skill-author`](./skills/skill-author/): creates, standardizes, and validates Pirobased
-  repository-local skills.
+- [`piro-skill-author`](./skills/skill-author/): creates, standardizes, validates, and optimizes
+  Pirobased repository-local skills.
 - [`piro-work-on-task`](./skills/work-on-task/): opens one GitHub issue or same-repository pull
   request in a Codex-managed worktree task, produces a user-centered assessment, and prepares a
   technical implementation plan before changes begin.
+- [`piro-clean-up-task`](./skills/clean-up-task/): verifies that one finished Codex task has preserved
+  its declared outcome and, when explicitly requested, archives it using evidence appropriate to a
+  PR, Git, retained checkout, or conversation-only task.
 
 Broader shared canon skills come from the paired `tanaab` plugin. The `ai` dotfile package installs
 the `piroplugin` source link and publishes the local `Pirostore` marketplace. Tanaab checkouts that

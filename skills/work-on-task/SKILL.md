@@ -29,6 +29,10 @@ instructions, and a copyable retry prompt. The created task begins with read-onl
 planning. This remains an instruction-only Me workflow; Codex owns task and worktree creation, and
 the skill does not add a parallel helper script or worktree manager.
 
+When the resulting task is finished, `$piro-clean-up-task` owns assessment and archival of that
+exact Codex task. It applies additional merged-PR evidence only when a pull request is the declared
+deliverable. This skill creates and starts work; it never archives an existing task.
+
 ## When to Use
 
 - The user explicitly invokes `$piro-work-on-task` and asks to create a new Codex task for one open
@@ -49,6 +53,8 @@ the skill does not add a parallel helper script or worktree manager.
   the clone command or drive the Codex UI.
 - Do not implement, commit, push, comment on GitHub, or open a pull request during the initial
   assessment and planning turn.
+- Do not assess or archive completed task state. Use `$piro-clean-up-task` when the resulting task's
+  declared outcome is finished, whether or not it produced a pull request.
 - Do not add a helper script until a demonstrated reliability gap cannot be handled by Codex's
   native project, task, branch, and worktree operations.
 
