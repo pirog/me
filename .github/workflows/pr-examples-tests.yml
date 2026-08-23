@@ -7,6 +7,7 @@ permissions:
   contents: read
 
 env:
+  HOMEBREW_NO_AUTO_UPDATE: '1'
   STAMPED_VERSION: v9.9.9-ci.${{ github.event.pull_request.head.sha }}
 
 jobs:
@@ -52,6 +53,6 @@ jobs:
           TMPDIR: ${{ github.workspace }}/examples/${{ matrix.example }}/.tmp
           OPTOKEN: ${{ secrets.TANAAB_OP_TEST }}
         run: |
-          brew update
           mkdir -p "$TMPDIR"
+          HOMEBREW_NO_AUTO_UPDATE= brew update-if-needed
           bun run leia "examples/${{ matrix.example }}/README.md" --stdin --retry 0
