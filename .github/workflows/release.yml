@@ -51,6 +51,8 @@ jobs:
             UNRELEASED_VERSION=${{ github.event.release.tag_name }}
       - name: Verify prepared formatting
         run: bun run format:check
+      - name: Validate prepared Codex plugin
+        run: bun run codex:validate
       - name: Install production dependencies
         run: |
           rm -rf node_modules

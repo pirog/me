@@ -74,7 +74,6 @@ services, mutate connector data, or validate the Agentbox product.
    helper's unsandboxed allowance to unrelated commands.
 
 2. Parse the versioned JSON contract:
-
    - `schemaVersion` identifies the report contract.
    - `status` is `ready`, `warning`, or `not_ready`; `ok` remains true for optional warnings.
    - `source` identifies the live probe without carrying credentials or raw environment data.
@@ -92,7 +91,6 @@ services, mutate connector data, or validate the Agentbox product.
 
 4. Discover the GitHub connector tools and run a read-only authenticated identity probe. This is a
    required Codex integration. Require both:
-
    - GitHub login `pirog`
    - GitHub user ID `713424`
 
@@ -100,7 +98,6 @@ services, mutate connector data, or validate the Agentbox product.
 
 5. Discover the monday connector tools and, when available, run
    `list_users_and_teams(getMe=true)`. Expect:
-
    - monday user ID `71211606`
    - monday user name `Michael Pirog`
 
@@ -108,7 +105,6 @@ services, mutate connector data, or validate the Agentbox product.
    monday data.
 
 6. Present the combined result:
-
    - `🟢 Ready`: local status is `ready` and GitHub identity matches.
    - `🟡 Ready with warnings`: local status is `warning`, or monday warns, while GitHub identity
      matches.

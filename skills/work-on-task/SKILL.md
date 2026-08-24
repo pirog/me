@@ -94,7 +94,6 @@ deliverable. This skill creates and starts work; it never archives an existing t
    generic filler such as `task`, `issue`, `work on`, or `github`.
 
 3. Derive the task title from the source kind and that description:
-
    - Issue task title: `#<issue-number>: <UPPERCASE BRIEF DESCRIPTION>`, for example
      `#123: FIX PROFILE CACHE DRIFT`.
    - Pull-request task title: `PR #<pr-number>: <UPPERCASE BRIEF DESCRIPTION>`, for example
@@ -108,7 +107,6 @@ deliverable. This skill creates and starts work; it never archives an existing t
 
 5. When no exact saved project matches, derive the expected checkout as `~/tanaab/<repo>` and stop
    with one setup handoff:
-
    - Inspect the expected path read-only. If it does not exist, provide this copyable command with
      canonical values substituted:
 
@@ -134,7 +132,6 @@ deliverable. This skill creates and starts work; it never archives an existing t
    `<issue-number>-<lowercase-kebab-description>`, for example `123-fix-profile-cache-drift`. It must
    begin with the decimal issue number and must not include `pirog-`, `issue-`, or another prefix.
    Create a new Codex task against the selected project with:
-
    - the issue-number-prefixed all-caps brief description as its explicit title;
    - a native `worktree` environment;
    - the derived branch as its starting state;
@@ -192,7 +189,6 @@ deliverable. This skill creates and starts work; it never archives an existing t
    Verify that `refs/remotes/origin/<validated-head-branch>` equals the GitHub-reported head commit.
    Stop on a fetch failure or mismatch. Then create a new Codex task against the selected project
    with:
-
    - the PR-number-prefixed all-caps brief description as its explicit title;
    - a native `worktree` environment;
    - `refs/remotes/origin/<validated-head-branch>` as its existing starting ref;

@@ -90,7 +90,6 @@ filesystem garbage collector, abandonment override, bulk collector, or scheduled
 
 3. Determine the environment from native task and project metadata plus the working directory. Do
    not classify from a path basename alone:
-
    - **managed Git worktree:** a Codex-managed disposable worktree associated with this task;
    - **retained Git environment:** a permanent worktree or local checkout that archival does not
      delete;
@@ -102,7 +101,6 @@ filesystem garbage collector, abandonment override, bulk collector, or scheduled
 4. Inventory the task's outcome without mutation. Record only explicit deliverables and whether the
    task reports unresolved questions, incomplete work, or a later user request that changed the
    expected outcome. Select exactly one evidence profile:
-
    - **PR deliverable:** one exact pull request is the task's primary completed outcome;
    - **Git without PR:** the task used a Git environment but has no primary PR deliverable;
    - **conversation or non-Git deliverable:** the durable result is the task transcript, a connected
@@ -113,7 +111,6 @@ filesystem garbage collector, abandonment override, bulk collector, or scheduled
    incidental links as extra deliverables.
 
 5. For every Git environment, inspect the current state read-only before applying a profile:
-
    - normalize `origin` when present and record the repository without requiring one for local-only
      work;
    - record `HEAD`, detached or symbolic branch state, and
@@ -192,7 +189,6 @@ filesystem garbage collector, abandonment override, bulk collector, or scheduled
    archival fails or cannot be read back, report the failure and retain every other state.
 
 9. Report the environment-specific result:
-
    - for a **managed Git worktree**, report that Codex owns its snapshot and reclamation; do not
      manually remove or poll-delete its directory;
    - for a **retained Git environment**, report that the local checkout or permanent worktree
