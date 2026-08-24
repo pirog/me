@@ -2,29 +2,42 @@
 
 ## FINAL MANUAL TAZKZ
 
+- @tanaab/canon
+  - assigned issues?
+  - milestone planner?
+
+- @pirog/me
+  - assigned issues?
+
+  - automation
+    - me-automation-sync
+      - find work?
+      - review agents?
+      - review goals?
+      - cleanup tasks?
+
+  - me doctor name?
+
 - @tanaab/openclaw-agent-system
   - v0.5.0
-    - complete issue + work flow
-      - chunk 1: issue assigned event flow
-        - optimizer?
-      - chunk 2: link session to open PR? separate event? metadata for PR?
-        - do work and end up with PR and link etc
+    - emoris source origin mismatch fix
+    - chunk 2: link session to open PR? separate event? metadata for PR?
+      - do work and end up with PR and link etc
 
-    - MERGE
+  - v0.6.0
+    - complete issue + plan flow
+      - plan mode need to be able to transition to work mode with plan prompt injection?
+    - complete auto flow
+    - complete freeform (eg awaiting instructions) mode
+      - card says: but dont do aything untul you hear from assigner
 
-      - send update to github command?
-        - reconcile local discussion and github and push update
-
-      - complete issue + plan flow
-        - plan mode need to be able to transition to work mode with plan prompt injection?
-      - complete auto flow
-      - complete freeform (eg awaiting instructions) mode
-        - card says: but dont do aything untul you hear from assigner
+    - send update to github command?
+      - reconcile local discussion and github and push update
 
     - optimize
     - docs
 
-  - v0.6.0
+  - v0.7.0
     - github_reply tool?
       - can anyone run?
     - model router
@@ -35,24 +48,63 @@
     - docs
     - what about guidance on completing an issue eg open PR etc?
 
-- @tanaab/emori
-  - continue testing notifications
-  - emori choose her emoji
-
-  - update goals?
-    - finish fleshing out our canon/agent-system/emori/me repos
-    - work on a bunch of random issues and milestones as a way to validate/bug fix/harden/imrpove our agent-sytem/canon/emori workflow
-
-  - emori also text pirog when isuses are done?
-  - iMessage me when no work left and bug me every few hours until i assign something?
-  - send me a report of work ready for review every morning?
-  - push back on irrelevant issues?
-  - remove emori from main pushing?
-  - emori release
-
 ## ISSUES 2 ADD
 
+- @tanaab/canon
+  - pr review task
+
+  - add AGENTS.md to project optimization?
+
+  - project author skill
+    - suggest 3 good tags skill?
+    - skill to autotag repos?
+
+  - openclaw plugin?
+    - make into `agent-system` native tools when AS API is available?
+      - `tanaab_task_author`
+      - `tanaab_github_issue_schema_author`
+      - `tanaab_github_issue_form_author`
+
+  - "keeper of the faith"
+    - some kind of tanaab-coach/advisor skill?
+    - a brand enforcer skill (better as separate agent now? need pull request reivew?)
+  - adoption of schema|error|cli frameworks?
+
+- @lando/leia
+  - fix JS literals
+  - Octal escape sequences are not allowed in template strings.
+  - ESM?
+  - update canon guidance
+
+- @tanaab/component-playground
+  - migrate tms one
+    - decouple styling
+
+- @tanaab/merge
+  - pilot task-decomposer
+    - scaffold
+      - pirog for secrets and github and initial release?
+    - ts to npm? bun based?
+
+- @tanaab/actions?
+  - for reusable actions
+  - release-npm
+  - release-clawhub
+  - release-github
+  - npm-pack
+  - ssh-key-gen
+
+- @tanaab/codex-tools?
+  - codex-sync utils?
+
 - @tanaab/emori
+  - queue up some issues?
+    - emori also text pirog when isuses are done?
+    - iMessage me when no work left and bug me every few hours until i assign something?
+    - automate goal checking?
+    - send me a report of work ready for review every morning?
+
+  - add a simple agent-system install test?
   - brave search API?
   - discord
   - skill audit and trim?
@@ -65,6 +117,8 @@
   - backup stuff memories?
 
   - incorporate log into memories system once we have backups?
+
+  - push back on irrelevant issues?
 
   - other issues/goals
     - bootstrap.md.template?
@@ -96,82 +150,12 @@
 
     - explore migration to MCP as base tooling layer?
 
-- @tanaab/canon
-  - milestone author?
-    - optimizer?
-
-  - issue decontructor?
-  - milestone planner?
-
-  - how do we roll out issue templates?
-  - add AGENTS.md to project optimization?
-
-  - project author skill
-    - suggest 3 good tags skill?
-    - skill to autotag repos?
-
-  - openclaw plugin?
-    - make into `agent-system` native tools when AS API is available?
-      - `tanaab_task_author`
-      - `tanaab_github_issue_schema_author`
-      - `tanaab_github_issue_form_author`
-
-  - "keeper of the faith"
-    - some kind of tanaab-coach/advisor skill?
-    - a brand enforcer skill (better as separate agent now? need pull request reivew?)
-  - adoption of schema|error|cli frameworks?
-
 - @pirog/me
-  - skills9
-    - work-on-task
-      - issue mode
-      - pr mode
-        - include code review if applicable against canon guidance?
-      - cleanup tasks?
-
-      - optimizer?
-
-    - advance-goals?
-      - stated goal
-      - github milestone
-      - fallback goals.md
-
-      - get all PRs/issues assigned
-        - use work-on-task
-
-    - automation
-      - around fetch skill?
-
-    - me-automation-sync
-      - advance goals?
-      - cleanup tasks?
-
-    - me/life issue labels?
-
-  - small things?
-    - node 26?
-    - add github known hosts
-
-  - later
-    - blog like pirog skill
-    - pirog openclaw/agent-system
-    - openclaw plugin skills metadata?
-  - model capabilitie for work-on-task?
-
-- @tanaab/codex-tools?
-  - codex-sync utils?
-
-- @lando/leia
-  - fix JS literals
-  - ESM?
-  - update canon guidance
-  - Octal escape sequences are not allowed in template strings.
-
-- @tanaab/component-playground
-  - migrate tms one
-    - decouple styling
-
-- @tanaab/merge
+  - pirog/life issue labels?
+  - blog like pirog skill
+  - pirog openclaw/agent-system
+  - openclaw plugin skills metadata?
+  - model capabilities for work-on-task?
 
 - @tanaab/\*
   - change to @tanaab npm namespacing via project optimizer
@@ -198,19 +182,6 @@
     - canon list of tags?
     - bootbox
     - hosted-scripts
-
-- @tanaab/utils
-  - audit which in core-next are worth it?
-    - merge?
-
-- @tanaab/config-system
-- @tanaab/actions?
-  - for reusable actions
-  - release-npm
-  - release-clawhub
-  - release-github
-  - npm-pack
-  - ssh-key-gen
 
 - @tanaab/openclaw-devguard
   - spec to issues?
@@ -299,3 +270,5 @@
 - @tanaab/template-netscript
   - AGENTS.md starter
   - llms?
+
+- @tanaab/config-system?
