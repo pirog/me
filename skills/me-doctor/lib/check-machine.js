@@ -35,7 +35,7 @@ const LIB_DIR = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_REPO_ROOT = path.resolve(LIB_DIR, '..', '..', '..');
 const PRIVATE_CONFIG_MODE = 0o600;
 const EXPECTED_TAILNET_NAME = 'tanaab.dev';
-const MINIMUM_NODE_MAJOR_VERSION = 24;
+const MINIMUM_NODE_MAJOR_VERSION = 26;
 const MINIMUM_ONEPASSWORD_ENVIRONMENT_CLI_VERSION = '2.33.0-beta.02';
 const READINESS_AUTHORIZATION_CODE_KEY = 'READINESS_AUTHORIZATION_CODE';
 const EXPECTED_READINESS_AUTHORIZATION_CODE_SHA256 =
@@ -365,34 +365,34 @@ async function appendNodeRuntimeCheck(checks, deps) {
     checks.push(
       fail(
         'node_version',
-        'The Homebrew node@24 runtime could not be checked because brew is missing.',
-        'Install Homebrew and node@24 from the Brewfile.',
+        'The Homebrew node@26 runtime could not be checked because brew is missing.',
+        'Install Homebrew and node@26 from the Brewfile.',
       ),
     );
     return;
   }
 
   try {
-    const { stdout: prefixOutput } = await deps.execFile('brew', ['--prefix', 'node@24']);
+    const { stdout: prefixOutput } = await deps.execFile('brew', ['--prefix', 'node@26']);
     const nodePath = path.join(prefixOutput.trim(), 'bin', 'node');
     const { stdout: versionOutput } = await deps.execFile(nodePath, ['--version']);
     const version = versionOutput.trim();
     const major = Number.parseInt(version.replace(/^v/, '').split('.')[0] ?? '', 10);
     checks.push(
       major >= MINIMUM_NODE_MAJOR_VERSION
-        ? pass('node_version', `Homebrew node@24 reports supported version ${version}.`)
+        ? pass('node_version', `Homebrew node@26 reports supported version ${version}.`)
         : fail(
             'node_version',
-            `Homebrew node@24 reports version ${version || 'unknown'}, expected major version ${MINIMUM_NODE_MAJOR_VERSION} or newer.`,
-            'Install or update node@24 from the Brewfile.',
+            `Homebrew node@26 reports version ${version || 'unknown'}, expected major version ${MINIMUM_NODE_MAJOR_VERSION} or newer.`,
+            'Install or update node@26 from the Brewfile.',
           ),
     );
   } catch {
     checks.push(
       fail(
         'node_version',
-        'The Homebrew node@24 binary could not be resolved or executed.',
-        'Install or repair node@24 from the Brewfile.',
+        'The Homebrew node@26 binary could not be resolved or executed.',
+        'Install or repair node@26 from the Brewfile.',
       ),
     );
   }

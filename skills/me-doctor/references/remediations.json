@@ -61,7 +61,7 @@
   },
   "node_version": {
     "kind": "reconcile",
-    "summary": "Install or repair the Homebrew `node@24` formula from the Brewfile.",
+    "summary": "Install or repair the Homebrew `node@26` formula from the Brewfile.",
     "requiresConfirmation": true
   },
   "dotfiles_stowed": {

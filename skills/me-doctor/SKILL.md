@@ -65,7 +65,7 @@ services, mutate connector data, or validate the Agentbox product.
    ```
 
    The helper is read-only. It checks effective Homebrew writability, queries installed formulas
-   and casks, verifies the running Bun and Homebrew `node@24`, simulates the complete GNU Stow
+   and casks, verifies the running Bun and Homebrew `node@26`, simulates the complete GNU Stow
    layout, inspects local files and links, and probes optional desktop or daemon services. It strips
    1Password token fallback variables from every `op` subprocess.
 
@@ -144,8 +144,8 @@ services, mutate connector data, or validate the Agentbox product.
 - Discover all `brew` and `cask` entries from the current Brewfile. Missing formulas fail; missing
   applicable casks warn.
 - Require `brew`, `bun`, `curl`, `git`, `stow`, and `zsh` on `PATH`. Require the running Bun to come
-  from Homebrew and match `.bun-version`. Resolve `$(brew --prefix node@24)/bin/node` directly and
-  require major version 24 or newer.
+  from Homebrew and match `.bun-version`. Resolve `$(brew --prefix node@26)/bin/node` directly and
+  require major version 26 or newer.
 - Discover every top-level package under `dotfiles/` and use a read-only Stow simulation. Any
   missing link or conflict fails readiness.
 - Keep generated Codex config, the `piroplugin` link, and GitHub identity as required integration
