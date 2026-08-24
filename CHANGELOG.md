@@ -1,10 +1,12 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+- Added GitHub SSH host keys to `~/.ssh/known_hosts` before bootstrap repository clones. [#43](https://github.com/pirog/me/pull/43)
 - Added `$piro-clean-up-task` for evidence-gated archival across PR, Git, retained-checkout, and conversation-only outcomes. [#39](https://github.com/pirog/me/pull/39)
 - Added `$piro-work-on-task` for issue and same-repository pull-request planning in Codex-managed worktrees. [#39](https://github.com/pirog/me/pull/39)
 - Fixed the shared Codex default to use the ChatGPT-compatible `gpt-5.6-sol` model ID. [#39](https://github.com/pirog/me/pull/39)
 - Removed the pre-seeded `tanaabot` OpenClaw identity and workspace while retaining the opt-in dependency bundle. [#39](https://github.com/pirog/me/pull/39)
 - Renamed `$piro-me-readiness` to `$piro-me-doctor` and added grouped, versioned diagnostics with focused remediation. [#39](https://github.com/pirog/me/pull/39)
+- Updated the machine profile and `$piro-me-doctor` to require Homebrew `node@26` and `.tool-versions` Node 26. [#43](https://github.com/pirog/me/pull/43)
 
 ## v1.0.0-beta.8 - [July 27, 2026](https://github.com/pirog/me/releases/tag/v1.0.0-beta.8)
 
