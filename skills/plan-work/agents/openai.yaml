@@ -1,0 +1,7 @@
+interface:
+  display_name: 'Plan Work'
+  short_description: 'Pirobased assigned-work planning and task selection.'
+  icon_small: '../../assets/composer-icon.svg'
+  icon_large: '../../assets/icon-large.png'
+  brand_color: '#db2777'
+  default_prompt: 'Use $piro-plan-work to discover and prioritize my assigned GitHub work for a light weekly plan, ask whether to include Lando, and wait for my exact selection before starting any Codex tasks.'
