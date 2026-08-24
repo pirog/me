@@ -5,25 +5,24 @@
 - @tanaab/openclaw-agent-system
   - v0.5.0
     - complete issue + work flow
-      - issue assigned event flow
-        - list of receipt responses
-        - ask as many questions as needed to make a plan but one by one
-        - plan should include the agent's own explanation of the issue, it should be user-centric
-
-      - link session to open PR? separate event? metadata for PR?
+      - chunk 1: issue assigned event flow
+        - optimizer?
+      - chunk 2: link session to open PR? separate event? metadata for PR?
         - do work and end up with PR and link etc
 
-    - complete issue + plan flow
-      - plan mode need to be able to transition to work mode with plan prompt injection?
-    - complete auto flow
-    - complete freeform (eg awaiting instructions) mode
+    - MERGE
 
-    - send update to github command?
-      - reconcile local discussion and github and push update
+      - send update to github command?
+        - reconcile local discussion and github and push update
+
+      - complete issue + plan flow
+        - plan mode need to be able to transition to work mode with plan prompt injection?
+      - complete auto flow
+      - complete freeform (eg awaiting instructions) mode
+        - card says: but dont do aything untul you hear from assigner
 
     - optimize
     - docs
-    - big test bucket repo?
 
   - v0.6.0
     - github_reply tool?
@@ -98,11 +97,13 @@
     - explore migration to MCP as base tooling layer?
 
 - @tanaab/canon
-  - milestone management?
+  - milestone author?
+    - optimizer?
+
   - issue decontructor?
+  - milestone planner?
 
   - how do we roll out issue templates?
-
   - add AGENTS.md to project optimization?
 
   - project author skill
@@ -121,15 +122,41 @@
   - adoption of schema|error|cli frameworks?
 
 - @pirog/me
-  - work-on-issue skill?
-  - issue to check "mergeable-work"
+  - skills9
+    - work-on-task
+      - issue mode
+      - pr mode
+        - include code review if applicable against canon guidance?
+      - cleanup tasks?
 
-  - node 26?
-  - add github known hosts
-  - blog like pirog skill
-  - $me-readiness should actually be like $me-setup, $me-update and $me-doctor?
-    - should also follow the "narrow remediation" path in `agentbox`
-  - "normalize" existing agent-system issues?
+      - optimizer?
+
+    - advance-goals?
+      - stated goal
+      - github milestone
+      - fallback goals.md
+
+      - get all PRs/issues assigned
+        - use work-on-task
+
+    - automation
+      - around fetch skill?
+
+    - me-automation-sync
+      - advance goals?
+      - cleanup tasks?
+
+    - me/life issue labels?
+
+  - small things?
+    - node 26?
+    - add github known hosts
+
+  - later
+    - blog like pirog skill
+    - pirog openclaw/agent-system
+    - openclaw plugin skills metadata?
+  - model capabilitie for work-on-task?
 
 - @tanaab/codex-tools?
   - codex-sync utils?
@@ -143,6 +170,8 @@
 - @tanaab/component-playground
   - migrate tms one
     - decouple styling
+
+- @tanaab/merge
 
 - @tanaab/\*
   - change to @tanaab npm namespacing via project optimizer
