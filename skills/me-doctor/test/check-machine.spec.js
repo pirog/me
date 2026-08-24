@@ -356,13 +356,16 @@ describe('skills/me-doctor/lib/check-machine', () => {
     assert.equal(legacy.ok, false);
   });
 
-  it('accepts Node 26 or newer and rejects older Node', async () => {
-    const current = await runCheck({ nodeVersion: 'v27.1.0' });
+  it('should accept Node 26 and reject other major versions', async () => {
+    const current = await runCheck({ nodeVersion: 'v26.1.0' });
     const old = await runCheck({ nodeVersion: 'v25.9.0' });
+    const newMajor = await runCheck({ nodeVersion: 'v27.1.0' });
 
     assert.equal(findCheck(current, 'node_version').status, 'pass');
     assert.equal(findCheck(old, 'node_version').status, 'fail');
+    assert.equal(findCheck(newMajor, 'node_version').status, 'fail');
     assert.equal(old.ok, false);
+    assert.equal(newMajor.ok, false);
   });
 
   it('checks the Homebrew node@26 binary without depending on the inherited PATH', async () => {

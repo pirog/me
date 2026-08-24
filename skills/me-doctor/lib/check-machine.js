@@ -35,7 +35,7 @@ const LIB_DIR = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_REPO_ROOT = path.resolve(LIB_DIR, '..', '..', '..');
 const PRIVATE_CONFIG_MODE = 0o600;
 const EXPECTED_TAILNET_NAME = 'tanaab.dev';
-const MINIMUM_NODE_MAJOR_VERSION = 26;
+const EXPECTED_NODE_MAJOR_VERSION = 26;
 const MINIMUM_ONEPASSWORD_ENVIRONMENT_CLI_VERSION = '2.33.0-beta.02';
 const READINESS_AUTHORIZATION_CODE_KEY = 'READINESS_AUTHORIZATION_CODE';
 const EXPECTED_READINESS_AUTHORIZATION_CODE_SHA256 =
@@ -379,11 +379,11 @@ async function appendNodeRuntimeCheck(checks, deps) {
     const version = versionOutput.trim();
     const major = Number.parseInt(version.replace(/^v/, '').split('.')[0] ?? '', 10);
     checks.push(
-      major >= MINIMUM_NODE_MAJOR_VERSION
+      major === EXPECTED_NODE_MAJOR_VERSION
         ? pass('node_version', `Homebrew node@26 reports supported version ${version}.`)
         : fail(
             'node_version',
-            `Homebrew node@26 reports version ${version || 'unknown'}, expected major version ${MINIMUM_NODE_MAJOR_VERSION} or newer.`,
+            `Homebrew node@26 reports version ${version || 'unknown'}, expected major version ${EXPECTED_NODE_MAJOR_VERSION}.`,
             'Install or update node@26 from the Brewfile.',
           ),
     );

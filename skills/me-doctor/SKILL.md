@@ -145,7 +145,7 @@ services, mutate connector data, or validate the Agentbox product.
   applicable casks warn.
 - Require `brew`, `bun`, `curl`, `git`, `stow`, and `zsh` on `PATH`. Require the running Bun to come
   from Homebrew and match `.bun-version`. Resolve `$(brew --prefix node@26)/bin/node` directly and
-  require major version 26 or newer.
+  require major version 26.
 - Discover every top-level package under `dotfiles/` and use a read-only Stow simulation. Any
   missing link or conflict fails readiness.
 - Keep generated Codex config, the `piroplugin` link, and GitHub identity as required integration
