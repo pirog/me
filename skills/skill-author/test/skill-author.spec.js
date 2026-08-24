@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { execFile } from 'node:child_process';
-import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { lstat, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { promisify } from 'node:util';
@@ -28,6 +28,7 @@ async function createGeneratedSkill({
   emoji,
   homepage,
   pluginRepository,
+  sharedPluginAssets = false,
   slug = 'openclaw-probe',
   type = 'generic',
 } = {}) {
@@ -43,6 +44,15 @@ async function createGeneratedSkill({
       `${JSON.stringify({ repository: pluginRepository }, null, 2)}\n`,
       'utf8',
     );
+
+    if (sharedPluginAssets) {
+      const assetsDir = path.join(tempRoot, 'assets');
+      await mkdir(assetsDir, { recursive: true });
+      await Promise.all([
+        writeFile(path.join(assetsDir, 'composer-icon.svg'), '<svg/>\n', 'utf8'),
+        writeFile(path.join(assetsDir, 'icon-large.png'), 'shared icon\n'),
+      ]);
+    }
   }
 
   const args = [
@@ -153,6 +163,28 @@ describe('skills/skill-author scaffolding', () => {
     assert.equal(validation.exitCode, 0, validation.output);
   });
 
+  it('should scaffold coding lifecycle and automation projection sections', async () => {
+    const generated = await createGeneratedSkill({ slug: 'coding-lifecycle', type: 'coding' });
+    tempRoots.push(generated.tempRoot);
+    const skillPath = path.join(generated.skillDir, 'SKILL.md');
+    const originalContent = await readFile(skillPath, 'utf8');
+
+    assert.match(originalContent, /\n## Documentation\n/);
+    assert.match(originalContent, /\n## Testing\n/);
+    assert.match(originalContent, /\n## Deployment\n/);
+    assert.match(originalContent, /\n## GitHub Actions\n/);
+    assert.doesNotMatch(originalContent, /\n## GitHub Actions Workflow\n/);
+
+    const withoutDeployment = originalContent.replace(
+      /\n## Deployment\n[\s\S]*?(?=\n## GitHub Actions\n)/,
+      '',
+    );
+    await writeFile(skillPath, withoutDeployment, 'utf8');
+
+    const validation = await validateGeneratedSkill(generated.skillDir, 'coding');
+    assert.equal(validation.exitCode, 0, validation.output);
+  });
+
   it('should derive plugin skill homepages and honor explicit presentation overrides', async () => {
     const derived = await createGeneratedSkill({
       pluginRepository: 'https://github.com/pirog/example.git',
@@ -177,6 +209,24 @@ describe('skills/skill-author scaffolding', () => {
     );
     assert.equal(overriddenOpenClaw.emoji, '🧪');
     assert.equal(overriddenOpenClaw.homepage, 'https://example.com/custom-skill');
+  });
+
+  it('should reuse shared presentation assets in a plugin that provides them', async () => {
+    const generated = await createGeneratedSkill({
+      pluginRepository: 'https://github.com/pirog/example',
+      sharedPluginAssets: true,
+      slug: 'shared-presentation',
+    });
+    tempRoots.push(generated.tempRoot);
+
+    const openAiContent = await readFile(
+      path.join(generated.skillDir, 'agents', 'openai.yaml'),
+      'utf8',
+    );
+
+    assert.match(openAiContent, /icon_small: "\.\.\/\.\.\/assets\/composer-icon\.svg"/);
+    assert.match(openAiContent, /icon_large: "\.\.\/\.\.\/assets\/icon-large\.png"/);
+    await assert.rejects(lstat(path.join(generated.skillDir, 'assets')));
   });
 
   it('should reject missing or malformed OpenClaw metadata and accept real requirement gates', async () => {

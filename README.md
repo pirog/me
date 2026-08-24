@@ -29,8 +29,8 @@ At a high level, `me`:
 - optionally clones or safely updates explicitly selected repositories from
   [`@tanaabased`](https://github.com/tanaabased)
 - applies coordinated Tanaab themes for Codex TUI, Vim, Visual Studio Code, and Warp
-- provides opt-in [OpenClaw plugin development tools](./OPENCLAW.md) and a pre-seeded `tanaabot`
-  (`MODEL L3-37`) workspace
+- provides an opt-in OpenClaw application and CLI bundle without provisioning an agent identity or
+  workspace
 - stows `piroplugin`, Pirobased skills, shared Codex defaults, and local plugin source links
 
 For the complete installed-component inventory, see
@@ -101,7 +101,7 @@ components, checkout behavior, post-bootstrap setup, and Codex configuration and
 ## After Bootstrap
 
 Complete the app-backed steps in [Post-Bootstrap Setup](./ADVANCED.md#post-bootstrap-setup), then ask
-Codex to run `$piro-me-readiness` for read-only verification of the resulting machine profile.
+Codex to run `$piro-me-doctor` for read-only diagnosis of the resulting machine profile.
 
 ## Development
 
@@ -115,9 +115,9 @@ bun run test
 bun run lint
 ```
 
-For OpenClaw plugin work, use the opt-in
-[OpenClaw Plugin Development](./OPENCLAW.md) flow. It creates a distinct `tanaabot` agent, keeps
-onboarding manual, and runs the local Gateway in the foreground only.
+For optional local OpenClaw tooling, manually install [`Brewfile.openclaw`](./Brewfile.openclaw).
+This repository does not provision an OpenClaw agent identity, workspace, runtime configuration, or
+Gateway.
 
 See [ADVANCED.md#codex-configuration-and-plugin-sync](./ADVANCED.md#codex-configuration-and-plugin-sync)
 for the separate `ai:sync` and `codex:*` workflows.

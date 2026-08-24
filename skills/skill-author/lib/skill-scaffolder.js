@@ -41,12 +41,18 @@ function quoteYaml(value) {
   return `"${String(value).replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
 }
 
-function makeOpenAiYaml({ displayName, shortDescription, defaultPrompt }) {
+function makeOpenAiYaml({
+  displayName,
+  shortDescription,
+  defaultPrompt,
+  iconSmall = './assets/icon-small.svg',
+  iconLarge = './assets/icon-large.png',
+}) {
   return `interface:
   display_name: ${quoteYaml(displayName)}
   short_description: ${quoteYaml(shortDescription)}
-  icon_small: "./assets/icon-small.svg"
-  icon_large: "./assets/icon-large.png"
+  icon_small: ${quoteYaml(iconSmall)}
+  icon_large: ${quoteYaml(iconLarge)}
   brand_color: ${quoteYaml(CANON_SKILL_BRAND_COLOR)}
   default_prompt: ${quoteYaml(defaultPrompt)}
 `;
@@ -133,6 +139,12 @@ export async function initializeSkill(options) {
   const pluginRoot = path.resolve(outputDir, '..');
   const pluginManifestPath = path.join(pluginRoot, '.codex-plugin', 'plugin.json');
   const pluginContained = await pathExists(pluginManifestPath);
+  const sharedPluginSmallIconPath = path.join(pluginRoot, 'assets', 'composer-icon.svg');
+  const sharedPluginLargeIconPath = path.join(pluginRoot, 'assets', 'icon-large.png');
+  const reuseSharedPluginIcons =
+    pluginContained &&
+    (await pathExists(sharedPluginSmallIconPath)) &&
+    (await pathExists(sharedPluginLargeIconPath));
   const folderName = pluginContained ? stripSkillPrefix(skillId) : skillId;
   const skillDir = path.resolve(outputDir, folderName);
   const openClawHomepageOverride = String(options.openclawHomepage ?? '').trim();
@@ -154,7 +166,9 @@ export async function initializeSkill(options) {
   const agentsDir = path.join(skillDir, 'agents');
   const assetsDir = path.join(skillDir, 'assets');
   await mkdir(agentsDir, { recursive: true });
-  await mkdir(assetsDir, { recursive: true });
+  if (!reuseSharedPluginIcons) {
+    await mkdir(assetsDir, { recursive: true });
+  }
 
   const skillContent = renderSkillTemplate(typeDefinition.templateBody, {
     description: normalizedDescription,
@@ -171,15 +185,22 @@ export async function initializeSkill(options) {
   const openAiContent = makeOpenAiYaml({
     defaultPrompt,
     displayName,
+    iconLarge: reuseSharedPluginIcons ? '../../assets/icon-large.png' : undefined,
+    iconSmall: reuseSharedPluginIcons ? '../../assets/composer-icon.svg' : undefined,
     shortDescription: makeShortSkillDescription(normalizedDescription),
   });
 
-  await Promise.all([
+  const writes = [
     writeFile(path.join(skillDir, 'SKILL.md'), skillContent, 'utf8'),
     writeFile(path.join(agentsDir, 'openai.yaml'), openAiContent, 'utf8'),
-    copyFile(getBundledSmallIconPath(), path.join(assetsDir, 'icon-small.svg')),
-    copyFile(getBundledLargeIconPath(), path.join(assetsDir, 'icon-large.png')),
-  ]);
+  ];
+  if (!reuseSharedPluginIcons) {
+    writes.push(
+      copyFile(getBundledSmallIconPath(), path.join(assetsDir, 'icon-small.svg')),
+      copyFile(getBundledLargeIconPath(), path.join(assetsDir, 'icon-large.png')),
+    );
+  }
+  await Promise.all(writes);
 
   const result = await validateSkillDir(skillDir, { expectedType: type });
   if (result.errors.length > 0) {

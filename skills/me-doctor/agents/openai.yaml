@@ -1,0 +1,7 @@
+interface:
+  display_name: 'Me Doctor'
+  short_description: 'Pirobased diagnosis for this me profile.'
+  icon_small: '../../assets/composer-icon.svg'
+  icon_large: '../../assets/icon-large.png'
+  brand_color: '#db2777'
+  default_prompt: 'Use $piro-me-doctor to diagnose this me environment, summarize grouped profile and Codex integration status, and recommend focused remediation without changing the machine.'

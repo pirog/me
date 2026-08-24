@@ -1,0 +1,59 @@
+{
+  "groups": [
+    {
+      "id": "homebrew",
+      "label": "Homebrew",
+      "checks": [
+        { "id": "command_brew", "label": "Homebrew command" },
+        { "id": "homebrew_writable", "label": "Homebrew write access" }
+      ]
+    },
+    {
+      "id": "packages",
+      "label": "Packages and runtimes",
+      "checks": [
+        { "id": "brewfile_readable", "label": "Brewfile" },
+        { "id": "brewfile_formulas_installed", "label": "Brewfile formulas" },
+        { "id": "brewfile_casks_installed", "label": "Brewfile casks" },
+        { "id": "command_bun", "label": "Bun command" },
+        { "id": "command_curl", "label": "curl command" },
+        { "id": "command_git", "label": "Git command" },
+        { "id": "command_stow", "label": "GNU Stow command" },
+        { "id": "command_zsh", "label": "Zsh command" },
+        { "id": "bun_homebrew", "label": "Homebrew Bun executable" },
+        { "id": "bun_version", "label": "Pinned Bun version" },
+        { "id": "node_version", "label": "Homebrew Node.js runtime" }
+      ]
+    },
+    {
+      "id": "dotfiles",
+      "label": "Dotfiles",
+      "checks": [
+        { "id": "dotfiles_stowed", "label": "Stow layout" },
+        { "id": "codex_generated_config", "label": "Generated Codex configuration" }
+      ]
+    },
+    {
+      "id": "manual_apps",
+      "label": "Optional capabilities",
+      "checks": [
+        { "id": "command_op", "label": "1Password command" },
+        { "id": "onepassword_cli_vault_access", "label": "1Password vault access" },
+        { "id": "onepassword_environment_cli", "label": "1Password Environments CLI" },
+        {
+          "id": "onepassword_environment_run",
+          "label": "1Password Environment authorization"
+        },
+        { "id": "command_tailscale", "label": "Tailscale command" },
+        { "id": "command_tailscaled", "label": "Agentbox tailscaled command" },
+        { "id": "tailscale_status", "label": "Tailscale connectivity" },
+        { "id": "bootstrap_token_env", "label": "Bootstrap token environment" }
+      ]
+    },
+    {
+      "id": "codex_plugins",
+      "label": "Codex plugin",
+      "checks": [{ "id": "codex_piroplugin_link", "label": "piroplugin source link" }]
+    }
+  ]
+}

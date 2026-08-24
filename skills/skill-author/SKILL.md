@@ -25,13 +25,16 @@ Use this skill when the skill itself is the artifact being created, standardized
 
 - `type` is the only variable identity input for new or standardized skills.
 - Choose the narrowest type that fits; keep `generic` as the fallback.
+- Treat project management as a domain rather than a separate skill type. Use `integration` for one provider-backed object or mutation boundary and `workflow` for a fixed multi-object lifecycle.
+- Prefer domain-led names for project, task, project milestone, and release surfaces; retain provider-led names when provider mechanics are the actual product surface, and retain repository or repo when the technical container is the exact owned surface.
 - Validation is a first-class workflow phase and a valid standalone mode.
-- Treat a workflow facet as a reusable path through one owned surface; retain and tailor `Optimization` for persistent surfaces and remove it for incident-specific, event-specific, or execution-only workflows.
-- Apply the shared optimization operations as evidence-led lenses rather than required output fields, and reconcile contradictions before adding another representation.
+- Treat a workflow facet as a reusable path through one owned surface; keep domain-appropriate mode, lifecycle, and variant language instead of forcing one label onto every skill.
+- Retain and tailor `Optimization` for persistent surfaces and remove it for incident-specific, event-specific, or execution-only workflows.
+- Apply the shared optimization operations as evidence-led lenses, not required output fields, and reconcile contradictions before adding another representation.
 - When multiple skills share a repository, review both each skill and the portfolio so overlap, fragmented variants, duplicated doctrine, and mega-skill behavior are visible.
 - Let the shared standard define the base contract and let local templates and scripts own type-specific authoring behavior.
 - Keep support material local unless it clearly passes the hoist test for repo-root canon, and apply that same ownership test to skill-local tests.
-- For `coding` skills, define one owned code surface plus three lifecycle sections: `Documentation`, `Testing`, and `GitHub Actions Workflow`.
+- For `coding` skills, define one owned code surface plus the required `Documentation` and `Testing` lifecycles; add optional `Deployment` when one canonical delivery mechanism materially shapes that surface, then map those lifecycles through the required `GitHub Actions` reference section.
 - In plugin-contained skill trees, keep the `piro-` machine id in frontmatter and prompts while omitting that prefix from the skill folder name.
 - Generate `metadata.openclaw` presentation fields in `SKILL.md`; add eligibility gates only for real runtime dependencies of the generated skill.
 - If the reusable artifact is really a whole starter repository with committed structure, scripts, examples, and docs that users adopt wholesale, challenge whether it should be a repo template instead of a live skill.
@@ -48,6 +51,7 @@ Use this skill when the skill itself is the artifact being created, standardized
 - Review whether a proposed skill surface is better expressed as a repo template than as a live skill.
 - Review whether a skill should bundle short repo `AGENTS.md` lines because its surface implies durable ambient repo policy.
 - Decide whether a new or standardized skill should retain and tailor the full template's optional `Optimization` facet.
+- Decide whether a coding skill should retain the optional `Deployment` lifecycle because it owns one canonical delivery or publication mechanism.
 - Optimize a repository-local collection of skills individually and collectively, including keep, reconcile, deduplicate, merge, split, extract, move, tighten, rename, or remove recommendations.
 
 ## When Not to Use
@@ -60,10 +64,14 @@ Use this skill when the skill itself is the artifact being created, standardized
 ## Evaluation Criteria
 
 - Use the smallest type that clearly fits the skill's owned surface.
+- For project-management skills, keep domain naming separate from implementation detail and choose `integration` or `workflow` from the actual permission and lifecycle boundary.
 - Keep structure and metadata aligned with the shared canon contract.
 - Keep validation results tied to the shared contract and canonical local templates rather than personal preference.
 - Keep material local by default and hoist only on proven reuse, repo-wide contract status, or standalone human value.
 - For `coding` skills, allow broad discovery language only when it still funnels into one dominant implementation pattern.
+- For `coding` skills that retain `Deployment`, keep package, build, artifact, and delivery decisions surface-local and route independent workflow-graph work to the workflow owner.
+- For `coding` skills, keep `GitHub Actions` as a thin reference map to owned lifecycle sections and complete workflow templates rather than another doctrine owner.
+- Name canonical `.github/workflows/*.yml` targets in that reference map so workflow boundaries and check identities remain stable.
 - Prefer a repo template when the reusable contract is a committed starter repository with structure, scripts, examples, and docs that users adopt as a whole; keep a live skill only for cross-repo decision-making that remains after the template choice.
 - Bundle repo `AGENTS.md` lines only for durable always-on repo rules, not for conditional workflow steps that belong in the skill itself.
 - Keep `Optimization` only when the skill owns persistent alignment, and make its read-only inspection, comparison, recommendation, authorized application, and verification boundaries specific to that surface.
@@ -75,9 +83,11 @@ Use this skill when the skill itself is the artifact being created, standardized
 - Do not treat type selection as runtime routing.
 - Do not keep a separate validator skill when validation is only a lifecycle phase of skill authoring.
 - Do not use `generic` as the default when a narrower type clearly fits.
+- Do not add a project-management type or provider-neutral umbrella skill when existing integration and workflow types already express the owned boundary.
 - Do not duplicate contract rules in skill prose when the standard or CLI already enforces them.
 - Do not hoist a file to repo root just because it might be reused later.
-- Do not let a `coding` skill accumulate multiple materially different documentation, testing, or GitHub Actions validation mechanisms unless the variations are minor flavors of one pattern.
+- Do not let a `coding` skill accumulate multiple materially different documentation, testing, or deployment mechanisms unless the variations are minor flavors of one pattern; do not use `GitHub Actions` to conceal that split.
+- Do not embed complete copyable GitHub Actions YAML in a coding skill when it belongs in an owning template.
 - Do not keep a live skill whose main job is to restate one repo template's structure, scripts, examples, and docs.
 - Do not use repo `AGENTS.md` guidance as a dumping ground for task-triggered workflow detail.
 - Do not require `Optimization` for incident-specific or event-specific skills, and do not leave a generic template section untailored.
@@ -89,14 +99,14 @@ Use this skill when the skill itself is the artifact being created, standardized
 - Scaffold or patch the skill, then validate immediately.
 - Run validation first when the request is validation-only.
 - Tighten scope before adding new sections, resources, or hoisted canon.
-- For `coding` skills, challenge the scope before adding a second materially different documentation, direct-test, or GitHub Actions workflow pattern.
+- For `coding` skills, challenge the scope before adding a second materially different documentation, direct-test, or deployment pattern, and use GitHub Actions H3 headings only when mapping multiple justified workflow paths.
 - Challenge skill-vs-template ownership before adding doctrine for a surface that already looks like a reusable starter repo.
 - Review optimization applicability before finalizing a new or standardized skill; retain and tailor the full-template section or remove it deliberately.
 - When optimizing a collection, inventory every skill before proposing portfolio changes and prefer clarification, movement, or extraction before adding another skill.
 
 ## Workflow
 
-1. Determine whether the task is create, standardize, validate, or optimize, and whether the target is one skill or a repository-local skill collection. Choose `type` whenever the task changes or asserts skill identity, and challenge whether the surface is really a live skill or would be better owned by a repo template.
+1. Determine whether the task is create, standardize, validate, or optimize, and whether the target is one skill or a repository-local skill collection. Choose `type` whenever the task changes or asserts skill identity, apply the project-management naming and type rules from the shared standard when that domain is present, and challenge whether the surface is really a live skill or would be better owned by a repo template.
 
 2. Load only the needed shared references.
 
@@ -159,7 +169,11 @@ Use this skill when the skill itself is the artifact being created, standardized
 - Confirm the new or updated skill has a distinct owned surface.
 - Confirm the selected `type` is explicit and correct.
 - Confirm the selected type order is correct.
-- Confirm `coding` skills include `Documentation`, `Testing`, and `GitHub Actions Workflow` as the canonical lifecycle sections.
+- Confirm project-management surfaces use domain-led names unless provider-specific mechanics are the owned product, without introducing another skill type.
+- Confirm `coding` skills include `Documentation` and `Testing` as canonical lifecycle sections plus `GitHub Actions` as their automation projection.
+- Confirm a retained coding-skill `Deployment` lifecycle owns one canonical delivery mechanism, remains surface-local, and hands independent workflow topology to the workflow owner.
+- Confirm `GitHub Actions` references the applicable lifecycle sections and owning templates without duplicating doctrine or embedding complete workflow YAML.
+- Confirm every mapped automation path names its canonical `.github/workflows/*.yml` target.
 - Confirm validation-only requests are handled by the same surface rather than a separate validator skill.
 - Confirm the surface is not better expressed as a repo template with the skill kept only as a thin discovery or adaptation layer, if needed.
 - Confirm any bundled repo `AGENTS.md` lines stay short, ambient, and worth copying into a project repo.

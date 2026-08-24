@@ -49,6 +49,8 @@ jobs:
             UNRELEASED_DATE=${{ env.RELEASE_DATE }}
             UNRELEASED_LINK=${{ github.event.release.html_url }}
             UNRELEASED_VERSION=${{ github.event.release.tag_name }}
+      - name: Verify prepared formatting
+        run: bun run format:check
       - name: Install production dependencies
         run: |
           rm -rf node_modules

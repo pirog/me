@@ -16,8 +16,8 @@ Bootbox installs or repairs the core prerequisites before `me` applies the compl
 development. It installs the Homebrew `openclaw-cli` formula, the npm-backed `clawhub` CLI, and the
 native app while allowing the browser to remain the development UI. The `openclaw-cli` formula owns
 the shared Node dependency. The optional bundle is not applied by `boot.sh` or checked by
-`$piro-me-readiness`. See
-[OpenClaw Plugin Development](./OPENCLAW.md) for its manual install and setup flow.
+`$piro-me-doctor`. It does not provision an agent identity, workspace, runtime configuration, or
+Gateway.
 
 > [!NOTE]
 > Dependency behavior differs on `agentbox` and formula-backed Tailscale hosts. See
@@ -53,11 +53,17 @@ Vim theme selections or an external runtime.
 The repository is packaged as `piroplugin` through
 [`.codex-plugin/plugin.json`](./.codex-plugin/plugin.json). It currently includes:
 
-- [`piro-me-readiness`](./skills/me-readiness/): verifies that the checkout, macOS profile,
-  desktop-backed 1Password access, Tailscale, Codex plugin links, and connector identities are ready
-  for Codex work as `pirog`.
-- [`piro-skill-author`](./skills/skill-author/): creates, standardizes, and validates Pirobased
-  repository-local skills.
+- [`piro-me-doctor`](./skills/me-doctor/): diagnoses the checkout, macOS profile, desktop-backed
+  1Password access, Tailscale, Codex plugin links, and connector identities without changing the
+  machine.
+- [`piro-skill-author`](./skills/skill-author/): creates, standardizes, validates, and optimizes
+  Pirobased repository-local skills.
+- [`piro-work-on-task`](./skills/work-on-task/): opens one GitHub issue or same-repository pull
+  request in a Codex-managed worktree task, produces a user-centered assessment, and prepares a
+  technical implementation plan before changes begin.
+- [`piro-clean-up-task`](./skills/clean-up-task/): verifies that one finished Codex task has preserved
+  its declared outcome and, when explicitly requested, archives it using evidence appropriate to a
+  PR, Git, retained checkout, or conversation-only task.
 
 Broader shared canon skills come from the paired `tanaab` plugin. The `ai` dotfile package installs
 the `piroplugin` source link and publishes the local `Pirostore` marketplace. Tanaab checkouts that
@@ -130,9 +136,9 @@ Detected `agentbox` hosts and workstations with the Homebrew `tailscale` formula
 
 ### Verification
 
-After completing the checklist, ask Codex to run `$piro-me-readiness`. Readiness may trigger macOS,
+After completing the checklist, ask Codex to run `$piro-me-doctor`. The Doctor may trigger macOS,
 Codex, or 1Password permission prompts while it verifies local desktop-app access; approve those
-prompts only when you intentionally requested the check.
+prompts only when you intentionally requested the diagnosis.
 
 ## Configuration Reference
 
