@@ -1,6 +1,6 @@
 ---
 name: piro-plan-work
-description: Pirobased workflow to discover assigned GitHub issues and pull-request attention across approved repository scopes, rank goal-aligned work to a bounded capacity, and start only the exact Codex tasks the user selects.
+description: Pirobased workflow to discover assigned GitHub issues and pull-request attention across approved repository scopes, recommend goal-aligned work to a bounded capacity, and queue only the Codex tasks the user selects.
 license: MIT
 metadata:
   type: workflow
@@ -23,9 +23,10 @@ assign or request review from `pirog`. Search `tanaabased/*` and `pirog/*` by de
 `lando/*` as a supported but opt-in scope that must be decided for each plan before discovery.
 
 Use an explicit objective or GitHub milestone when supplied; otherwise use the current objective and
-near-term priorities in [`GOALS.md`](../../GOALS.md). Rank actionable issue work into a light daily
-or weekly capacity and present pull-request attention separately. A plan remains read-only until the
-user selects exact rows and explicitly asks to start them.
+near-term priorities in [`GOALS.md`](../../GOALS.md). Rank actionable issues, recommend the strongest
+goal-aligned bundle that fits a light daily or weekly capacity, and present pull-request attention
+separately. A plan remains read-only until the user clearly identifies which listed sources to queue
+as Codex tasks.
 
 This is an instruction-only workflow. Plan Work owns discovery, prioritization, capacity, selection,
 and orchestration. [`$piro-work-on-task`](../work-on-task/SKILL.md) continues to own the branch, ref,
@@ -69,7 +70,7 @@ gap that native GitHub and Codex operations cannot handle.
 
 ## Workflow
 
-1. Classify the request as **plan only** or **plan then start after selection**. Both begin read-only;
+1. Classify the request as **plan only** or **plan then queue after selection**. Both begin read-only;
    a general request to plan, advance goals, or find work never authorizes task creation.
 
 2. Establish the candidate scope. Start with `tanaabased/*` and `pirog/*`, narrowed by any explicit
@@ -125,8 +126,11 @@ gap that native GitHub and Codex operations cannot handle.
 8. Apply capacity without pretending Work size is time:
    - An explicit target controls when provided.
    - A daily plan defaults to target `5` and normally recommends one new task.
-   - A weekly or unspecified plan defaults to target `21`, prefers a total at or below `21`, accepts
-     `18–24` when Fibonacci fit justifies it, and recommends at most three new tasks.
+   - A weekly or unspecified plan defaults to target `21`, prefers a total at or below `21`, and
+     accepts `18–24` when Fibonacci fit justifies it.
+   - Do not impose a hard task-count limit unless the user supplies one. Prefer the smallest coherent
+     bundle that advances the objective and fits capacity, but include more small tasks when that is
+     the strongest plan rather than leaving capacity empty because of an arbitrary count cap.
    - Allowed verified issue sizes are `1`, `2`, `3`, `5`, `8`, `13`, and `21`.
    - Existing active issue commitments consume their full verified Work size unless the user supplies
      a current remaining-size value. Never infer fractional progress.
@@ -152,7 +156,7 @@ gap that native GitHub and Codex operations cannot handle.
       fallback, search completeness, and the Lando choice;
     - `## Existing Commitments`: exact active tasks and their conservative capacity;
     - `## Recommended Work`: stable row ids such as `W1`, ordered issue URLs, observed Work size,
-      Priority and Task score when present, alignment rationale, dependencies, and start eligibility;
+      Priority and Task score when present, alignment rationale, dependencies, and queue eligibility;
     - `## Pull-Request Attention`: stable ids such as `P1`, PR URLs, assignment or review reason,
       draft and same-repository status, and recommended attention order;
     - `## Alternates`: aligned actionable work that did not fit;
@@ -161,19 +165,29 @@ gap that native GitHub and Codex operations cannot handle.
     - `## Capacity`: existing size, proposed new size, total issue size, soft-range result, new task
       count, and any unbudgeted PR attention.
 
-11. Stop after the plan and ask the user to select exact row ids or canonical URLs and explicitly say
-    whether to start them. A reply such as `start W1 and P2` is exact only when those ids refer to the
-    immediately preceding unchanged plan. Discussion, reordering, or approval of the plan as a whole
-    does not authorize task creation.
+11. End the plan with a concise invitation such as `Tell me which items you want me to queue.` Then
+    stop for the user's selection. Accept natural, unambiguous selection through any combination of:
+    - stable row ids from the immediately preceding unchanged plan, such as `W1` or `P2`;
+    - canonical GitHub URLs;
+    - exact `owner/repo#number` references; and
+    - bare issue or pull-request numbers only when the current plan makes both repository and source
+      kind unambiguous.
 
-12. After an exact start selection, re-fetch each selected source and confirm it remains open, in the
+    Do not require a magic verb. `Queue`, `start`, `spin up`, `open tasks for`, `create tasks for`, or
+    equivalent language authorizes task creation when it clearly applies to exact selected sources.
+    For example, `Looks good; queue W1, W3, and #16` is sufficient when those references are
+    unambiguous in the current plan. Approval without a selection, or a selection without clear
+    task-creation intent, remains read-only.
+
+12. After an exact queue selection, re-fetch each selected source and confirm it remains open, in the
     approved scope, assigned or review-requested as planned, and absent from another active or pending
     Codex task. Report changed or duplicate items and do not start them.
 
 13. Process eligible selections in their displayed order, one exact canonical source at a time. The
-    current explicit selection is an authorized upstream invocation of `$piro-work-on-task` for that
-    source only. Apply that skill's complete current workflow without copying or weakening its branch,
-    ref, saved-project, worktree, prompt, waiting, read-back, or verification rules.
+    current explicit request to queue each selected source is an authorized upstream invocation of
+    `$piro-work-on-task` for that source only. Apply that skill's complete current workflow without
+    copying or weakening its branch, ref, saved-project, worktree, prompt, waiting, read-back, or
+    verification rules.
 
 14. Continue to the next selected source only after the prior Work on Task handoff is ready or safely
     pending. On identity mismatch, unsafe pull-request routing, missing-project setup handoff, failed
@@ -197,14 +211,14 @@ gap that native GitHub and Codex operations cannot handle.
   eligible for the current Work on Task start path.
 - The planning phase changes no GitHub, repository, branch, ref, task, worktree, goal, or automation
   state.
-- Only an exact current selection plus an explicit start instruction authorizes one Work on Task
-  invocation per selected source.
+- Only an exact current selection plus clear current intent to queue Codex tasks authorizes one Work
+  on Task invocation per selected source; no particular verb is required.
 
 ## Completion Criteria
 
 - **Plan only:** one complete, bounded, explainable plan was returned with exact candidate URLs,
   capacity evidence, exclusions, and no mutation.
-- **Plan then start:** every attempted source was selected exactly, reverified, and handed to Work on
+- **Plan then queue:** every attempted source was selected exactly, reverified, and handed to Work on
   Task once; each result is reported without duplicate or replacement tasks.
 - Any unavailable connector, ambiguous milestone, incomplete search, identity mismatch, duplicate
   task, unsafe PR, missing project, or failed verification stopped at its declared boundary with the
@@ -231,8 +245,9 @@ gap that native GitHub and Codex operations cannot handle.
   `codex:check` convergence cycle before live use.
 - Review static scenarios for explicit objective, exact milestone filtering, `GOALS.md` fallback,
   mandatory Lando choice, missing and conflicting Work size, active-task deduplication, `13` and `21`
-  handling, pull-request attention, incomplete pagination, and exact selection authorization.
+  handling, pull-request attention, incomplete pagination, capacity-driven task counts, and natural
+  exact-selection authorization.
 - Prove discovery later with read-only fixtures in `tanaabased/big-test-bucket`; select nothing and
-  confirm no task or GitHub mutation. Prove start mode only after separate authorization for exact
+  confirm no task or GitHub mutation. Prove queue mode only after separate authorization for exact
   disposable sources, then clean them up through their owning workflows.
 - Do not run Leia for this skill unless the user explicitly requests it.
