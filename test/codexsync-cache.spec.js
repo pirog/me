@@ -95,6 +95,26 @@ describe('lib/codexsync-cache', () => {
     await assert.rejects(lstat(path.join(targetRoot, 'skills', 'obsolete')));
   });
 
+  it('should copy shared references used by installed skills', async () => {
+    const { sourceRoot, targetRoot, tempRoot } = await createRoots();
+    tempRoots.push(tempRoot);
+    await mkdir(path.join(sourceRoot, 'references'), { recursive: true });
+    await mkdir(path.join(sourceRoot, 'skills', 'skill-author'), { recursive: true });
+    await writeFile(path.join(sourceRoot, 'references', 'skill-standard.md'), '# Skill Standard\n');
+    await writeFile(path.join(sourceRoot, 'skills', 'skill-author', 'SKILL.md'), 'author\n');
+
+    const diff = await syncRoots(sourceRoot, targetRoot);
+    const installedReferencePath = path.resolve(
+      targetRoot,
+      'skills',
+      'skill-author',
+      '../../references/skill-standard.md',
+    );
+
+    assert.deepEqual(diff, { changed: [], extra: [], missing: [] });
+    assert.equal(await readFile(installedReferencePath, 'utf8'), '# Skill Standard\n');
+  });
+
   it('should replace entries when their filesystem type changes', async () => {
     const { sourceRoot, targetRoot, tempRoot } = await createRoots();
     tempRoots.push(tempRoot);

@@ -323,8 +323,8 @@ deliverable. This skill creates and starts work; it never archives an existing t
 
 - [`agents/openai.yaml`](./agents/openai.yaml): Pirog-facing Codex presentation, discovery, and
   explicit-invocation policy.
-- [`assets/icon-small.svg`](./assets/icon-small.svg) and
-  [`assets/icon-large.png`](./assets/icon-large.png): skill presentation assets.
+- [`composer-icon.svg`](../../assets/composer-icon.svg) and
+  [`icon-large.png`](../../assets/icon-large.png): shared plugin presentation assets.
 
 ## Validation
 

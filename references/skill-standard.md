@@ -96,7 +96,7 @@ skill-folder/
 - `[error]` `agents/openai.yaml` must contain `interface.display_name`, `interface.short_description`, `interface.default_prompt`, and `interface.brand_color`.
 - `[error]` `agents/openai.yaml` must contain `interface.icon_small` and `interface.icon_large`.
 - `[error]` `interface.short_description` must start with `Pirobased`.
-- `[error]` `interface.icon_small` and `interface.icon_large` must point to existing relative skill asset paths.
+- `[error]` `interface.icon_small` and `interface.icon_large` must point to existing relative asset paths resolved from the skill directory.
 - `[error]` `interface.default_prompt` should explicitly mention the skill by `$<machine-id>`.
 - `[error]` `interface.brand_color` must equal `#db2777`.
 - `[error]` Optional `policy.allow_implicit_invocation` must be a boolean when present.
@@ -116,6 +116,7 @@ skill-folder/
 - `[error]` Repo-level operational script filenames must end in `-cli.js` or `-task.js`; import-only modules belong in `lib/` or `utils/` instead of using a `-lib.js` suffix under `scripts/`.
 - `[warn]` Keep support material local to the owning skill by default.
 - `[warn]` Hoist support material to repo root only on proven reuse across live surfaces, repo-wide contract or tooling status, or standalone human value.
+- `[warn]` When multiple plugin-contained skills use identical presentation icons, prefer shared plugin-root assets and relative metadata paths; retain skill-local icons for standalone or uniquely branded skills.
 - `[warn]` Machine-readable data should live with the smallest justified owner. Hoist it into repo-root `references/` only when multiple live consumers or independent human value justify it.
 - `[error]` Bundleable repo scripts must import shared templates, assets, and machine-readable canon explicitly so `bun build` can follow the dependency graph.
 - `[warn]` Keep the default scaffold minimal.

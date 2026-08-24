@@ -1,8 +1,8 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import bundledLargeIconImport from '../assets/icon-large.png';
-import bundledSmallIconImport from '../assets/icon-small.svg';
+import bundledLargeIconImport from '../../../assets/icon-large.png';
+import bundledSmallIconImport from '../../../assets/composer-icon.svg';
 import codingTemplateText from '../templates/coding.md' with { type: 'text' };
 import genericTemplateText from '../templates/generic.md' with { type: 'text' };
 import integrationTemplateText from '../templates/integration.md' with { type: 'text' };

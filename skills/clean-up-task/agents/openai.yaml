@@ -1,8 +1,8 @@
 interface:
   display_name: 'Clean Up Task'
   short_description: 'Pirobased safe Codex task retirement.'
-  icon_small: './assets/icon-small.svg'
-  icon_large: './assets/icon-large.png'
+  icon_small: '../../assets/composer-icon.svg'
+  icon_large: '../../assets/icon-large.png'
   brand_color: '#db2777'
   default_prompt: 'Use $piro-clean-up-task with one exact finished Codex task id and any explicit deliverable to assess whether its outcome is preserved and, only when requested, archive that verified task without deleting branches, artifacts, or worktree directories directly.'
 policy:
