@@ -11,8 +11,8 @@ typeset -a user_paths
 user_paths=()
 
 [[ -d "$HOME/.local/bin" ]] && user_paths+=("$HOME/.local/bin")
-if [[ -n "${HOMEBREW_PREFIX:-}" && -d "$HOMEBREW_PREFIX/opt/node@24/bin" ]]; then
-  user_paths+=("$HOMEBREW_PREFIX/opt/node@24/bin")
+if [[ -n "${HOMEBREW_PREFIX:-}" && -d "$HOMEBREW_PREFIX/opt/node@26/bin" ]]; then
+  user_paths+=("$HOMEBREW_PREFIX/opt/node@26/bin")
 fi
 [[ -d "$HOME/.lando/bin" ]] && user_paths+=("$HOME/.lando/bin")
 

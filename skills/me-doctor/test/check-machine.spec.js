@@ -24,7 +24,7 @@ const BUN_PREFIX = '/opt/homebrew/opt/bun';
 const BUN_PATH = path.join(BUN_PREFIX, 'bin', 'bun');
 const BUN_REAL_PATH = '/opt/homebrew/Cellar/bun/1.3.14/bin/bun';
 const LEGACY_BUN_PATH = path.join(HOME_DIR, '.bun', 'bin', 'bun');
-const NODE_PREFIX = '/opt/homebrew/opt/node@24';
+const NODE_PREFIX = '/opt/homebrew/opt/node@26';
 const NODE_PATH = path.join(NODE_PREFIX, 'bin', 'node');
 const BUN_VERSION_PATH = path.join(REPO_ROOT, '.bun-version');
 
@@ -42,7 +42,7 @@ const DEFAULT_BREWFILE = [
   'brew "git"',
   'brew "imagemagick"',
   'brew "jq"',
-  'brew "node@24"',
+  'brew "node@26"',
   'brew "python@3.14"',
   'brew "stow"',
   'brew "vim"',
@@ -55,7 +55,7 @@ const DEFAULT_FORMULAS = [
   'git',
   'imagemagick',
   'jq',
-  'node@24',
+  'node@26',
   'python@3.14',
   'stow',
   'vim',
@@ -119,7 +119,7 @@ function makeDeps({
   execCalls,
   installedCasks = DEFAULT_CASKS,
   installedFormulas = DEFAULT_FORMULAS,
-  nodeVersion = 'v24.11.1',
+  nodeVersion = 'v26.1.0',
   opError = false,
   pluginTarget = REPO_ROOT,
   stowError = false,
@@ -146,7 +146,7 @@ function makeDeps({
       execCalls?.push({ args, command, options });
 
       if (command === 'brew') {
-        if (args[0] === '--prefix' && args[1] === 'node@24') {
+        if (args[0] === '--prefix' && args[1] === 'node@26') {
           return { stdout: `${NODE_PREFIX}\n` };
         }
         if (args[0] === '--prefix' && args[1] === 'oven-sh/bun/bun') {
@@ -356,16 +356,19 @@ describe('skills/me-doctor/lib/check-machine', () => {
     assert.equal(legacy.ok, false);
   });
 
-  it('accepts Node 24 or newer and rejects older Node', async () => {
+  it('should accept Node 26 and reject other major versions', async () => {
     const current = await runCheck({ nodeVersion: 'v26.1.0' });
-    const old = await runCheck({ nodeVersion: 'v23.9.0' });
+    const old = await runCheck({ nodeVersion: 'v25.9.0' });
+    const newMajor = await runCheck({ nodeVersion: 'v27.1.0' });
 
     assert.equal(findCheck(current, 'node_version').status, 'pass');
     assert.equal(findCheck(old, 'node_version').status, 'fail');
+    assert.equal(findCheck(newMajor, 'node_version').status, 'fail');
     assert.equal(old.ok, false);
+    assert.equal(newMajor.ok, false);
   });
 
-  it('checks the Homebrew node@24 binary without depending on the inherited PATH', async () => {
+  it('checks the Homebrew node@26 binary without depending on the inherited PATH', async () => {
     const execCalls = [];
     const report = await runCheck({ execCalls });
     const nodeCall = execCalls.find((call) => call.command === NODE_PATH);

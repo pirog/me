@@ -11,6 +11,8 @@ setup path.
 
 [`Brewfile`](./Brewfile) is the source of truth for the base machine inventory.
 Bootbox installs or repairs the core prerequisites before `me` applies the complete Brewfile.
+The base profile pins Homebrew `node@26` and Node 26 in [`.tool-versions`](./.tool-versions); the Zsh
+profile prefers the formula's `bin` directory, and `$piro-me-doctor` requires that exact major.
 
 [`Brewfile.openclaw`](./Brewfile.openclaw) is an opt-in extension for local OpenClaw plugin
 development. It installs the Homebrew `openclaw-cli` formula, the npm-backed `clawhub` CLI, and the
