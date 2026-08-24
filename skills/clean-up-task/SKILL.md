@@ -144,9 +144,14 @@ filesystem garbage collector, abandonment override, bulk collector, or scheduled
    - Require GitHub's recorded merge commit to be an ancestor of the freshly fetched default branch.
      Do not require the PR head itself to be an ancestor because a valid squash merge can replace
      that identity.
-   - For a **managed Git worktree**, additionally require an empty status and `HEAD` equal to the
-     final PR head. A different or dirty managed worktree indicates unpreserved follow-up work and
-     blocks archival.
+   - For a **managed Git worktree**, additionally require an empty status and prove that the final
+     PR head contains the task's `HEAD`. Validate both values as full hexadecimal Git object ids,
+     then use the same-repository GitHub compare surface with the task `HEAD` as the base and the
+     final PR head as the head. Require a status of `identical` or `ahead`, `behind_by` equal to
+     zero, and the reported merge-base commit equal to the task `HEAD`. This permits later commits
+     on the delivered PR while proving that the managed task has no commit ahead of or divergent
+     from its final head. A dirty worktree, failed comparison, `behind` or `diverged` result, or
+     mismatched merge base indicates potentially unpreserved work and blocks archival.
    - For a **retained Git environment**, report dirty files, differing `HEAD`, and other local state
      without changing it. Because archival does not remove that checkout, those observations do not
      by themselves destroy work; however, stop if task history says they are unfinished parts of the
@@ -209,7 +214,7 @@ filesystem garbage collector, abandonment override, bulk collector, or scheduled
 - A managed Git worktree is clean and its `HEAD` is preserved by the profile's required durable
   evidence before archival.
 - A PR profile proves the exact merged PR is on the freshly fetched default branch and, for a managed
-  worktree, that its clean `HEAD` equals the final PR head.
+  worktree, that its clean `HEAD` is equal to or an ancestor of the final PR head.
 - A retained local checkout or permanent worktree is never deleted or silently presented as clean;
   its actual state is reported.
 - A conversation-only or non-Git result is present in the restorable task transcript, a connected
@@ -225,8 +230,8 @@ filesystem garbage collector, abandonment override, bulk collector, or scheduled
   profile.
 - **Archive mode:** the exact eligible task was archived and read back as archived; no unrelated
   task or external artifact changed.
-- Managed-worktree work was proved clean and durably represented before Codex became responsible for
-  snapshot and reclamation.
+- Managed-worktree work was proved clean and contained by its applicable durable Git evidence before
+  Codex became responsible for snapshot and reclamation.
 - Retained local, permanent, branch, file, issue, and PR state was reported accurately and left in
   place.
 - Any uncertain environment, ambiguous outcome, dirty disposable state, unreferenced commit, missing
@@ -246,15 +251,17 @@ filesystem garbage collector, abandonment override, bulk collector, or scheduled
 - Run `bun run codex:validate`, then complete the repository's `codex:check` / `codex:sync` /
   `codex:check` convergence cycle before live use.
 - Prove the **PR deliverable** profile with PR #39 after merge. Confirm the exact task association,
-  targeted default-branch fetch, merge-commit reachability, clean managed worktree, exact task
-  archival, native Codex worktree handling, and retention of the separate local `pirog-skills-9`
-  checkout plus its unstaged `TASKS.md`.
+  targeted default-branch fetch, merge-commit reachability, clean managed worktree, and a GitHub
+  comparison showing the final PR head ahead of the older task `HEAD` with no commits behind and
+  that task `HEAD` as the merge base. Confirm exact task archival, native Codex worktree handling,
+  and retention of the separate local `pirog-skills-9` checkout plus its unstaged `TASKS.md`.
 - Prove **Git without PR** with a disposable idle managed-worktree task whose clean `HEAD` is contained
   by a named branch or tag. Confirm no GitHub or default-branch requirement and no ref deletion.
 - Prove **conversation or non-Git deliverable** with a disposable projectless task whose result is in
   its transcript and no file artifact requires preservation. Confirm no Git or GitHub calls.
 - Prove a **retained Git environment** with a disposable task attached to a local or permanent
   checkout. Confirm archival leaves the checkout and its observed state untouched.
-- Prove negative managed-worktree cases for dirty files, untracked files, and a detached commit with
-  no containing durable ref. Confirm the task is not archived and no cleanup mutation occurs.
+- Prove negative managed-worktree cases for dirty files, untracked files, a PR task `HEAD` ahead of
+  or divergent from its final PR head, and a detached non-PR commit with no containing durable ref.
+  Confirm the task is not archived and no cleanup mutation occurs.
 - Do not run Leia for this skill unless the user explicitly requests it.
