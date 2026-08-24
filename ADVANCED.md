@@ -62,8 +62,8 @@ The repository is packaged as `piroplugin` through
   Pirobased repository-local skills.
 - [`piro-plan-work`](./skills/plan-work/): discovers assigned GitHub issues and pull-request
   attention across Pirog and Tanaab repositories, optionally includes Lando for the current plan,
-  and recommends a capacity-bounded bundle before queueing only the exact Codex tasks selected by
-  the user in natural language.
+  and uses visible goal, readiness, dependency, Priority, date, Impact, workload, and capacity
+  evidence before queueing only the exact Codex tasks selected by the user in natural language.
 - [`piro-work-on-task`](./skills/work-on-task/): opens one GitHub issue or same-repository pull
   request in a Codex-managed worktree task, produces a user-centered assessment, and prepares a
   technical implementation plan before changes begin.

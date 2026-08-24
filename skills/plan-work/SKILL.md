@@ -100,7 +100,8 @@ gap that native GitHub and Codex operations cannot handle.
 
 5. Fetch only the bounded evidence needed to plan each candidate: source kind, canonical URL,
    repository, title, state, assignees or review requests, draft status, milestone, labels, linked or
-   blocking relationships, last meaningful update, issue type, Priority, Work size, and Task score.
+   blocking relationships, last meaningful update, issue type, Priority, Work size, Impact, Start
+   date, and Target date.
    Prefer observed native fields. Accept an exact canonical fallback value from the issue body only
    when the native field is unavailable; native values win on a conflict, which must be reported.
    Never estimate, normalize, or write missing metadata during this workflow.
@@ -141,22 +142,23 @@ gap that native GitHub and Codex operations cannot handle.
    to make the total look complete; when the user supplies a different target or range, do not exceed
    that explicit boundary.
 
-9. Rank actionable issues with explainable judgment rather than a new opaque score. Treat Task score
-   as a supporting goal-independent signal, not as a replacement for goal alignment, and do not
-   recompute it from partial evidence. Apply, in order:
+9. Rank actionable issues with explainable judgment from direct current evidence. Apply, in order:
    - hard milestone and scope eligibility;
    - direct contribution to the objective or current near-term priority;
    - dependency order and work that unblocks other aligned outcomes;
-   - observed Priority and Task score;
-   - time-sensitive obligations and current review requests; and
-   - capacity fit and concentration risk.
+   - human-controlled Priority and time-sensitive obligations shown by observed dates or current
+     review requests;
+   - observed Impact;
+   - current commitments and concentration risk; and
+   - Work size capacity fit.
 
 10. Return one reviewable plan with these headings:
     - `## Planning Basis`: horizon, target, included owners, exact objective or milestones, goal
       fallback, search completeness, and the Lando choice;
     - `## Existing Commitments`: exact active tasks and their conservative capacity;
     - `## Recommended Work`: stable row ids such as `W1`, ordered issue URLs, observed Work size,
-      Priority and Task score when present, alignment rationale, dependencies, and queue eligibility;
+      Priority, relevant dates, and Impact when present, alignment rationale, dependencies, and queue
+      eligibility;
     - `## Pull-Request Attention`: stable ids such as `P1`, PR URLs, assignment or review reason,
       draft and same-repository status, and recommended attention order;
     - `## Alternates`: aligned actionable work that did not fit;
@@ -205,8 +207,8 @@ gap that native GitHub and Codex operations cannot handle.
 - The goal basis, milestone filters, repository scope, capacity, and observed metadata sources are
   visible rather than inferred silently.
 - Existing Codex tasks are reconciled before recommendations and again before creation.
-- Missing Work size, Task score, Priority, or relationship evidence remains missing; Plan Work does
-  not invent or mutate it.
+- Missing Work size, Priority, Impact, date, or relationship evidence remains missing; Plan Work
+  does not invent or mutate it.
 - Pull-request attention is distinct from issue Work size, and fork-backed PRs are visible but not
   eligible for the current Work on Task start path.
 - The planning phase changes no GitHub, repository, branch, ref, task, worktree, goal, or automation
@@ -244,9 +246,9 @@ gap that native GitHub and Codex operations cannot handle.
   contract. Run `bun run codex:validate`, then complete the `codex:check` / `codex:sync` /
   `codex:check` convergence cycle before live use.
 - Review static scenarios for explicit objective, exact milestone filtering, `GOALS.md` fallback,
-  mandatory Lando choice, missing and conflicting Work size, active-task deduplication, `13` and `21`
-  handling, pull-request attention, incomplete pagination, capacity-driven task counts, and natural
-  exact-selection authorization.
+  mandatory Lando choice, direct-evidence ranking, missing and conflicting metadata, active-task
+  deduplication, `13` and `21` handling, pull-request attention, incomplete pagination,
+  capacity-driven task counts, and natural exact-selection authorization.
 - Prove discovery later with read-only fixtures in `tanaabased/big-test-bucket`; select nothing and
   confirm no task or GitHub mutation. Prove queue mode only after separate authorization for exact
   disposable sources, then clean them up through their owning workflows.
