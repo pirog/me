@@ -115,6 +115,17 @@ describe('lib/codexsync-cache', () => {
     assert.equal(await readFile(installedReferencePath, 'utf8'), '# Skill Standard\n');
   });
 
+  it('should copy the goals used by installed planning skills', async () => {
+    const { sourceRoot, targetRoot, tempRoot } = await createRoots();
+    tempRoots.push(tempRoot);
+    await writeFile(path.join(sourceRoot, 'GOALS.md'), '# Goals\n');
+
+    const diff = await syncRoots(sourceRoot, targetRoot);
+
+    assert.deepEqual(diff, { changed: [], extra: [], missing: [] });
+    assert.equal(await readFile(path.join(targetRoot, 'GOALS.md'), 'utf8'), '# Goals\n');
+  });
+
   it('should replace entries when their filesystem type changes', async () => {
     const { sourceRoot, targetRoot, tempRoot } = await createRoots();
     tempRoots.push(tempRoot);
