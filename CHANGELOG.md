@@ -2,6 +2,7 @@
 
 - Added GitHub SSH host keys to `~/.ssh/known_hosts` before bootstrap repository clones. [#43](https://github.com/pirog/me/pull/43)
 - Added `$piro-clean-up-task` for evidence-gated archival across PR, Git, retained-checkout, and conversation-only outcomes. [#39](https://github.com/pirog/me/pull/39)
+- Added `$piro-plan-work` with `GOALS.md` fallback, opt-in Lando discovery, bounded capacity, and exact Codex task selection.
 - Added `$piro-work-on-task` for issue and same-repository pull-request planning in Codex-managed worktrees. [#39](https://github.com/pirog/me/pull/39)
 - Fixed the shared Codex default to use the ChatGPT-compatible `gpt-5.6-sol` model ID. [#39](https://github.com/pirog/me/pull/39)
 - Removed the pre-seeded `tanaabot` OpenClaw identity and workspace while retaining the opt-in dependency bundle. [#39](https://github.com/pirog/me/pull/39)
