@@ -2,29 +2,16 @@
 
 ## FINAL MANUAL TAZKZ
 
-- @tanaab/canon
-  - assigned issues?
-  - milestone planner?
-
-- @pirog/me
-  - assigned issues?
-
-  - automation
-    - me-automation-sync
-      - find work?
-      - review agents?
-      - review goals?
-      - cleanup tasks?
-
-  - me doctor name?
-
 - @tanaab/openclaw-agent-system
   - v0.5.0
-    - emoris source origin mismatch fix
+    - mock testing done!
+    - emori fix
+    - optimize and release
+
+  - v0.6.0
     - chunk 2: link session to open PR? separate event? metadata for PR?
       - do work and end up with PR and link etc
 
-  - v0.6.0
     - complete issue + plan flow
       - plan mode need to be able to transition to work mode with plan prompt injection?
     - complete auto flow
@@ -34,24 +21,14 @@
     - send update to github command?
       - reconcile local discussion and github and push update
 
-    - optimize
-    - docs
-
-  - v0.7.0
-    - github_reply tool?
-      - can anyone run?
-    - model router
-    - place to inject notification instructions eg filtering by goals
-    - CLI coloring
-    - agent-system-init-config skill?
-      - make sure we always audit whether this is up to date? agents.md
-    - docs
-    - what about guidance on completing an issue eg open PR etc?
+    - optimize and release
 
 ## ISSUES 2 ADD
 
 - @tanaab/canon
   - pr review task
+
+  - more human readable task creation/normalization?
 
   - add AGENTS.md to project optimization?
 
@@ -74,6 +51,7 @@
   - fix JS literals
   - Octal escape sequences are not allowed in template strings.
   - ESM?
+  - 2.x for bun/esm/ts version?
   - update canon guidance
 
 - @tanaab/component-playground
@@ -98,11 +76,7 @@
   - codex-sync utils?
 
 - @tanaab/emori
-  - queue up some issues?
-    - emori also text pirog when isuses are done?
-    - iMessage me when no work left and bug me every few hours until i assign something?
-    - automate goal checking?
-    - send me a report of work ready for review every morning?
+  - assigned issued?
 
   - add a simple agent-system install test?
   - brave search API?
@@ -129,6 +103,17 @@
     - pr-review flow
     - pr link?
 
+    - github_reply tool?
+      - can anyone run?
+
+    - model router
+    - place to inject notification instructions eg filtering by goals
+    - CLI coloring
+    - agent-system-init-config skill?
+      - make sure we always audit whether this is up to date? agents.md
+    - docs
+    - what about guidance on completing an issue eg open PR etc?
+
   - issues
     - investigate "legacy" issues do we need them still?
       - if so normalize them
@@ -151,11 +136,12 @@
     - explore migration to MCP as base tooling layer?
 
 - @pirog/me
+  - model capabilities for work-on-task?
   - pirog/life issue labels?
   - blog like pirog skill
   - pirog openclaw/agent-system
   - openclaw plugin skills metadata?
-  - model capabilities for work-on-task?
+  - read only email summarizer?
 
 - @tanaab/\*
   - change to @tanaab npm namespacing via project optimizer
