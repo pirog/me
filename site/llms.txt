@@ -12,7 +12,7 @@ When an installed `agentbox` runtime is detected, `me` leaves `agentbox`'s formu
 
 After bootstrap, `$piro-me-doctor` provides read-only diagnosis of the checkout, macOS profile, Codex plugin links, and optional app-backed capabilities.
 
-`AUTOMATIONS.yaml` declares repository-owned Codex scheduled tasks. `$piro-automation` validates and compares that manifest, ignores unmarked personal tasks, and requires approval of an exact deterministic plan before live reconciliation. The shipped enabled, projectless `🧪 Pyro automation smoke test` can be paused after verification by setting `enabled` to `false` and approving a new sync.
+`AUTOMATIONS.yaml` declares repository-owned Codex scheduled tasks. `$piro-automation` validates and compares that manifest, ignores unmarked personal tasks, and requires approval of an exact deterministic plan before live reconciliation. The verified projectless `🧪 Pyro automation smoke test` remains declared but paused; enabled projectless weekday tasks perform a preservation-gated morning closeout at 04:00 local time and prepare a goal-aligned daily work plan at 05:00.
 
 This repository targets the `pirog` workstation profile. Generic bootstrap behavior belongs in Bootbox, while headless host setup, SSH hardening, remote access, and service supervision belong in `agentbox`.
 

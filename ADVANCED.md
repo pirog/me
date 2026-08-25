@@ -78,6 +78,9 @@ The repository is packaged as `piroplugin` through
 - [`piro-clean-up-task`](./skills/clean-up-task/): verifies that one finished Codex task has preserved
   its declared outcome and, when explicitly requested, archives it using evidence appropriate to a
   PR, Git, retained checkout, or conversation-only task.
+- [`piro-morning-closeout`](./skills/morning-closeout/): discovers exact eligible worktree and prior
+  report tasks on the current host, passes each separately through Clean Up Task, and reports
+  verified completed Work size.
 
 [`ACTORS.md`](./ACTORS.md) identifies reviewed work-planning actors, concise current focus, and public
 goals sources without listing repository policy. [`WORK_REPOS.md`](./WORK_REPOS.md) owns ordered
@@ -94,17 +97,20 @@ plugin sources; every plugin still requires explicit installation and enablement
 ### Declarative Codex Automations
 
 [`AUTOMATIONS.yaml`](./AUTOMATIONS.yaml) is the desired-state manifest for Codex scheduled tasks
-owned by this repository. It ships with one enabled, projectless `🧪 Pyro automation smoke test`
-that runs every 15 minutes and only reports success plus the current local time. Change its
-`enabled` field to `false` after exercising the integration, then reconcile again to pause the live
-task without removing its declaration.
+owned by this repository. It keeps the verified projectless `🧪 Pyro automation smoke test`
+declared but paused. Two enabled projectless weekday tasks run in local time: `🧹 MORNING CLOSEOUT`
+at 04:00 safely retires eligible tasks and every earlier managed report regardless of read state,
+then reports verified completed capacity; `📋 DAILY WORK PLAN` at 05:00 recommends up to two issues
+against a Work size target of 10 and uses Find Work only when verified capacity remains and no
+actionable assigned work exists.
 
 Use `$piro-automation check` to validate the manifest and compare it with live state. Use
 `$piro-automation sync` to produce an ordered plan and SHA-256 digest; Codex waits for explicit
 approval of that exact plan before creating, updating, pausing, resuming, or deleting a marked task.
 Unmarked personal automations are ignored. A missing `local-project` makes a task projectless; an
-explicit local project must match exactly one Codex project by absolute path. Short prompts belong
-inline, while reusable prompts may live beneath `automations/` and use `prompt-file`.
+explicit local project must match exactly one Codex project by absolute path. Prompts of at most 25
+physical lines may stay inline. Longer prompts must live beneath `automations/` and use
+`prompt-file`.
 
 Repository validation does not create the live smoke task. Its first creation is a separate
 approval-gated `$piro-automation sync` operation in the Codex desktop app.
@@ -173,7 +179,7 @@ Detected `agentbox` hosts and workstations with the Homebrew `tailscale` formula
 - Connect the GitHub app connector as `pirog`.
 - Connect the monday.com app connector as `Michael Pirog` for this `me` environment.
 - Ask Codex to run `$piro-automation check`, then approve the exact sync plan when the declarative
-  smoke task should be created.
+  automation set should be reconciled.
 
 ### Verification
 

@@ -28,9 +28,9 @@ the declaration, compare it with authoritative Codex automation state, produce a
 reconciliation plan and digest, and mutate app state only after the user approves that exact plan.
 
 The manifest is the desired state for marked `pirog/me` automations. Unmarked personal automations
-are never adopted, changed, paused, resumed, or removed. An enabled, projectless
-`🧪 Pyro automation smoke test` ships in the manifest so the integration can be exercised and then
-disabled declaratively.
+are never adopted, changed, paused, resumed, or removed. The shipped projectless smoke task remains
+declared but paused after verification; weekday morning closeout and daily work-plan tasks use
+file-backed prompts for their longer workflow contracts.
 
 ## When to Use
 
@@ -99,8 +99,9 @@ disabled declaratively.
    `resume`, or `remove`, inspect the current manifest and make only the requested repository edit:
    - `pause` sets `enabled: false`; `resume` sets `enabled: true`.
    - `remove` removes the exact manifest entry but does not delete the live task yet.
-   - Use inline `prompt` for short content and `prompt-file` only for a file beneath
-     `automations/`. Never allow an absolute, escaping, missing, or symlink-escaping prompt file.
+   - Use inline `prompt` for content of at most 25 physical lines. A longer prompt must use
+     `prompt-file` beneath `automations/`. Never allow an absolute, escaping, missing, or
+     symlink-escaping prompt file.
 
 2. Validate the complete manifest before inspecting or changing app state:
 
@@ -160,12 +161,12 @@ disabled declaratively.
 
 Audit the persistent automation surface against the complete contract before proposing broad
 changes. Prefer one clear task definition per outcome, structured schedules over raw recurrence
-strings, inline prompts until reuse or size justifies `automations/`, projectless execution unless a
-specific repository is truly required, and inherited model defaults unless stable divergence is
-intentional. Flag duplicate outcomes, unnecessary high reasoning, noisy notifications, stale
-disabled entries, ambiguous local-project bindings, and tasks whose prompts request more authority
-than their stated purpose. Preserve user-owned automations and keep every proposed cleanup behind
-the same fresh digest approval.
+strings, inline prompts up to the 25-line limit, projectless execution unless a specific repository
+is truly required, and inherited model defaults unless stable divergence is intentional. Flag
+duplicate outcomes, unnecessary high reasoning, noisy notifications, stale disabled entries,
+ambiguous local-project bindings, and tasks whose prompts request more authority than their stated
+purpose. Preserve user-owned automations and keep every proposed cleanup behind the same fresh
+digest approval.
 
 ## Bundled Resources
 
@@ -187,11 +188,12 @@ the same fresh digest approval.
 
 ## Validation
 
-- Run the shipped manifest validator and require the smoke task to compile as a projectless active
-  task with `RRULE:FREQ=MINUTELY;INTERVAL=15`.
+- Run the shipped manifest validator and require the smoke task to compile as a paused projectless
+  task with `RRULE:FREQ=MINUTELY;INTERVAL=15`; require the two active weekday tasks to compile at
+  04:00 and 05:00 local time.
 - Run the focused automation tests and confirm valid schedule variants, schema rejection,
-  prompt-file containment, marker conflicts, project resolution, deterministic digests, every
-  lifecycle action, and read-back failure behavior.
+  the 25-line inline prompt boundary, prompt-file containment, marker conflicts, project resolution,
+  deterministic digests, every lifecycle action, and read-back failure behavior.
 - Run `bun run test` followed by `bun run lint`.
 - Run `bun run codex:validate`, then the repository's `codex:check` / `codex:sync` /
   `codex:check` cache-convergence cycle when installed plugin-cache mutation is authorized.
