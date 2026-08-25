@@ -1,5 +1,7 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+## v1.0.0-beta.10 - [August 25, 2026](https://github.com/pirog/me/releases/tag/v1.0.0-beta.10)
+
 ### Breaking Changes
 
 - Removed the pre-seeded `tanaabot` OpenClaw identity and workspace while retaining the opt-in tooling bundle. [#39](https://github.com/pirog/me/pull/39)
