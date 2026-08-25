@@ -65,6 +65,10 @@ The repository is packaged as `piroplugin` through
   every current-invocation scope decision, and uses visible goal, repository-priority, readiness,
   dependency, Priority, date, Impact, workload, and capacity evidence before queueing only the exact
   Codex tasks selected by the user in natural language.
+- [`piro-find-work`](./skills/find-work/): discovers unassigned GitHub issues across the reviewed
+  repository scopes and recommends read-only, goal-aligned assignments for every actor in
+  [`ACTORS.md`](./ACTORS.md), or an exact requested subset, using visible workload, capacity,
+  readiness, dependency, repository, and current assignability evidence.
 - [`piro-work-on-task`](./skills/work-on-task/): opens one GitHub issue or same-repository pull
   request in a Codex-managed worktree task, produces a user-centered assessment, and prepares a
   technical implementation plan before changes begin.
