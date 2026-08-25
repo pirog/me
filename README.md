@@ -101,7 +101,9 @@ components, checkout behavior, post-bootstrap setup, and Codex configuration and
 ## After Bootstrap
 
 Complete the app-backed steps in [Post-Bootstrap Setup](./ADVANCED.md#post-bootstrap-setup), then ask
-Codex to run `$piro-me-doctor` for read-only diagnosis of the resulting machine profile.
+Codex to run `$piro-automation check` and review the exact plan for the shipped smoke task before
+its first live sync. Run `$piro-me-doctor` for read-only diagnosis of the resulting machine profile
+and declarative automation drift.
 
 ## Development
 

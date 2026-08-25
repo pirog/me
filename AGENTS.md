@@ -24,6 +24,8 @@ its Codex plugin bundle.
 - `dotfiles/theme/colors.json` is the lowest-level portable color source for application themes.
 - `.codex-plugin/`, plugin source directories, `package.json`, and the Codex sync implementation own
   the `piroplugin` package and managed cache surface.
+- `AUTOMATIONS.yaml` owns desired Codex scheduled-task state. `skills/automation/` owns validation,
+  drift planning, approval-gated reconciliation, and read-back verification.
 - `ACTORS.md` owns reviewed work-planning actors and their public goals sources, `WORK_REPOS.md` owns
   priority repositories and discovery-scope policy, and `GOALS.md` owns reviewed direction and
   fallback planning priorities. `skills/plan-work/`, `skills/work-on-task/`, and

@@ -137,6 +137,26 @@ describe('lib/codexsync-cache', () => {
     );
   });
 
+  it('should copy the declarative automation manifest and prompt directory', async () => {
+    const { sourceRoot, targetRoot, tempRoot } = await createRoots();
+    tempRoots.push(tempRoot);
+    await writeFile(path.join(sourceRoot, 'AUTOMATIONS.yaml'), 'schema-version: 1\n');
+    await mkdir(path.join(sourceRoot, 'automations'));
+    await writeFile(path.join(sourceRoot, 'automations', 'weekly.md'), 'Run weekly.\n');
+
+    const diff = await syncRoots(sourceRoot, targetRoot);
+
+    assert.deepEqual(diff, { changed: [], extra: [], missing: [] });
+    assert.equal(
+      await readFile(path.join(targetRoot, 'AUTOMATIONS.yaml'), 'utf8'),
+      'schema-version: 1\n',
+    );
+    assert.equal(
+      await readFile(path.join(targetRoot, 'automations', 'weekly.md'), 'utf8'),
+      'Run weekly.\n',
+    );
+  });
+
   it('should replace entries when their filesystem type changes', async () => {
     const { sourceRoot, targetRoot, tempRoot } = await createRoots();
     tempRoots.push(tempRoot);

@@ -55,6 +55,9 @@ Vim theme selections or an external runtime.
 The repository is packaged as `piroplugin` through
 [`.codex-plugin/plugin.json`](./.codex-plugin/plugin.json). It currently includes:
 
+- [`piro-automation`](./skills/automation/): validates and compares the declarative scheduled tasks
+  in [`AUTOMATIONS.yaml`](./AUTOMATIONS.yaml), then reconciles marked Codex automations only after
+  approval of an exact deterministic plan and digest.
 - [`piro-me-doctor`](./skills/me-doctor/): diagnoses the checkout, macOS profile, desktop-backed
   1Password access, Tailscale, Codex plugin links, and connector identities without changing the
   machine.
@@ -83,6 +86,24 @@ Broader shared canon skills come from the paired `tanaab` plugin. The `ai` dotfi
 the `piroplugin` source link and publishes the local `Pirostore` marketplace. Tanaab checkouts that
 contain `.codex-plugin/plugin.json` receive generated local source links. These links expose local
 plugin sources; every plugin still requires explicit installation and enablement through Codex.
+
+### Declarative Codex Automations
+
+[`AUTOMATIONS.yaml`](./AUTOMATIONS.yaml) is the desired-state manifest for Codex scheduled tasks
+owned by this repository. It ships with one enabled, projectless `🧪 Pyro automation smoke test`
+that runs every 15 minutes and only reports success plus the current local time. Change its
+`enabled` field to `false` after exercising the integration, then reconcile again to pause the live
+task without removing its declaration.
+
+Use `$piro-automation check` to validate the manifest and compare it with live state. Use
+`$piro-automation sync` to produce an ordered plan and SHA-256 digest; Codex waits for explicit
+approval of that exact plan before creating, updating, pausing, resuming, or deleting a marked task.
+Unmarked personal automations are ignored. A missing `local-project` makes a task projectless; an
+explicit local project must match exactly one Codex project by absolute path. Short prompts belong
+inline, while reusable prompts may live beneath `automations/` and use `prompt-file`.
+
+Repository validation does not create the live smoke task. Its first creation is a separate
+approval-gated `$piro-automation sync` operation in the Codex desktop app.
 
 ### Tanaab Repositories
 
@@ -147,6 +168,8 @@ Detected `agentbox` hosts and workstations with the Homebrew `tailscale` formula
 - Install `piroplugin` from `Pirostore`. If Canon was selected, install `tanaab` as well.
 - Connect the GitHub app connector as `pirog`.
 - Connect the monday.com app connector as `Michael Pirog` for this `me` environment.
+- Ask Codex to run `$piro-automation check`, then approve the exact sync plan when the declarative
+  smoke task should be created.
 
 ### Verification
 
@@ -359,7 +382,8 @@ bun run codex:check
 bun run codex:sync
 ```
 
-- `codex:validate` validates the source plugin manifest, skills, MCP stub, and workflow references.
+- `codex:validate` validates the source plugin manifest, skills, MCP stub, automation manifest, and
+  workflow references.
 - `codex:check` compares the installed `piroplugin` cache with the managed source surface.
 - `codex:sync` refreshes that installed cache when local plugin changes should become available to
   Codex.

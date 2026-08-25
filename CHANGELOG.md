@@ -1,6 +1,7 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
 - Added GitHub SSH host keys to `~/.ssh/known_hosts` before bootstrap repository clones. [#43](https://github.com/pirog/me/pull/43)
+- Added `$piro-automation` with a declarative Codex scheduled-task manifest, deterministic approval-gated reconciliation, Doctor drift reporting, and an enabled projectless smoke task. [#50](https://github.com/pirog/me/issues/50)
 - Added `$piro-clean-up-task` for evidence-gated archival across PR, Git, retained-checkout, and conversation-only outcomes. [#39](https://github.com/pirog/me/pull/39)
 - Added `$piro-plan-work` with `GOALS.md` fallback, opt-in Lando discovery, bounded capacity, and exact Codex task selection.
 - Added `$piro-work-on-task` for issue and same-repository pull-request planning in Codex-managed worktrees. [#39](https://github.com/pirog/me/pull/39)

@@ -12,6 +12,8 @@ When an installed `agentbox` runtime is detected, `me` leaves `agentbox`'s formu
 
 After bootstrap, `$piro-me-doctor` provides read-only diagnosis of the checkout, macOS profile, Codex plugin links, and optional app-backed capabilities.
 
+`AUTOMATIONS.yaml` declares repository-owned Codex scheduled tasks. `$piro-automation` validates and compares that manifest, ignores unmarked personal tasks, and requires approval of an exact deterministic plan before live reconciliation. The shipped enabled, projectless `🧪 Pyro automation smoke test` can be paused after verification by setting `enabled` to `false` and approving a new sync.
+
 This repository targets the `pirog` workstation profile. Generic bootstrap behavior belongs in Bootbox, while headless host setup, SSH hardening, remote access, and service supervision belong in `agentbox`.
 
 The advanced reference covers installed components, `agentbox` host behavior, post-bootstrap setup, the complete option and environment-variable contract, checkout behavior, Codex configuration and plugin sync, and the optional OpenClaw dependency bundle. This repository does not provision an OpenClaw agent identity or workspace.
@@ -21,6 +23,7 @@ The advanced reference covers installed components, `agentbox` host behavior, po
 - [Hosted bootstrap](https://boot.pirog.me/boot.sh): The generated shell entrypoint for bootstrapping the machine profile.
 - [README source](https://raw.githubusercontent.com/pirog/me/main/README.md): Main quickstart, common usage, post-bootstrap pointers, and project links.
 - [Advanced source](https://raw.githubusercontent.com/pirog/me/main/ADVANCED.md): Installed components, host-specific and post-bootstrap behavior, full configuration reference, checkout behavior, and Codex sync details.
+- [Automation manifest](https://raw.githubusercontent.com/pirog/me/main/AUTOMATIONS.yaml): Declarative desired state for repository-managed Codex scheduled tasks.
 - [Changelog source](https://raw.githubusercontent.com/pirog/me/main/CHANGELOG.md): Current unreleased changes and published release history.
 - [GitHub repository](https://github.com/pirog/me): Source code, canonical documentation, workflows, plugin assets, and Leia examples.
 - [Releases](https://github.com/pirog/me/releases): Published versions and `piroplugin` archives.
