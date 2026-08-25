@@ -1,5 +1,7 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+## v1.0.0-beta.9 - [August 25, 2026](https://github.com/pirog/me/releases/tag/v1.0.0-beta.9)
+
 - Added GitHub SSH host keys to `~/.ssh/known_hosts` before bootstrap repository clones. [#43](https://github.com/pirog/me/pull/43)
 - Added `$piro-automation` with declarative approval-gated reconciliation, Doctor drift reporting, a paused smoke task, and projectless weekday morning closeout and daily planning tasks. [#50](https://github.com/pirog/me/issues/50)
 - Added `$piro-clean-up-task` for evidence-gated archival across PR, Git, retained-checkout, and conversation-only outcomes. [#39](https://github.com/pirog/me/pull/39)
