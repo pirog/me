@@ -61,15 +61,23 @@ The repository is packaged as `piroplugin` through
 - [`piro-skill-author`](./skills/skill-author/): creates, standardizes, validates, and optimizes
   Pirobased repository-local skills.
 - [`piro-plan-work`](./skills/plan-work/): discovers assigned GitHub issues and pull-request
-  attention across Pirog and Tanaab repositories, optionally includes Lando for the current plan,
-  and uses visible goal, readiness, dependency, Priority, date, Impact, workload, and capacity
-  evidence before queueing only the exact Codex tasks selected by the user in natural language.
+  attention across the reviewed repository scopes in [`WORK_REPOS.md`](./WORK_REPOS.md), resolves
+  every current-invocation scope decision, and uses visible goal, repository-priority, readiness,
+  dependency, Priority, date, Impact, workload, and capacity evidence before queueing only the exact
+  Codex tasks selected by the user in natural language.
 - [`piro-work-on-task`](./skills/work-on-task/): opens one GitHub issue or same-repository pull
   request in a Codex-managed worktree task, produces a user-centered assessment, and prepares a
   technical implementation plan before changes begin.
 - [`piro-clean-up-task`](./skills/clean-up-task/): verifies that one finished Codex task has preserved
   its declared outcome and, when explicitly requested, archives it using evidence appropriate to a
   PR, Git, retained checkout, or conversation-only task.
+
+[`ACTORS.md`](./ACTORS.md) identifies reviewed work-planning actors, concise current focus, and public
+goals sources without listing repository policy. [`WORK_REPOS.md`](./WORK_REPOS.md) owns ordered
+priority repositories, default discovery scopes, current-invocation decisions, and exact narrowing.
+Both files are copied into the managed plugin cache for installed planning skills. They remain
+reviewed inputs rather than proof of live identity, availability, access, workload, assignability, or
+mutation authority.
 
 Broader shared canon skills come from the paired `tanaab` plugin. The `ai` dotfile package installs
 the `piroplugin` source link and publishes the local `Pirostore` marketplace. Tanaab checkouts that

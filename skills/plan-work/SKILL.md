@@ -19,8 +19,8 @@ metadata:
 ## Overview
 
 Build one bounded work plan from open GitHub issues assigned to `pirog` and open pull requests that
-assign or request review from `pirog`. Search `tanaabased/*` and `pirog/*` by default. Treat
-`lando/*` as a supported but opt-in scope that must be decided for each plan before discovery.
+assign or request review from `pirog`. Use [`WORK_REPOS.md`](../../WORK_REPOS.md) for ordered priority
+repositories, default discovery scopes, current-invocation scope decisions, and explicit narrowing.
 
 Use an explicit objective or GitHub milestone when supplied; otherwise use the current objective and
 near-term priorities in [`GOALS.md`](../../GOALS.md). Rank actionable issues, recommend the strongest
@@ -39,8 +39,8 @@ gap that native GitHub and Codex operations cannot handle.
 - The user invokes `$piro-plan-work` or asks what assigned GitHub work they should do next.
 - The desired result is a goal- or milestone-aligned daily or weekly plan, optionally followed by
   separate ready Codex tasks for an exact user-selected subset.
-- Candidate work may span repositories owned by `tanaabased`, `pirog`, and—only after current opt-in—
-  `lando`.
+- Candidate work may span the default and explicitly included current-invocation scopes in
+  `WORK_REPOS.md`.
 
 ## When Not to Use
 
@@ -49,8 +49,9 @@ gap that native GitHub and Codex operations cannot handle.
 - Do not create, revise, close, assign, label, or otherwise mutate GitHub issues, pull requests,
   milestones, projects, or repository settings.
 - Do not edit `GOALS.md`, create an automation, implement selected work, or archive finished tasks.
-- Do not search `lando/*` from silence, an earlier invocation, saved preference, inferred relevance,
-  or the appearance of Lando work in `GOALS.md`. Require the current plan's explicit choice.
+- Do not search a current-invocation decision scope from silence, an earlier invocation, saved
+  preference, inferred relevance, or its appearance in goals. Require the current plan's explicit
+  choice.
 - Do not treat authored but unassigned pull requests, general repository backlogs, or unrelated work
   as assigned candidates.
 
@@ -60,6 +61,13 @@ gap that native GitHub and Codex operations cannot handle.
   unavailable connector or identity mismatch.
 - Require native Codex task listing and reading for duplicate detection. Starting selected work also
   requires the task-creation capabilities used by `$piro-work-on-task`.
+- Require `WORK_REPOS.md` to define priority repositories, default discovery scopes,
+  current-invocation scope decisions, explicit narrowing, and authority boundaries.
+- When `WORK_REPOS.md` is missing, unreadable, or incomplete, stop before candidate discovery. State
+  that Plan Work cannot establish an approved scope, confirm that no GitHub discovery or mutation
+  occurred, and recommend restoring and reviewing the source file plus running `bun run codex:sync`
+  from an editable `pirog/me` checkout, or updating or reinstalling Piroplugin.
+- Do not create or repair `WORK_REPOS.md`, guess repository policy, or use an embedded scope fallback.
 - Accept optional current inputs: objective text, one or more exact GitHub milestones, repository or
   owner restrictions, a daily or weekly horizon, and a Work size target. Do not infer a private
   objective from memory or unrelated task history.
@@ -73,10 +81,12 @@ gap that native GitHub and Codex operations cannot handle.
 1. Classify the request as **plan only** or **plan then queue after selection**. Both begin read-only;
    a general request to plan, advance goals, or find work never authorizes task creation.
 
-2. Establish the candidate scope. Start with `tanaabased/*` and `pirog/*`, narrowed by any explicit
-   repository or owner restriction. If the user has not explicitly included or excluded `lando/*`
-   for this plan, pause before candidate discovery and ask exactly one concise question about whether
-   to include it. An explicit current answer applies only to this plan.
+2. Establish the candidate scope from `WORK_REPOS.md`. Start with its default discovery scopes,
+   intersect them with any exact repository or owner restriction, and retain the in-scope ordered
+   priority repositories as a visible relevance signal. For every current-invocation decision scope
+   that the user has not explicitly included or excluded for this plan, pause before candidate
+   discovery and ask one concise question that resolves the missing decisions. An explicit current
+   answer applies only to this plan. Priority never narrows discovery or excuses incomplete coverage.
 
 3. Establish the planning basis:
    - When milestones are supplied, verify each exact open milestone and use membership in any of them
@@ -149,12 +159,14 @@ gap that native GitHub and Codex operations cannot handle.
    - human-controlled Priority and time-sensitive obligations shown by observed dates or current
      review requests;
    - observed Impact;
+   - declared priority-repository status as a soft relevance signal;
    - current commitments and concentration risk; and
    - Work size capacity fit.
 
 10. Return one reviewable plan with these headings:
-    - `## Planning Basis`: horizon, target, included owners, exact objective or milestones, goal
-      fallback, search completeness, and the Lando choice;
+    - `## Planning Basis`: horizon, target, included owners, in-scope priority repositories, exact
+      objective or milestones, goal fallback, search completeness, and every current-invocation scope
+      decision;
     - `## Existing Commitments`: exact active tasks and their conservative capacity;
     - `## Recommended Work`: stable row ids such as `W1`, ordered issue URLs, observed Work size,
       Priority, relevant dates, and Impact when present, alignment rationale, dependencies, and queue
@@ -203,9 +215,10 @@ gap that native GitHub and Codex operations cannot handle.
 ## Checkpoints
 
 - GitHub identity is `pirog`; candidate discovery is complete or explicitly reported incomplete.
-- Every plan records a current explicit include or exclude choice for `lando/*`.
-- The goal basis, milestone filters, repository scope, capacity, and observed metadata sources are
-  visible rather than inferred silently.
+- Every plan records a current explicit include or exclude choice for every current-invocation
+  decision scope in `WORK_REPOS.md`.
+- The goal basis, milestone filters, repository scope, priority-repository signal, capacity, and
+  observed metadata sources are visible rather than inferred silently.
 - Existing Codex tasks are reconciled before recommendations and again before creation.
 - Missing Work size, Priority, Impact, date, or relationship evidence remains missing; Plan Work
   does not invent or mutate it.
@@ -222,9 +235,9 @@ gap that native GitHub and Codex operations cannot handle.
   capacity evidence, exclusions, and no mutation.
 - **Plan then queue:** every attempted source was selected exactly, reverified, and handed to Work on
   Task once; each result is reported without duplicate or replacement tasks.
-- Any unavailable connector, ambiguous milestone, incomplete search, identity mismatch, duplicate
-  task, unsafe PR, missing project, or failed verification stopped at its declared boundary with the
-  retained state made explicit.
+- Any unavailable or incomplete planning input, unavailable connector, ambiguous milestone,
+  incomplete search, identity mismatch, duplicate task, unsafe PR, missing project, or failed
+  verification stopped at its declared boundary with the retained state made explicit.
 - GitHub objects, repository files, goals, existing tasks, and unrelated worktrees remain unchanged;
   only the per-source task, branch, or refreshed ref mutations explicitly owned by Work on Task may
   occur after selection.
@@ -232,6 +245,8 @@ gap that native GitHub and Codex operations cannot handle.
 ## Bundled Resources
 
 - [`GOALS.md`](../../GOALS.md): reviewed fallback direction, priorities, deferrals, and decision rules.
+- [`WORK_REPOS.md`](../../WORK_REPOS.md): reviewed priority repositories, discovery scopes,
+  per-invocation decisions, narrowing, and authority boundaries.
 - [`$piro-work-on-task`](../work-on-task/SKILL.md): exact per-source Codex task creation, assessment,
   and verification owner after selection.
 - [`agents/openai.yaml`](./agents/openai.yaml): Codex presentation and default planning prompt.
@@ -242,11 +257,12 @@ gap that native GitHub and Codex operations cannot handle.
 
 - Run
   `bun skills/skill-author/scripts/validate-skill.js --skill-dir skills/plan-work --type workflow`.
-- Run `bun run test`, then `bun run lint` because Plan Work adds `GOALS.md` to the managed plugin cache
-  contract. Run `bun run codex:validate`, then complete the `codex:check` / `codex:sync` /
-  `codex:check` convergence cycle before live use.
-- Review static scenarios for explicit objective, exact milestone filtering, `GOALS.md` fallback,
-  mandatory Lando choice, direct-evidence ranking, missing and conflicting metadata, active-task
+- Run `bun run test`, then `bun run lint` because Plan Work's root planning inputs are part of the
+  managed plugin cache contract. Run `bun run codex:validate`, then complete the `codex:check` /
+  `codex:sync` / `codex:check` convergence cycle before live use.
+- Review static scenarios for missing or incomplete `WORK_REPOS.md`, explicit objective, exact
+  milestone filtering, `GOALS.md` fallback, priority repositories, every current-invocation scope
+  choice, exact narrowing, direct-evidence ranking, missing and conflicting metadata, active-task
   deduplication, `13` and `21` handling, pull-request attention, incomplete pagination,
   capacity-driven task counts, and natural exact-selection authorization.
 - Prove discovery later with read-only fixtures in `tanaabased/big-test-bucket`; select nothing and
