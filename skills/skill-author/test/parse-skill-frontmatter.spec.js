@@ -11,6 +11,7 @@ metadata:
     - pirog
     - generic
   openclaw:
+    always: false
     emoji: "🧩"
 ---
 # Probe
@@ -18,7 +19,7 @@ metadata:
 
     assert.deepEqual(frontmatter, {
       metadata: {
-        openclaw: { emoji: '🧩' },
+        openclaw: { always: false, emoji: '🧩' },
         tags: ['pirog', 'generic'],
       },
       name: 'piro-probe',

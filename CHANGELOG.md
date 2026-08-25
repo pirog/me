@@ -1,19 +1,36 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
-## v1.0.0-beta.9 - [August 25, 2026](https://github.com/pirog/me/releases/tag/v1.0.0-beta.9)
+### Breaking Changes
 
-- Added GitHub SSH host keys to `~/.ssh/known_hosts` before bootstrap repository clones. [#43](https://github.com/pirog/me/pull/43)
-- Added `$piro-automation` with declarative approval-gated reconciliation, Doctor drift reporting, a paused smoke task, and projectless weekday morning closeout and daily planning tasks. [#50](https://github.com/pirog/me/issues/50)
-- Added `$piro-clean-up-task` for evidence-gated archival across PR, Git, retained-checkout, and conversation-only outcomes. [#39](https://github.com/pirog/me/pull/39)
-- Added `$piro-find-work` for read-only, goal-aware assignment recommendations across reviewed actors and unassigned GitHub issues. [#46](https://github.com/pirog/me/issues/46)
-- Added `$piro-plan-work` with `GOALS.md` fallback, opt-in Lando discovery, bounded capacity, and exact Codex task selection.
-- Added `$piro-work-on-task` for issue and same-repository pull-request planning in Codex-managed worktrees. [#39](https://github.com/pirog/me/pull/39)
-- Added shared `ACTORS.md` and `WORK_REPOS.md` inputs for work-planning actors, repository priorities, and discovery scopes. [#45](https://github.com/pirog/me/issues/45)
-- Fixed the shared Codex default to use the ChatGPT-compatible `gpt-5.6-sol` model ID. [#39](https://github.com/pirog/me/pull/39)
-- Removed `Task score` from Plan Work evidence, ordering, output, and missing-data rules. [#47](https://github.com/pirog/me/issues/47)
-- Removed the pre-seeded `tanaabot` OpenClaw identity and workspace while retaining the opt-in dependency bundle. [#39](https://github.com/pirog/me/pull/39)
+- Removed the pre-seeded `tanaabot` OpenClaw identity and workspace while retaining the opt-in tooling bundle. [#39](https://github.com/pirog/me/pull/39)
 - Renamed `$piro-me-readiness` to `$piro-me-doctor` and added grouped, versioned diagnostics with focused remediation. [#39](https://github.com/pirog/me/pull/39)
+
+### Work System
+
+- Added `GOALS.md`, `ACTORS.md`, and `WORK_REPOS.md` as shared sources for direction, actors, priorities, and repository discovery. [#44](https://github.com/pirog/me/pull/44) [#51](https://github.com/pirog/me/pull/51)
+- Added `$piro-automation` for declarative, approval-gated reconciliation of Codex scheduled tasks. [#53](https://github.com/pirog/me/pull/53)
+- Added `$piro-clean-up-task` for evidence-gated archival across PR, Git, retained-checkout, and conversation outcomes. [#39](https://github.com/pirog/me/pull/39)
+- Added `$piro-find-work` for goal-aware assignment recommendations across reviewed actors and unassigned issues. [#52](https://github.com/pirog/me/pull/52)
+- Added `$piro-morning-closeout` plus weekday closeout and daily planning automations. [#53](https://github.com/pirog/me/pull/53)
+- Added `$piro-plan-work` with bounded capacity and exact Codex task selection. [#44](https://github.com/pirog/me/pull/44)
+- Added `$piro-work-on-task` for implementation planning in Codex-managed issue and pull-request worktrees. [#39](https://github.com/pirog/me/pull/39)
+- Fixed `$piro-clean-up-task` to accept later PR-head commits when the task commit remains preserved.
+- Removed `Task score` from `$piro-plan-work` evidence, ordering, output, and missing-data rules. [#48](https://github.com/pirog/me/pull/48)
+
+### Machine Profile
+
+- Added a guarded default Warp agent execution profile. [#39](https://github.com/pirog/me/pull/39)
+- Added `clawhub` to the opt-in OpenClaw development bundle.
+- Added GitHub SSH host keys to `~/.ssh/known_hosts` before bootstrap repository clones. [#43](https://github.com/pirog/me/pull/43)
+- Fixed the shared Codex default to use the ChatGPT-compatible `gpt-5.6-sol` model ID. [#39](https://github.com/pirog/me/pull/39)
 - Updated the machine profile and `$piro-me-doctor` to require Homebrew `node@26` and `.tool-versions` Node 26. [#43](https://github.com/pirog/me/pull/43)
+
+### Developer Improvements
+
+- Added canonical GitHub issue forms for Task, Bug, and Feature intake. [#39](https://github.com/pirog/me/pull/39)
+- Marked `package.json` private to prevent accidental npm publication. [#39](https://github.com/pirog/me/pull/39)
+- Reduced duplicate automation, cache-sync, and skill-parser code while preserving public behavior.
+- Updated release validation to run unit tests and revalidate formatted, stamped plugin artifacts.
 
 ## v1.0.0-beta.8 - [July 27, 2026](https://github.com/pirog/me/releases/tag/v1.0.0-beta.8)
 

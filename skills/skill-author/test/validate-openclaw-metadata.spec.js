@@ -8,6 +8,7 @@ describe('skills/skill-author/utils/validate-openclaw-metadata', () => {
       validateOpenClawMetadata({
         emoji: '🧪',
         homepage: 'https://example.com/skill',
+        always: false,
         os: ['darwin'],
         requires: { bins: ['bun'] },
       }),
@@ -17,7 +18,7 @@ describe('skills/skill-author/utils/validate-openclaw-metadata', () => {
 
   it('should report malformed gates and a missing stable homepage', () => {
     const findings = validateOpenClawMetadata({
-      always: 'sometimes',
+      always: 'false',
       emoji: '',
       os: ['plan9'],
       requires: { bins: 'bun' },

@@ -265,7 +265,7 @@ gap that native GitHub and Codex operations cannot handle.
   choice, exact narrowing, direct-evidence ranking, missing and conflicting metadata, active-task
   deduplication, `13` and `21` handling, pull-request attention, incomplete pagination,
   capacity-driven task counts, and natural exact-selection authorization.
-- Prove discovery later with read-only fixtures in `tanaabased/big-test-bucket`; select nothing and
-  confirm no task or GitHub mutation. Prove queue mode only after separate authorization for exact
-  disposable sources, then clean them up through their owning workflows.
+- Prove discovery with bounded read-only fixtures; select nothing and confirm no task or GitHub
+  mutation. Prove queue mode only after separate authorization for exact disposable sources, then
+  retire them through their owning workflows.
 - Do not run Leia for this skill unless the user explicitly requests it.

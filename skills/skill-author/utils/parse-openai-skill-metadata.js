@@ -1,79 +1,17 @@
-function unquoteYaml(value) {
-  const trimmed = String(value ?? '').trim();
-  if (
-    (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
-    (trimmed.startsWith("'") && trimmed.endsWith("'"))
-  ) {
-    return trimmed.slice(1, -1);
-  }
+import parseYaml from './parse-yaml.js';
 
-  return trimmed;
-}
-
-function parseIndentedKeyValues(content, sectionName) {
-  const lines = content.split('\n');
-  const values = {};
-  let inSection = false;
-
-  for (const line of lines) {
-    if (!inSection) {
-      if (line.trim() === `${sectionName}:`) inSection = true;
-      continue;
-    }
-
-    if (!line.trim()) continue;
-    if (!line.startsWith('  ')) break;
-
-    const match = line.match(/^ {2}([a-z_]+):\s*(.+)$/);
-    if (match) values[match[1]] = unquoteYaml(match[2]);
-  }
-
-  return values;
-}
-
-function parseDependencyTools(content) {
-  const lines = content.split('\n');
-  const tools = [];
-  let inDependencies = false;
-  let inTools = false;
-  let currentTool = null;
-
-  for (const line of lines) {
-    if (!inDependencies) {
-      if (line.trim() === 'dependencies:') inDependencies = true;
-      continue;
-    }
-
-    if (!line.trim()) continue;
-    if (!line.startsWith('  ')) break;
-
-    if (!inTools) {
-      if (line.trim() === 'tools:') inTools = true;
-      continue;
-    }
-
-    if (!line.startsWith('    ')) break;
-
-    const firstEntryMatch = line.match(/^ {4}-\s+([a-z_]+):\s*(.+)$/);
-    if (firstEntryMatch) {
-      currentTool = { [firstEntryMatch[1]]: unquoteYaml(firstEntryMatch[2]) };
-      tools.push(currentTool);
-      continue;
-    }
-
-    const entryMatch = line.match(/^ {6}([a-z_]+):\s*(.+)$/);
-    if (entryMatch && currentTool) currentTool[entryMatch[1]] = unquoteYaml(entryMatch[2]);
-  }
-
-  return tools;
+function mapping(value) {
+  return value && typeof value === 'object' && !Array.isArray(value) ? value : {};
 }
 
 export default function parseOpenAiSkillMetadata(content) {
-  const normalizedContent = String(content ?? '');
+  const metadata = mapping(parseYaml(content));
+  const dependencies = mapping(metadata.dependencies);
+
   return {
-    dependencyTools: parseDependencyTools(normalizedContent),
-    hasDependencyToolsSection: /^\s{2}tools:\s*$/m.test(normalizedContent),
-    interfaceValues: parseIndentedKeyValues(normalizedContent, 'interface'),
-    policyValues: parseIndentedKeyValues(normalizedContent, 'policy'),
+    dependencyTools: Array.isArray(dependencies.tools) ? dependencies.tools : [],
+    hasDependencyToolsSection: Object.hasOwn(dependencies, 'tools'),
+    interfaceValues: mapping(metadata.interface),
+    policyValues: mapping(metadata.policy),
   };
 }

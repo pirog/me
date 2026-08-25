@@ -105,6 +105,22 @@ Codex to run `$piro-automation check` and review the exact plan for the shipped 
 before its first live sync. Run `$piro-me-doctor` for read-only diagnosis of the resulting machine
 profile and declarative automation drift.
 
+## Codex Workflows
+
+`piroplugin` includes profile and plugin maintenance through
+[`$piro-automation`](./skills/automation/), [`$piro-me-doctor`](./skills/me-doctor/), and
+[`$piro-skill-author`](./skills/skill-author/). Its work system includes
+[`$piro-plan-work`](./skills/plan-work/), [`$piro-find-work`](./skills/find-work/),
+[`$piro-work-on-task`](./skills/work-on-task/),
+[`$piro-clean-up-task`](./skills/clean-up-task/), and
+[`$piro-morning-closeout`](./skills/morning-closeout/).
+
+The work-planning workflows use [`GOALS.md`](./GOALS.md) for reviewed direction,
+[`ACTORS.md`](./ACTORS.md) for reviewed actors and their goals sources, and
+[`WORK_REPOS.md`](./WORK_REPOS.md) for repository discovery policy. Scheduled task definitions live
+in [`AUTOMATIONS.yaml`](./AUTOMATIONS.yaml). These files provide reviewed inputs; each linked skill
+owns its runtime workflow and authority boundaries.
+
 ## Development
 
 This repository uses Bun for local tooling:

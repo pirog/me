@@ -11,6 +11,8 @@ its Codex plugin bundle.
 
 - Keep `boot.sh` thin over Bootbox and treat this checkout as the editable source and runtime payload
   for the profile.
+- Keep `boot.sh` as one self-contained published script because it is served directly by Netlify;
+  do not split it into source fragments or require release-time assembly from multiple files.
 - Keep generic bootstrap behavior in Bootbox. Headless setup, SSH hardening, remote-login policy,
   service supervision, and production OpenClaw hosting belong in `agentbox`.
 - Keep setup, token management, connector mutations, releases, Leia, and unrelated machine
@@ -30,10 +32,13 @@ its Codex plugin bundle.
   `automations/`.
 - `ACTORS.md` owns reviewed work-planning actors and their public goals sources, `WORK_REPOS.md` owns
   priority repositories and discovery-scope policy, and `GOALS.md` owns reviewed direction and
-  fallback planning priorities. `skills/plan-work/`, `skills/work-on-task/`,
-  `skills/clean-up-task/`, and `skills/morning-closeout/` own assigned-work planning, exact-source
-  task startup, one-task preservation-gated retirement, and current-host morning coordination
-  respectively.
+  fallback planning priorities. `skills/plan-work/`, `skills/find-work/`, `skills/work-on-task/`,
+  `skills/clean-up-task/`, and `skills/morning-closeout/` own assigned-work planning, unassigned-work
+  recommendations, exact-source task startup, one-task preservation-gated retirement, and
+  current-host morning coordination respectively.
+- `TASKS.md` is informal cross-repository planning scratch. It is not a durable contract, current
+  state proof, or authorization source; preserve unrelated edits and keep it outside the managed
+  plugin cache.
 - `skills/me-doctor/` and `skills/me-doctor/test/check-machine.spec.js` own profile diagnostic
   behavior.
 - `README.md` is the primary setup entrypoint. `ADVANCED.md` owns complete configuration,
@@ -58,6 +63,9 @@ its Codex plugin bundle.
   examples when public options, environment variables, help, planning, or failure text changes.
 - Keep development and CI-only inputs hidden. Preserve `PIROME_*` as the public wrapper namespace
   and use `BOOTBOX_*` only for internal delegation.
+- Preserve the hidden plural bootstrap aliases `--ssh-keys`, `--tanaabs`, `PIROME_SSH_KEYS`, and
+  `PIROME_TANAABS` as intentional quality-of-life compatibility inputs. Keep them out of `--help`
+  and do not treat them as future optimization-removal candidates.
 - Preserve the fixed Bootbox delegation, secret masking, child-environment isolation, and interactive
   confirmation needed by hosted pipe-to-Bash use. Never reintroduce raw token or argument logging.
 - Never delete or replace an existing checkout, including under force modes. Refresh only clean

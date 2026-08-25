@@ -177,14 +177,11 @@ digest approval.
   validation.
 - [`../../lib/automation-plan.js`](../../lib/automation-plan.js): drift classification and digest
   generation.
-- [`../../lib/automation-apply.js`](../../lib/automation-apply.js): injected-adapter lifecycle and
-  authoritative read-back contract used by tests.
 - [`../../utils/compile-automation-schedule.js`](../../utils/compile-automation-schedule.js):
   structured schedule compiler.
-- [`../../test/automation-manifest.spec.js`](../../test/automation-manifest.spec.js),
-  [`../../test/automation-plan.spec.js`](../../test/automation-plan.spec.js), and
-  [`../../test/automation-apply.spec.js`](../../test/automation-apply.spec.js): deterministic
-  validation, reconciliation, and lifecycle coverage.
+- [`../../test/automation-manifest.spec.js`](../../test/automation-manifest.spec.js) and
+  [`../../test/automation-plan.spec.js`](../../test/automation-plan.spec.js): deterministic
+  validation and reconciliation coverage.
 
 ## Validation
 
@@ -193,7 +190,7 @@ digest approval.
   04:00 and 05:00 local time.
 - Run the focused automation tests and confirm valid schedule variants, schema rejection,
   the 25-line inline prompt boundary, prompt-file containment, marker conflicts, project resolution,
-  deterministic digests, every lifecycle action, and read-back failure behavior.
+  deterministic digests, and every planned lifecycle action.
 - Run `bun run test` followed by `bun run lint`.
 - Run `bun run codex:validate`, then the repository's `codex:check` / `codex:sync` /
   `codex:check` cache-convergence cycle when installed plugin-cache mutation is authorized.
