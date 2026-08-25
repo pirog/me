@@ -1,0 +1,38 @@
+schema-version: 1
+automations:
+  - id: smoke-test
+    name: 🧪 Pyro automation smoke test
+    enabled: false
+    schedule:
+      frequency: minutely
+      interval: 15
+    prompt: |
+      Reply with "Pyro automation smoke test passed" and the current local time.
+      Do not access project files or connected services. Apart from updating the automation memory
+      supplied with the run, do not change state.
+  - id: morning-closeout
+    name: 🧹 MORNING CLOSEOUT
+    enabled: true
+    schedule:
+      frequency: weekly
+      weekdays:
+        - monday
+        - tuesday
+        - wednesday
+        - thursday
+        - friday
+      at: '04:00'
+    prompt-file: automations/morning-closeout.md
+  - id: daily-work-plan
+    name: 📋 DAILY WORK PLAN
+    enabled: true
+    schedule:
+      frequency: weekly
+      weekdays:
+        - monday
+        - tuesday
+        - wednesday
+        - thursday
+        - friday
+      at: '05:00'
+    prompt-file: automations/daily-work-plan.md

@@ -55,6 +55,9 @@ Vim theme selections or an external runtime.
 The repository is packaged as `piroplugin` through
 [`.codex-plugin/plugin.json`](./.codex-plugin/plugin.json). It currently includes:
 
+- [`piro-automation`](./skills/automation/): validates and compares the declarative scheduled tasks
+  in [`AUTOMATIONS.yaml`](./AUTOMATIONS.yaml), then reconciles marked Codex automations only after
+  approval of an exact deterministic plan and digest.
 - [`piro-me-doctor`](./skills/me-doctor/): diagnoses the checkout, macOS profile, desktop-backed
   1Password access, Tailscale, Codex plugin links, and connector identities without changing the
   machine.
@@ -75,6 +78,9 @@ The repository is packaged as `piroplugin` through
 - [`piro-clean-up-task`](./skills/clean-up-task/): verifies that one finished Codex task has preserved
   its declared outcome and, when explicitly requested, archives it using evidence appropriate to a
   PR, Git, retained checkout, or conversation-only task.
+- [`piro-morning-closeout`](./skills/morning-closeout/): discovers exact eligible worktree and prior
+  report tasks on the current host, passes each separately through Clean Up Task, and reports
+  verified completed Work size.
 
 [`ACTORS.md`](./ACTORS.md) identifies reviewed work-planning actors, concise current focus, and public
 goals sources without listing repository policy. [`WORK_REPOS.md`](./WORK_REPOS.md) owns ordered
@@ -87,6 +93,27 @@ Broader shared canon skills come from the paired `tanaab` plugin. The `ai` dotfi
 the `piroplugin` source link and publishes the local `Pirostore` marketplace. Tanaab checkouts that
 contain `.codex-plugin/plugin.json` receive generated local source links. These links expose local
 plugin sources; every plugin still requires explicit installation and enablement through Codex.
+
+### Declarative Codex Automations
+
+[`AUTOMATIONS.yaml`](./AUTOMATIONS.yaml) is the desired-state manifest for Codex scheduled tasks
+owned by this repository. It keeps the verified projectless `🧪 Pyro automation smoke test`
+declared but paused. Two enabled projectless weekday tasks run in local time: `🧹 MORNING CLOSEOUT`
+at 04:00 safely retires eligible tasks and every earlier managed report regardless of read state,
+then reports verified completed capacity; `📋 DAILY WORK PLAN` at 05:00 recommends up to two issues
+against a Work size target of 10 and uses Find Work only when verified capacity remains and no
+actionable assigned work exists.
+
+Use `$piro-automation check` to validate the manifest and compare it with live state. Use
+`$piro-automation sync` to produce an ordered plan and SHA-256 digest; Codex waits for explicit
+approval of that exact plan before creating, updating, pausing, resuming, or deleting a marked task.
+Unmarked personal automations are ignored. A missing `local-project` makes a task projectless; an
+explicit local project must match exactly one Codex project by absolute path. Prompts of at most 25
+physical lines may stay inline. Longer prompts must live beneath `automations/` and use
+`prompt-file`.
+
+Repository validation does not create the live smoke task. Its first creation is a separate
+approval-gated `$piro-automation sync` operation in the Codex desktop app.
 
 ### Tanaab Repositories
 
@@ -151,6 +178,8 @@ Detected `agentbox` hosts and workstations with the Homebrew `tailscale` formula
 - Install `piroplugin` from `Pirostore`. If Canon was selected, install `tanaab` as well.
 - Connect the GitHub app connector as `pirog`.
 - Connect the monday.com app connector as `Michael Pirog` for this `me` environment.
+- Ask Codex to run `$piro-automation check`, then approve the exact sync plan when the declarative
+  automation set should be reconciled.
 
 ### Verification
 
@@ -363,7 +392,8 @@ bun run codex:check
 bun run codex:sync
 ```
 
-- `codex:validate` validates the source plugin manifest, skills, MCP stub, and workflow references.
+- `codex:validate` validates the source plugin manifest, skills, MCP stub, automation manifest, and
+  workflow references.
 - `codex:check` compares the installed `piroplugin` cache with the managed source surface.
 - `codex:sync` refreshes that installed cache when local plugin changes should become available to
   Codex.

@@ -24,11 +24,16 @@ its Codex plugin bundle.
 - `dotfiles/theme/colors.json` is the lowest-level portable color source for application themes.
 - `.codex-plugin/`, plugin source directories, `package.json`, and the Codex sync implementation own
   the `piroplugin` package and managed cache surface.
+- `AUTOMATIONS.yaml` owns desired Codex scheduled-task state. `skills/automation/` owns validation,
+  drift planning, approval-gated reconciliation, and read-back verification. Automation prompts of
+  at most 25 physical lines may stay inline; longer prompts must use `prompt-file` and live under
+  `automations/`.
 - `ACTORS.md` owns reviewed work-planning actors and their public goals sources, `WORK_REPOS.md` owns
   priority repositories and discovery-scope policy, and `GOALS.md` owns reviewed direction and
-  fallback planning priorities. `skills/plan-work/`, `skills/work-on-task/`, and
-  `skills/clean-up-task/` own assigned-work planning, exact-source task startup, and
-  preservation-gated task retirement respectively.
+  fallback planning priorities. `skills/plan-work/`, `skills/work-on-task/`,
+  `skills/clean-up-task/`, and `skills/morning-closeout/` own assigned-work planning, exact-source
+  task startup, one-task preservation-gated retirement, and current-host morning coordination
+  respectively.
 - `skills/me-doctor/` and `skills/me-doctor/test/check-machine.spec.js` own profile diagnostic
   behavior.
 - `README.md` is the primary setup entrypoint. `ADVANCED.md` owns complete configuration,

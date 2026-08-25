@@ -1,0 +1,9 @@
+interface:
+  display_name: 'Automation'
+  short_description: 'Pirobased declarative Codex scheduled task management.'
+  icon_small: '../../assets/composer-icon.svg'
+  icon_large: '../../assets/icon-large.png'
+  brand_color: '#db2777'
+  default_prompt: 'Use $piro-automation to validate and compare AUTOMATIONS.yaml with my managed Codex scheduled tasks, show the exact deterministic plan and digest, and wait for my approval before changing app state.'
+policy:
+  allow_implicit_invocation: false

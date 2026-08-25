@@ -34,8 +34,8 @@ services, mutate connector data, or validate the Agentbox product.
 
 - Diagnose a profile after `boot.sh` or before relying on repo-owned dotfiles and `piroplugin`.
 - Check whether `me` is ready, set up, current, or updated for supported Codex work.
-- Investigate optional 1Password, Tailscale, application, or monday capabilities alongside the
-  required core profile.
+- Investigate required declarative automation state and optional 1Password, Tailscale, application,
+  or monday capabilities alongside the required core profile.
 - Recheck the profile after the user has separately applied a repair.
 
 ## When Not to Use
@@ -55,6 +55,8 @@ services, mutate connector data, or validate the Agentbox product.
   recommend the supported bootstrap workflow; do not install Bun from the Doctor.
 - Require the GitHub connector in the active Codex session for the final identity check. The monday
   connector is optional and may be reported as a warning.
+- Require native Codex automation inspection for the declarative automation drift check. The Doctor
+  reports drift but never reconciles it.
 
 ## Workflow
 
@@ -96,7 +98,22 @@ services, mutate connector data, or validate the Agentbox product.
 
    Missing tools, failed authentication, or an identity mismatch make the final result not ready.
 
-5. Discover the monday connector tools and, when available, run
+5. Discover `automation_update` and inspect declarative automation state read-only:
+   - Validate `AUTOMATIONS.yaml` with the bundled `$piro-automation` command.
+   - List `$CODEX_HOME/automations/*/automation.toml` only to discover candidate ids and managed
+     marker hints. Do not edit those files or treat them as authoritative task definitions.
+   - Call `automation_update` in view mode for every candidate id. Read current `model` and
+     `model_reasoning_effort` from the effective Codex config and call `list_projects` only when the
+     manifest declares a `local-project`.
+   - Feed the authoritative snapshots, defaults, and projects to the bundled deterministic planner.
+     Zero missing, changed, or extra managed tasks passes. Any drift, malformed or duplicate marker,
+     invalid manifest, unavailable native operation, or failed view makes the final result not ready.
+     Unmanaged automation tasks are ignored and reported by count.
+
+   Do not create, update, pause, resume, or delete an automation. Route remediation to
+   `$piro-automation check` followed by an explicitly approved sync.
+
+6. Discover the monday connector tools and, when available, run
    `list_users_and_teams(getMe=true)`. Expect:
    - monday user ID `71211606`
    - monday user name `Michael Pirog`
@@ -104,12 +121,12 @@ services, mutate connector data, or validate the Agentbox product.
    Missing tools, failed authentication, or an identity mismatch are warnings. Do not mutate
    monday data.
 
-6. Present the combined result:
-   - `🟢 Ready`: local status is `ready` and GitHub identity matches.
+7. Present the combined result:
+   - `🟢 Ready`: local status is `ready`, GitHub identity matches, and managed automations converge.
    - `🟡 Ready with warnings`: local status is `warning`, or monday warns, while GitHub identity
-     matches.
+     matches and managed automations converge.
    - `🔴 Not ready`: local status is `not_ready`, the helper contract is invalid, or GitHub identity
-     fails.
+     or managed automation validation fails.
 
    Group the summary by meaning rather than treating Codex as the machine's source of truth:
 
@@ -126,6 +143,7 @@ services, mutate connector data, or validate the Agentbox product.
 
    - ✅ piroplugin
    - ✅ GitHub connector: `pirog` / `713424`
+   - ✅ Declarative automations: converged
 
    Optional capabilities
 
@@ -133,7 +151,7 @@ services, mutate connector data, or validate the Agentbox product.
    - ⚠️ monday connector
    ```
 
-7. Render a cataloged remediation command as code when one is present, but do not execute it. A
+8. Render a cataloged remediation command as code when one is present, but do not execute it. A
    request to diagnose and repair does not replace the mutation checkpoint: present the exact next
    action, explain its scope, and obtain separate confirmation first.
 
@@ -150,12 +168,15 @@ services, mutate connector data, or validate the Agentbox product.
   missing link or conflict fails readiness.
 - Keep generated Codex config, the `piroplugin` link, and GitHub identity as required integration
   surfaces.
+- Require valid `AUTOMATIONS.yaml` and zero missing, changed, or extra marked automations. Keep the
+  Doctor's automation inspection read-only and ignore unmarked personal tasks.
 - Treat 1Password, Tailscale, applications, Agentbox `tailscaled`, and monday identity as optional
   warnings.
 - Before presenting remediation, require it to come from the report catalog rather than improvising
   from raw output.
 - Never print token values, raw environment contents, or the 1Password authorization sentinel.
-- Do not mutate GitHub or monday data and do not fall back to browser or computer automation.
+- Do not mutate GitHub, monday, or Codex automation data and do not fall back to browser or computer
+  automation.
 
 ## Completion Criteria
 
@@ -164,6 +185,8 @@ services, mutate connector data, or validate the Agentbox product.
 - Every active group was represented; passing leaf checks were hidden by default.
 - Every local failure or warning and every connector mismatch was reported with a focused next step.
 - GitHub identity matched `pirog` / `713424`, or the final result was not ready.
+- Declarative automation validation and the read-only drift plan converged, or the final result was
+  not ready with `$piro-automation` remediation.
 - monday identity matched `Michael Pirog` / `71211606`, or the mismatch was reported as a warning.
 - No repair, setup, credential, connector, or host mutation was performed.
 
@@ -177,6 +200,8 @@ services, mutate connector data, or validate the Agentbox product.
   safety metadata.
 - [`utils/build-doctor-report.js`](./utils/build-doctor-report.js): versioned report normalization.
 - [`test/`](./test/): flat direct utility, report-contract, and live orchestration coverage.
+- [`../automation/`](../automation/): declarative automation validation, planning, and remediation
+  workflow reused by the Doctor's read-only drift check.
 
 ## Validation
 
@@ -188,3 +213,5 @@ services, mutate connector data, or validate the Agentbox product.
   stable.
 - Confirm Bun and Node runtime, Stow, Agentbox cask exception, connector, and secret-redaction
   boundaries remain read-only and covered.
+- Confirm a clean automation plan passes, managed drift fails readiness, unmanaged tasks are ignored,
+  and the Doctor never invokes an automation mutation.
