@@ -1,7 +1,6 @@
 #!/usr/bin/env bun
 /* eslint-disable no-console */
 
-import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 
 import { loadAutomationManifest } from '../../../lib/automation-manifest.js';
@@ -36,7 +35,11 @@ function usage() {
 }
 
 async function readJsonStdin() {
-  const content = await readFile('/dev/stdin', 'utf8');
+  process.stdin.setEncoding('utf8');
+  let content = '';
+  for await (const chunk of process.stdin) {
+    content += chunk;
+  }
   if (!content.trim()) {
     throw new Error('plan requires JSON on stdin.');
   }
