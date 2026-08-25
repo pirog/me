@@ -389,8 +389,8 @@ async function validateOpenAiMetadata({
   }
 
   if (
-    policyValues.allow_implicit_invocation &&
-    !['true', 'false'].includes(policyValues.allow_implicit_invocation)
+    Object.hasOwn(policyValues, 'allow_implicit_invocation') &&
+    typeof policyValues.allow_implicit_invocation !== 'boolean'
   ) {
     errors.push('policy.allow_implicit_invocation must be `true` or `false` when present.');
   }

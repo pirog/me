@@ -42,6 +42,6 @@
     "lint:eslint": "eslint .",
     "lint:shellcheck": "shellcheck boot.sh",
     "test": "bun run test:unit",
-    "test:unit": "mocha \"test/**/*.spec.js\" \"skills/*/test/**/*.spec.js\""
+    "test:unit": "bunx --bun mocha \"test/**/*.spec.js\" \"skills/*/test/**/*.spec.js\""
   }
 }

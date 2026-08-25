@@ -66,7 +66,7 @@ export default function validateOpenClawMetadata(openClaw) {
     }
   }
 
-  if (Object.hasOwn(openClaw, 'always') && !['true', 'false'].includes(String(openClaw.always))) {
+  if (Object.hasOwn(openClaw, 'always') && typeof openClaw.always !== 'boolean') {
     errors.push('metadata.openclaw.always must be `true` or `false` when present.');
   }
 

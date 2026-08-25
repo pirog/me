@@ -15,7 +15,7 @@ dependencies:
 `);
 
     assert.deepEqual(parsed.interfaceValues, { display_name: 'Probe' });
-    assert.deepEqual(parsed.policyValues, { allow_implicit_invocation: 'false' });
+    assert.deepEqual(parsed.policyValues, { allow_implicit_invocation: false });
     assert.deepEqual(parsed.dependencyTools, [{ type: 'mcp', value: 'probe' }]);
     assert.equal(parsed.hasDependencyToolsSection, true);
   });
