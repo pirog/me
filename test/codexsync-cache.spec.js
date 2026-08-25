@@ -115,15 +115,26 @@ describe('lib/codexsync-cache', () => {
     assert.equal(await readFile(installedReferencePath, 'utf8'), '# Skill Standard\n');
   });
 
-  it('should copy the goals used by installed planning skills', async () => {
+  it('should copy root inputs used by installed planning skills', async () => {
     const { sourceRoot, targetRoot, tempRoot } = await createRoots();
     tempRoots.push(tempRoot);
-    await writeFile(path.join(sourceRoot, 'GOALS.md'), '# Goals\n');
+    await Promise.all([
+      writeFile(path.join(sourceRoot, 'ACTORS.md'), '# Work-Planning Actors\n'),
+      writeFile(path.join(sourceRoot, 'GOALS.md'), '# Goals\n'),
+      writeFile(path.join(sourceRoot, 'WORK_REPOS.md'), '# Work Repositories\n'),
+    ]);
 
     const diff = await syncRoots(sourceRoot, targetRoot);
 
     assert.deepEqual(diff, { changed: [], extra: [], missing: [] });
-    assert.equal(await readFile(path.join(targetRoot, 'GOALS.md'), 'utf8'), '# Goals\n');
+    assert.deepEqual(
+      await Promise.all(
+        ['ACTORS.md', 'GOALS.md', 'WORK_REPOS.md'].map((filename) =>
+          readFile(path.join(targetRoot, filename), 'utf8'),
+        ),
+      ),
+      ['# Work-Planning Actors\n', '# Goals\n', '# Work Repositories\n'],
+    );
   });
 
   it('should replace entries when their filesystem type changes', async () => {
