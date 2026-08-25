@@ -10,18 +10,20 @@ The portable palette in `dotfiles/theme/colors.json` anchors coordinated themes 
 
 When an installed `agentbox` runtime is detected, `me` leaves `agentbox`'s formula-backed `tailscaled` runtime in control and skips the 1Password and Tailscale desktop casks while retaining the beta 1Password CLI used for service-account-backed bootstrap work. Any host with the Homebrew `tailscale` formula also skips the conflicting `tailscale-app` cask.
 
-After bootstrap, `$piro-me-readiness` provides read-only verification of the checkout, macOS profile, Codex plugin links, and optional app-backed capabilities.
+After bootstrap, `$piro-me-doctor` provides read-only diagnosis of the checkout, macOS profile, Codex plugin links, and optional app-backed capabilities.
+
+`AUTOMATIONS.yaml` declares repository-owned Codex scheduled tasks. `$piro-automation` validates and compares that manifest, ignores unmarked personal tasks, and requires approval of an exact deterministic plan before live reconciliation. The verified projectless `🧪 Pyro automation smoke test` remains declared but paused; enabled projectless weekday tasks perform a preservation-gated morning closeout at 04:00 local time and prepare a goal-aligned daily work plan at 05:00.
 
 This repository targets the `pirog` workstation profile. Generic bootstrap behavior belongs in Bootbox, while headless host setup, SSH hardening, remote access, and service supervision belong in `agentbox`.
 
-The advanced reference covers installed components, `agentbox` host behavior, post-bootstrap setup, the complete option and environment-variable contract, checkout behavior, and Codex configuration and plugin sync. The OpenClaw guide owns the opt-in local plugin-development workspace, its distinct `tanaabot` agent, Tanaab-based theming, and foreground Gateway workflow.
+The advanced reference covers installed components, `agentbox` host behavior, post-bootstrap setup, the complete option and environment-variable contract, checkout behavior, Codex configuration and plugin sync, and the optional OpenClaw dependency bundle. This repository does not provision an OpenClaw agent identity or workspace.
 
 ## Primary Resources
 
 - [Hosted bootstrap](https://boot.pirog.me/boot.sh): The generated shell entrypoint for bootstrapping the machine profile.
 - [README source](https://raw.githubusercontent.com/pirog/me/main/README.md): Main quickstart, common usage, post-bootstrap pointers, and project links.
 - [Advanced source](https://raw.githubusercontent.com/pirog/me/main/ADVANCED.md): Installed components, host-specific and post-bootstrap behavior, full configuration reference, checkout behavior, and Codex sync details.
-- [OpenClaw source](https://raw.githubusercontent.com/pirog/me/main/OPENCLAW.md): Opt-in local OpenClaw setup, `tanaabot` identity, Tanaab-based theming, Gateway operation, and verification.
+- [Automation manifest](https://raw.githubusercontent.com/pirog/me/main/AUTOMATIONS.yaml): Declarative desired state for repository-managed Codex scheduled tasks.
 - [Changelog source](https://raw.githubusercontent.com/pirog/me/main/CHANGELOG.md): Current unreleased changes and published release history.
 - [GitHub repository](https://github.com/pirog/me): Source code, canonical documentation, workflows, plugin assets, and Leia examples.
 - [Releases](https://github.com/pirog/me/releases): Published versions and `piroplugin` archives.
