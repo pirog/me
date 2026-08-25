@@ -32,10 +32,13 @@ its Codex plugin bundle.
   `automations/`.
 - `ACTORS.md` owns reviewed work-planning actors and their public goals sources, `WORK_REPOS.md` owns
   priority repositories and discovery-scope policy, and `GOALS.md` owns reviewed direction and
-  fallback planning priorities. `skills/plan-work/`, `skills/work-on-task/`,
-  `skills/clean-up-task/`, and `skills/morning-closeout/` own assigned-work planning, exact-source
-  task startup, one-task preservation-gated retirement, and current-host morning coordination
-  respectively.
+  fallback planning priorities. `skills/plan-work/`, `skills/find-work/`, `skills/work-on-task/`,
+  `skills/clean-up-task/`, and `skills/morning-closeout/` own assigned-work planning, unassigned-work
+  recommendations, exact-source task startup, one-task preservation-gated retirement, and
+  current-host morning coordination respectively.
+- `TASKS.md` is informal cross-repository planning scratch. It is not a durable contract, current
+  state proof, or authorization source; preserve unrelated edits and keep it outside the managed
+  plugin cache.
 - `skills/me-doctor/` and `skills/me-doctor/test/check-machine.spec.js` own profile diagnostic
   behavior.
 - `README.md` is the primary setup entrypoint. `ADVANCED.md` owns complete configuration,

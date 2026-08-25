@@ -53,41 +53,18 @@ Vim theme selections or an external runtime.
 ### Codex Plugin And Skills
 
 The repository is packaged as `piroplugin` through
-[`.codex-plugin/plugin.json`](./.codex-plugin/plugin.json). It currently includes:
+[`.codex-plugin/plugin.json`](./.codex-plugin/plugin.json). Profile and plugin maintenance comes from
+[`piro-automation`](./skills/automation/), [`piro-me-doctor`](./skills/me-doctor/), and
+[`piro-skill-author`](./skills/skill-author/). Work planning and task lifecycle support comes from
+[`piro-plan-work`](./skills/plan-work/), [`piro-find-work`](./skills/find-work/),
+[`piro-work-on-task`](./skills/work-on-task/), [`piro-clean-up-task`](./skills/clean-up-task/), and
+[`piro-morning-closeout`](./skills/morning-closeout/). Follow each skill for its current behavior,
+checks, and authority boundaries.
 
-- [`piro-automation`](./skills/automation/): validates and compares the declarative scheduled tasks
-  in [`AUTOMATIONS.yaml`](./AUTOMATIONS.yaml), then reconciles marked Codex automations only after
-  approval of an exact deterministic plan and digest.
-- [`piro-me-doctor`](./skills/me-doctor/): diagnoses the checkout, macOS profile, desktop-backed
-  1Password access, Tailscale, Codex plugin links, and connector identities without changing the
-  machine.
-- [`piro-skill-author`](./skills/skill-author/): creates, standardizes, validates, and optimizes
-  Pirobased repository-local skills.
-- [`piro-plan-work`](./skills/plan-work/): discovers assigned GitHub issues and pull-request
-  attention across the reviewed repository scopes in [`WORK_REPOS.md`](./WORK_REPOS.md), resolves
-  every current-invocation scope decision, and uses visible goal, repository-priority, readiness,
-  dependency, Priority, date, Impact, workload, and capacity evidence before queueing only the exact
-  Codex tasks selected by the user in natural language.
-- [`piro-find-work`](./skills/find-work/): discovers unassigned GitHub issues across the reviewed
-  repository scopes and recommends read-only, goal-aligned assignments for every actor in
-  [`ACTORS.md`](./ACTORS.md), or an exact requested subset, using visible workload, capacity,
-  readiness, dependency, repository, and current assignability evidence.
-- [`piro-work-on-task`](./skills/work-on-task/): opens one GitHub issue or same-repository pull
-  request in a Codex-managed worktree task, produces a user-centered assessment, and prepares a
-  technical implementation plan before changes begin.
-- [`piro-clean-up-task`](./skills/clean-up-task/): verifies that one finished Codex task has preserved
-  its declared outcome and, when explicitly requested, archives it using evidence appropriate to a
-  PR, Git, retained checkout, or conversation-only task.
-- [`piro-morning-closeout`](./skills/morning-closeout/): discovers exact eligible worktree and prior
-  report tasks on the current host, passes each separately through Clean Up Task, and reports
-  verified completed Work size.
-
-[`ACTORS.md`](./ACTORS.md) identifies reviewed work-planning actors, concise current focus, and public
-goals sources without listing repository policy. [`WORK_REPOS.md`](./WORK_REPOS.md) owns ordered
-priority repositories, default discovery scopes, current-invocation decisions, and exact narrowing.
-Both files are copied into the managed plugin cache for installed planning skills. They remain
-reviewed inputs rather than proof of live identity, availability, access, workload, assignability, or
-mutation authority.
+[`GOALS.md`](./GOALS.md) owns reviewed direction, [`ACTORS.md`](./ACTORS.md) owns work-planning actors
+and their goals sources, and [`WORK_REPOS.md`](./WORK_REPOS.md) owns repository priority and discovery
+policy. These inputs are copied into the managed plugin cache, but they do not prove live identity,
+access, workload, assignability, or mutation authority.
 
 Broader shared canon skills come from the paired `tanaab` plugin. The `ai` dotfile package installs
 the `piroplugin` source link and publishes the local `Pirostore` marketplace. Tanaab checkouts that
@@ -97,23 +74,10 @@ plugin sources; every plugin still requires explicit installation and enablement
 ### Declarative Codex Automations
 
 [`AUTOMATIONS.yaml`](./AUTOMATIONS.yaml) is the desired-state manifest for Codex scheduled tasks
-owned by this repository. It keeps the verified projectless `🧪 Pyro automation smoke test`
-declared but paused. Two enabled projectless weekday tasks run in local time: `🧹 MORNING CLOSEOUT`
-at 04:00 safely retires eligible tasks and every earlier managed report regardless of read state,
-then reports verified completed capacity; `📋 DAILY WORK PLAN` at 05:00 recommends up to two issues
-against a Work size target of 10 and uses Find Work only when verified capacity remains and no
-actionable assigned work exists.
-
-Use `$piro-automation check` to validate the manifest and compare it with live state. Use
-`$piro-automation sync` to produce an ordered plan and SHA-256 digest; Codex waits for explicit
-approval of that exact plan before creating, updating, pausing, resuming, or deleting a marked task.
-Unmarked personal automations are ignored. A missing `local-project` makes a task projectless; an
-explicit local project must match exactly one Codex project by absolute path. Prompts of at most 25
-physical lines may stay inline. Longer prompts must live beneath `automations/` and use
-`prompt-file`.
-
-Repository validation does not create the live smoke task. Its first creation is a separate
-approval-gated `$piro-automation sync` operation in the Codex desktop app.
+owned by this repository. Read it for the current task names, schedules, status, and prompt sources.
+Use [`$piro-automation`](./skills/automation/) to validate the manifest, inspect live drift, and
+prepare any approval-gated reconciliation. Repository validation never creates or changes live Codex
+automations.
 
 ### Tanaab Repositories
 

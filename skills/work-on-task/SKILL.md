@@ -338,21 +338,9 @@ deliverable. This skill creates and starts work; it never archives an existing t
   `bun skills/skill-author/scripts/validate-skill.js --skill-dir skills/work-on-task --type workflow`.
 - Run `bun run codex:validate`, then complete the repository's `codex:check` / `codex:sync` /
   `codex:check` convergence cycle before a live invocation.
-- Prove missing-project behavior with one real open source in a repository that is not a saved Codex
-  project. Confirm the exact `~/tanaab` command, manual setup steps, retry prompt, and absence of any
-  mutation.
-- Prove pull-request behavior with one same-repository open PR. Confirm the
-  `PR #<number>: <UPPERCASE BRIEF DESCRIPTION>` title, exact remote head ref and commit, native
-  detached worktree, `## Assessment` / `## Review` / `## Plan` or `## Questions`, and absence of
-  file changes or GitHub writes during the initial turn.
-- Prove branch-boundary behavior by confirming an ordinary value such as `pirog-skills-9` passes the
-  shell-safe allowlist and Git ref-format validation, while values containing `$`, command
-  substitution, backticks, quotes, whitespace, or other shell metacharacters are rejected before
-  command construction even when Git would otherwise accept the ref name.
-- Prove later direct push-back only with a disposable pull request and separate explicit
-  authorization. Confirm a normal fast-forward `HEAD:refs/heads/<validated-head-branch>` push
-  updates the existing PR without creating another branch or PR.
-- Prove the Plan Work handoff with an exact disposable source selected from the immediately preceding
-  plan. Confirm that planning alone creates nothing, a clear natural-language request to queue an
-  exact selection creates one task through this complete workflow, and stale, fuzzy, or unselected
-  references remain rejected.
+- Cover missing-project handoff, exact issue startup, same-repository pull-request startup, duplicate
+  protection, unsafe branch values, and the Plan Work selection handoff. Verify exact source,
+  project, origin, commit, title, and worktree state at each applicable boundary.
+- Exercise live task creation, ref mutation, or pull-request push-back only with separate explicit
+  authorization and a disposable exact source. Confirm that planning and assessment alone change no
+  repository or GitHub state.

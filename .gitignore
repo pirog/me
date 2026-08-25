@@ -25,6 +25,7 @@ dotfiles/ai/.codex/plugins/*
 /BOOTSTRAP.md
 /.private/
 /.scratch/
+/scratchpad/
 /.worktrees/
 
 # OpenClaw runtime state

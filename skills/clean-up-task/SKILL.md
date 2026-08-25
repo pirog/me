@@ -252,18 +252,10 @@ filesystem garbage collector, abandonment override, bulk collector, or scheduled
   `bun skills/skill-author/scripts/validate-skill.js --skill-dir skills/clean-up-task --type workflow`.
 - Run `bun run codex:validate`, then complete the repository's `codex:check` / `codex:sync` /
   `codex:check` convergence cycle before live use.
-- Prove the **PR deliverable** profile with PR #39 after merge. Confirm the exact task association,
-  targeted default-branch fetch, merge-commit reachability, clean managed worktree, and a GitHub
-  comparison showing the final PR head ahead of the older task `HEAD` with no commits behind and
-  that task `HEAD` as the merge base. Confirm exact task archival, native Codex worktree handling,
-  and retention of the separate local `pirog-skills-9` checkout plus its unstaged `TASKS.md`.
-- Prove **Git without PR** with a disposable idle managed-worktree task whose clean `HEAD` is contained
-  by a named branch or tag. Confirm no GitHub or default-branch requirement and no ref deletion.
-- Prove **conversation or non-Git deliverable** with a disposable projectless task whose result is in
-  its transcript and no file artifact requires preservation. Confirm no Git or GitHub calls.
-- Prove a **retained Git environment** with a disposable task attached to a local or permanent
-  checkout. Confirm archival leaves the checkout and its observed state untouched.
-- Prove negative managed-worktree cases for dirty files, untracked files, a PR task `HEAD` ahead of
-  or divergent from its final PR head, and a detached non-PR commit with no containing durable ref.
-  Confirm the task is not archived and no cleanup mutation occurs.
+- Cover PR, Git-without-PR, conversation-only, and retained-checkout outcomes. Confirm that every
+  applicable preservation gate passes before archival and that retained environments remain
+  untouched.
+- Cover dirty or untracked managed worktrees, divergent PR heads, and unreferenced detached commits.
+  Confirm that uncertain or unpreserved work remains active and no artifact, ref, or worktree is
+  deleted directly.
 - Do not run Leia for this skill unless the user explicitly requests it.

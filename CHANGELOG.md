@@ -1,9 +1,10 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
 - Added GitHub SSH host keys to `~/.ssh/known_hosts` before bootstrap repository clones. [#43](https://github.com/pirog/me/pull/43)
-- Added `$piro-automation` with declarative approval-gated reconciliation, Doctor drift reporting, a paused smoke task, and projectless weekday morning closeout and daily planning tasks. [#50](https://github.com/pirog/me/issues/50)
+- Added `$piro-automation` with declarative approval-gated reconciliation and Doctor drift reporting. [#50](https://github.com/pirog/me/issues/50)
 - Added `$piro-clean-up-task` for evidence-gated archival across PR, Git, retained-checkout, and conversation-only outcomes. [#39](https://github.com/pirog/me/pull/39)
 - Added `$piro-find-work` for read-only, goal-aware assignment recommendations across reviewed actors and unassigned GitHub issues. [#46](https://github.com/pirog/me/issues/46)
+- Added `$piro-morning-closeout` plus projectless weekday closeout and daily planning automations. [#50](https://github.com/pirog/me/issues/50)
 - Added `$piro-plan-work` with `GOALS.md` fallback, opt-in Lando discovery, bounded capacity, and exact Codex task selection.
 - Added `$piro-work-on-task` for issue and same-repository pull-request planning in Codex-managed worktrees. [#39](https://github.com/pirog/me/pull/39)
 - Added shared `ACTORS.md` and `WORK_REPOS.md` inputs for work-planning actors, repository priorities, and discovery scopes. [#45](https://github.com/pirog/me/issues/45)

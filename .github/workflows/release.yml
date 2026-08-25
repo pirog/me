@@ -24,6 +24,8 @@ jobs:
         run: bun install --frozen-lockfile --ignore-scripts
       - name: Lint
         run: bun run lint
+      - name: Run unit tests
+        run: bun run test
       - name: Validate Codex plugin
         run: bun run codex:validate
       - name: Export release metadata

@@ -10,9 +10,9 @@ The portable palette in `dotfiles/theme/colors.json` anchors coordinated themes 
 
 When an installed `agentbox` runtime is detected, `me` leaves `agentbox`'s formula-backed `tailscaled` runtime in control and skips the 1Password and Tailscale desktop casks while retaining the beta 1Password CLI used for service-account-backed bootstrap work. Any host with the Homebrew `tailscale` formula also skips the conflicting `tailscale-app` cask.
 
-After bootstrap, `$piro-me-doctor` provides read-only diagnosis of the checkout, macOS profile, Codex plugin links, and optional app-backed capabilities.
+After bootstrap, `piroplugin` provides read-only profile diagnosis, declarative automation management, skill authoring, assigned- and unassigned-work planning, exact-source task startup, preservation-gated task retirement, and morning closeout coordination. The individual Pirobased skills own their current behavior and authority boundaries.
 
-`AUTOMATIONS.yaml` declares repository-owned Codex scheduled tasks. `$piro-automation` validates and compares that manifest, ignores unmarked personal tasks, and requires approval of an exact deterministic plan before live reconciliation. The verified projectless `🧪 Pyro automation smoke test` remains declared but paused; enabled projectless weekday tasks perform a preservation-gated morning closeout at 04:00 local time and prepare a goal-aligned daily work plan at 05:00.
+`GOALS.md` owns reviewed direction, `ACTORS.md` owns work-planning actors and their goals sources, and `WORK_REPOS.md` owns repository priority and discovery policy. `AUTOMATIONS.yaml` owns the current repository-managed Codex task names, schedules, status, and prompt sources; `$piro-automation` validates and compares it with live state before any approval-gated reconciliation.
 
 This repository targets the `pirog` workstation profile. Generic bootstrap behavior belongs in Bootbox, while headless host setup, SSH hardening, remote access, and service supervision belong in `agentbox`.
 
@@ -23,7 +23,11 @@ The advanced reference covers installed components, `agentbox` host behavior, po
 - [Hosted bootstrap](https://boot.pirog.me/boot.sh): The generated shell entrypoint for bootstrapping the machine profile.
 - [README source](https://raw.githubusercontent.com/pirog/me/main/README.md): Main quickstart, common usage, post-bootstrap pointers, and project links.
 - [Advanced source](https://raw.githubusercontent.com/pirog/me/main/ADVANCED.md): Installed components, host-specific and post-bootstrap behavior, full configuration reference, checkout behavior, and Codex sync details.
+- [Goals source](https://raw.githubusercontent.com/pirog/me/main/GOALS.md): Reviewed direction, priorities, deferrals, and decision rules.
+- [Actor registry](https://raw.githubusercontent.com/pirog/me/main/ACTORS.md): Reviewed work-planning actors, focus, and public goals sources.
+- [Work repository policy](https://raw.githubusercontent.com/pirog/me/main/WORK_REPOS.md): Priority repositories, discovery scopes, narrowing, and authority boundaries.
 - [Automation manifest](https://raw.githubusercontent.com/pirog/me/main/AUTOMATIONS.yaml): Declarative desired state for repository-managed Codex scheduled tasks.
+- [Pirobased skills](https://github.com/pirog/me/tree/main/skills): Current profile, automation, planning, task-lifecycle, and skill-authoring workflows.
 - [Changelog source](https://raw.githubusercontent.com/pirog/me/main/CHANGELOG.md): Current unreleased changes and published release history.
 - [GitHub repository](https://github.com/pirog/me): Source code, canonical documentation, workflows, plugin assets, and Leia examples.
 - [Releases](https://github.com/pirog/me/releases): Published versions and `piroplugin` archives.
