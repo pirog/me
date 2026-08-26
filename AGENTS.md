@@ -29,7 +29,9 @@ its Codex plugin bundle.
 - `AUTOMATIONS.yaml` owns desired Codex scheduled-task state. `skills/automation/` owns validation,
   drift planning, approval-gated reconciliation, and read-back verification. Automation prompts of
   at most 25 physical lines may stay inline; longer prompts must use `prompt-file` and live under
-  `automations/`.
+  `automations/`. Reusable readiness and failure handling may use an optional `preflight-file` under
+  `automations/`; it is composed before the task prompt and must not absorb the owning skill's
+  runtime workflow.
 - `ACTORS.md` owns reviewed work-planning actors and their public goals sources, `WORK_REPOS.md` owns
   priority repositories and discovery-scope policy, and `GOALS.md` owns reviewed direction and
   fallback planning priorities. `skills/plan-work/`, `skills/find-work/`, `skills/work-on-task/`,

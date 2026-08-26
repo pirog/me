@@ -60,7 +60,8 @@ creates a Codex task, or implements work.
   unavailable connector or identity mismatch.
 - Require `ACTORS.md` to define exact handles, actor kinds, concise focuses, goals sources, and its
   live-verification boundary. Require `WORK_REPOS.md` to define priority repositories, default
-  discovery scopes, current-invocation decisions, explicit narrowing, and authority boundaries.
+  discovery scopes, exact repository exclusions with reasons, current-invocation decisions,
+  explicit narrowing, and authority boundaries.
 - When either registry is missing, unreadable, or incomplete, stop before GitHub discovery. Name the
   missing prerequisite, confirm that no mutation occurred, and recommend restoring and reviewing
   the source plus running `bun run codex:sync` from an editable `pirog/me` checkout, or updating or
@@ -90,8 +91,10 @@ creates a Codex task, or implements work.
      assignability, repository access, or permission.
 
 3. Establish the repository scope from `WORK_REPOS.md`. Start with its default discovery scopes,
-   intersect them with any exact repository or owner restriction, and retain in-scope priority
-   repositories as a visible relevance signal. For every current-invocation decision scope without
+   remove every exact excluded repository, intersect the result with any exact repository or owner
+   restriction, and retain in-scope priority repositories as a visible relevance signal. Record every
+   applicable exclusion and its reviewed reason. If an exact restriction names an excluded
+   repository, stop with a scope-conflict report. For every current-invocation decision scope without
    an explicit include or exclude choice, pause before all candidate and workload discovery and ask
    one concise question that resolves the missing decisions. A current answer applies only to this
    invocation. Never broaden a restriction or search an unsupported owner.
@@ -99,6 +102,8 @@ creates a Codex task, or implements work.
 4. Discover every open issue with no assignee in the approved scope through the native GitHub
    connector. Exhaust pagination for every query and deduplicate canonical issue URLs returned
    through overlapping owner, repository, or priority-repository searches. Exclude pull requests.
+   Filter raw owner-wide hits from excluded repositories before candidate evidence fetching and
+   record only the repository-level count and reviewed reason.
    When connector limits, inaccessible repositories, or pagination prevent complete discovery,
    record the exact incomplete coverage and do not claim a complete backlog search.
 
@@ -109,6 +114,8 @@ creates a Codex task, or implements work.
    actor's complete GitHub workload. When the connector cannot prove complete assigned-issue
    coverage for an actor, treat that actor's remaining capacity as unknown and do not make a default
    recommendation for them until the gap is resolved.
+   List every retained in-scope workload commitment by canonical URL in that actor's context. Raw
+   hits from excluded repositories are filtered and reported only at the repository level.
 
 6. Fetch only the bounded evidence needed for each candidate and commitment: canonical URL,
    repository, title, state, assignees, milestone, labels, issue type, linked or blocking
@@ -175,29 +182,39 @@ creates a Codex task, or implements work.
     - Work size capacity fit.
 
     Recommend each issue to at most one actor and do not exceed any actor's verified capacity. When
-    more than one actor is suitable, choose the strongest current fit and list other eligible actors
-    as alternates with their tradeoffs. Do not produce an opaque actor-fit number.
+    more than one actor is suitable for a recommended issue, choose the strongest current fit and
+    record other eligible actors and their tradeoffs inside that issue's recommended row rather than
+    duplicating its URL in `Alternates`. Do not produce an opaque actor-fit number.
 
 12. Immediately before reporting, re-fetch every proposed issue and confirm that it remains open and
     unassigned, then reverify its recommended actor's current assignability. Move changed or
     unverifiable pairings to deferred results with the exact reason instead of silently replacing
     them.
 
-13. Return one stable, reviewable report with these headings:
+13. Build a canonical candidate disposition ledger. Place every in-scope deduplicated unassigned
+    issue discovered in step 4 in exactly one of `Recommended Assignments`, `Alternates`, or
+    `Deferred or Unready`. Require set equality between discovered canonical URLs and rendered ledger
+    URLs, with no duplicates. A finalist changed by step 12 must leave its earlier destination. Do
+    not silently omit an issue because it ranked poorly, lacked metadata, had no assignable actor, or
+    could not fit verified capacity.
+
+14. Return one stable, reviewable report with these headings:
     - `## Planning Basis`: horizon, per-actor target, exact actor filter or all-actor default, goals
-      basis, repository restrictions, priority repositories, and every current-invocation scope
-      decision;
+      basis, repository restrictions, priority repositories, exact exclusions with reviewed reasons,
+      and every current-invocation scope decision;
     - `## Scope Coverage`: candidate and workload queries, pagination completeness, inaccessible
-      repositories, and canonical deduplication;
+      repositories, canonical deduplication, and excluded-repository filtered raw-hit counts;
     - `## Actor Context`: exact handle, kind, goals source or focus fallback, explicit availability
-      evidence, observed commitments, and workload coverage for every requested actor;
+      evidence, canonical URLs for observed commitments, and workload coverage for every requested
+      actor;
     - `## Recommended Assignments`: stable ids such as `F1`, one canonical issue URL and one exact
       actor per row, observed metadata, goal-alignment rationale, readiness, dependencies,
       assignability proof, workload effect, and capacity fit;
-    - `## Alternates`: actionable issues or alternate eligible actors that did not make the default
-      plan, with exact tradeoffs;
+    - `## Alternates`: stable ids and canonical issue URLs for unselected actionable issues, including
+      alternate eligible actors and the exact ranking or capacity tradeoff;
     - `## Deferred or Unready`: blocked, oversized, unestimated, conflicting, inaccessible,
-      ambiguous, poorly aligned, non-assignable, or capacity-uncertain issues with exact reasons;
+      ambiguous, poorly aligned, non-assignable, or capacity-uncertain issues with stable ids,
+      canonical URLs, one disposition category, and exact evidence-backed reasons;
     - `## Capacity`: verified existing size, proposed new size, total size, target or soft-range
       result, and unknown workload for each actor; and
     - `## Actor-Context Limitations`: unknown, unavailable, unverified, or currently ineligible
@@ -214,6 +231,10 @@ creates a Codex task, or implements work.
 - Every report records an explicit current decision for every decision scope in `WORK_REPOS.md`.
 - The exact actor set is visible; unknown, unavailable, or ineligible actors were not substituted.
 - Candidate and workload discovery exhausted pagination or reported exact incomplete coverage.
+- Every reviewed repository exclusion was applied before evidence fetching and reported once with
+  its reason; an exact excluded-repository restriction stopped as a scope conflict.
+- Every in-scope candidate issue appears exactly once in the disposition ledger, and every
+  non-selected candidate has an exact evidence-backed reason.
 - Every recommendation is still open, unassigned, actionable, goal-aligned, within verified actor
   capacity, and backed by a current assignability check.
 - Missing or conflicting workload, Work size, Priority, date, Impact, goals, or relationship evidence
@@ -222,8 +243,9 @@ creates a Codex task, or implements work.
 
 ## Completion Criteria
 
-- **Recommendations found:** one complete report identifies each recommended issue and actor through
-  stable ids, canonical URLs, direct fit evidence, current assignability, and per-actor capacity.
+- **Recommendations found:** one complete report accounts for every in-scope candidate exactly once
+  and identifies each recommended issue and actor through stable ids, canonical URLs, direct fit
+  evidence, current assignability, and per-actor capacity.
 - **No match:** one complete report shows the searched scope, evaluated actors, capacity and context,
   exclusions, limitations, and an explicit empty recommendation set.
 - **Incomplete or blocked:** a missing prerequisite, identity mismatch, unresolved scope decision,
@@ -236,8 +258,8 @@ creates a Codex task, or implements work.
 
 - [`ACTORS.md`](../../ACTORS.md): reviewed actor handles, kinds, focuses, goals sources, and authority
   boundaries.
-- [`WORK_REPOS.md`](../../WORK_REPOS.md): reviewed priority repositories, discovery scopes,
-  current-invocation decisions, narrowing, and authority boundaries.
+- [`WORK_REPOS.md`](../../WORK_REPOS.md): reviewed priority repositories, discovery scopes, exact
+  exclusions, current-invocation decisions, narrowing, and authority boundaries.
 - [`GOALS.md`](../../GOALS.md): the reviewed goals source currently registered for `pirog`.
 - [`$piro-plan-work`](../plan-work/SKILL.md): assigned-work owner and Work size capacity semantics.
 - [`agents/openai.yaml`](./agents/openai.yaml): Codex presentation and default prompt.
@@ -254,9 +276,9 @@ creates a Codex task, or implements work.
   `emoriwan`, and multiple-handle filters; unknown and unavailable actors; workload balancing;
   missing or conflicting commitment size; goals fallback; assignability failure; no candidates;
   incomplete pagination; duplicate results; missing or conflicting candidate metadata; Lando
-  include and exclude decisions; exact narrowing; a finalist assigned during the run; complete
-  no-match output; and proof of no GitHub, access, repository, task, goal, registry, or automation
-  mutation.
+  include and exclude decisions; exact narrowing; excluded-repository conflicts and raw-hit
+  filtering; exact-once candidate dispositions; a finalist assigned during the run; complete no-match
+  output; and proof of no GitHub, access, repository, task, goal, registry, or automation mutation.
 - Confirm the portfolio boundary remains clear: Find Work recommends actors for unassigned issues;
   Plan Work plans work assigned to `pirog` and alone may queue exact selected Codex tasks.
 - Do not run Leia for this skill unless the user explicitly requests it.

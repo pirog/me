@@ -2,6 +2,16 @@
 
 Run the Piro morning closeout for the current local date.
 Use `$piro-morning-closeout` in archive mode and follow its complete safety contract.
+Managed automation id: `morning-closeout`.
+
+## Required preflight capabilities
+
+- `$piro-morning-closeout` and `$piro-clean-up-task` with their complete current contracts.
+- Native Codex operations for current-host active and pinned task listing, exact task reading,
+  archival, and archived-task read-back.
+
+Use only listing and reading during preflight. Do not begin candidate discovery or archival when the
+shared automation preflight fails.
 
 Work only on Codex tasks visible on the current local host.
 Inspect active tasks and pinned tasks before selecting any candidate.

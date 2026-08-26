@@ -22,6 +22,7 @@ automations:
         - thursday
         - friday
       at: '04:00'
+    preflight-file: automations/codex-task-preflight.md
     prompt-file: automations/morning-closeout.md
   - id: daily-work-plan
     name: 📋 DAILY WORK PLAN
@@ -35,4 +36,5 @@ automations:
         - thursday
         - friday
       at: '05:00'
+    preflight-file: automations/codex-task-preflight.md
     prompt-file: automations/daily-work-plan.md

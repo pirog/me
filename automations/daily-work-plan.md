@@ -2,6 +2,17 @@
 
 Prepare the Piro daily work plan for the current local date.
 This is a projectless planning task; do not edit repository files.
+Managed automation id: `daily-work-plan`.
+
+## Required preflight capabilities
+
+- `$piro-plan-work` and `$piro-find-work` with their complete current contracts.
+- Native GitHub read operations authenticated as `pirog`, including complete issue and pull-request
+  discovery within the approved scope.
+- Native Codex task listing and exact task reading for current-host commitment and duplicate checks.
+- Readable `WORK_REPOS.md`, `GOALS.md`, and `ACTORS.md` sources from the installed Piroplugin.
+
+Do not begin Plan Work when the shared automation preflight fails.
 
 First use `$piro-plan-work` in plan-only mode with these explicit inputs:
 

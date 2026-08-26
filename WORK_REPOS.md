@@ -2,7 +2,7 @@
 
 Owner: pirog
 Visibility: Public
-Last reviewed: 2026-08-25
+Last reviewed: 2026-08-26
 Review cadence: Weekly and when current priorities or supported scopes change
 
 This file owns the reviewed repository-discovery policy used by Piroplugin work planning.
@@ -32,6 +32,19 @@ The following owner scopes are included by default:
 Priority repositories are already included through these default scopes and do not need separate
 search authorization.
 
+## Excluded Repositories
+
+The following exact repositories are excluded from work-planning candidate and workload discovery,
+even when an included owner scope would otherwise match them:
+
+- `tanaabased/big-test-bucket` — controlled manual and GitHub integration proof fixture; it does not
+  contain actionable planning work.
+
+Apply exclusions before fetching candidate or workload evidence. When an owner-wide query returns a
+raw hit from an excluded repository, filter it at the repository boundary and report the repository,
+reason, and filtered count rather than enumerating its issues or pull requests. Direct controlled
+proof work through `$piro-work-on-task` remains separate from Plan Work and Find Work discovery.
+
 ## Current-Invocation Decision
 
 `lando/*` is supported only after the user explicitly includes or excludes it for the current
@@ -48,7 +61,8 @@ A user may narrow the current discovery scope with one or more exact:
 - repositories, such as `tanaabased/canon`.
 
 Narrowing intersects the reviewed scope. It does not add an otherwise unsupported owner or
-repository.
+repository and cannot re-include an excluded repository. An exact restriction that names an
+excluded repository is a visible scope conflict, not permission to search it.
 
 ## Authority And Live Verification
 
@@ -59,6 +73,9 @@ Repository patterns define discovery scope only. They do not:
 - establish actor membership or assignability;
 - authorize issue, pull-request, repository, access, or task mutations; or
 - replace per-invocation identity, privacy, permission, pagination, and availability checks.
+
+Every in-scope canonical source returned by planning discovery must receive one visible disposition.
+Repository-level exclusions are reported separately and do not become candidate-level deferrals.
 
 Incomplete discovery must be reported honestly. A workflow must not substitute another repository
 or silently broaden scope.
