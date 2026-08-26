@@ -1,5 +1,8 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+- Added fail-closed Codex task-operation preflights to managed daily planning and morning closeout automations. [#56](https://github.com/pirog/me/pull/56)
+- Added shared GitHub issue `Work size` resolution for planning, discovery, and morning closeout workflows. [#57](https://github.com/pirog/me/pull/57)
+
 ## v1.0.0-beta.10 - [August 25, 2026](https://github.com/pirog/me/releases/tag/v1.0.0-beta.10)
 
 ### Breaking Changes
