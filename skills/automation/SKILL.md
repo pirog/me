@@ -70,8 +70,9 @@ file-backed prompts for their longer workflow contracts.
 - **Mode:** exactly one of `add`, `edit`, `pause`, `resume`, `remove`, `check`, or `sync`.
 - **Target:** a manifest `id` for targeted modes; `check` and `sync` may reconcile the complete
   manifest.
-- **Task definition:** name, enabled state, structured schedule, exactly one prompt source, and any
-  explicit model, reasoning, notification, or local-project override.
+- **Task definition:** name, enabled state, structured schedule, exactly one prompt source, an
+  optional reusable preflight file, and any explicit model, reasoning, notification, or
+  local-project override.
 - **Approval:** a fresh approval of the exact reconciliation summary and SHA-256 plan digest before
   any app-state mutation.
 
@@ -85,8 +86,8 @@ file-backed prompts for their longer workflow contracts.
 
 ## Failure Handling
 
-- Stop before planning when YAML, schema, task ids, structured schedules, prompt sources, project
-  paths, model defaults, or enumerated values are invalid.
+- Stop before planning when YAML, schema, task ids, structured schedules, prompt or preflight
+  sources, project paths, model defaults, or enumerated values are invalid.
 - Fail closed on a malformed managed marker, duplicate marker id, missing automation id, ambiguous
   local project, unavailable app operation, stale approval digest, or failed authoritative read-back.
 - Preserve completed mutations if a later action fails. Report the exact verified actions and the
@@ -102,6 +103,10 @@ file-backed prompts for their longer workflow contracts.
    - Use inline `prompt` for content of at most 25 physical lines. A longer prompt must use
      `prompt-file` beneath `automations/`. Never allow an absolute, escaping, missing, or
      symlink-escaping prompt file.
+   - Use optional `preflight-file` beneath `automations/` only for a shared readiness and failure
+     contract that applies before the task-specific prompt. Validate it with the same containment
+     rules, compose it before the prompt with one Markdown separator, and keep task-body behavior in
+     the prompt or its owning skill.
 
 2. Validate the complete manifest before inspecting or changing app state:
 
@@ -171,10 +176,12 @@ digest approval.
 ## Bundled Resources
 
 - [`../../AUTOMATIONS.yaml`](../../AUTOMATIONS.yaml): repository-owned desired automation state.
+- [`../../automations/codex-task-preflight.md`](../../automations/codex-task-preflight.md): shared
+  capability-based preflight and automation-error contract for Codex task-management runs.
 - [`scripts/automation-task.js`](./scripts/automation-task.js): thin validation and deterministic
   planning command.
-- [`../../lib/automation-manifest.js`](../../lib/automation-manifest.js): manifest and prompt-file
-  validation.
+- [`../../lib/automation-manifest.js`](../../lib/automation-manifest.js): manifest, prompt-file,
+  preflight-file, and deterministic prompt-composition validation.
 - [`../../lib/automation-plan.js`](../../lib/automation-plan.js): drift classification and digest
   generation.
 - [`../../utils/compile-automation-schedule.js`](../../utils/compile-automation-schedule.js):
@@ -189,8 +196,9 @@ digest approval.
   task with `RRULE:FREQ=MINUTELY;INTERVAL=15`; require the two active weekday tasks to compile at
   04:00 and 05:00 local time.
 - Run the focused automation tests and confirm valid schedule variants, schema rejection,
-  the 25-line inline prompt boundary, prompt-file containment, marker conflicts, project resolution,
-  deterministic digests, and every planned lifecycle action.
+  the 25-line inline prompt boundary, prompt and preflight containment, deterministic preflight-first
+  composition, marker conflicts, project resolution, deterministic digests, and every planned
+  lifecycle action.
 - Run `bun run test` followed by `bun run lint`.
 - Run `bun run codex:validate`, then the repository's `codex:check` / `codex:sync` /
   `codex:check` cache-convergence cycle when installed plugin-cache mutation is authorized.

@@ -81,6 +81,13 @@ describe('lib/automation-manifest', () => {
     assert.equal(automations.get('morning-closeout').status, 'ACTIVE');
     assert.equal(automations.get('morning-closeout').name, '🧹 MORNING CLOSEOUT');
     assert.equal(automations.get('morning-closeout').projectId, null);
+    assert.match(automations.get('morning-closeout').prompt, /# AUTOMATION PREFLIGHT/);
+    assert.match(automations.get('morning-closeout').prompt, /# AUTOMATION ERROR/);
+    assert.match(automations.get('morning-closeout').prompt, /Do not begin candidate discovery/);
+    assert.ok(
+      automations.get('morning-closeout').prompt.indexOf('# AUTOMATION PREFLIGHT') <
+        automations.get('morning-closeout').prompt.indexOf('# MORNING CLOSEOUT'),
+    );
     assert.equal(
       automations.get('morning-closeout').rrule,
       'RRULE:FREQ=WEEKLY;BYHOUR=4;BYMINUTE=0;BYDAY=MO,TU,WE,TH,FR',
@@ -88,6 +95,13 @@ describe('lib/automation-manifest', () => {
     assert.equal(automations.get('daily-work-plan').status, 'ACTIVE');
     assert.equal(automations.get('daily-work-plan').name, '📋 DAILY WORK PLAN');
     assert.equal(automations.get('daily-work-plan').projectId, null);
+    assert.match(automations.get('daily-work-plan').prompt, /# AUTOMATION PREFLIGHT/);
+    assert.match(automations.get('daily-work-plan').prompt, /# AUTOMATION ERROR/);
+    assert.match(automations.get('daily-work-plan').prompt, /Do not begin Plan Work/);
+    assert.ok(
+      automations.get('daily-work-plan').prompt.indexOf('# AUTOMATION PREFLIGHT') <
+        automations.get('daily-work-plan').prompt.indexOf('# DAILY WORK PLAN'),
+    );
     assert.equal(
       automations.get('daily-work-plan').rrule,
       'RRULE:FREQ=WEEKLY;BYHOUR=5;BYMINUTE=0;BYDAY=MO,TU,WE,TH,FR',
@@ -113,6 +127,29 @@ describe('lib/automation-manifest', () => {
     const manifest = await loadAutomationManifest({ parseYaml: JSON.parse, repoRoot });
 
     assert.equal(manifest.automations[0].prompt, 'Write the note.');
+  });
+
+  it('should compose a reusable preflight before the task prompt', async () => {
+    const repoRoot = await createRepo({
+      automations: [
+        {
+          enabled: false,
+          id: 'weekly-note',
+          name: 'Weekly note',
+          'preflight-file': 'automations/preflight.md',
+          'prompt-file': 'automations/weekly-note.md',
+          schedule: { at: '08:00', frequency: 'weekly', weekdays: ['monday'] },
+        },
+      ],
+      'schema-version': 1,
+    });
+    await mkdir(path.join(repoRoot, 'automations'));
+    await writeFile(path.join(repoRoot, 'automations', 'preflight.md'), 'Check readiness.\n');
+    await writeFile(path.join(repoRoot, 'automations', 'weekly-note.md'), 'Write the note.\n');
+
+    const manifest = await loadAutomationManifest({ parseYaml: JSON.parse, repoRoot });
+
+    assert.equal(manifest.automations[0].prompt, 'Check readiness.\n\n---\n\nWrite the note.');
   });
 
   it('should reject unknown fields and duplicate ids', async () => {
@@ -143,28 +180,29 @@ describe('lib/automation-manifest', () => {
     );
   });
 
-  it('should reject prompt files that escape through a symlink', async () => {
-    const repoRoot = await createRepo({
-      automations: [
-        {
-          enabled: true,
-          id: 'escaped',
-          name: 'Escaped',
-          'prompt-file': 'automations/escaped.md',
-          schedule: { frequency: 'minutely' },
-        },
-      ],
-      'schema-version': 1,
-    });
-    await mkdir(path.join(repoRoot, 'automations'));
-    await writeFile(path.join(repoRoot, 'outside.md'), 'Outside.\n');
-    await symlink('../outside.md', path.join(repoRoot, 'automations', 'escaped.md'));
+  for (const field of ['prompt-file', 'preflight-file']) {
+    it(`should reject ${field} files that escape through a symlink`, async () => {
+      const task = {
+        enabled: true,
+        id: `escaped-${field}`,
+        name: `Escaped ${field}`,
+        [field]: 'automations/escaped.md',
+        schedule: { frequency: 'minutely' },
+      };
+      if (field === 'preflight-file') {
+        task.prompt = 'Run the task.';
+      }
+      const repoRoot = await createRepo({ automations: [task], 'schema-version': 1 });
+      await mkdir(path.join(repoRoot, 'automations'));
+      await writeFile(path.join(repoRoot, 'outside.md'), 'Outside.\n');
+      await symlink('../outside.md', path.join(repoRoot, 'automations', 'escaped.md'));
 
-    await assert.rejects(
-      loadAutomationManifest({ parseYaml: JSON.parse, repoRoot }),
-      /resolves outside automations/,
-    );
-  });
+      await assert.rejects(
+        loadAutomationManifest({ parseYaml: JSON.parse, repoRoot }),
+        /resolves outside automations/,
+      );
+    });
+  }
 
   it('should require prompt files for inline prompts longer than 25 lines', async () => {
     const twentyFiveLines = Array.from({ length: 25 }, (_, index) => `Line ${index + 1}`).join(

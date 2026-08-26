@@ -2,7 +2,7 @@
 
 Owner: pirog
 Visibility: Public
-Last reviewed: 2026-08-25
+Last reviewed: 2026-08-26
 Review cadence: Weekly and when current priorities or supported scopes change
 
 This file owns the reviewed repository-discovery policy used by Piroplugin work planning.
@@ -32,6 +32,17 @@ The following owner scopes are included by default:
 Priority repositories are already included through these default scopes and do not need separate
 search authorization.
 
+## Excluded Repositories
+
+These exact repositories are excluded from candidate and workload discovery even when an included
+owner scope would otherwise match them:
+
+- `tanaabased/big-test-bucket` — controlled manual and GitHub integration proof fixture; it does not
+  contain actionable planning work.
+
+Filter broad-query hits before evidence fetching. Report the repository, reason, and filtered count
+rather than enumerating its issues or pull requests.
+
 ## Current-Invocation Decision
 
 `lando/*` is supported only after the user explicitly includes or excludes it for the current
@@ -48,7 +59,8 @@ A user may narrow the current discovery scope with one or more exact:
 - repositories, such as `tanaabased/canon`.
 
 Narrowing intersects the reviewed scope. It does not add an otherwise unsupported owner or
-repository.
+repository and cannot re-include an excluded repository. An exact restriction that names an
+excluded repository is a visible scope conflict, not permission to search it.
 
 ## Authority And Live Verification
 

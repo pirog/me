@@ -82,11 +82,13 @@ gap that native GitHub and Codex operations cannot handle.
    a general request to plan, advance goals, or find work never authorizes task creation.
 
 2. Establish the candidate scope from `WORK_REPOS.md`. Start with its default discovery scopes,
-   intersect them with any exact repository or owner restriction, and retain the in-scope ordered
-   priority repositories as a visible relevance signal. For every current-invocation decision scope
-   that the user has not explicitly included or excluded for this plan, pause before candidate
-   discovery and ask one concise question that resolves the missing decisions. An explicit current
-   answer applies only to this plan. Priority never narrows discovery or excuses incomplete coverage.
+   apply its exact repository exclusions and reporting rules, intersect the result with any exact
+   repository or owner restriction, and retain the in-scope ordered priority repositories as a
+   visible relevance signal. If an exact restriction names an excluded repository, stop with a
+   scope-conflict report rather than searching it. For every current-invocation decision scope that
+   the user has not explicitly included or excluded for this plan, pause before candidate discovery
+   and ask one concise question that resolves the missing decisions. An explicit current answer
+   applies only to this plan. Priority never narrows discovery or excuses incomplete coverage.
 
 3. Establish the planning basis:
    - When milestones are supplied, verify each exact open milestone and use membership in any of them
@@ -136,6 +138,10 @@ gap that native GitHub and Codex operations cannot handle.
    Show them separately with the exact reason. The user may explicitly select a supported source
    after reviewing that warning, but Plan Work must not claim it fits the default plan.
 
+   Keep actionable issues that lose only on current ranking or capacity as alternates. State the
+   exact higher-ranked dependency, goal-alignment, Priority, date, Impact, concentration, or capacity
+   evidence that kept each alternate out of the default bundle; do not label lower rank as a blocker.
+
 8. Apply capacity without pretending Work size is time:
    - An explicit target controls when provided.
    - A daily plan defaults to target `5` and normally recommends one new task.
@@ -165,23 +171,39 @@ gap that native GitHub and Codex operations cannot handle.
    - current commitments and concentration risk; and
    - Work size capacity fit.
 
-10. Return one reviewable plan with these headings:
+10. Build a canonical disposition ledger before rendering. Place every in-scope deduplicated issue
+    or pull request discovered in step 4 in exactly one of these destinations:
+    - `Existing Commitments` when one unambiguous live Codex task already owns it;
+    - `Recommended Work` for selected issue recommendations;
+    - `Pull-Request Attention` for discovered pull requests not already represented as commitments;
+    - `Alternates` for actionable aligned issues that lost on rank or capacity; or
+    - `Deferred or Unready` for non-actionable, conflicting, ambiguous, or unaligned sources.
+
+    Require set equality between discovered canonical URLs and rendered ledger URLs, with no
+    duplicates. If current evidence changes during the run, remove the source from its earlier
+    destination before reclassifying it. Do not silently omit a source because it ranked poorly, had
+    incomplete metadata, was a draft pull request, or already had a task.
+
+11. Return one reviewable plan with these headings:
     - `## Planning Basis`: horizon, target, included owners, in-scope priority repositories, exact
-      objective or milestones, goal fallback, search completeness, and every current-invocation scope
-      decision;
-    - `## Existing Commitments`: exact active tasks and their conservative capacity;
+      objective or milestones, goal fallback, search completeness, canonical deduplication, every
+      excluded repository with its reviewed reason and filtered raw-hit count, and every
+      current-invocation scope decision;
+    - `## Existing Commitments`: canonical source URLs, exact active tasks, and their conservative
+      capacity;
     - `## Recommended Work`: stable row ids such as `W1`, ordered issue URLs, observed Work size,
       Priority, relevant dates, and Impact when present, alignment rationale, dependencies, and queue
       eligibility;
     - `## Pull-Request Attention`: stable ids such as `P1`, PR URLs, assignment or review reason,
       draft and same-repository status, and recommended attention order;
-    - `## Alternates`: aligned actionable work that did not fit;
+    - `## Alternates`: stable ids, canonical issue URLs, and the exact ranking or capacity reason
+      each aligned actionable item did not fit;
     - `## Deferred or Unready`: blocked, oversized, unestimated, conflicting, or unaligned candidates
-      with exact reasons; and
+      with canonical URLs, one disposition category, and exact evidence-backed reasons;
     - `## Capacity`: existing size, proposed new size, total issue size, soft-range result, new task
       count, and any unbudgeted PR attention.
 
-11. End the plan with a concise invitation such as `Tell me which items you want me to queue.` Then
+12. End the plan with a concise invitation such as `Tell me which items you want me to queue.` Then
     stop for the user's selection. Accept natural, unambiguous selection through any combination of:
     - stable row ids from the immediately preceding unchanged plan, such as `W1` or `P2`;
     - canonical GitHub URLs;
@@ -195,22 +217,22 @@ gap that native GitHub and Codex operations cannot handle.
     unambiguous in the current plan. Approval without a selection, or a selection without clear
     task-creation intent, remains read-only.
 
-12. After an exact queue selection, re-fetch each selected source and confirm it remains open, in the
+13. After an exact queue selection, re-fetch each selected source and confirm it remains open, in the
     approved scope, assigned or review-requested as planned, and absent from another active or pending
     Codex task. Report changed or duplicate items and do not start them.
 
-13. Process eligible selections in their displayed order, one exact canonical source at a time. The
+14. Process eligible selections in their displayed order, one exact canonical source at a time. The
     current explicit request to queue each selected source is an authorized upstream invocation of
     `$piro-work-on-task` for that source only. Apply that skill's complete current workflow without
     copying or weakening its branch, ref, saved-project, worktree, prompt, waiting, read-back, or
     verification rules.
 
-14. Continue to the next selected source only after the prior Work on Task handoff is ready or safely
+15. Continue to the next selected source only after the prior Work on Task handoff is ready or safely
     pending. On identity mismatch, unsafe pull-request routing, missing-project setup handoff, failed
     creation, or failed verification, stop and list every remaining unattempted selection. Never
     create a replacement task or silently skip to a different candidate.
 
-15. Return the final selected-source order, one Work on Task result per attempted source, ready or
+16. Return the final selected-source order, one Work on Task result per attempted source, ready or
     pending task ids, setup or failure evidence, remaining unattempted selections, and the planned
     capacity represented by successfully started issue tasks. Do not implement work in the new tasks.
 
@@ -266,10 +288,11 @@ gap that native GitHub and Codex operations cannot handle.
   `codex:sync` / `codex:check` convergence cycle before live use.
 - Review static scenarios for missing or incomplete `WORK_REPOS.md`, explicit objective, exact
   milestone filtering, `GOALS.md` fallback, priority repositories, every current-invocation scope
-  choice, exact narrowing, direct-evidence ranking, shared Work size connector and endpoint success,
-  missing, unsupported, conflicting, and personal-repository `HTTP 404` results without Projects
-  GraphQL, active-task deduplication, `13` and `21` handling, pull-request attention, incomplete
-  pagination, capacity-driven task counts, and natural exact-selection authorization.
+  choice, exact narrowing, excluded-repository conflicts and raw-hit filtering, direct-evidence
+  ranking, shared Work size connector and endpoint success, missing, unsupported, conflicting, and
+  personal-repository `HTTP 404` results without Projects GraphQL, active-task deduplication, `13` and
+  `21` handling, pull-request attention, exact-once candidate dispositions, incomplete pagination,
+  capacity-driven task counts, and natural exact-selection authorization.
 - Prove discovery with bounded read-only fixtures; select nothing and confirm no task or GitHub
   mutation. Prove queue mode only after separate authorization for exact disposable sources, then
   retire them through their owning workflows.

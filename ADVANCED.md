@@ -79,6 +79,11 @@ Use [`$piro-automation`](./skills/automation/) to validate the manifest, inspect
 prepare any approval-gated reconciliation. Repository validation never creates or changes live Codex
 automations.
 
+An automation may declare `preflight-file` beneath `automations/` to compose a reusable readiness
+and fail-closed error contract before its task-specific prompt. The managed daily plan and morning
+closeout use this to verify required Codex task operations before planning or archival; the owning
+skills still define the actual workflow and safety gates.
+
 ### Tanaab Repositories
 
 Tanaab repository selection is empty by default. Repeat `--tanaab` to clone editable repositories
