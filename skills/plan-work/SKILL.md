@@ -114,9 +114,11 @@ gap that native GitHub and Codex operations cannot handle.
    repository, title, state, assignees or review requests, draft status, milestone, labels, linked or
    blocking relationships, last meaningful update, issue type, Priority, Work size, Impact, Start
    date, and Target date.
-   Prefer observed native fields. Accept an exact canonical fallback value from the issue body only
-   when the native field is unavailable; native values win on a conflict, which must be reported.
-   Never estimate, normalize, or write missing metadata during this workflow.
+   Resolve Work size through
+   [`GitHub Issue Work Size Resolution`](../../references/github-issue-work-size.md). For the other
+   managed metadata, prefer observed native fields and accept an exact canonical fallback value from
+   the issue body only when the native field is unavailable; native values win on a conflict, which
+   must be reported. Never estimate, normalize, or write missing metadata during this workflow.
 
 6. List active and pending Codex tasks and map only exact canonical GitHub sources from their original
    assignments or explicit current outcomes. Mark a candidate as an existing commitment when one
@@ -129,7 +131,7 @@ gap that native GitHub and Codex operations cannot handle.
    - **parent or planning work:** verified Work size `21`;
    - **blocked or waiting:** an observed blocker, dependency, missing decision, or hold state prevents
      useful execution;
-   - **unestimated:** Work size is unavailable or conflicting; and
+   - **unestimated:** Work size is missing, unsupported, conflicting, or unavailable; and
    - **not aligned:** the outcome conflicts with the planning basis or `Not Now`.
 
    Do not place `13`, `21`, blocked, unestimated, or not-aligned issues in the default capacity plan.
@@ -269,6 +271,8 @@ gap that native GitHub and Codex operations cannot handle.
 - [`GOALS.md`](../../GOALS.md): reviewed fallback direction, priorities, deferrals, and decision rules.
 - [`WORK_REPOS.md`](../../WORK_REPOS.md): reviewed priority repositories, discovery scopes,
   per-invocation decisions, narrowing, and authority boundaries.
+- [`GitHub Issue Work Size Resolution`](../../references/github-issue-work-size.md): shared native
+  provider order, canonical value interpretation, exclusions, and reporting contract.
 - [`$piro-work-on-task`](../work-on-task/SKILL.md): exact per-source Codex task creation, assessment,
   and verification owner after selection.
 - [`agents/openai.yaml`](./agents/openai.yaml): Codex presentation and default planning prompt.
@@ -285,8 +289,9 @@ gap that native GitHub and Codex operations cannot handle.
 - Review static scenarios for missing or incomplete `WORK_REPOS.md`, explicit objective, exact
   milestone filtering, `GOALS.md` fallback, priority repositories, every current-invocation scope
   choice, exact narrowing, excluded-repository conflicts and raw-hit filtering, direct-evidence
-  ranking, missing and conflicting metadata, active-task deduplication, `13` and `21` handling,
-  pull-request attention, exact-once candidate dispositions, incomplete pagination,
+  ranking, shared Work size connector and endpoint success, missing, unsupported, conflicting, and
+  personal-repository `HTTP 404` results without Projects GraphQL, active-task deduplication, `13` and
+  `21` handling, pull-request attention, exact-once candidate dispositions, incomplete pagination,
   capacity-driven task counts, and natural exact-selection authorization.
 - Prove discovery with bounded read-only fixtures; select nothing and confirm no task or GitHub
   mutation. Prove queue mode only after separate authorization for exact disposable sources, then

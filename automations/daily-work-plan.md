@@ -8,7 +8,8 @@ Managed automation id: `daily-work-plan`.
 
 - `$piro-plan-work` and `$piro-find-work` with their complete current contracts.
 - Native GitHub read operations authenticated as `pirog`, including complete issue and pull-request
-  discovery within the approved scope.
+  discovery within the approved scope, plus authenticated `gh api` access for the canonical Work size
+  fallback.
 - Native Codex task listing and exact task reading for current-host commitment and duplicate checks.
 - Readable `WORK_REPOS.md`, `GOALS.md`, and `ACTORS.md` sources from the installed Piroplugin.
 

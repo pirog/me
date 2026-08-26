@@ -105,12 +105,14 @@ turns a failed candidate into an abandonment decision, or mutates external deliv
    selected cleanup evidence profile, and archive read-back result.
 
 8. Calculate completed capacity from archived work tasks only:
-   - fetch Work size only from the exact source issue identified by the task's original assignment
-     or explicit delivered outcome;
-   - accept only a current verified native Work size of `1`, `2`, `3`, `5`, `8`, `13`, or `21`;
+   - resolve the exact source issue and its current native Work size through
+     [`GitHub Issue Work Size Resolution`](../../references/github-issue-work-size.md), using only the
+     task's original assignment or explicit delivered outcome as source provenance;
    - count each canonical issue once even if multiple archived tasks reference it;
-   - exclude prior report tasks, pull-request-only tasks, missing or conflicting sizes, and sources
-     whose current Work size cannot be verified;
+   - exclude prior report tasks, pull-request-only tasks, and every issue whose Work size result is
+     missing, unsupported, conflicting, or unavailable, preserving the exact reason;
+   - when archived issue work exists but every Work size is excluded, report a verified subtotal of
+     `0` plus those exclusions rather than an unqualified completed capacity of `0`;
    - report excluded items separately and never estimate, backfill, or call the total elapsed time,
      completed effort, a Task score, or a productivity measure.
 
@@ -159,6 +161,8 @@ single-task preservation logic out of Clean Up Task or add direct worktree recla
 - [`../../AUTOMATIONS.yaml`](../../AUTOMATIONS.yaml): managed report ids and schedules.
 - [`../../automations/morning-closeout.md`](../../automations/morning-closeout.md): scheduled
   invocation contract.
+- [`GitHub Issue Work Size Resolution`](../../references/github-issue-work-size.md): shared native
+  provider order, canonical value interpretation, exclusions, and reporting contract.
 - [`agents/openai.yaml`](./agents/openai.yaml): Codex presentation and explicit-invocation policy.
 - [`composer-icon.svg`](../../assets/composer-icon.svg) and
   [`icon-large.png`](../../assets/icon-large.png): shared plugin presentation assets.
@@ -170,8 +174,9 @@ single-task preservation logic out of Clean Up Task or add direct worktree recla
 - Confirm static scenarios cover a mixed list containing the caller, a running task, a pinned task,
   one eligible worktree task, one blocked worktree task, an exact prior managed report, and a
   title-only report lookalike. Only the two preservation-gated exact candidates may archive.
-- Confirm capacity deduplicates one issue referenced twice and excludes report, pull-request-only,
-  missing, conflicting, and unsupported Work sizes.
+- Confirm capacity follows the shared provider sequence, deduplicates one issue referenced twice,
+  and covers connector-native success, endpoint success, missing, conflicting, unsupported, and
+  personal-repository `HTTP 404` results without Projects GraphQL or an unqualified zero total.
 - Run `bun run codex:validate`, then complete the repository's `codex:check` / `codex:sync` /
   `codex:check` convergence cycle before live scheduled use.
 - Do not run Leia unless the user explicitly requests it.

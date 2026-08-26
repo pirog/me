@@ -9,6 +9,7 @@ Managed automation id: `morning-closeout`.
 - `$piro-morning-closeout` and `$piro-clean-up-task` with their complete current contracts.
 - Native Codex operations for current-host active and pinned task listing, exact task reading,
   archival, and archived-task read-back.
+- Native GitHub issue reads plus authenticated `gh api` access for the canonical Work size fallback.
 
 Use only listing and reading during preflight. Do not begin candidate discovery or archival when the
 shared automation preflight fails.

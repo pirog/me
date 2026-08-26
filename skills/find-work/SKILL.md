@@ -115,10 +115,12 @@ creates a Codex task, or implements work.
 6. Fetch only the bounded evidence needed for each candidate and commitment: canonical URL,
    repository, title, state, assignees, milestone, labels, issue type, linked or blocking
    relationships, last meaningful update, Priority, Work size, Impact, Start date, and Target date.
-   Prefer observed native fields. Accept an exact canonical fallback value from the issue body only
-   when the native field is unavailable; native values win on a conflict, which must be reported.
-   Use only direct evidence; never fetch, derive, display, rank by, or report missing composite
-   scores. Never estimate, normalize, or write missing metadata.
+   Resolve Work size through
+   [`GitHub Issue Work Size Resolution`](../../references/github-issue-work-size.md). For the other
+   managed metadata, prefer observed native fields and accept an exact canonical fallback value from
+   the issue body only when the native field is unavailable; native values win on a conflict, which
+   must be reported. Use only direct evidence; never fetch, derive, display, rank by, or report
+   missing composite scores. Never estimate, normalize, or write missing metadata.
 
 7. Establish actor context:
    - Read each accessible reviewed goals source named by `ACTORS.md`. Use current objectives,
@@ -138,8 +140,9 @@ creates a Codex task, or implements work.
    - Allowed verified issue sizes are `1`, `2`, `3`, `5`, `8`, `13`, and `21`.
    - Existing commitments consume their full verified Work size unless the user supplies a current,
      trustworthy remaining-size value. Never infer fractional progress.
-   - Missing or conflicting commitment size makes the actor's remaining capacity unknown rather
-     than zero. Do not claim a default recommendation fits that actor until capacity is resolved.
+   - Missing, unsupported, conflicting, or unavailable commitment size makes the actor's remaining
+     capacity unknown rather than zero. Do not claim a default recommendation fits that actor until
+     capacity is resolved.
    - Prefer an honestly underfilled assignment plan to weakly aligned filler or an exceeded target.
 
 9. Classify candidate readiness before actor matching:
@@ -149,7 +152,7 @@ creates a Codex task, or implements work.
    - **parent or planning work:** verified Work size `21`;
    - **blocked or waiting:** an observed blocker, dependency, missing decision, or hold prevents
      useful execution;
-   - **unestimated or conflicting:** Work size is missing or native and fallback evidence conflict;
+   - **unestimated or conflicting:** Work size is missing, unsupported, conflicting, or unavailable;
    - **inaccessible or ambiguous:** candidate state, readiness, or relationship evidence cannot be
      verified; and
    - **not aligned:** the outcome conflicts with every retained actor's reviewed goals, focus, or
@@ -227,8 +230,9 @@ creates a Codex task, or implements work.
 - Candidate and workload discovery exhausted pagination or reported exact incomplete coverage.
 - Every recommendation is still open, unassigned, actionable, goal-aligned, within verified actor
   capacity, and backed by a current assignability check.
-- Missing or conflicting workload, Work size, Priority, date, Impact, goals, or relationship evidence
-  remains unknown and visible rather than becoming zero or a composite score.
+- Missing or conflicting workload, non-verified Work size, and missing Priority, date, Impact, goals,
+  or relationship evidence remain unknown and visible rather than becoming zero or a composite
+  score.
 - Issue, repository, access, task, goal, registry, and automation state remained unchanged.
 
 ## Completion Criteria
@@ -250,6 +254,8 @@ creates a Codex task, or implements work.
 - [`WORK_REPOS.md`](../../WORK_REPOS.md): reviewed priority repositories, discovery scopes,
   current-invocation decisions, narrowing, and authority boundaries.
 - [`GOALS.md`](../../GOALS.md): the reviewed goals source currently registered for `pirog`.
+- [`GitHub Issue Work Size Resolution`](../../references/github-issue-work-size.md): shared native
+  provider order, canonical value interpretation, exclusions, and reporting contract.
 - [`$piro-plan-work`](../plan-work/SKILL.md): assigned-work owner and Work size capacity semantics.
 - [`agents/openai.yaml`](./agents/openai.yaml): Codex presentation and default prompt.
 - [`composer-icon.svg`](../../assets/composer-icon.svg) and
@@ -263,11 +269,13 @@ creates a Codex task, or implements work.
   `codex:check` / `codex:sync` / `codex:check` convergence cycle before live use.
 - Review and record static scenarios for the default multi-actor set; exact `pirog`, exact
   `emoriwan`, and multiple-handle filters; unknown and unavailable actors; workload balancing;
-  missing or conflicting commitment size; goals fallback; assignability failure; no candidates;
-  incomplete pagination; duplicate results; missing or conflicting candidate metadata; Lando
-  include and exclude decisions; exact narrowing; excluded-repository conflicts and raw-hit
-  filtering; exact-once candidate dispositions; a finalist assigned during the run; complete no-match
-  output; and proof of no GitHub, access, repository, task, goal, registry, or automation mutation.
+  shared Work size connector and endpoint success; missing, unsupported, conflicting, and
+  personal-repository `HTTP 404` results without Projects GraphQL; goals fallback; assignability
+  failure; no candidates; incomplete pagination; duplicate results; missing or conflicting
+  candidate metadata; Lando include and exclude decisions; exact narrowing; excluded-repository
+  conflicts and raw-hit filtering; exact-once candidate dispositions; a finalist assigned during the
+  run; complete no-match output; and proof of no GitHub, access, repository, task, goal, registry, or
+  automation mutation.
 - Confirm the portfolio boundary remains clear: Find Work recommends actors for unassigned issues;
   Plan Work plans work assigned to `pirog` and alone may queue exact selected Codex tasks.
 - Do not run Leia for this skill unless the user explicitly requests it.

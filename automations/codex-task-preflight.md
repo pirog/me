@@ -4,7 +4,7 @@ Complete this read-only preflight before starting the task body.
 
 1. Read the task body's `Required preflight capabilities` and the complete contracts of every named
    skill.
-2. Confirm that every required skill, connector, native Codex operation, registry, and source is
+2. Confirm that every required skill, connector, CLI, native Codex operation, registry, and source is
    available. Exercise required read operations with the smallest safe probe. When Codex task
    management is required, require usable current-host listing and exact task read-back; an error,
    malformed result, or coverage that cannot be proved is a failed preflight, not an empty state.
