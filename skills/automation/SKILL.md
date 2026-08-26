@@ -31,8 +31,6 @@ The manifest is the desired state for marked `pirog/me` automations. Unmarked pe
 are never adopted, changed, paused, resumed, or removed. The shipped projectless smoke task remains
 declared but paused after verification; weekday morning closeout and daily work-plan tasks use
 file-backed prompts for their longer workflow contracts.
-The optional `preflight-file` composes one reusable fail-closed readiness contract before an
-automation's task-specific prompt without moving runtime workflow ownership into this skill.
 
 ## When to Use
 

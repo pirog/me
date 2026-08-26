@@ -20,8 +20,7 @@ metadata:
 
 Build one bounded work plan from open GitHub issues assigned to `pirog` and open pull requests that
 assign or request review from `pirog`. Use [`WORK_REPOS.md`](../../WORK_REPOS.md) for ordered priority
-repositories, default discovery scopes, exact repository exclusions, current-invocation scope
-decisions, and explicit narrowing.
+repositories, default discovery scopes, current-invocation scope decisions, and explicit narrowing.
 
 Use an explicit objective or GitHub milestone when supplied; otherwise use the current objective and
 near-term priorities in [`GOALS.md`](../../GOALS.md). Rank actionable issues, recommend the strongest
@@ -62,9 +61,8 @@ gap that native GitHub and Codex operations cannot handle.
   unavailable connector or identity mismatch.
 - Require native Codex task listing and reading for duplicate detection. Starting selected work also
   requires the task-creation capabilities used by `$piro-work-on-task`.
-- Require `WORK_REPOS.md` to define priority repositories, default discovery scopes, exact
-  repository exclusions with reasons, current-invocation scope decisions, explicit narrowing, and
-  authority boundaries.
+- Require `WORK_REPOS.md` to define priority repositories, default discovery scopes,
+  current-invocation scope decisions, explicit narrowing, and authority boundaries.
 - When `WORK_REPOS.md` is missing, unreadable, or incomplete, stop before candidate discovery. State
   that Plan Work cannot establish an approved scope, confirm that no GitHub discovery or mutation
   occurred, and recommend restoring and reviewing the source file plus running `bun run codex:sync`
@@ -84,14 +82,13 @@ gap that native GitHub and Codex operations cannot handle.
    a general request to plan, advance goals, or find work never authorizes task creation.
 
 2. Establish the candidate scope from `WORK_REPOS.md`. Start with its default discovery scopes,
-   remove every exact excluded repository, intersect the result with any exact repository or owner
-   restriction, and retain the in-scope ordered priority repositories as a visible relevance signal.
-   Record every applicable excluded repository and its reviewed reason. If an exact restriction
-   names an excluded repository, stop with a scope-conflict report rather than searching it. For
-   every current-invocation decision scope that the user has not explicitly included or excluded for
-   this plan, pause before candidate discovery and ask one concise question that resolves the missing
-   decisions. An explicit current answer applies only to this plan. Priority never narrows discovery
-   or excuses incomplete coverage.
+   apply its exact repository exclusions and reporting rules, intersect the result with any exact
+   repository or owner restriction, and retain the in-scope ordered priority repositories as a
+   visible relevance signal. If an exact restriction names an excluded repository, stop with a
+   scope-conflict report rather than searching it. For every current-invocation decision scope that
+   the user has not explicitly included or excluded for this plan, pause before candidate discovery
+   and ask one concise question that resolves the missing decisions. An explicit current answer
+   applies only to this plan. Priority never narrows discovery or excuses incomplete coverage.
 
 3. Establish the planning basis:
    - When milestones are supplied, verify each exact open milestone and use membership in any of them
@@ -111,9 +108,7 @@ gap that native GitHub and Codex operations cannot handle.
 
    Follow pagination to exhaustion. If the available connector truncates results or cannot prove a
    complete search, report the incomplete scope and do not claim the plan covers all assigned work.
-   Deduplicate canonical issue and pull-request URLs returned through multiple searches. When an
-   owner-wide query returns a raw hit from an excluded repository, filter it before candidate
-   evidence fetching and record only the repository-level filtered count and reviewed reason.
+   Deduplicate canonical issue and pull-request URLs returned through multiple searches.
 
 5. Fetch only the bounded evidence needed to plan each candidate: source kind, canonical URL,
    repository, title, state, assignees or review requests, draft status, milestone, labels, linked or
@@ -189,12 +184,11 @@ gap that native GitHub and Codex operations cannot handle.
 
 11. Return one reviewable plan with these headings:
     - `## Planning Basis`: horizon, target, included owners, in-scope priority repositories, exact
-      objective or milestones, goal fallback, and every current-invocation scope decision;
-    - `## Scope Coverage`: candidate queries, pagination and search completeness, canonical
-      deduplication, and every excluded repository with its reviewed reason and filtered raw-hit
-      count;
-    - `## Existing Commitments`: stable ids, canonical source URLs, exact active tasks, and their
-      conservative capacity;
+      objective or milestones, goal fallback, search completeness, canonical deduplication, every
+      excluded repository with its reviewed reason and filtered raw-hit count, and every
+      current-invocation scope decision;
+    - `## Existing Commitments`: canonical source URLs, exact active tasks, and their conservative
+      capacity;
     - `## Recommended Work`: stable row ids such as `W1`, ordered issue URLs, observed Work size,
       Priority, relevant dates, and Impact when present, alignment rationale, dependencies, and queue
       eligibility;
@@ -203,7 +197,7 @@ gap that native GitHub and Codex operations cannot handle.
     - `## Alternates`: stable ids, canonical issue URLs, and the exact ranking or capacity reason
       each aligned actionable item did not fit;
     - `## Deferred or Unready`: blocked, oversized, unestimated, conflicting, or unaligned candidates
-      with stable ids, canonical URLs, one disposition category, and exact evidence-backed reasons;
+      with canonical URLs, one disposition category, and exact evidence-backed reasons;
     - `## Capacity`: existing size, proposed new size, total issue size, soft-range result, new task
       count, and any unbudgeted PR attention.
 
@@ -247,10 +241,6 @@ gap that native GitHub and Codex operations cannot handle.
   decision scope in `WORK_REPOS.md`.
 - The goal basis, milestone filters, repository scope, priority-repository signal, capacity, and
   observed metadata sources are visible rather than inferred silently.
-- Every reviewed repository exclusion is applied before evidence fetching and reported once with its
-  reason; an exact excluded-repository restriction stops as a scope conflict.
-- The canonical disposition ledger contains every in-scope discovered issue and pull request exactly
-  once, and every non-selected source has an exact evidence-backed reason.
 - Existing Codex tasks are reconciled before recommendations and again before creation.
 - Missing Work size, Priority, Impact, date, or relationship evidence remains missing; Plan Work
   does not invent or mutate it.
@@ -263,9 +253,8 @@ gap that native GitHub and Codex operations cannot handle.
 
 ## Completion Criteria
 
-- **Plan only:** one complete, bounded, explainable plan was returned with every in-scope candidate
-  URL exactly once, capacity evidence, repository-level exclusions, exact non-selection reasons, and
-  no mutation.
+- **Plan only:** one complete, bounded, explainable plan was returned with exact candidate URLs,
+  capacity evidence, exclusions, and no mutation.
 - **Plan then queue:** every attempted source was selected exactly, reverified, and handed to Work on
   Task once; each result is reported without duplicate or replacement tasks.
 - Any unavailable or incomplete planning input, unavailable connector, ambiguous milestone,
@@ -278,8 +267,8 @@ gap that native GitHub and Codex operations cannot handle.
 ## Bundled Resources
 
 - [`GOALS.md`](../../GOALS.md): reviewed fallback direction, priorities, deferrals, and decision rules.
-- [`WORK_REPOS.md`](../../WORK_REPOS.md): reviewed priority repositories, discovery scopes, exact
-  exclusions, per-invocation decisions, narrowing, and authority boundaries.
+- [`WORK_REPOS.md`](../../WORK_REPOS.md): reviewed priority repositories, discovery scopes,
+  per-invocation decisions, narrowing, and authority boundaries.
 - [`$piro-work-on-task`](../work-on-task/SKILL.md): exact per-source Codex task creation, assessment,
   and verification owner after selection.
 - [`agents/openai.yaml`](./agents/openai.yaml): Codex presentation and default planning prompt.

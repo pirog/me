@@ -12,7 +12,7 @@ When an installed `agentbox` runtime is detected, `me` leaves `agentbox`'s formu
 
 After bootstrap, `piroplugin` provides read-only profile diagnosis, declarative automation management, skill authoring, assigned- and unassigned-work planning, exact-source task startup, preservation-gated task retirement, and morning closeout coordination. The individual Pirobased skills own their current behavior and authority boundaries.
 
-`GOALS.md` owns reviewed direction, `ACTORS.md` owns work-planning actors and their goals sources, and `WORK_REPOS.md` owns repository priority, exclusions, and discovery policy. `AUTOMATIONS.yaml` owns the current repository-managed Codex task names, schedules, status, prompt sources, and optional shared preflight composition; `$piro-automation` validates and compares it with live state before any approval-gated reconciliation.
+`GOALS.md` owns reviewed direction, `ACTORS.md` owns work-planning actors and their goals sources, and `WORK_REPOS.md` owns repository priority and discovery policy. `AUTOMATIONS.yaml` owns the current repository-managed Codex task names, schedules, status, and prompt sources; `$piro-automation` validates and compares it with live state before any approval-gated reconciliation.
 
 This repository targets the `pirog` workstation profile. Generic bootstrap behavior belongs in Bootbox, while headless host setup, SSH hardening, remote access, and service supervision belong in `agentbox`.
 

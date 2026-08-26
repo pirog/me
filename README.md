@@ -119,9 +119,7 @@ The work-planning workflows use [`GOALS.md`](./GOALS.md) for reviewed direction,
 [`ACTORS.md`](./ACTORS.md) for reviewed actors and their goals sources, and
 [`WORK_REPOS.md`](./WORK_REPOS.md) for repository discovery policy. Scheduled task definitions live
 in [`AUTOMATIONS.yaml`](./AUTOMATIONS.yaml). These files provide reviewed inputs; each linked skill
-owns its runtime workflow and authority boundaries. Managed task-planning automations compose a
-shared capability preflight before their task-specific prompts and fail with a diagnostic instead of
-continuing when required Codex operations cannot be proved usable.
+owns its runtime workflow and authority boundaries.
 
 ## Development
 

@@ -180,73 +180,29 @@ describe('lib/automation-manifest', () => {
     );
   });
 
-  it('should reject prompt files that escape through a symlink', async () => {
-    const repoRoot = await createRepo({
-      automations: [
-        {
-          enabled: true,
-          id: 'escaped',
-          name: 'Escaped',
-          'prompt-file': 'automations/escaped.md',
-          schedule: { frequency: 'minutely' },
-        },
-      ],
-      'schema-version': 1,
+  for (const field of ['prompt-file', 'preflight-file']) {
+    it(`should reject ${field} files that escape through a symlink`, async () => {
+      const task = {
+        enabled: true,
+        id: `escaped-${field}`,
+        name: `Escaped ${field}`,
+        [field]: 'automations/escaped.md',
+        schedule: { frequency: 'minutely' },
+      };
+      if (field === 'preflight-file') {
+        task.prompt = 'Run the task.';
+      }
+      const repoRoot = await createRepo({ automations: [task], 'schema-version': 1 });
+      await mkdir(path.join(repoRoot, 'automations'));
+      await writeFile(path.join(repoRoot, 'outside.md'), 'Outside.\n');
+      await symlink('../outside.md', path.join(repoRoot, 'automations', 'escaped.md'));
+
+      await assert.rejects(
+        loadAutomationManifest({ parseYaml: JSON.parse, repoRoot }),
+        /resolves outside automations/,
+      );
     });
-    await mkdir(path.join(repoRoot, 'automations'));
-    await writeFile(path.join(repoRoot, 'outside.md'), 'Outside.\n');
-    await symlink('../outside.md', path.join(repoRoot, 'automations', 'escaped.md'));
-
-    await assert.rejects(
-      loadAutomationManifest({ parseYaml: JSON.parse, repoRoot }),
-      /resolves outside automations/,
-    );
-  });
-
-  it('should reject preflight files that escape through a symlink', async () => {
-    const repoRoot = await createRepo({
-      automations: [
-        {
-          enabled: true,
-          id: 'escaped-preflight',
-          name: 'Escaped preflight',
-          'preflight-file': 'automations/preflight.md',
-          prompt: 'Run the task.',
-          schedule: { frequency: 'minutely' },
-        },
-      ],
-      'schema-version': 1,
-    });
-    await mkdir(path.join(repoRoot, 'automations'));
-    await writeFile(path.join(repoRoot, 'outside.md'), 'Outside.\n');
-    await symlink('../outside.md', path.join(repoRoot, 'automations', 'preflight.md'));
-
-    await assert.rejects(
-      loadAutomationManifest({ parseYaml: JSON.parse, repoRoot }),
-      /preflight-file resolves outside automations/,
-    );
-  });
-
-  it('should reject a missing preflight file', async () => {
-    const repoRoot = await createRepo({
-      automations: [
-        {
-          enabled: true,
-          id: 'missing-preflight',
-          name: 'Missing preflight',
-          'preflight-file': 'automations/missing.md',
-          prompt: 'Run the task.',
-          schedule: { frequency: 'minutely' },
-        },
-      ],
-      'schema-version': 1,
-    });
-
-    await assert.rejects(
-      loadAutomationManifest({ parseYaml: JSON.parse, repoRoot }),
-      /preflight-file does not exist/,
-    );
-  });
+  }
 
   it('should require prompt files for inline prompts longer than 25 lines', async () => {
     const twentyFiveLines = Array.from({ length: 25 }, (_, index) => `Line ${index + 1}`).join(

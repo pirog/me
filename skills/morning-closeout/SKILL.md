@@ -159,8 +159,6 @@ single-task preservation logic out of Clean Up Task or add direct worktree recla
 - [`../../AUTOMATIONS.yaml`](../../AUTOMATIONS.yaml): managed report ids and schedules.
 - [`../../automations/morning-closeout.md`](../../automations/morning-closeout.md): scheduled
   invocation contract.
-- [`../../automations/codex-task-preflight.md`](../../automations/codex-task-preflight.md): shared
-  scheduled-run capability and fail-closed error contract.
 - [`agents/openai.yaml`](./agents/openai.yaml): Codex presentation and explicit-invocation policy.
 - [`composer-icon.svg`](../../assets/composer-icon.svg) and
   [`icon-large.png`](../../assets/icon-large.png): shared plugin presentation assets.

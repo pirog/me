@@ -34,16 +34,14 @@ search authorization.
 
 ## Excluded Repositories
 
-The following exact repositories are excluded from work-planning candidate and workload discovery,
-even when an included owner scope would otherwise match them:
+These exact repositories are excluded from candidate and workload discovery even when an included
+owner scope would otherwise match them:
 
 - `tanaabased/big-test-bucket` — controlled manual and GitHub integration proof fixture; it does not
   contain actionable planning work.
 
-Apply exclusions before fetching candidate or workload evidence. When an owner-wide query returns a
-raw hit from an excluded repository, filter it at the repository boundary and report the repository,
-reason, and filtered count rather than enumerating its issues or pull requests. Direct controlled
-proof work through `$piro-work-on-task` remains separate from Plan Work and Find Work discovery.
+Filter broad-query hits before evidence fetching. Report the repository, reason, and filtered count
+rather than enumerating its issues or pull requests.
 
 ## Current-Invocation Decision
 
@@ -73,9 +71,6 @@ Repository patterns define discovery scope only. They do not:
 - establish actor membership or assignability;
 - authorize issue, pull-request, repository, access, or task mutations; or
 - replace per-invocation identity, privacy, permission, pagination, and availability checks.
-
-Every in-scope canonical source returned by planning discovery must receive one visible disposition.
-Repository-level exclusions are reported separately and do not become candidate-level deferrals.
 
 Incomplete discovery must be reported honestly. A workflow must not substitute another repository
 or silently broaden scope.
