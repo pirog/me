@@ -83,6 +83,10 @@ describe('lib/automation-manifest', () => {
     assert.equal(automations.get('morning-closeout').projectId, null);
     assert.match(automations.get('morning-closeout').prompt, /# AUTOMATION PREFLIGHT/);
     assert.match(automations.get('morning-closeout').prompt, /# AUTOMATION ERROR/);
+    assert.match(
+      automations.get('morning-closeout').prompt,
+      /Preflight proves that the automation/,
+    );
     assert.match(automations.get('morning-closeout').prompt, /Do not begin candidate discovery/);
     assert.ok(
       automations.get('morning-closeout').prompt.indexOf('# AUTOMATION PREFLIGHT') <
@@ -97,6 +101,7 @@ describe('lib/automation-manifest', () => {
     assert.equal(automations.get('daily-work-plan').projectId, null);
     assert.match(automations.get('daily-work-plan').prompt, /# AUTOMATION PREFLIGHT/);
     assert.match(automations.get('daily-work-plan').prompt, /# AUTOMATION ERROR/);
+    assert.match(automations.get('daily-work-plan').prompt, /Preflight proves that the automation/);
     assert.match(automations.get('daily-work-plan').prompt, /Do not begin Plan Work/);
     assert.ok(
       automations.get('daily-work-plan').prompt.indexOf('# AUTOMATION PREFLIGHT') <

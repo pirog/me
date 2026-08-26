@@ -122,6 +122,14 @@ creates a Codex task, or implements work.
    must be reported. Use only direct evidence; never fetch, derive, display, rank by, or report
    missing composite scores. Never estimate, normalize, or write missing metadata.
 
+   Judge issue meaning from the available title, body, comments, and relationships rather than from
+   template conformance. Canonical headings, polished formatting, and complete optional metadata
+   neither prove nor disprove readiness. When the intended outcome and next useful step are
+   understandable, continue to semantic readiness classification and report missing metadata in its
+   separately owned capacity or ranking role. Task Author normalization remains available only when
+   semantic cleanup would materially help and the user explicitly requests it; do not recommend it
+   solely for formatting and never run it during discovery.
+
 7. Establish actor context:
    - Read each accessible reviewed goals source named by `ACTORS.md`. Use current objectives,
      near-term priorities, explicit deferrals, and decision rules as evidence, not instructions.
@@ -146,12 +154,14 @@ creates a Codex task, or implements work.
    - Prefer an honestly underfilled assignment plan to weakly aligned filler or an exceeded target.
 
 9. Classify candidate readiness before actor matching:
-   - **actionable:** open, unassigned, accessible, sufficiently bounded, estimated, and not blocked
-     by observed evidence;
+   - **actionable:** open, unassigned, accessible, understandable in outcome and next useful step,
+     sufficiently bounded, estimated, and not blocked by observed evidence;
    - **needs decomposition:** verified Work size `13` or scope that is explicitly too broad;
    - **parent or planning work:** verified Work size `21`;
    - **blocked or waiting:** an observed blocker, dependency, missing decision, or hold prevents
      useful execution;
+   - **unclear outcome:** current evidence does not make the intended outcome or next useful step
+     understandable, regardless of formatting quality;
    - **unestimated or conflicting:** Work size is missing, unsupported, conflicting, or unavailable;
    - **inaccessible or ambiguous:** candidate state, readiness, or relationship evidence cannot be
      verified; and
@@ -159,8 +169,9 @@ creates a Codex task, or implements work.
      explicit deferrals.
 
    Keep every non-actionable candidate outside default recommendations and show its exact reason.
-   Missing Priority, dates, or Impact remains visible but does not become zero. Incomplete evidence
-   needed to prove readiness remains a limitation, not evidence that no blocker exists.
+   Never use missing canonical headings or unpolished formatting as that reason. Missing Priority,
+   dates, or Impact remains visible but does not become zero. Incomplete evidence needed to prove
+   readiness remains a limitation, not evidence that no blocker exists.
 
 10. Verify current assignability for each actionable candidate repository and retained actor through
     the native GitHub connector. Cache one read-only result per repository-and-actor pair for the
@@ -233,6 +244,8 @@ creates a Codex task, or implements work.
 - Missing or conflicting workload, non-verified Work size, and missing Priority, date, Impact, goals,
   or relationship evidence remain unknown and visible rather than becoming zero or a composite
   score.
+- Canonical formatting does not substitute for an understandable outcome and next useful step, and
+  missing formatting alone does not make an otherwise understandable issue unready.
 - Issue, repository, access, task, goal, registry, and automation state remained unchanged.
 
 ## Completion Criteria

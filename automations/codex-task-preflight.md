@@ -2,6 +2,12 @@
 
 Complete this read-only preflight before starting the task body.
 
+Preflight proves that the automation and its named skills can operate. Keep it limited to required
+capabilities, identity, access, readable sources, and trustworthy operation results. Do not use
+template conformance, canonical headings, polished formatting, or optional managed metadata as
+preflight gates. Leave source meaning, readiness, ranking, and any later normalization to the owning
+task-body skill.
+
 1. Read the task body's `Required preflight capabilities` and the complete contracts of every named
    skill.
 2. Confirm that every required skill, connector, CLI, native Codex operation, registry, and source is

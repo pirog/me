@@ -120,23 +120,35 @@ gap that native GitHub and Codex operations cannot handle.
    the issue body only when the native field is unavailable; native values win on a conflict, which
    must be reported. Never estimate, normalize, or write missing metadata during this workflow.
 
+   Judge issue meaning from the available title, body, comments, and relationships rather than from
+   template conformance. Canonical headings, polished formatting, and complete optional metadata
+   neither prove nor disprove readiness. When the intended outcome and next useful step are
+   understandable, continue to semantic readiness classification and report missing metadata in its
+   separately owned capacity or ranking role. Task Author normalization remains available only when
+   semantic cleanup would materially help and the user explicitly requests it; do not recommend it
+   solely for formatting and never run it during planning.
+
 6. List active and pending Codex tasks and map only exact canonical GitHub sources from their original
    assignments or explicit current outcomes. Mark a candidate as an existing commitment when one
    unambiguous live task already owns it. Do not create a duplicate because its task is idle, blocked,
    or awaiting input. Report ambiguous task associations instead of guessing.
 
 7. Classify issue readiness before ranking:
-   - **actionable:** open, assigned, sufficiently bounded, and not blocked by observed evidence;
+   - **actionable:** open, assigned, understandable in outcome and next useful step, sufficiently
+     bounded, and not blocked by observed evidence;
    - **needs decomposition:** verified Work size `13` or scope that is explicitly too broad;
    - **parent or planning work:** verified Work size `21`;
    - **blocked or waiting:** an observed blocker, dependency, missing decision, or hold state prevents
      useful execution;
+   - **unclear outcome:** current evidence does not make the intended outcome or next useful step
+     understandable, regardless of formatting quality;
    - **unestimated:** Work size is missing, unsupported, conflicting, or unavailable; and
    - **not aligned:** the outcome conflicts with the planning basis or `Not Now`.
 
-   Do not place `13`, `21`, blocked, unestimated, or not-aligned issues in the default capacity plan.
-   Show them separately with the exact reason. The user may explicitly select a supported source
-   after reviewing that warning, but Plan Work must not claim it fits the default plan.
+   Do not place `13`, `21`, blocked, unclear, unestimated, or not-aligned issues in the default
+   capacity plan. Show them separately with the exact reason. Never use missing canonical headings or
+   unpolished formatting as that reason. The user may explicitly select a supported source after
+   reviewing the warning, but Plan Work must not claim it fits the default plan.
 
    Keep actionable issues that lose only on current ranking or capacity as alternates. State the
    exact higher-ranked dependency, goal-alignment, Priority, date, Impact, concentration, or capacity
@@ -246,6 +258,8 @@ gap that native GitHub and Codex operations cannot handle.
 - Existing Codex tasks are reconciled before recommendations and again before creation.
 - Missing Work size, Priority, Impact, date, or relationship evidence remains missing; Plan Work
   does not invent or mutate it.
+- Canonical formatting does not substitute for an understandable outcome and next useful step, and
+  missing formatting alone does not make an otherwise understandable issue unready.
 - Pull-request attention is distinct from issue Work size, and fork-backed PRs are visible but not
   eligible for the current Work on Task start path.
 - The planning phase changes no GitHub, repository, branch, ref, task, worktree, goal, or automation

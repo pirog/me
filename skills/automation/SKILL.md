@@ -106,7 +106,9 @@ file-backed prompts for their longer workflow contracts.
    - Use optional `preflight-file` beneath `automations/` only for a shared readiness and failure
      contract that applies before the task-specific prompt. Validate it with the same containment
      rules, compose it before the prompt with one Markdown separator, and keep task-body behavior in
-     the prompt or its owning skill.
+     the prompt or its owning skill. Limit shared preflight to operational capabilities, identity,
+     access, readable sources, and trustworthy operation results. Do not turn source formatting,
+     optional metadata, or domain-specific candidate quality into a preflight gate.
 
 2. Validate the complete manifest before inspecting or changing app state:
 
