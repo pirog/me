@@ -8,20 +8,20 @@ Managed automation id: `morning-closeout`.
 
 - `$piro-morning-closeout` and `$piro-clean-up-task` with their complete current contracts.
 - Native Codex operations for current-host active and pinned task listing, exact task reading,
-  archival, and archived-task read-back.
-- Native GitHub issue reads plus authenticated `gh api` access for the canonical Work size fallback.
-  Prove both providers through `GitHub Read Access` and keep the connector first. During preflight,
-  prove CLI identity and access only; call the issue-field endpoint later and only when one archived
-  issue actually requires Work size resolution.
+  archival, and archived-task read-back under
+  [`Codex Task Access`](../references/codex-task-access.md).
+- Native GitHub issue reads for optional completed-capacity evidence. Apply
+  [`GitHub Read Access`](../references/github-read-access.md) connector-first. A wrong identity hard
+  fails; an unavailable optional provider degrades capacity evidence. Verify the CLI route only when
+  an archived issue actually requires its Work size fallback.
 
 Use only listing and reading during preflight. Do not begin candidate discovery or archival when the
 shared automation preflight fails.
 
-A valid current-host listing that reaches its supported maximum without pagination or completeness
-evidence is usable but incomplete for this workflow, not a missing capability. Process only exact
-visible candidates and state `active-task discovery was incomplete` in the final report. A malformed
-listing, an unavailable current-host source, a failed exact task read, or ambiguous task identity
-still fails closed.
+Start with `list_threads(limit=50)`. A valid capped result is usable partial evidence: do not repeat
+the identical read, process only exact visible candidates, and state `active-task discovery was
+incomplete`. An unavailable or malformed listing, ambiguous identity, or failed exact read before
+archival stops mutation.
 
 Work only on Codex tasks visible on the current local host.
 Inspect active tasks and pinned tasks before selecting any candidate.
@@ -38,6 +38,7 @@ Consider two candidate classes:
 
 Do not select a report from its title alone.
 Read each candidate and prove its exact task id, environment, original assignment, and current state.
+Repeat the exact target read immediately before its archival attempt.
 Read or unread state is not an archival gate; record it when exposed, but do not infer it or retain an otherwise eligible earlier report because it may be unread.
 For a prior managed report, treat the delivered report as its declared outcome; unchosen optional recommendations do not by themselves make that report incomplete.
 Retain a report whose run failed or whose own required report output is incomplete.

@@ -85,11 +85,16 @@ describe('lib/automation-manifest', () => {
     assert.match(morningPrompt, /# AUTOMATION PREFLIGHT/);
     assert.match(morningPrompt, /# ❌ AUTOMATION ERROR/);
     assert.match(morningPrompt, /## Attempts/);
-    assert.match(morningPrompt, /Preflight proves that the automation/);
     assert.match(morningPrompt, /at most three\s+total attempts/);
-    assert.match(morningPrompt, /authorized host execution context/);
+    assert.match(
+      morningPrompt,
+      /detailed ordered\s+attempt ledger only for degraded or failed runs/,
+    );
     assert.match(morningPrompt, /GitHub Read Access/);
-    assert.match(morningPrompt, /active-task discovery was incomplete/);
+    assert.match(morningPrompt, /Codex Task Access/);
+    assert.match(morningPrompt, /list_threads\(limit=50\)/);
+    assert.match(morningPrompt, /active-task discovery was\s+incomplete/);
+    assert.match(morningPrompt, /Repeat the exact target read immediately before its archival/);
     assert.match(morningPrompt, /Do not begin candidate discovery/);
     assert.ok(
       morningPrompt.indexOf('# AUTOMATION PREFLIGHT') < morningPrompt.indexOf('# MORNING CLOSEOUT'),
@@ -105,11 +110,13 @@ describe('lib/automation-manifest', () => {
     assert.match(dailyPrompt, /# AUTOMATION PREFLIGHT/);
     assert.match(dailyPrompt, /# ❌ AUTOMATION ERROR/);
     assert.match(dailyPrompt, /## Attempts/);
-    assert.match(dailyPrompt, /Preflight proves that the automation/);
-    assert.match(dailyPrompt, /complete current-host active and pending Codex task listing/);
-    assert.match(dailyPrompt, /fails this\s+task-specific readiness requirement/);
     assert.match(dailyPrompt, /GitHub Read Access/);
-    assert.match(dailyPrompt, /Do not begin Plan Work/);
+    assert.match(dailyPrompt, /Codex Task Access/);
+    assert.match(dailyPrompt, /valid capped Codex listing is soft degradation/);
+    assert.match(dailyPrompt, /completely unavailable after bounded recovery/);
+    assert.match(dailyPrompt, /one clearly conditional, read-only issue recommendation/);
+    assert.match(dailyPrompt, /do not claim that no active commitment exists/);
+    assert.match(dailyPrompt, /Do not begin Plan Work after a hard shared-preflight failure/);
     assert.ok(
       dailyPrompt.indexOf('# AUTOMATION PREFLIGHT') < dailyPrompt.indexOf('# DAILY WORK PLAN'),
     );
@@ -119,20 +126,86 @@ describe('lib/automation-manifest', () => {
     );
   });
 
-  it('should define bounded GitHub connector and CLI recovery', async () => {
+  it('should statically define bounded lazy GitHub connector and CLI recovery', async () => {
     const contract = await readFile(
       path.join(REPO_ROOT, 'references', 'github-read-access.md'),
       'utf8',
     );
 
     assert.match(contract, /Prove connector access and CLI access independently/);
+    assert.match(contract, /Do not preflight the CLI merely because it is a documented fallback/);
     assert.match(contract, /gh auth status/);
     assert.match(contract, /gh api user --jq \.login/);
+    assert.match(contract, /network\/auth ambiguity rather than proof that the token is bad/);
     assert.match(contract, /authorized host execution context/);
     assert.match(contract, /zsh -lc/);
     assert.match(contract, /zsh -ilc/);
     assert.match(contract, /Do not cycle shell wrappers inside a restricted context/);
     assert.match(contract, /never run `gh auth login`/);
+  });
+
+  it('should statically define current Codex task access and bounded recovery', async () => {
+    const contract = await readFile(
+      path.join(REPO_ROOT, 'references', 'codex-task-access.md'),
+      'utf8',
+    );
+
+    assert.match(contract, /list_threads\(limit=50\)/);
+    assert.match(contract, /Do not begin with `limit=100`/);
+    assert.match(contract, /correct\s+it once/);
+    assert.match(contract, /maximum of\s+three total attempts/);
+    assert.match(contract, /Do not\s+repeat the identical capped read/);
+    assert.match(contract, /Call `read_thread` for each visible candidate/);
+    assert.match(contract, /failed exact read[\s\S]*blocks that mutation/);
+  });
+
+  it('should statically classify recoverable, degraded, and hard preflight outcomes', async () => {
+    const contract = await readFile(
+      path.join(REPO_ROOT, 'automations', 'codex-task-preflight.md'),
+      'utf8',
+    );
+
+    assert.match(contract, /\*\*Recoverable:\*\*/);
+    assert.match(contract, /\*\*Soft degradation:\*\*/);
+    assert.match(contract, /\*\*Hard failure:\*\*/);
+    assert.match(contract, /wrong identity/);
+    assert.match(contract, /every required provider unavailable after recovery/);
+    assert.match(contract, /failed exact target read immediately before mutation/);
+    assert.match(contract, /attempt ledger only for degraded or failed runs/);
+  });
+
+  it('should statically continue plan-only work under partial or unavailable task coverage', async () => {
+    const planWork = await readFile(
+      path.join(REPO_ROOT, 'skills', 'plan-work', 'SKILL.md'),
+      'utf8',
+    );
+
+    assert.match(
+      planWork,
+      /Start current-host commitment discovery with `list_threads\(limit=50\)`/,
+    );
+    assert.match(planWork, /\*\*partial:\*\*[\s\S]*Map only exact visible commitments/);
+    assert.match(planWork, /visible subtotal with incomplete coverage/);
+    assert.match(planWork, /remaining and total capacity as\s+unknown/);
+    assert.match(planWork, /\*\*unavailable:\*\*[\s\S]*clearly conditional issue recommendation/);
+    assert.match(planWork, /recommend at most one issue/);
+    assert.match(planWork, /partial or unavailable listing[\s\S]*blocks creation/);
+  });
+
+  it('should statically keep Morning Closeout safe under capped task coverage', async () => {
+    const closeout = await readFile(
+      path.join(REPO_ROOT, 'skills', 'morning-closeout', 'SKILL.md'),
+      'utf8',
+    );
+
+    assert.match(closeout, /Start current-host discovery with `list_threads\(limit=50\)`/);
+    assert.match(closeout, /valid capped result is partial but usable/);
+    assert.match(closeout, /process only candidates proved by exact visible reads/);
+    assert.match(
+      closeout,
+      /Immediately before each archive-mode\s+handoff, read the exact target again/,
+    );
+    assert.match(closeout, /unavailable\s+or malformed listing stops before archival/);
   });
 
   it('should resolve prompt files only from automations', async () => {

@@ -7,18 +7,28 @@ Managed automation id: `daily-work-plan`.
 ## Required preflight capabilities
 
 - `$piro-plan-work` and `$piro-find-work` with their complete current contracts.
-- Native GitHub read operations authenticated as `pirog`, including complete issue and pull-request
-  discovery within the approved scope, plus authenticated `gh api` access for the canonical Work size
-  fallback. Prove connector and CLI access independently through `GitHub Read Access`.
-- A complete current-host active and pending Codex task listing plus exact task reading for commitment
-  and duplicate checks. A valid listing that reaches its supported maximum without pagination, a
-  total, or a completeness marker remains incomplete after its one confirmation read and fails this
-  task-specific readiness requirement.
+- Native GitHub connector reads authenticated as `pirog`, including complete issue and pull-request
+  discovery within the approved scope. Apply [`GitHub Read Access`](../references/github-read-access.md)
+  connector-first; verify the CLI route only if connector recovery or a required Work size fallback
+  actually reaches it.
+- Native Codex task listing and exact reading under
+  [`Codex Task Access`](../references/codex-task-access.md). This is preferred commitment evidence,
+  but the plan-only degradation below may continue when trustworthy complete coverage is unavailable.
 - Readable `WORK_REPOS.md`, `GOALS.md`, and `ACTORS.md` sources from the installed Piroplugin.
 
-Do not begin Plan Work when the shared automation preflight fails.
+Do not begin Plan Work after a hard shared-preflight failure. Wrong identity, unavailable required
+GitHub discovery after recovery, or malformed or untrustworthy final provider data fails closed.
+A valid capped Codex listing is soft degradation: process exact visible commitments, report partial
+coverage, keep remaining and total capacity unknown, and recommend at most one issue. Do not repeat
+the identical capped read.
+
+If Codex task listing is completely unavailable after bounded recovery but GitHub discovery works,
+continue to one clearly conditional, read-only issue recommendation. State that existing commitments
+and remaining capacity are unknown and do not claim that no active commitment exists. A conditional
+plan never authorizes queueing or creation.
+
 Do not substitute local session files, UI inspection, Computer History, or another non-authoritative
-surface for complete native task coverage.
+surface for native task evidence.
 
 First use `$piro-plan-work` in plan-only mode with these explicit inputs:
 
@@ -41,6 +51,9 @@ Use `$piro-find-work` only when all of these conditions hold after Plan Work:
 1. Verified daily capacity remains.
 2. There is no actionable assigned issue or pull-request attention to recommend.
 3. Assigned-work discovery completed without a blocking evidence gap.
+
+Do not run Find Work when Codex commitment coverage is partial or unavailable because remaining
+capacity is not verified.
 
 When the fallback applies, run Find Work read-only with these explicit inputs:
 
