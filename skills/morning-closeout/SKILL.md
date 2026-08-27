@@ -165,6 +165,8 @@ single-task preservation logic out of Clean Up Task or add direct worktree recla
 - [`../../AUTOMATIONS.yaml`](../../AUTOMATIONS.yaml): managed report ids and schedules.
 - [`../../automations/morning-closeout.md`](../../automations/morning-closeout.md): scheduled
   invocation contract.
+- [`GitHub Read Access`](../../references/github-read-access.md): independent connector and CLI
+  identity, access, and execution-route verification.
 - [`GitHub Issue Work Size Resolution`](../../references/github-issue-work-size.md): shared native
   provider order, canonical value interpretation, exclusions, and reporting contract.
 - [`agents/openai.yaml`](./agents/openai.yaml): Codex presentation and explicit-invocation policy.

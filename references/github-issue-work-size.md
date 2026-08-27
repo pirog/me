@@ -15,7 +15,8 @@ GitHub Projects access, or changes authentication.
    case-insensitively. Use the connector result only when it resolves to one canonical value under
    the interpretation rules below.
 3. When connector-native Work size is absent, unsupported, conflicting, or not exposed, call the
-   canonical repository issue-field endpoint through the existing `gh` authentication path:
+   canonical repository issue-field endpoint through the CLI route already verified by
+   [`GitHub Read Access`](./github-read-access.md):
 
    ```sh
    gh api \

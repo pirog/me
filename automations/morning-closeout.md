@@ -10,8 +10,9 @@ Managed automation id: `morning-closeout`.
 - Native Codex operations for current-host active and pinned task listing, exact task reading,
   archival, and archived-task read-back.
 - Native GitHub issue reads plus authenticated `gh api` access for the canonical Work size fallback.
-  Keep the connector first. During preflight, prove CLI identity and access only; call the issue-field
-  endpoint later and only when one archived issue actually requires Work size resolution.
+  Prove both providers through `GitHub Read Access` and keep the connector first. During preflight,
+  prove CLI identity and access only; call the issue-field endpoint later and only when one archived
+  issue actually requires Work size resolution.
 
 Use only listing and reading during preflight. Do not begin candidate discovery or archival when the
 shared automation preflight fails.

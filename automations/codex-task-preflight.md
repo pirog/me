@@ -14,15 +14,19 @@ task-body skill.
    available. Exercise required read operations with the smallest safe probes, and record each probe
    in an attempt ledger:
    - Keep every CLI network probe as one isolated direct read. Do not hide it in a compound shell
-     script, conditional, pipeline, or unrelated file-read command. For GitHub CLI identity and
-     access, run `gh auth status` and then separately run `gh api user --jq .login`.
+     script, conditional, pipeline, or unrelated file-read command.
+   - When GitHub connector or CLI reads are required, read and apply the complete
+     [`GitHub Read Access`](../references/github-read-access.md) contract. Prove the connector and CLI
+     independently, use shell variants only for command or profile initialization in authorized host
+     context, and record the first complete provider route that passed.
    - Correct one caller-originated argument-validation mistake and retry that operation once. For a
      transport error, hang, malformed result, or unavailable current-host source, make at most three
      total attempts. Never treat repeated identical failures as progress.
    - When a restricted execution result leaves network access and authentication ambiguous, retry
-     once through an available authorized host execution context using the same isolated read. Require
-     the retry to succeed with the expected identity, record that context for later task-body CLI
-     reads, and fail closed when the context is unavailable or the retry fails.
+     once through an available authorized host execution context using the same isolated read. Apply
+     the GitHub-specific provider sequence above when applicable. Require the retry to succeed with the
+     expected identity, record that context for later task-body CLI reads, and fail closed when the
+     context is unavailable or the retry fails.
    - When Codex task management is required, require a trustworthy current-host listing and exact
      task read-back. A valid listing that reaches its supported maximum without a cursor, total, or
      completeness marker proves the operation is usable but not that coverage is complete. Repeat a

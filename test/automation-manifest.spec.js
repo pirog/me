@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { execFile, spawn } from 'node:child_process';
-import { mkdir, mkdtemp, rm, symlink, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm, symlink, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { promisify } from 'node:util';
@@ -88,6 +88,7 @@ describe('lib/automation-manifest', () => {
     assert.match(morningPrompt, /Preflight proves that the automation/);
     assert.match(morningPrompt, /at most three\s+total attempts/);
     assert.match(morningPrompt, /authorized host execution context/);
+    assert.match(morningPrompt, /GitHub Read Access/);
     assert.match(morningPrompt, /active-task discovery was incomplete/);
     assert.match(morningPrompt, /Do not begin candidate discovery/);
     assert.ok(
@@ -107,6 +108,7 @@ describe('lib/automation-manifest', () => {
     assert.match(dailyPrompt, /Preflight proves that the automation/);
     assert.match(dailyPrompt, /complete current-host active and pending Codex task listing/);
     assert.match(dailyPrompt, /fails this\s+task-specific readiness requirement/);
+    assert.match(dailyPrompt, /GitHub Read Access/);
     assert.match(dailyPrompt, /Do not begin Plan Work/);
     assert.ok(
       dailyPrompt.indexOf('# AUTOMATION PREFLIGHT') < dailyPrompt.indexOf('# DAILY WORK PLAN'),
@@ -115,6 +117,22 @@ describe('lib/automation-manifest', () => {
       automations.get('daily-work-plan').rrule,
       'RRULE:FREQ=WEEKLY;BYHOUR=5;BYMINUTE=0;BYDAY=MO,TU,WE,TH,FR',
     );
+  });
+
+  it('should define bounded GitHub connector and CLI recovery', async () => {
+    const contract = await readFile(
+      path.join(REPO_ROOT, 'references', 'github-read-access.md'),
+      'utf8',
+    );
+
+    assert.match(contract, /Prove connector access and CLI access independently/);
+    assert.match(contract, /gh auth status/);
+    assert.match(contract, /gh api user --jq \.login/);
+    assert.match(contract, /authorized host execution context/);
+    assert.match(contract, /zsh -lc/);
+    assert.match(contract, /zsh -ilc/);
+    assert.match(contract, /Do not cycle shell wrappers inside a restricted context/);
+    assert.match(contract, /never run `gh auth login`/);
   });
 
   it('should resolve prompt files only from automations', async () => {

@@ -187,6 +187,8 @@ digest approval.
 - [`../../AUTOMATIONS.yaml`](../../AUTOMATIONS.yaml): repository-owned desired automation state.
 - [`../../automations/codex-task-preflight.md`](../../automations/codex-task-preflight.md): shared
   capability-based preflight and automation-error contract for Codex task-management runs.
+- [`GitHub Read Access`](../../references/github-read-access.md): connector, direct CLI,
+  authorized-context, and login-shell recovery contract for read-only GitHub access.
 - [`scripts/automation-task.js`](./scripts/automation-task.js): thin validation and deterministic
   planning command.
 - [`../../lib/automation-manifest.js`](../../lib/automation-manifest.js): manifest, prompt-file,
@@ -206,9 +208,10 @@ digest approval.
   04:00 and 05:00 local time.
 - Run the focused automation tests and confirm valid schedule variants, schema rejection,
   the 25-line inline prompt boundary, prompt and preflight containment, deterministic preflight-first
-  composition, bounded attempt and authorized-context rules, consumer-specific saturated-list
-  handling, the exact automation-error heading and attempt ledger, marker conflicts, project
-  resolution, deterministic digests, and every planned lifecycle action.
+  composition, bounded attempt and authorized-context rules, independent GitHub connector and CLI
+  provider recovery, consumer-specific saturated-list handling, the exact automation-error heading
+  and attempt ledger, marker conflicts, project resolution, deterministic digests, and every planned
+  lifecycle action.
 - Run `bun run test` followed by `bun run lint`.
 - Run `bun run codex:validate`, then the repository's `codex:check` / `codex:sync` /
   `codex:check` cache-convergence cycle when installed plugin-cache mutation is authorized.

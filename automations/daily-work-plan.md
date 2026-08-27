@@ -9,7 +9,7 @@ Managed automation id: `daily-work-plan`.
 - `$piro-plan-work` and `$piro-find-work` with their complete current contracts.
 - Native GitHub read operations authenticated as `pirog`, including complete issue and pull-request
   discovery within the approved scope, plus authenticated `gh api` access for the canonical Work size
-  fallback.
+  fallback. Prove connector and CLI access independently through `GitHub Read Access`.
 - A complete current-host active and pending Codex task listing plus exact task reading for commitment
   and duplicate checks. A valid listing that reaches its supported maximum without pagination, a
   total, or a completeness marker remains incomplete after its one confirmation read and fails this

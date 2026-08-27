@@ -291,6 +291,8 @@ gap that native GitHub and Codex operations cannot handle.
 - [`GOALS.md`](../../GOALS.md): reviewed fallback direction, priorities, deferrals, and decision rules.
 - [`WORK_REPOS.md`](../../WORK_REPOS.md): reviewed priority repositories, discovery scopes,
   per-invocation decisions, narrowing, and authority boundaries.
+- [`GitHub Read Access`](../../references/github-read-access.md): independent connector and CLI
+  identity, access, and execution-route verification.
 - [`GitHub Issue Work Size Resolution`](../../references/github-issue-work-size.md): shared native
   provider order, canonical value interpretation, exclusions, and reporting contract.
 - [`$piro-work-on-task`](../work-on-task/SKILL.md): exact per-source Codex task creation, assessment,
