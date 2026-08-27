@@ -81,16 +81,17 @@ describe('lib/automation-manifest', () => {
     assert.equal(automations.get('morning-closeout').status, 'ACTIVE');
     assert.equal(automations.get('morning-closeout').name, '🧹 MORNING CLOSEOUT');
     assert.equal(automations.get('morning-closeout').projectId, null);
-    assert.match(automations.get('morning-closeout').prompt, /# AUTOMATION PREFLIGHT/);
-    assert.match(automations.get('morning-closeout').prompt, /# AUTOMATION ERROR/);
-    assert.match(
-      automations.get('morning-closeout').prompt,
-      /Preflight proves that the automation/,
-    );
-    assert.match(automations.get('morning-closeout').prompt, /Do not begin candidate discovery/);
+    const morningPrompt = automations.get('morning-closeout').prompt;
+    assert.match(morningPrompt, /# AUTOMATION PREFLIGHT/);
+    assert.match(morningPrompt, /# ❌ AUTOMATION ERROR/);
+    assert.match(morningPrompt, /## Attempts/);
+    assert.match(morningPrompt, /Preflight proves that the automation/);
+    assert.match(morningPrompt, /at most three\s+total attempts/);
+    assert.match(morningPrompt, /authorized host execution context/);
+    assert.match(morningPrompt, /active-task discovery was incomplete/);
+    assert.match(morningPrompt, /Do not begin candidate discovery/);
     assert.ok(
-      automations.get('morning-closeout').prompt.indexOf('# AUTOMATION PREFLIGHT') <
-        automations.get('morning-closeout').prompt.indexOf('# MORNING CLOSEOUT'),
+      morningPrompt.indexOf('# AUTOMATION PREFLIGHT') < morningPrompt.indexOf('# MORNING CLOSEOUT'),
     );
     assert.equal(
       automations.get('morning-closeout').rrule,
@@ -99,13 +100,16 @@ describe('lib/automation-manifest', () => {
     assert.equal(automations.get('daily-work-plan').status, 'ACTIVE');
     assert.equal(automations.get('daily-work-plan').name, '📋 DAILY WORK PLAN');
     assert.equal(automations.get('daily-work-plan').projectId, null);
-    assert.match(automations.get('daily-work-plan').prompt, /# AUTOMATION PREFLIGHT/);
-    assert.match(automations.get('daily-work-plan').prompt, /# AUTOMATION ERROR/);
-    assert.match(automations.get('daily-work-plan').prompt, /Preflight proves that the automation/);
-    assert.match(automations.get('daily-work-plan').prompt, /Do not begin Plan Work/);
+    const dailyPrompt = automations.get('daily-work-plan').prompt;
+    assert.match(dailyPrompt, /# AUTOMATION PREFLIGHT/);
+    assert.match(dailyPrompt, /# ❌ AUTOMATION ERROR/);
+    assert.match(dailyPrompt, /## Attempts/);
+    assert.match(dailyPrompt, /Preflight proves that the automation/);
+    assert.match(dailyPrompt, /complete current-host active and pending Codex task listing/);
+    assert.match(dailyPrompt, /fails this\s+task-specific readiness requirement/);
+    assert.match(dailyPrompt, /Do not begin Plan Work/);
     assert.ok(
-      automations.get('daily-work-plan').prompt.indexOf('# AUTOMATION PREFLIGHT') <
-        automations.get('daily-work-plan').prompt.indexOf('# DAILY WORK PLAN'),
+      dailyPrompt.indexOf('# AUTOMATION PREFLIGHT') < dailyPrompt.indexOf('# DAILY WORK PLAN'),
     );
     assert.equal(
       automations.get('daily-work-plan').rrule,

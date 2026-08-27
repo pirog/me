@@ -10,9 +10,17 @@ Managed automation id: `morning-closeout`.
 - Native Codex operations for current-host active and pinned task listing, exact task reading,
   archival, and archived-task read-back.
 - Native GitHub issue reads plus authenticated `gh api` access for the canonical Work size fallback.
+  Keep the connector first. During preflight, prove CLI identity and access only; call the issue-field
+  endpoint later and only when one archived issue actually requires Work size resolution.
 
 Use only listing and reading during preflight. Do not begin candidate discovery or archival when the
 shared automation preflight fails.
+
+A valid current-host listing that reaches its supported maximum without pagination or completeness
+evidence is usable but incomplete for this workflow, not a missing capability. Process only exact
+visible candidates and state `active-task discovery was incomplete` in the final report. A malformed
+listing, an unavailable current-host source, a failed exact task read, or ambiguous task identity
+still fails closed.
 
 Work only on Codex tasks visible on the current local host.
 Inspect active tasks and pinned tasks before selecting any candidate.

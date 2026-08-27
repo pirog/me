@@ -128,10 +128,14 @@ gap that native GitHub and Codex operations cannot handle.
    semantic cleanup would materially help and the user explicitly requests it; do not recommend it
    solely for formatting and never run it during planning.
 
-6. List active and pending Codex tasks and map only exact canonical GitHub sources from their original
-   assignments or explicit current outcomes. Mark a candidate as an existing commitment when one
-   unambiguous live task already owns it. Do not create a duplicate because its task is idle, blocked,
-   or awaiting input. Report ambiguous task associations instead of guessing.
+6. List active and pending Codex tasks completely and map only exact canonical GitHub sources from
+   their original assignments or explicit current outcomes. A valid listing that reaches its
+   supported maximum without pagination, a total, or a completeness marker does not prove complete
+   commitment coverage; stop before capacity calculation or recommendations rather than risking a
+   hidden duplicate or under-counted Work size. Do not substitute local session files, UI inspection,
+   Computer History, or another non-authoritative surface. Mark a candidate as an existing commitment
+   when one unambiguous live task already owns it. Do not create a duplicate because its task is idle,
+   blocked, or awaiting input. Report ambiguous task associations instead of guessing.
 
 7. Classify issue readiness before ranking:
    - **actionable:** open, assigned, understandable in outcome and next useful step, sufficiently
@@ -251,6 +255,8 @@ gap that native GitHub and Codex operations cannot handle.
 ## Checkpoints
 
 - GitHub identity is `pirog`; candidate discovery is complete or explicitly reported incomplete.
+- Active and pending Codex commitment discovery is complete; a saturated native result without
+  completeness evidence stopped before capacity calculation and recommendations.
 - Every plan records a current explicit include or exclude choice for every current-invocation
   decision scope in `WORK_REPOS.md`.
 - The goal basis, milestone filters, repository scope, priority-repository signal, capacity, and
@@ -305,8 +311,9 @@ gap that native GitHub and Codex operations cannot handle.
   choice, exact narrowing, excluded-repository conflicts and raw-hit filtering, direct-evidence
   ranking, shared Work size connector and endpoint success, missing, unsupported, conflicting, and
   personal-repository `HTTP 404` results without Projects GraphQL, active-task deduplication, `13` and
-  `21` handling, pull-request attention, exact-once candidate dispositions, incomplete pagination,
-  capacity-driven task counts, and natural exact-selection authorization.
+  `21` handling, pull-request attention, exact-once candidate dispositions, incomplete GitHub
+  pagination, saturated Codex commitment listing, capacity-driven task counts, and natural
+  exact-selection authorization.
 - Prove discovery with bounded read-only fixtures; select nothing and confirm no task or GitHub
   mutation. Prove queue mode only after separate authorization for exact disposable sources, then
   retire them through their owning workflows.

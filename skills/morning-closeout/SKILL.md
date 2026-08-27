@@ -72,7 +72,9 @@ turns a failed candidate into an abandonment decision, or mutates external deliv
 2. List active and pinned Codex tasks using the broadest supported current-host listing. Record
    whether discovery is complete. If a native limit or unavailable pagination prevents complete
    coverage, report that limitation and process only candidates whose exact identities are visible;
-   never claim a complete clean slate.
+   never claim a complete clean slate. A valid capped result is a usable operation and not a
+   preflight capability failure for this workflow. State `active-task discovery was incomplete` in
+   the final report.
 
 3. Exclude the calling task, every running or pending task, every pinned task, tasks on another
    host, and entries whose exact task id or environment cannot be read back. Do not change state to
@@ -98,7 +100,9 @@ turns a failed candidate into an abandonment decision, or mutates external deliv
 6. For an ineligible candidate, retain it and record every failed gate plus the exact state that
    remains. Continue with independent candidates because a preservation-gated refusal changes no
    candidate state. Stop the entire run on a native task-operation failure, identity mismatch, or
-   other systemic failure that makes later reads or mutations unsafe; list all unattempted ids.
+   other systemic failure that makes later reads or mutations unsafe; list all unattempted ids. A
+   malformed listing, unavailable current-host source, failed exact task read, or ambiguous task
+   identity is systemic; a valid supported listing limit by itself is not.
 
 7. For every task verified as archived, record its exact id and displayed title, candidate class,
    repository when applicable, exact issue or pull-request source when present, delivered outcome,
@@ -174,6 +178,9 @@ single-task preservation logic out of Clean Up Task or add direct worktree recla
 - Confirm static scenarios cover a mixed list containing the caller, a running task, a pinned task,
   one eligible worktree task, one blocked worktree task, an exact prior managed report, and a
   title-only report lookalike. Only the two preservation-gated exact candidates may archive.
+- Confirm a valid 50-result listing with no pagination processes only exact visible candidates and
+  reports `active-task discovery was incomplete`. Confirm malformed results, unavailable current-host
+  sources, failed exact reads, and ambiguous identities stop before archival.
 - Confirm capacity follows the shared provider sequence, deduplicates one issue referenced twice,
   and covers connector-native success, endpoint success, missing, conflicting, unsupported, and
   personal-repository `HTTP 404` results without Projects GraphQL or an unqualified zero total.
