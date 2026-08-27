@@ -6,6 +6,9 @@
 
 ## ISSUES 2 ADD
 
+- @tanaab/canon
+  - more user centric prose in task creation stuff?
+
 - @tanaab/openclaw-agent-system
   - cut 0.5.4?
   - cron
