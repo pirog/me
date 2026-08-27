@@ -4,9 +4,12 @@ Use this contract whenever a Piroplugin workflow requires native GitHub reads, a
 CLI reads, or both. This is a read-only access check. It never changes authentication, connector
 configuration, repository state, or GitHub objects.
 
-Prove connector access and CLI access independently. A working connector does not prove that `gh`
-can reach the API, and a working CLI does not replace a connector-first workflow.
-Try each declared provider route at most once unless an owning preflight supplies a smaller total
+Prove connector access and CLI access independently when the owning workflow actually needs both. A
+working connector does not prove that `gh` can reach the API, and a working CLI does not replace a
+connector-first workflow. Do not preflight the CLI merely because it is a documented fallback; use
+it when connector recovery is permitted or an actual CLI-only read is needed.
+
+Try each needed provider route at most once unless an owning preflight supplies a smaller total
 transient-retry budget. Do not restart the sequence after a route succeeds or a final identity
 mismatch occurs.
 
@@ -15,10 +18,12 @@ mismatch occurs.
 1. When the workflow requires the native GitHub connector:
    - read the authenticated connector login and require the expected actor;
    - perform the smallest exact repository, issue, or pull-request read required by the workflow; and
-   - stop on an identity mismatch, unavailable connector, malformed result, or inaccessible required
-     source after the owning workflow's bounded transient attempts.
+   - stop immediately on an identity mismatch; otherwise return an unavailable, malformed, or
+     inaccessible result to the owning workflow after its bounded transient attempts so that owner
+     can apply the required-provider or optional-provider boundary.
 
-2. When the workflow requires GitHub CLI access, keep every probe as a separate direct read:
+2. When the workflow reaches a GitHub CLI fallback or CLI-only read, keep every probe as a separate
+   direct read:
 
    ```sh
    gh auth status
@@ -57,9 +62,10 @@ mismatch occurs.
    route failed before API transport because the CLI, configuration, or login initialization could
    not be resolved.
 
-5. Record the connector route and the first complete CLI route that passed. Reuse that exact CLI
-   execution route for later task-body `gh api` reads. If the workflow requires both providers, do not
-   continue until both pass.
+5. Record the connector route and, when invoked, the first complete CLI route that passed. Reuse that
+   exact CLI execution route for later task-body `gh api` reads. Require every provider needed for
+   the next operation; let the owning workflow report an unavailable optional provider as a soft
+   degradation.
 
 6. Fail closed when every permitted route fails, the expected actor cannot be proved, the authorized
    host context is unavailable, or the required exact source remains unreadable. Preserve sanitized

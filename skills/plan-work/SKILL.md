@@ -57,10 +57,13 @@ gap that native GitHub and Codex operations cannot handle.
 
 ## Preconditions
 
-- Require the native GitHub connector, confirm its current login is `pirog`, and stop on an
-  unavailable connector or identity mismatch.
-- Require native Codex task listing and reading for duplicate detection. Starting selected work also
-  requires the task-creation capabilities used by `$piro-work-on-task`.
+- Require the native GitHub connector, confirm its current login is `pirog`, and stop on an identity
+  mismatch. Apply [`GitHub Read Access`](../../references/github-read-access.md) lazily when connector
+  recovery or a CLI-only fallback is actually needed.
+- Use native Codex task listing and exact reading for commitment and duplicate detection under
+  [`Codex Task Access`](../../references/codex-task-access.md). Plan-only mode may continue with the
+  explicitly bounded degradation below; starting selected work still requires a fresh trustworthy
+  duplicate check plus the task-creation capabilities used by `$piro-work-on-task`.
 - Require `WORK_REPOS.md` to define priority repositories, default discovery scopes,
   current-invocation scope decisions, explicit narrowing, and authority boundaries.
 - When `WORK_REPOS.md` is missing, unreadable, or incomplete, stop before candidate discovery. State
@@ -128,14 +131,27 @@ gap that native GitHub and Codex operations cannot handle.
    semantic cleanup would materially help and the user explicitly requests it; do not recommend it
    solely for formatting and never run it during planning.
 
-6. List active and pending Codex tasks completely and map only exact canonical GitHub sources from
-   their original assignments or explicit current outcomes. A valid listing that reaches its
-   supported maximum without pagination, a total, or a completeness marker does not prove complete
-   commitment coverage; stop before capacity calculation or recommendations rather than risking a
-   hidden duplicate or under-counted Work size. Do not substitute local session files, UI inspection,
-   Computer History, or another non-authoritative surface. Mark a candidate as an existing commitment
-   when one unambiguous live task already owns it. Do not create a duplicate because its task is idle,
-   blocked, or awaiting input. Report ambiguous task associations instead of guessing.
+6. Start current-host commitment discovery with `list_threads(limit=50)` and apply Codex Task Access.
+   Inspect visible active, pending, and pinned candidates, then use exact `read_thread` results before
+   mapping canonical GitHub sources from original assignments or explicit current outcomes. Do not
+   substitute local session files, UI inspection, Computer History, or another non-authoritative
+   surface.
+
+   Classify commitment coverage explicitly:
+   - **complete:** map exact commitments and calculate capacity normally;
+   - **partial:** when a valid listing reaches 50 without pagination, a total, or a completeness
+     marker, do not repeat the same capped read. Map only exact visible commitments, label existing
+     capacity as a visible subtotal with incomplete coverage, label remaining and total capacity as
+     unknown, and recommend at most one issue;
+   - **unavailable:** after bounded recovery, continue plan-only GitHub work with no claim about
+     active commitments, label existing, remaining, and total capacity unknown, and return at most one
+     clearly conditional issue recommendation; or
+   - **untrustworthy:** stop when the final listing or required exact task data is malformed,
+     ambiguous, or otherwise unsafe to use.
+
+   Mark a candidate as an existing commitment only when one unambiguous exact task owns it. Never
+   describe partial or unavailable coverage as no active commitment, and never create a duplicate
+   because its visible task is idle, blocked, or awaiting input.
 
 7. Classify issue readiness before ranking:
    - **actionable:** open, assigned, understandable in outcome and next useful step, sufficiently
@@ -171,6 +187,9 @@ gap that native GitHub and Codex operations cannot handle.
      a current remaining-size value. Never infer fractional progress.
    - Pull-request attention is a separate lane and does not consume issue Work size unless the user
      provides an explicit, trustworthy remaining-work estimate for that pull request.
+   - Under partial or unavailable Codex coverage, do not subtract an incomplete subtotal from the
+     target or claim that a conditional recommendation fits remaining capacity. The one-issue limit
+     is a duplicate-risk bound, not evidence of spare capacity.
 
    Prefer a useful underfilled plan to weakly aligned filler. Under defaults, never exceed `24` merely
    to make the total look complete; when the user supplies a different target or range, do not exceed
@@ -216,8 +235,9 @@ gap that native GitHub and Codex operations cannot handle.
       each aligned actionable item did not fit;
     - `## Deferred or Unready`: blocked, oversized, unestimated, conflicting, or unaligned candidates
       with canonical URLs, one disposition category, and exact evidence-backed reasons;
-    - `## Capacity`: existing size, proposed new size, total issue size, soft-range result, new task
-      count, and any unbudgeted PR attention.
+    - `## Capacity`: existing size or visible subtotal, proposed new size, total issue size or
+      `unknown`, remaining capacity or `unknown`, coverage status, soft-range result when calculable,
+      new task count, and any unbudgeted PR attention.
 
 12. End the plan with a concise invitation such as `Tell me which items you want me to queue.` Then
     stop for the user's selection. Accept natural, unambiguous selection through any combination of:
@@ -234,8 +254,10 @@ gap that native GitHub and Codex operations cannot handle.
     task-creation intent, remains read-only.
 
 13. After an exact queue selection, re-fetch each selected source and confirm it remains open, in the
-    approved scope, assigned or review-requested as planned, and absent from another active or pending
-    Codex task. Report changed or duplicate items and do not start them.
+    approved scope, and assigned or review-requested as planned. Immediately before creation, repeat
+    the strongest current Codex duplicate verification and exact task reads required by Codex Task
+    Access. A partial or unavailable listing, failed exact read, ambiguous association, changed
+    source, or proved duplicate blocks creation; report it and do not start the source.
 
 14. Process eligible selections in their displayed order, one exact canonical source at a time. The
     current explicit request to queue each selected source is an authorized upstream invocation of
@@ -255,8 +277,9 @@ gap that native GitHub and Codex operations cannot handle.
 ## Checkpoints
 
 - GitHub identity is `pirog`; candidate discovery is complete or explicitly reported incomplete.
-- Active and pending Codex commitment discovery is complete; a saturated native result without
-  completeness evidence stopped before capacity calculation and recommendations.
+- Codex commitment coverage is labeled complete, partial, unavailable, or untrustworthy; partial and
+  unavailable plan-only results use unknown capacity, map no unproved commitments, and recommend at
+  most one conditional issue.
 - Every plan records a current explicit include or exclude choice for every current-invocation
   decision scope in `WORK_REPOS.md`.
 - The goal basis, milestone filters, repository scope, priority-repository signal, capacity, and
@@ -275,13 +298,13 @@ gap that native GitHub and Codex operations cannot handle.
 
 ## Completion Criteria
 
-- **Plan only:** one complete, bounded, explainable plan was returned with exact candidate URLs,
+- **Plan only:** one bounded, explainable plan was returned with exact candidate URLs, coverage-aware
   capacity evidence, exclusions, and no mutation.
 - **Plan then queue:** every attempted source was selected exactly, reverified, and handed to Work on
   Task once; each result is reported without duplicate or replacement tasks.
-- Any unavailable or incomplete planning input, unavailable connector, ambiguous milestone,
-  incomplete search, identity mismatch, duplicate task, unsafe PR, missing project, or failed
-  verification stopped at its declared boundary with the retained state made explicit.
+- Any hard-failure planning input, ambiguous milestone, incomplete GitHub search, identity mismatch,
+  duplicate task, unsafe PR, missing project, or failed pre-mutation verification stopped at its
+  declared boundary; permitted Codex coverage degradation is explicit and remains read-only.
 - GitHub objects, repository files, goals, existing tasks, and unrelated worktrees remain unchanged;
   only the per-source task, branch, or refreshed ref mutations explicitly owned by Work on Task may
   occur after selection.
@@ -293,6 +316,8 @@ gap that native GitHub and Codex operations cannot handle.
   per-invocation decisions, narrowing, and authority boundaries.
 - [`GitHub Read Access`](../../references/github-read-access.md): independent connector and CLI
   identity, access, and execution-route verification.
+- [`Codex Task Access`](../../references/codex-task-access.md): current supported listing, bounded
+  recovery, partial evidence, exact reads, and mutation boundary.
 - [`GitHub Issue Work Size Resolution`](../../references/github-issue-work-size.md): shared native
   provider order, canonical value interpretation, exclusions, and reporting contract.
 - [`$piro-work-on-task`](../work-on-task/SKILL.md): exact per-source Codex task creation, assessment,
@@ -314,8 +339,11 @@ gap that native GitHub and Codex operations cannot handle.
   ranking, shared Work size connector and endpoint success, missing, unsupported, conflicting, and
   personal-repository `HTTP 404` results without Projects GraphQL, active-task deduplication, `13` and
   `21` handling, pull-request attention, exact-once candidate dispositions, incomplete GitHub
-  pagination, saturated Codex commitment listing, capacity-driven task counts, and natural
-  exact-selection authorization.
+  pagination, a known maximum of 50 without an invalid 100 probe, partial Codex commitment coverage,
+  unavailable Codex listing with a conditional read-only result, unknown capacity, the one-issue
+  degradation bound, hard final-data failure, pre-creation exact reads, capacity-driven task counts,
+  and natural exact-selection authorization. These are static workflow-contract scenarios; use
+  bounded disposable fixtures for runtime task-operation behavior.
 - Prove discovery with bounded read-only fixtures; select nothing and confirm no task or GitHub
   mutation. Prove queue mode only after separate authorization for exact disposable sources, then
   retire them through their owning workflows.

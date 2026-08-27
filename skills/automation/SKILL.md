@@ -109,13 +109,12 @@ file-backed prompts for their longer workflow contracts.
      the prompt or its owning skill. Limit shared preflight to operational capabilities, identity,
      access, readable sources, and trustworthy operation results. Do not turn source formatting,
      optional metadata, or domain-specific candidate quality into a preflight gate.
-   - Keep network probes as isolated direct reads. Bound argument correction, transient retries, and
-     authorized-context retry exactly as the shared preflight declares, and preserve an ordered
-     attempt ledger for failures.
-   - Distinguish a missing or untrustworthy operation from a valid supported result-set limit. Defer
-     the limit's task-specific meaning to the owning prompt and skill: a workflow may continue with an
-     explicit limitation only when its owner permits it, while a workflow requiring complete coverage
-     must stop before its task body.
+   - Keep recoverable, soft-degradation, and hard-failure policy in the shared preflight. Route GitHub
+     mechanics to `GitHub Read Access` and Codex listing, exact-read, and mutation safety to
+     `Codex Task Access`; do not restate those runbooks in every prompt.
+   - Probe providers lazily and proportionally. Keep a detailed attempt ledger for degraded or failed
+     runs, not every successful read, and let the owning task body decide whether a permitted soft
+     degradation can produce a useful independent result.
 
 2. Validate the complete manifest before inspecting or changing app state:
 
@@ -189,6 +188,8 @@ digest approval.
   capability-based preflight and automation-error contract for Codex task-management runs.
 - [`GitHub Read Access`](../../references/github-read-access.md): connector, direct CLI,
   authorized-context, and login-shell recovery contract for read-only GitHub access.
+- [`Codex Task Access`](../../references/codex-task-access.md): current supported listing, bounded
+  recovery, partial evidence, exact reads, and mutation boundary.
 - [`scripts/automation-task.js`](./scripts/automation-task.js): thin validation and deterministic
   planning command.
 - [`../../lib/automation-manifest.js`](../../lib/automation-manifest.js): manifest, prompt-file,
@@ -208,10 +209,12 @@ digest approval.
   04:00 and 05:00 local time.
 - Run the focused automation tests and confirm valid schedule variants, schema rejection,
   the 25-line inline prompt boundary, prompt and preflight containment, deterministic preflight-first
-  composition, bounded attempt and authorized-context rules, independent GitHub connector and CLI
-  provider recovery, consumer-specific saturated-list handling, the exact automation-error heading
-  and attempt ledger, marker conflicts, project resolution, deterministic digests, and every planned
-  lifecycle action.
+  composition, known Codex maximum 50 without an invalid 100 probe, bounded recovery,
+  authorized-context GitHub recovery, lazy CLI checks, plan-only partial and unavailable task
+  coverage, wrong-identity failure, exact-read mutation gates, consumer-specific capped-list
+  handling, the exact automation-error heading, degraded-or-failed attempt ledgers, marker conflicts,
+  project resolution, deterministic digests, and every planned lifecycle action. Treat prompt tests
+  as static contract checks rather than runtime task-operation proof.
 - Run `bun run test` followed by `bun run lint`.
 - Run `bun run codex:validate`, then the repository's `codex:check` / `codex:sync` /
   `codex:check` cache-convergence cycle when installed plugin-cache mutation is authorized.

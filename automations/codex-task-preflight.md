@@ -1,58 +1,35 @@
 # AUTOMATION PREFLIGHT
 
-Complete this read-only preflight before starting the task body.
+Complete this read-only readiness check before the task body. Read its
+`Required preflight capabilities` and every named skill, then probe only the identity, providers,
+operations, and sources the owning workflow actually needs.
 
-Preflight proves that the automation and its named skills can operate. Keep it limited to required
-capabilities, identity, access, readable sources, and trustworthy operation results. Do not use
-template conformance, canonical headings, polished formatting, or optional managed metadata as
-preflight gates. Leave source meaning, readiness, ranking, and any later normalization to the owning
-task-body skill.
+Use [`GitHub Read Access`](../references/github-read-access.md) for connector and CLI mechanics and
+[`Codex Task Access`](../references/codex-task-access.md) for task listing and exact reads. Keep
+GitHub checks lazy: start with the connector, and verify the CLI route only when the owning workflow
+needs that fallback or a CLI-only read. Make every network probe an isolated direct read.
 
-1. Read the task body's `Required preflight capabilities` and the complete contracts of every named
-   skill.
-2. Confirm that every required skill, connector, CLI, native Codex operation, registry, and source is
-   available. Exercise required read operations with the smallest safe probes, and record each probe
-   in an attempt ledger:
-   - Keep every CLI network probe as one isolated direct read. Do not hide it in a compound shell
-     script, conditional, pipeline, or unrelated file-read command.
-   - When GitHub connector or CLI reads are required, read and apply the complete
-     [`GitHub Read Access`](../references/github-read-access.md) contract. Prove the connector and CLI
-     independently, use shell variants only for command or profile initialization in authorized host
-     context, and record the first complete provider route that passed.
-   - Correct one caller-originated argument-validation mistake and retry that operation once. For a
-     transport error, hang, malformed result, or unavailable current-host source, make at most three
-     total attempts. Never treat repeated identical failures as progress.
-   - When a restricted execution result leaves network access and authentication ambiguous, retry
-     once through an available authorized host execution context using the same isolated read. Apply
-     the GitHub-specific provider sequence above when applicable. Require the retry to succeed with the
-     expected identity, record that context for later task-body CLI reads, and fail closed when the
-     context is unavailable or the retry fails.
-   - When Codex task management is required, require a trustworthy current-host listing and exact
-     task read-back. A valid listing that reaches its supported maximum without a cursor, total, or
-     completeness marker proves the operation is usable but not that coverage is complete. Repeat a
-     saturated listing once when the task requires complete coverage. Let the owning task-body skill
-     decide whether confirmed incomplete coverage is a reported limitation or a task-specific
-     readiness failure; continuation is allowed only when that skill explicitly permits it.
-   - Fail immediately on an identity mismatch or ambiguous exact task identity. An error or malformed
-     final result is a failed preflight, not an empty state.
-3. Make no mutation during preflight. Do not probe a write operation by changing state; verify that
-   it is exposed and leave its complete safety gates to the owning skill.
+Classify outcomes before deciding whether to start the task body:
 
-If any required capability or task-specific readiness requirement is missing, fails, or remains
-ambiguous after its bounded attempts, stop without starting the task body or any fallback workflow.
-Return only `# ❌ AUTOMATION ERROR — <automation name> — <local YYYY-MM-DD>`, followed immediately by
-one quoted sentence explaining why the task body did not run, with:
+- **Recoverable:** one caller argument error, a transient transport failure, or restricted-network
+  ambiguity. Correct an invalid argument once; allow at most three total attempts for a genuine
+  transient or malformed result; use the authorized-context recovery in the owning reference.
+- **Soft degradation:** a valid capped listing, incomplete pagination, missing optional metadata, or
+  one unavailable optional provider. Continue useful independent read-only work only where the task
+  body permits it, and report the exact limitation.
+- **Hard failure:** wrong identity; every required provider unavailable after recovery; malformed or
+  untrustworthy final data; a failed exact target read immediately before mutation; or ambiguous or
+  destructive target safety. Stop at the owning boundary without treating the failure as empty data.
 
-- `## Automation`: managed automation id and intended outcome;
-- `## Attempts`: ordered probes, corrected inputs, execution context, sanitized results, and whether
-  any repeated result confirmed a persistent failure or saturation;
-- `## Failed Preflight`: failed phase and exact capability;
-- `## Evidence`: observed error, malformed result, or task-specific incomplete coverage without
-  invented details;
-- `## Impact`: which task-body operations were not attempted;
-- `## Remediation`: the smallest evidence-backed next step; and
-- `## State Changes`: confirm exactly what remained unchanged.
+Make no mutation during preflight and never test readiness with a write. Keep a detailed ordered
+attempt ledger only for degraded or failed runs; successful probes need only a concise readiness
+summary.
 
-Do not claim a pending Codex update caused a failure unless that state is directly exposed. When
-native Codex operations fail and no cause is observable, recommend checking for an update and
-restarting Codex as troubleshooting, not as a diagnosed root cause.
+On a hard preflight failure, do not start the task body or a fallback workflow. Return
+`# ❌ AUTOMATION ERROR — <automation name> — <local YYYY-MM-DD>`, one quoted summary sentence, and:
+
+- `## Automation`, `## Attempts`, `## Failed Preflight`, `## Evidence`, `## Impact`,
+  `## Remediation`, and `## State Changes`.
+
+Preserve sanitized evidence. Treat checking for an update or restarting Codex as troubleshooting
+unless an update state is directly exposed; never present it as a diagnosed cause.
