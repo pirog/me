@@ -9,11 +9,16 @@ Managed automation id: `daily-work-plan`.
 - `$piro-plan-work` and `$piro-find-work` with their complete current contracts.
 - Native GitHub read operations authenticated as `pirog`, including complete issue and pull-request
   discovery within the approved scope, plus authenticated `gh api` access for the canonical Work size
-  fallback.
-- Native Codex task listing and exact task reading for current-host commitment and duplicate checks.
+  fallback. Prove connector and CLI access independently through `GitHub Read Access`.
+- A complete current-host active and pending Codex task listing plus exact task reading for commitment
+  and duplicate checks. A valid listing that reaches its supported maximum without pagination, a
+  total, or a completeness marker remains incomplete after its one confirmation read and fails this
+  task-specific readiness requirement.
 - Readable `WORK_REPOS.md`, `GOALS.md`, and `ACTORS.md` sources from the installed Piroplugin.
 
 Do not begin Plan Work when the shared automation preflight fails.
+Do not substitute local session files, UI inspection, Computer History, or another non-authoritative
+surface for complete native task coverage.
 
 First use `$piro-plan-work` in plan-only mode with these explicit inputs:
 

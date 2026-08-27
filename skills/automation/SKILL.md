@@ -109,6 +109,13 @@ file-backed prompts for their longer workflow contracts.
      the prompt or its owning skill. Limit shared preflight to operational capabilities, identity,
      access, readable sources, and trustworthy operation results. Do not turn source formatting,
      optional metadata, or domain-specific candidate quality into a preflight gate.
+   - Keep network probes as isolated direct reads. Bound argument correction, transient retries, and
+     authorized-context retry exactly as the shared preflight declares, and preserve an ordered
+     attempt ledger for failures.
+   - Distinguish a missing or untrustworthy operation from a valid supported result-set limit. Defer
+     the limit's task-specific meaning to the owning prompt and skill: a workflow may continue with an
+     explicit limitation only when its owner permits it, while a workflow requiring complete coverage
+     must stop before its task body.
 
 2. Validate the complete manifest before inspecting or changing app state:
 
@@ -180,6 +187,8 @@ digest approval.
 - [`../../AUTOMATIONS.yaml`](../../AUTOMATIONS.yaml): repository-owned desired automation state.
 - [`../../automations/codex-task-preflight.md`](../../automations/codex-task-preflight.md): shared
   capability-based preflight and automation-error contract for Codex task-management runs.
+- [`GitHub Read Access`](../../references/github-read-access.md): connector, direct CLI,
+  authorized-context, and login-shell recovery contract for read-only GitHub access.
 - [`scripts/automation-task.js`](./scripts/automation-task.js): thin validation and deterministic
   planning command.
 - [`../../lib/automation-manifest.js`](../../lib/automation-manifest.js): manifest, prompt-file,
@@ -199,7 +208,9 @@ digest approval.
   04:00 and 05:00 local time.
 - Run the focused automation tests and confirm valid schedule variants, schema rejection,
   the 25-line inline prompt boundary, prompt and preflight containment, deterministic preflight-first
-  composition, marker conflicts, project resolution, deterministic digests, and every planned
+  composition, bounded attempt and authorized-context rules, independent GitHub connector and CLI
+  provider recovery, consumer-specific saturated-list handling, the exact automation-error heading
+  and attempt ledger, marker conflicts, project resolution, deterministic digests, and every planned
   lifecycle action.
 - Run `bun run test` followed by `bun run lint`.
 - Run `bun run codex:validate`, then the repository's `codex:check` / `codex:sync` /
