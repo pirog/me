@@ -1,58 +1,69 @@
 # TASKS
 
-## FINAL MANUAL TAZKZ
+## RN
 
-- @tanaab/openclaw-agent-system
-  - v0.5.0
-    - mock testing done!
-    - emori fix
-    - optimize and release
-
-  - v0.6.0
-    - chunk 2: link session to open PR? separate event? metadata for PR?
-      - do work and end up with PR and link etc
-
-    - complete issue + plan flow
-      - plan mode need to be able to transition to work mode with plan prompt injection?
-    - complete auto flow
-    - complete freeform (eg awaiting instructions) mode
-      - card says: but dont do aything untul you hear from assigner
-
-    - send update to github command?
-      - reconcile local discussion and github and push update
-
-    - optimize and release
+- humanizers?
 
 ## ISSUES 2 ADD
 
-- @tanaab/canon
-  - pr review task
+- @tanaab/openclaw-agent-system
+  - cut 0.5.4?
+  - cron
+    - backups?
+    - memory?
 
-  - more human readable task creation/normalization?
+  - `gog` system
+  - `generic-tool` system?
 
-  - add AGENTS.md to project optimization?
+  - investigate "legacy" issues do we need them still?
+    - if so normalize them
+    - otherwise remove them
 
-  - project author skill
-    - suggest 3 good tags skill?
-    - skill to autotag repos?
+  - complete issue + plan flow
+    - plan mode need to be able to transition to work mode with plan prompt injection?
+  - complete auto flow
 
-  - openclaw plugin?
-    - make into `agent-system` native tools when AS API is available?
-      - `tanaab_task_author`
-      - `tanaab_github_issue_schema_author`
-      - `tanaab_github_issue_form_author`
+  - pr flow
+  - pr-review flow
+  - pr link?
 
-  - "keeper of the faith"
-    - some kind of tanaab-coach/advisor skill?
-    - a brand enforcer skill (better as separate agent now? need pull request reivew?)
-  - adoption of schema|error|cli frameworks?
+  - assigned to review support?
+  - "random" comment anywhere support?
+  - git encrypted keys?
+  - API endpoints
+  - backups and scheduling
+    - setup creates cron job?
+  - local mem0? podman for now or postgres directly
+  - explore migration to MCP as base tooling layer?
 
-- @lando/leia
-  - fix JS literals
-  - Octal escape sequences are not allowed in template strings.
-  - ESM?
-  - 2.x for bun/esm/ts version?
-  - update canon guidance
+- @pirog/me
+  - model capabilities for work-on-task?
+  - pirog openclaw/agent-system
+    - openclaw plugin skills metadata?
+
+  - read only email summarizer?
+  - blog like pirog skill
+
+- @tanaab/emori
+  - cron jobs?
+  - add a simple agent-system install test?
+  - brave search API?
+  - discord
+  - skill audit and trim?
+  - automate emori improvements?
+  - some plugins to install for her?
+  - backup system?
+  - local postgres?
+  - memories?
+  - memory diffs
+  - backup stuff memories?
+
+  - incorporate log into memories system once we have backups?
+
+  - push back on irrelevant issues?
+
+  - other issues/goals
+    - bootstrap.md.template?
 
 - @tanaab/component-playground
   - migrate tms one
@@ -75,75 +86,8 @@
 - @tanaab/codex-tools?
   - codex-sync utils?
 
-- @tanaab/emori
-  - assigned issued?
-
-  - add a simple agent-system install test?
-  - brave search API?
-  - discord
-  - skill audit and trim?
-  - automate emori improvements?
-  - some plugins to install for her?
-  - backup system?
-  - local postgres?
-  - memories?
-  - memory diffs
-  - backup stuff memories?
-
-  - incorporate log into memories system once we have backups?
-
-  - push back on irrelevant issues?
-
-  - other issues/goals
-    - bootstrap.md.template?
-
-- @tanaab/openclaw-agent-system
-  - v0.7.0
-    - pr flow
-    - pr-review flow
-    - pr link?
-
-    - github_reply tool?
-      - can anyone run?
-
-    - model router
-    - place to inject notification instructions eg filtering by goals
-    - CLI coloring
-    - agent-system-init-config skill?
-      - make sure we always audit whether this is up to date? agents.md
-    - docs
-    - what about guidance on completing an issue eg open PR etc?
-
-  - issues
-    - investigate "legacy" issues do we need them still?
-      - if so normalize them
-      - otherwise remove them
-    - install script stuff
-    - `gog` system
-    - `generic-tool` system?
-    - cron
-      - backups?
-      - memory?
-    - public api
-    - assigned to review support?
-    - "random" comment anywhere support?
-    - git encrypted keys?
-    - API endpoints
-    - backups and scheduling
-      - setup creates cron job?
-    - local mem0? podman for now or postgres directly
-
-    - explore migration to MCP as base tooling layer?
-
-- @pirog/me
-  - model capabilities for work-on-task?
-  - pirog/life issue labels?
-  - blog like pirog skill
-  - pirog openclaw/agent-system
-  - openclaw plugin skills metadata?
-  - read only email summarizer?
-
 - @tanaab/\*
+  - go through all repos and normalize with new project skill
   - change to @tanaab npm namespacing via project optimizer
   - bump to latest bun
   - create @tanaabased/codex-plugin-validator-action@v1
