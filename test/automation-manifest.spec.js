@@ -17,7 +17,10 @@ const AUTOMATION_TASK_PATH = path.join(
   'automation-task.js',
 );
 
-function planShippedAutomations() {
+async function planShippedAutomations() {
+  const sharedConfigPath = path.join(REPO_ROOT, 'dotfiles', 'ai', '.codex', 'config.shared.toml');
+  const sharedConfig = globalThis.Bun.TOML.parse(await readFile(sharedConfigPath, 'utf8'));
+
   return new Promise((resolve, reject) => {
     const child = spawn('bun', [AUTOMATION_TASK_PATH, 'plan'], { cwd: REPO_ROOT });
     let stderr = '';
@@ -41,7 +44,10 @@ function planShippedAutomations() {
     child.stdin.end(
       JSON.stringify({
         actualTasks: [],
-        defaults: { model: 'gpt-5.6-sol', reasoningEffort: 'xhigh' },
+        defaults: {
+          model: sharedConfig.model,
+          reasoningEffort: sharedConfig.model_reasoning_effort,
+        },
         projects: [],
       }),
     );
@@ -75,6 +81,10 @@ describe('lib/automation-manifest', () => {
 
     const plan = await planShippedAutomations();
     const automations = new Map(plan.actions.map((action) => [action.manifestId, action.expected]));
+    for (const automation of automations.values()) {
+      assert.equal(automation.model, 'gpt-6-astra');
+      assert.equal(automation.reasoningEffort, 'xhigh');
+    }
     assert.equal(automations.get('smoke-test').status, 'PAUSED');
     assert.equal(automations.get('smoke-test').projectId, null);
     assert.equal(automations.get('smoke-test').rrule, 'RRULE:FREQ=MINUTELY;INTERVAL=15');
