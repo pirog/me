@@ -369,3 +369,18 @@ bun run codex:sync
 
 After a plugin cache refresh, restart Codex when the current app session does not pick up the changed
 plugin assets automatically.
+
+### Model Defaults
+
+[`config.shared.toml`](./dotfiles/ai/.codex/config.shared.toml) owns the shared model and reasoning
+defaults. Apply changes through `ai:sync` after reviewing differences from the live configuration,
+then verify a new task without a model override. Existing task model selections are independent.
+
+Entries in [`AUTOMATIONS.yaml`](./AUTOMATIONS.yaml) that omit model or reasoning overrides inherit
+the effective Codex defaults during reconciliation. Use the
+[`$piro-automation` workflow](./skills/automation/SKILL.md) to check and apply that drift; changing
+the shared file alone does not update saved automations.
+
+OpenClaw model settings are machine-owned and configured separately. `ai:sync` does not change
+them; provider access, fallback preservation, and fresh-session verification belong to that local
+rollout.

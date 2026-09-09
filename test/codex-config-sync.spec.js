@@ -79,7 +79,7 @@ describe('lib/codex-config-sync', () => {
     await sync(paths);
 
     const generatedConfig = parseToml(await readFile(paths.outputPath, 'utf8'));
-    assert.equal(sharedConfig.model, 'gpt-5.6-sol');
+    assert.equal(sharedConfig.model, 'gpt-6-astra');
     assert.deepEqual(generatedConfig, sharedConfig);
   });
 
