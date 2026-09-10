@@ -4,6 +4,6 @@ interface:
   icon_small: '../../assets/composer-icon.svg'
   icon_large: '../../assets/icon-large.png'
   brand_color: '#db2777'
-  default_prompt: 'Use $piro-voice to draft this human-facing prose with the appropriate content direction without changing its facts or required format.'
+  default_prompt: 'Use $piro-voice to draft this human-facing prose without changing its facts or required format.'
 policy:
   allow_implicit_invocation: true
