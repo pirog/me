@@ -157,6 +157,23 @@ describe('lib/codexsync-cache', () => {
     );
   });
 
+  it('should copy and refresh the shared model policy used by installed task routing', async () => {
+    const { sourceRoot, targetRoot, tempRoot } = await createRoots();
+    tempRoots.push(tempRoot);
+    const source = path.join(sourceRoot, 'MODEL_ROUTING.yaml');
+    const target = path.join(targetRoot, 'MODEL_ROUTING.yaml');
+    await writeFile(source, 'schema-version: 1\n');
+    assert.deepEqual(await syncRoots(sourceRoot, targetRoot), {
+      changed: [],
+      extra: [],
+      missing: [],
+    });
+    assert.equal(await readFile(target, 'utf8'), 'schema-version: 1\n');
+    await writeFile(source, 'schema-version: 1\n# revised operator policy\n');
+    await syncRoots(sourceRoot, targetRoot);
+    assert.equal(await readFile(target, 'utf8'), await readFile(source, 'utf8'));
+  });
+
   it('should replace entries when their filesystem type changes', async () => {
     const { sourceRoot, targetRoot, tempRoot } = await createRoots();
     tempRoots.push(tempRoot);

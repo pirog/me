@@ -24,6 +24,9 @@ its Codex plugin bundle.
 - `Brewfile` owns the base Homebrew inventory, `Brewfile.openclaw` owns opt-in OpenClaw development
   dependencies, and top-level packages under `dotfiles/` own installed user configuration.
 - `dotfiles/theme/colors.json` is the lowest-level portable color source for application themes.
+- `MODEL_ROUTING.yaml` owns shared Codex model, effort and Fast-mode defaults plus complexity-tier
+  mappings. `references/model-routing.md` owns assessment and native selection guidance. Keep model
+  literals out of skill instructions; configuration generation and Work on Task consume this policy.
 - `.codex-plugin/`, plugin source directories, `package.json`, and the Codex sync implementation own
   the `piroplugin` package and managed cache surface.
 - `AUTOMATIONS.yaml` owns desired Codex scheduled-task state. `skills/automation/` owns validation,

@@ -6,6 +6,7 @@ import path from 'node:path';
 import { promisify } from 'node:util';
 
 import { loadAutomationManifest } from '../lib/automation-manifest.js';
+import { loadModelRoutingPolicy, modelRoutingConfig } from '../lib/model-routing-policy.js';
 
 const execFileAsync = promisify(execFile);
 const REPO_ROOT = path.resolve(import.meta.dirname, '..');
@@ -18,8 +19,7 @@ const AUTOMATION_TASK_PATH = path.join(
 );
 
 async function planShippedAutomations() {
-  const sharedConfigPath = path.join(REPO_ROOT, 'dotfiles', 'ai', '.codex', 'config.shared.toml');
-  const sharedConfig = globalThis.Bun.TOML.parse(await readFile(sharedConfigPath, 'utf8'));
+  const sharedConfig = modelRoutingConfig(await loadModelRoutingPolicy());
 
   return new Promise((resolve, reject) => {
     const child = spawn('bun', [AUTOMATION_TASK_PATH, 'plan'], { cwd: REPO_ROOT });
@@ -83,7 +83,7 @@ describe('lib/automation-manifest', () => {
     const automations = new Map(plan.actions.map((action) => [action.manifestId, action.expected]));
     for (const automation of automations.values()) {
       assert.equal(automation.model, 'gpt-6-astra');
-      assert.equal(automation.reasoningEffort, 'xhigh');
+      assert.equal(automation.reasoningEffort, 'high');
     }
     assert.equal(automations.get('smoke-test').status, 'PAUSED');
     assert.equal(automations.get('smoke-test').projectId, null);
