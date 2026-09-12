@@ -55,11 +55,7 @@ consumed in CI, and most scenarios mutate GitHub-hosted macOS runners.
 - Use `TMPDIR` for durable fixtures, unavoidable logs, and helper internals only.
 - Keep checked-in fixtures beside the README that owns them; do not duplicate one fixture across
   input-form examples.
-- Leia embeds executable command blocks in JavaScript template literals. Inside those blocks, do not
-  use literal backticks or braced shell expansions such as `${VAR}`.
-- Use `$(command)` instead of backtick command substitution and `$VAR` instead of `${VAR}`. When
-  braces are required for shell semantics, move that logic into a checked-in example-local helper.
-- These restrictions do not apply to Markdown fences or inline code outside executable blocks;
-  shell tests using `[ ... ]` or `[[ ... ]]` remain safe.
+- Use Leia 1.0.0-beta.9 or newer and the selected shell's normal syntax and quoting rules. No extra
+  escaping, rewriting, or helper extraction is needed for Leia's former template-literal bug.
 - Do not give setup fixture commands standalone `# should` blocks unless the fixture state itself is
   the contract.

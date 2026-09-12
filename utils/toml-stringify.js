@@ -66,7 +66,7 @@ function collectTables(config, prefix = []) {
   )) {
     const segments = [...prefix, key];
 
-    if (Array.isArray(value) && value.every(isPlainObject)) {
+    if (Array.isArray(value) && value.length > 0 && value.every(isPlainObject)) {
       tableArrays.push([segments, value]);
       continue;
     }
@@ -136,7 +136,7 @@ function renderTableArray(values, prefix) {
  * Render the small TOML subset used by generated Codex config files.
  *
  * Object keys are sorted for deterministic output. Plain-object arrays become
- * table arrays, and empty nested objects remain explicit tables. Unsupported
+ * table arrays when nonempty; empty arrays and nested objects remain explicit. Unsupported
  * scalar or nested array values throw.
  *
  * @param {object} config Plain-object TOML tree to render.

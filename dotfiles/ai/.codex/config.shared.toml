@@ -1,15 +1,12 @@
 personality = "pragmatic"
-model = "gpt-6-astra"
-model_reasoning_effort = "xhigh"
+# Model, effort and Fast mode defaults are owned by MODEL_ROUTING.yaml.
 commit_attribution = ""
 file_opener = "vscode"
-service_tier = "fast"
 
 [features]
 chronicle = true
 memories = true
 multi_agent = true
-fast_mode = true
 
 [memories]
 disable_on_external_context = true

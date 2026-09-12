@@ -1,0 +1,23 @@
+schema-version: 1
+
+# Shared Codex defaults and automatic task routes. Explicit user selections win.
+defaults:
+  model: gpt-6-astra
+  effort: high
+  fast-mode: false
+
+allowed-efforts:
+  - medium
+  - high
+  - xhigh
+
+complexity:
+  low:
+    model: gpt-5.6-terra
+    effort: medium
+  medium:
+    model: gpt-5.6-sol
+    effort: high
+  high:
+    model: gpt-6-astra
+    effort: high

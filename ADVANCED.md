@@ -327,12 +327,13 @@ Codex.
 
 ## Codex Configuration And Plugin Sync
 
-The Codex configuration under `dotfiles/ai` uses three layers:
+The Codex configuration uses these owned inputs and generated output:
 
-- `dotfiles/ai/.codex/config.shared.toml` is repository-owned and contains portable global defaults.
+- `MODEL_ROUTING.yaml` owns model, effort and Fast-mode defaults plus task-routing mappings.
+- `dotfiles/ai/.codex/config.shared.toml` is repository-owned and contains other portable settings.
 - `~/.codex/config.local.toml` is machine-owned and contains project trust, local paths,
   notifications, marketplace paths, plugin cache paths, and other machine-specific values.
-- `~/.codex/config.toml` is generated from the shared and local inputs; do not edit it directly.
+- `~/.codex/config.toml` is generated from the policy, shared and local inputs; do not edit it directly.
 
 Custom Codex TUI syntax themes live under `dotfiles/ai/.codex/themes/`. Tanaab Solarized Dark is the
 default and preserves ANSI syntax colors from the active terminal palette while supplying its own
@@ -341,7 +342,7 @@ switch `[tui].theme` to `ansi` so Codex follows the active Warp palette without 
 dark-specific fills.
 
 Local configuration may add settings alongside shared tables, but it may not override an exact key
-owned by the shared file.
+owned by the shared file or model policy.
 
 Use `ai:sync` to restow `dotfiles/ai` into `$HOME` and regenerate the installed Codex
 configuration:
@@ -372,9 +373,17 @@ plugin assets automatically.
 
 ### Model Defaults
 
-[`config.shared.toml`](./dotfiles/ai/.codex/config.shared.toml) owns the shared model and reasoning
-defaults. Apply changes through `ai:sync` after reviewing differences from the live configuration,
+[`MODEL_ROUTING.yaml`](./MODEL_ROUTING.yaml) owns shared model, reasoning and Fast-mode defaults,
+plus Low/Medium/High task mappings. `config.shared.toml` retains other portable settings; do not
+duplicate policy-owned keys there or in `config.local.toml`. Apply changes through `ai:sync` after reviewing differences from the live configuration,
 then verify a new task without a model override. Existing task model selections are independent.
+
+Work on Task classifies briefly in its current conversation and resolves native creation arguments
+from the same policy. Native metadata is optional; structured fallback and labeled content assessment
+support repositories without custom fields. See [model routing](./references/model-routing.md) for
+precedence, overrides and effective-selection verification. Refresh the plugin cache with
+`codex:sync` / `codex:check` after policy or skill changes. No separate classifier or automatic
+escalation runs; a reasoning blocker may prompt a recommendation for your approval.
 
 Entries in [`AUTOMATIONS.yaml`](./AUTOMATIONS.yaml) that omit model or reasoning overrides inherit
 the effective Codex defaults during reconciliation. Use the

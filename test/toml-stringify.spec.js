@@ -43,4 +43,11 @@ describe('utils/toml-stringify', () => {
       '[desktop.appearanceLightChromeTheme.fonts]\n',
     );
   });
+
+  it('should preserve empty arrays instead of dropping them as empty table arrays', () => {
+    const config = { empty: [], mcp_servers: { browser: { args: [] } } };
+    const rendered = stringifyToml(config);
+    assert.equal(rendered, 'empty = []\n\n[mcp_servers.browser]\nargs = []\n');
+    assert.deepEqual(globalThis.Bun.TOML.parse(rendered), config);
+  });
 });
