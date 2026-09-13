@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdir, mkdtemp, readFile, stat, writeFile } from 'node:fs/promises';
+import { lstat, mkdir, mkdtemp, readFile, stat, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -71,6 +71,35 @@ async function sync(paths) {
 }
 
 describe('lib/codex-config-sync', () => {
+  for (const code of ['EACCES', 'EPERM', 'EIO', 'ENOTDIR']) {
+    it(`should preserve all config files when metadata access fails with ${code}`, async () => {
+      for (const key of ['sharedPath', 'localPath', 'outputPath']) {
+        const paths = await tempConfigPaths();
+        const originals = {
+          sharedPath: 'personality = "pragmatic"\n',
+          localPath: 'model = "local-model"\n',
+          outputPath: `# ${GENERATED_MARKER}\nmodel = "previous-model"\n`,
+        };
+        for (const [name, content] of Object.entries(originals))
+          await writeFile(paths[name], content);
+        const failure = Object.assign(new Error('metadata probe failed'), { code });
+        await assert.rejects(
+          sync({
+            ...paths,
+            statPath: async (targetPath) => {
+              if (targetPath === paths[key]) throw failure;
+              return lstat(targetPath);
+            },
+          }),
+          (error) => error === failure,
+        );
+        for (const [name, content] of Object.entries(originals)) {
+          assert.equal(await readFile(paths[name], 'utf8'), content);
+        }
+      }
+    });
+  }
+
   it('should round-trip the repo-owned shared Codex config', async () => {
     const sharedConfigPath = path.join(REPO_ROOT, 'dotfiles', 'ai', '.codex', 'config.shared.toml');
     const sharedContent = await readFile(sharedConfigPath, 'utf8');

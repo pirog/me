@@ -14,7 +14,7 @@ import {
 import os from 'node:os';
 import path from 'node:path';
 
-import { collectManagedEntries, syncEntries } from '../lib/codexsync-cache.js';
+import { collectManagedEntries, pathExists, syncEntries } from '../lib/codexsync-cache.js';
 
 async function createRoots() {
   const tempRoot = await mkdtemp(path.join(os.tmpdir(), 'piro-codexsync-cache-'));
@@ -24,10 +24,10 @@ async function createRoots() {
   return { sourceRoot, targetRoot, tempRoot };
 }
 
-async function syncRoots(sourceRoot, targetRoot) {
+async function syncRoots(sourceRoot, targetRoot, statPath = lstat) {
   const [sourceEntries, targetEntries] = await Promise.all([
-    collectManagedEntries(sourceRoot),
-    collectManagedEntries(targetRoot),
+    collectManagedEntries(sourceRoot, new Map(), statPath),
+    collectManagedEntries(targetRoot, new Map(), statPath),
   ]);
 
   return syncEntries({ sourceEntries, sourceRoot, targetEntries, targetRoot });
@@ -39,6 +39,53 @@ describe('lib/codexsync-cache', () => {
   afterEach(async () => {
     await Promise.all(tempRoots.splice(0).map((tempRoot) => rm(tempRoot, { recursive: true })));
   });
+
+  it('should treat only ENOENT as a missing cache path', async () => {
+    const missing = async () => {
+      throw Object.assign(new Error('missing'), { code: 'ENOENT' });
+    };
+    assert.equal(await pathExists('/virtual/cache', missing), false);
+    assert.deepEqual(await collectManagedEntries('/virtual/source', new Map(), missing), new Map());
+  });
+
+  for (const code of ['EACCES', 'EPERM', 'EIO', 'ENOTDIR']) {
+    it(`should propagate ${code} when checking cache existence`, async () => {
+      const failure = Object.assign(new Error('metadata probe failed'), { code });
+      await assert.rejects(
+        pathExists('/virtual/cache', async () => {
+          throw failure;
+        }),
+        (error) => error === failure,
+      );
+    });
+
+    for (const side of ['source', 'target']) {
+      it(`should preserve cache files when nested ${side} metadata fails with ${code}`, async () => {
+        const { sourceRoot, targetRoot, tempRoot } = await createRoots();
+        tempRoots.push(tempRoot);
+        for (const root of [sourceRoot, targetRoot]) {
+          await mkdir(path.join(root, 'skills', 'voice'), { recursive: true });
+          await writeFile(path.join(root, 'skills', 'voice', 'SKILL.md'), 'preserve skill\n');
+        }
+        const cached = path.join(targetRoot, 'skills', 'voice', 'SKILL.md');
+        const denied = path.join(
+          side === 'source' ? sourceRoot : targetRoot,
+          'skills',
+          'voice',
+          'SKILL.md',
+        );
+        const failure = Object.assign(new Error('metadata probe failed'), { code });
+        await assert.rejects(
+          syncRoots(sourceRoot, targetRoot, async (targetPath) => {
+            if (targetPath === denied) throw failure;
+            return lstat(targetPath);
+          }),
+          (error) => error === failure,
+        );
+        assert.equal(await readFile(cached, 'utf8'), 'preserve skill\n');
+      });
+    }
+  }
 
   it('should leave matching managed files untouched', async () => {
     const { sourceRoot, targetRoot, tempRoot } = await createRoots();
