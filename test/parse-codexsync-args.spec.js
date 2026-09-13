@@ -25,4 +25,30 @@ describe('utils/parse-codexsync-args', () => {
     assert.throws(() => parseCodexSyncArgs(['--unknown'], '/repo'), /Unknown option/);
     assert.throws(() => parseCodexSyncArgs(['--repo-root'], '/repo'), /Missing value/);
   });
+
+  for (const option of ['--repo-root', '--cache-path']) {
+    it(`should reject a missing ${option} value without swallowing the next flag`, () => {
+      for (const next of [
+        '--unknown',
+        '--repo-root=/tmp/profile',
+        '--cache-path=/tmp/cache',
+        '-x',
+      ]) {
+        assert.throws(() => parseCodexSyncArgs(['sync', option, next], '/repo'), /Missing value/);
+      }
+      assert.throws(() => parseCodexSyncArgs(['sync', `${option}=`], '/repo'), /Missing value/);
+    });
+
+    it(`should preserve explicit equals and relative path syntax for ${option}`, () => {
+      const key = option === '--repo-root' ? 'repoRoot' : 'cachePath';
+      assert.equal(
+        parseCodexSyncArgs(['check', `${option}=--literal`], '/repo').options[key],
+        path.resolve('--literal'),
+      );
+      assert.equal(
+        parseCodexSyncArgs(['check', option, './--literal'], '/repo').options[key],
+        path.resolve('./--literal'),
+      );
+    });
+  }
 });

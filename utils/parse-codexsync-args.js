@@ -23,7 +23,9 @@ export default function parseCodexSyncArgs(argv, defaultRepoRoot) {
     const repoRootValue = resolveArgValue(arg, '--repo-root');
     if (repoRootValue !== undefined) {
       const value = repoRootValue ?? argv[++index];
-      if (!value) throw new Error('Missing value for --repo-root.');
+      if (!value || (repoRootValue === null && value.startsWith('-'))) {
+        throw new Error('Missing value for --repo-root.');
+      }
       options.repoRoot = path.resolve(value);
       continue;
     }
@@ -31,7 +33,9 @@ export default function parseCodexSyncArgs(argv, defaultRepoRoot) {
     const cachePathValue = resolveArgValue(arg, '--cache-path');
     if (cachePathValue !== undefined) {
       const value = cachePathValue ?? argv[++index];
-      if (!value) throw new Error('Missing value for --cache-path.');
+      if (!value || (cachePathValue === null && value.startsWith('-'))) {
+        throw new Error('Missing value for --cache-path.');
+      }
       options.cachePath = path.resolve(value);
       continue;
     }
