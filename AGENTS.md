@@ -46,8 +46,8 @@ its Codex plugin bundle.
   plugin cache.
 - `skills/me-doctor/` and `skills/me-doctor/test/check-machine.spec.js` own profile diagnostic
   behavior.
-- `README.md` is the primary setup entrypoint. `ADVANCED.md` owns complete configuration,
-  host-specific behavior, post-bootstrap setup, checkout behavior, and Codex sync details.
+- `README.md` owns the primary setup journey, including post-bootstrap setup. `ADVANCED.md` owns
+  installed-component inventories, CLI options, and sync utilities.
 - `examples/**/README.md` are Leia-backed executable CI contracts. Read `examples/AGENTS.md` before
   changing them.
 - `site/llms.txt`, `scripts/build-dist.js`, and release workflows own published output; `dist/` is
