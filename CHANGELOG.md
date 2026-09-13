@@ -1,5 +1,7 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+## v1.0.0-beta.11 - [September 13, 2026](https://github.com/pirog/me/releases/tag/v1.0.0-beta.11)
+
 ### Model Routing
 
 - Added brief routing explanations to task assessments, including disagreements with issue metadata. [#67](https://github.com/pirog/me/pull/67)
