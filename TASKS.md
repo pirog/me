@@ -1,26 +1,29 @@
 # TASKS
 
-## RN
+## PIROG
 
-- humanizers?
+- @tanaab/openclaw-agent-system + emori
+  - new account?
+  - 0.7.0
+    - setup task and emori setup of setup task?
 
-## ISSUES 2 ADD
+    - post prompt optimizer?
+    - better branch names 42-something-2-dobun
+    - status command?
 
-- @tanaab/canon
-  - more user centric prose in task creation stuff?
+  - 0.9.0
+    - cron system?
 
-- @tanaab/openclaw-agent-system
-  - cut 0.5.4?
-  - cron
-    - backups?
-    - memory?
+  - 0.8.0
+    - `gog` tool
+    - backups & memory?
 
-  - `gog` system
+    - dictation
+      - issue until supported by subscription?
+
+    - theme?
+
   - `generic-tool` system?
-
-  - investigate "legacy" issues do we need them still?
-    - if so normalize them
-    - otherwise remove them
 
   - complete issue + plan flow
     - plan mode need to be able to transition to work mode with plan prompt injection?
@@ -40,14 +43,15 @@
   - explore migration to MCP as base tooling layer?
 
 - @pirog/me
-  - model capabilities for work-on-task?
-  - pirog openclaw/agent-system
-    - openclaw plugin skills metadata?
-
   - read only email summarizer?
   - blog like pirog skill
 
+  - pirog-ify for openclaw/agent-system?
+    - openclaw plugin skills metadata?
+
 - @tanaab/emori
+  - get new openai account for emori?
+  - improve voice skill?
   - cron jobs?
   - add a simple agent-system install test?
   - brave search API?
@@ -68,9 +72,12 @@
   - other issues/goals
     - bootstrap.md.template?
 
-- @tanaab/component-playground
-  - migrate tms one
-    - decouple styling
+## EMORI ISSUES
+
+- leia upgrade and agentbox cutover?
+
+- @lando/leia
+  - milestone?
 
 - @tanaab/merge
   - pilot task-decomposer
@@ -88,6 +95,10 @@
 
 - @tanaab/codex-tools?
   - codex-sync utils?
+
+- @tanaab/component-playground
+  - migrate tms one
+    - decouple styling
 
 - @tanaab/\*
   - go through all repos and normalize with new project skill
@@ -115,9 +126,6 @@
     - canon list of tags?
     - bootbox
     - hosted-scripts
-
-- @tanaab/openclaw-devguard
-  - spec to issues?
 
 - @tanaab/goals?
   - place for "hidden" tickets and goal setting?
