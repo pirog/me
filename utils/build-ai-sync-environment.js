@@ -19,6 +19,14 @@ export default function buildAiSyncEnvironment({
   const codexDir = path.join(target, '.codex');
 
   return {
+    // Preserve provenance even when an explicit path happens to equal its default.
+    explicitCodexConfigPaths: [
+      ['codexConfigLocal', env.TANAAB_CODEX_CONFIG_LOCAL],
+      ['codexConfigOutput', env.TANAAB_CODEX_CONFIG_OUTPUT],
+      ['codexConfigShared', env.TANAAB_CODEX_CONFIG_SHARED],
+    ]
+      .filter(([, value]) => value?.trim())
+      .map(([key]) => key),
     codexConfigLocal:
       env.TANAAB_CODEX_CONFIG_LOCAL?.trim() || path.join(codexDir, 'config.local.toml'),
     codexConfigOutput: env.TANAAB_CODEX_CONFIG_OUTPUT?.trim() || path.join(codexDir, 'config.toml'),
