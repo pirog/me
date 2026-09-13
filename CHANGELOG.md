@@ -1,11 +1,25 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
-- Added configurable model and effort routing to Work on Task, including issues without custom fields. [#67](https://github.com/pirog/me/pull/67)
+### Model Routing
+
+- Added brief routing explanations to task assessments, including disagreements with issue metadata. [#67](https://github.com/pirog/me/pull/67)
+- Added complexity-based Work on Task routing: Terra/medium, Sol/high, and Astra/high, applied through native task creation. [#67](https://github.com/pirog/me/pull/67)
+- Added `MODEL_ROUTING.yaml` as the shared policy for task models, reasoning effort, and Codex defaults. [#67](https://github.com/pirog/me/pull/67)
+- Added routing from native fields, fallback metadata, or content assessment when reliable metadata is absent. [#67](https://github.com/pirog/me/pull/67)
+- Updated Codex defaults to Astra/high with Fast mode off, shared with automations that inherit defaults. [#65](https://github.com/pirog/me/pull/65) [#67](https://github.com/pirog/me/pull/67)
+
+### Work Planning And Voice
+
 - Added shared GitHub issue `Work size` resolution for planning, discovery, and morning closeout. [#57](https://github.com/pirog/me/pull/57)
 - Added task-operation preflights with bounded recovery and explicit limits for partially available automation data. [#56](https://github.com/pirog/me/pull/56) [#59](https://github.com/pirog/me/pull/59) [#60](https://github.com/pirog/me/pull/60)
 - Added the default Pirog Voice skill for human-facing prose and stronger collaborator pushback. [#61](https://github.com/pirog/me/pull/61)
+- Removed `big-test-bucket` from planning and workload discovery to keep test fixtures out of real work. [#56](https://github.com/pirog/me/pull/56)
+
+### Fixes And Developer Improvements
+
+- Fixed `aisync` package selection and configuration-path precedence, and tightened sync CLI argument validation. [#68](https://github.com/pirog/me/pull/68)
 - Fixed Codex configuration generation dropping empty arrays. [#67](https://github.com/pirog/me/pull/67)
-- Updated Codex defaults to Astra/high with Fast mode off, shared with automations that inherit defaults. [#65](https://github.com/pirog/me/pull/65) [#67](https://github.com/pirog/me/pull/67)
+- Fixed sync operations treating filesystem access errors as missing paths, risking lost settings, cache entries, or skill links. [#68](https://github.com/pirog/me/pull/68)
 - Updated Leia examples to native ESM and removed obsolete CommonJS workarounds. [#67](https://github.com/pirog/me/pull/67)
 
 ## v1.0.0-beta.10 - [August 25, 2026](https://github.com/pirog/me/releases/tag/v1.0.0-beta.10)
