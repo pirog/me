@@ -2,16 +2,26 @@ import path from 'node:path';
 
 import buildAiSyncEnvironment from './build-ai-sync-environment.js';
 
+const VALUE_OPTIONS = new Map([
+  ['--target', 'target'],
+  ['--dotfiles-dir', 'dotfilesDir'],
+  ['--package', 'packageName'],
+  ['--codex-config-shared', 'codexConfigShared'],
+  ['--codex-config-local', 'codexConfigLocal'],
+  ['--codex-config-output', 'codexConfigOutput'],
+]);
+
 /**
  * Applies aisync CLI options over resolved environment defaults.
  *
  * @param {string[]} argv Raw command arguments after common flags are removed.
  * @param {object} environment Resolved environment defaults.
  * @returns {object} Normalized aisync options.
+ * @throws {Error} When an option is unknown or lacks a value, or an argument is positional.
  */
 export default function parseAiSyncArgs(argv, environment = buildAiSyncEnvironment()) {
-  const parsed = { ...environment };
-  const explicitCodexConfigPaths = new Set();
+  const { explicitCodexConfigPaths: environmentPaths = [], ...parsed } = environment;
+  const explicitCodexConfigPaths = new Set(environmentPaths);
 
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
@@ -32,12 +42,14 @@ export default function parseAiSyncArgs(argv, environment = buildAiSyncEnvironme
       throw new Error(`Positional arguments are not supported: ${arg}`);
     }
 
+    const key = VALUE_OPTIONS.get(arg);
+    if (!key) throw new Error(`Unknown option: ${arg}`);
+
     const value = argv[index + 1];
     if (!value || value.startsWith('--')) {
       throw new Error(`Missing value for ${arg}`);
     }
 
-    const key = arg.slice(2).replace(/-([a-z])/g, (_, char) => char.toUpperCase());
     parsed[key] = value;
     if (['codexConfigShared', 'codexConfigLocal', 'codexConfigOutput'].includes(key)) {
       explicitCodexConfigPaths.add(key);

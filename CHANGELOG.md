@@ -1,7 +1,12 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
-- Added fail-closed Codex task-operation preflights to managed daily planning and morning closeout automations. [#56](https://github.com/pirog/me/pull/56)
-- Added shared GitHub issue `Work size` resolution for planning, discovery, and morning closeout workflows. [#57](https://github.com/pirog/me/pull/57)
+- Added configurable model and effort routing to Work on Task, including issues without custom fields. [#67](https://github.com/pirog/me/pull/67)
+- Added shared GitHub issue `Work size` resolution for planning, discovery, and morning closeout. [#57](https://github.com/pirog/me/pull/57)
+- Added task-operation preflights with bounded recovery and explicit limits for partially available automation data. [#56](https://github.com/pirog/me/pull/56) [#59](https://github.com/pirog/me/pull/59) [#60](https://github.com/pirog/me/pull/60)
+- Added the default Pirog Voice skill for human-facing prose and stronger collaborator pushback. [#61](https://github.com/pirog/me/pull/61)
+- Fixed Codex configuration generation dropping empty arrays. [#67](https://github.com/pirog/me/pull/67)
+- Updated Codex defaults to Astra/high with Fast mode off, shared with automations that inherit defaults. [#65](https://github.com/pirog/me/pull/65) [#67](https://github.com/pirog/me/pull/67)
+- Updated Leia examples to native ESM and removed obsolete CommonJS workarounds. [#67](https://github.com/pirog/me/pull/67)
 
 ## v1.0.0-beta.10 - [August 25, 2026](https://github.com/pirog/me/releases/tag/v1.0.0-beta.10)
 

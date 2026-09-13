@@ -10,6 +10,19 @@ const CODEXSYNC_PATH = path.join(REPO_ROOT, 'bin', 'codexsync.js');
 const BUN_EXECUTABLE = process.versions.bun ? process.execPath : 'bun';
 
 describe('bin/codexsync', () => {
+  it('should reject a missing cache path at the CLI boundary', async () => {
+    await assert.rejects(
+      execFileAsync(BUN_EXECUTABLE, [CODEXSYNC_PATH, 'check', '--cache-path', '--unknown'], {
+        cwd: REPO_ROOT,
+      }),
+      (error) => {
+        assert.equal(error.code, 1);
+        assert.match(error.stderr, /Missing value for --cache-path/);
+        return true;
+      },
+    );
+  });
+
   it('should expose help and version without running a command', async () => {
     const help = await execFileAsync(BUN_EXECUTABLE, [CODEXSYNC_PATH, '--help'], {
       cwd: REPO_ROOT,

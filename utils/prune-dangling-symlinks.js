@@ -1,12 +1,13 @@
 import { access, lstat, readdir, rm } from 'node:fs/promises';
 import path from 'node:path';
 
-async function pathExists(targetPath) {
+async function pathExists(targetPath, checkAccess) {
   try {
-    await access(targetPath);
+    await checkAccess(targetPath);
     return true;
-  } catch {
-    return false;
+  } catch (error) {
+    if (error.code === 'ENOENT') return false;
+    throw error;
   }
 }
 
@@ -14,10 +15,13 @@ async function pathExists(targetPath) {
  * Removes dangling descendant symlinks and directories emptied by that removal.
  *
  * @param {string} rootPath Root directory to preserve.
+ * @param {object} [options] Injectable filesystem probe.
+ * @param {Function} [options.checkAccess] Target access check; defaults to filesystem access.
  * @returns {Promise<{removedDirs: number, removedLinks: number}>} Removal counts.
+ * @throws {Error} When filesystem access fails for a reason other than a missing target.
  */
-export default async function pruneDanglingSymlinks(rootPath) {
-  if (!(await pathExists(rootPath))) return { removedDirs: 0, removedLinks: 0 };
+export default async function pruneDanglingSymlinks(rootPath, { checkAccess = access } = {}) {
+  if (!(await pathExists(rootPath, checkAccess))) return { removedDirs: 0, removedLinks: 0 };
 
   const stat = await lstat(rootPath);
   if (!stat.isDirectory()) return { removedDirs: 0, removedLinks: 0 };
@@ -31,7 +35,7 @@ export default async function pruneDanglingSymlinks(rootPath) {
       const entryPath = path.join(currentPath, entry.name);
 
       if (entry.isSymbolicLink()) {
-        if (await pathExists(entryPath)) continue;
+        if (await pathExists(entryPath, checkAccess)) continue;
         await rm(entryPath, { force: true });
         counters.removedLinks += 1;
         continue;

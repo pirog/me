@@ -1,169 +1,92 @@
 # Advanced
 
-This reference covers the installed machine profile, host-specific behavior, post-bootstrap setup,
-the complete public `piroboot` configuration surface, normal checkout behavior, and the separate
-Codex configuration and plugin-sync workflows. Start with the [README](./README.md) for the primary
-setup path.
+What you get, what you can change, and which command actually changes it. Start with the
+[README](./README.md) for setup; this is the inventory and reference, not a second initiation ceremony.
 
 ## What Gets Installed
 
 ### Dependencies
 
-[`Brewfile`](./Brewfile) is the source of truth for the base machine inventory.
-Bootbox installs or repairs the core prerequisites before `me` applies the complete Brewfile.
-The base profile pins Homebrew `node@26` and Node 26 in [`.tool-versions`](./.tool-versions); the Zsh
-profile prefers the formula's `bin` directory, and `$piro-me-doctor` requires that exact major.
+[`Brewfile`](./Brewfile) is the shopping list for applications and command-line tools.
+[Bootbox](https://github.com/tanaabased/bootbox) prepares the prerequisites before `me` applies it.
+The profile and Me Doctor require Node 26, pinned in Homebrew and [`.tool-versions`](./.tool-versions).
 
-[`Brewfile.openclaw`](./Brewfile.openclaw) is an opt-in extension for local OpenClaw plugin
-development. It installs the Homebrew `openclaw-cli` formula, the npm-backed `clawhub` CLI, and the
-native app while allowing the browser to remain the development UI. The `openclaw-cli` formula owns
-the shared Node dependency. The optional bundle is not applied by `boot.sh` or checked by
-`$piro-me-doctor`. It does not provision an agent identity, workspace, runtime configuration, or
-Gateway.
+[`Brewfile.openclaw`](./Brewfile.openclaw) is a manually installed, optional bundle containing
+`openclaw-cli`, `clawhub`, and the native OpenClaw app. Bootstrap and Me Doctor leave it alone;
+it does not provision an agent identity, workspace, runtime configuration, or Gateway.
 
-> [!NOTE]
-> Dependency behavior differs on `agentbox` and formula-backed Tailscale hosts. See
-> [`agentbox` Hosts](#agentbox-hosts).
+On installed [`agentbox`](https://github.com/tanaabased/agentbox) hosts, `me` skips the 1Password and
+Tailscale desktop apps but retains the beta 1Password CLI. Any host with the Homebrew `tailscale`
+formula also skips `tailscale-app` to preserve its existing service. Detection requires both
+`/opt/tanaab/agentbox/bin/health.sh` and
+`/Library/LaunchDaemons/dev.tanaab.agentbox.health.plist`; a source checkout alone does not qualify.
 
 ### Dotfiles
 
-`me` applies each top-level package under [`dotfiles/`](./dotfiles/) to `$HOME` with GNU Stow:
+Each package under [`dotfiles/`](./dotfiles/) is applied to `$HOME` with GNU Stow:
 
-- [`ai`](./dotfiles/ai): shared Codex defaults, global agent guidance, pet profiles, the local
-  `Pirostore` marketplace definition, and plugin links.
-- [`gh`](./dotfiles/gh): GitHub CLI configuration.
-- [`git`](./dotfiles/git): Git configuration, including the Lando-specific include.
-- [`hyperdrive`](./dotfiles/hyperdrive): Hyperdrive application configuration.
-- [`lando`](./dotfiles/lando): Lando configuration.
-- [`ssh`](./dotfiles/ssh): SSH configuration and public-key material.
-- [`theme`](./dotfiles/theme): low-level portable Tanaab color palette for application-specific
-  theme assets.
-- [`vim`](./dotfiles/vim): self-contained Vim configuration with native packages and a
-  terminal-driven Tanaab theme.
-- [`vscode`](./dotfiles/vscode): cleaned Visual Studio Code user settings and the local
-  `tanaabased.theme` extension with Tanaab and Tanaab Solarized dark and light variants.
-- [`warp`](./dotfiles/warp): file-backed Warp terminal settings and Tanaab and Tanaab Solarized
-  dark and light themes.
-- [`zsh`](./dotfiles/zsh): framework-free Zsh environment, history, and fallback prompt.
+| Package                               | Provides                                                                                  |
+| ------------------------------------- | ----------------------------------------------------------------------------------------- |
+| [`ai`](./dotfiles/ai)                 | Codex defaults, global agent guidance, pets, the Pirostore marketplace, and plugin links. |
+| [`gh`](./dotfiles/gh)                 | GitHub CLI configuration.                                                                 |
+| [`git`](./dotfiles/git)               | Git configuration, including the Lando-specific include.                                  |
+| [`hyperdrive`](./dotfiles/hyperdrive) | Hyperdrive configuration.                                                                 |
+| [`lando`](./dotfiles/lando)           | Lando configuration.                                                                      |
+| [`ssh`](./dotfiles/ssh)               | SSH configuration and public keys.                                                        |
+| [`theme`](./dotfiles/theme)           | The shared Tanaab color palette.                                                          |
+| [`vim`](./dotfiles/vim)               | Native packages and a Tanaab theme that follows the terminal's ANSI palette.              |
+| [`vscode`](./dotfiles/vscode)         | Settings and Tanaab / Tanaab Solarized light and dark themes.                             |
+| [`warp`](./dotfiles/warp)             | Terminal settings and Tanaab / Tanaab Solarized light and dark themes.                    |
+| [`zsh`](./dotfiles/zsh)               | Shell environment, history, and fallback prompt.                                          |
 
-The Vim profile uses native runtime packages and maps its `tanaab` colorscheme onto the terminal's
-ANSI palette, allowing it to follow the active Tanaab Warp theme without separate light and dark
-Vim theme selections or an external runtime.
+Codex TUI defaults to Tanaab Solarized Dark. When using another Warp theme, set `[tui].theme` to
+`ansi` in [the shared configuration](./dotfiles/ai/.codex/config.shared.toml) so syntax and diff
+colors follow the terminal instead of retaining dark-specific fills.
 
-### Codex Plugin And Skills
+### Skills
 
-The repository is packaged as `piroplugin` through
-[`.codex-plugin/plugin.json`](./.codex-plugin/plugin.json). Profile and plugin maintenance comes from
-[`piro-automation`](./skills/automation/), [`piro-me-doctor`](./skills/me-doctor/), and
-[`piro-skill-author`](./skills/skill-author/). Work planning and task lifecycle support comes from
-[`piro-plan-work`](./skills/plan-work/), [`piro-find-work`](./skills/find-work/),
-[`piro-work-on-task`](./skills/work-on-task/), [`piro-clean-up-task`](./skills/clean-up-task/), and
-[`piro-morning-closeout`](./skills/morning-closeout/). Follow each skill for its current behavior,
-checks, and authority boundaries.
+[`piroplugin`](./.codex-plugin/plugin.json) puts these skills to work in Codex. Invoke them by name;
+each has a defined job, not a general license to meddle. Follow the links for workflows and approval boundaries.
 
-[`GOALS.md`](./GOALS.md) owns reviewed direction, [`ACTORS.md`](./ACTORS.md) owns work-planning actors
-and their goals sources, and [`WORK_REPOS.md`](./WORK_REPOS.md) owns repository priority and discovery
-policy. These inputs are copied into the managed plugin cache, but they do not prove live identity,
-access, workload, assignability, or mutation authority.
+| Skill                                                 | Owns                                                                                               |
+| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| [`piro-automation`](./skills/automation/)             | Scheduled-task validation, drift checks, and approval-gated sync.                                  |
+| [`piro-clean-up-task`](./skills/clean-up-task/)       | Archiving a finished task after checking that its work is preserved.                               |
+| [`piro-find-work`](./skills/find-work/)               | Goal-aware recommendations for unassigned GitHub issues.                                           |
+| [`piro-me-doctor`](./skills/me-doctor/)               | Read-only machine-profile and automation-drift diagnosis.                                          |
+| [`piro-morning-closeout`](./skills/morning-closeout/) | Completed-work reporting and eligible task cleanup.                                                |
+| [`piro-plan-work`](./skills/plan-work/)               | Assigned-work planning and queuing tasks you select.                                               |
+| [`piro-skill-author`](./skills/skill-author/)         | Skill authoring and optimization.                                                                  |
+| [`piro-voice`](./skills/voice/)                       | Human-facing prose with conviction, irreverence, and wit; code and structured data stay untouched. |
+| [`piro-work-on-task`](./skills/work-on-task/)         | Issue or PR assessment and planning in a Codex worktree, with policy-based model selection.        |
 
-Broader shared canon skills come from the paired `tanaab` plugin. The `ai` dotfile package installs
-the `piroplugin` source link and publishes the local `Pirostore` marketplace. Tanaab checkouts that
-contain `.codex-plugin/plugin.json` receive generated local source links. These links expose local
-plugin sources; every plugin still requires explicit installation and enablement through Codex.
+Bootstrap prepares local plugin sources, including verified Tanaab checkouts with plugin manifests.
+Source links do not install or enable plugins; do that in Codex. The paired
+[`tanaab` plugin](https://github.com/tanaabased/canon) supplies shared authoring skills.
 
-### Declarative Codex Automations
+### Configuration Files
 
-[`AUTOMATIONS.yaml`](./AUTOMATIONS.yaml) is the desired-state manifest for Codex scheduled tasks
-owned by this repository. Read it for the current task names, schedules, status, and prompt sources.
-Use [`$piro-automation`](./skills/automation/) to validate the manifest, inspect live drift, and
-prepare any approval-gated reconciliation. Repository validation never creates or changes live Codex
-automations.
+| File                                                                               | Owns                                                                             |
+| ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| [`GOALS.md`](./GOALS.md)                                                           | Direction, priorities, and deferrals.                                            |
+| [`ACTORS.md`](./ACTORS.md)                                                         | Reviewed work-planning actors and their goals sources.                           |
+| [`WORK_REPOS.md`](./WORK_REPOS.md)                                                 | Repository priorities and discovery scope.                                       |
+| [`MODEL_ROUTING.yaml`](./MODEL_ROUTING.yaml)                                       | Default model, reasoning effort, Fast mode, and complexity-tier mappings.        |
+| [`AUTOMATIONS.yaml`](./AUTOMATIONS.yaml)                                           | Desired schedules, status, and prompt sources for managed Codex tasks.           |
+| [`automations/`](./automations/)                                                   | Task prompts and shared readiness checks with bounded recovery and safety stops. |
+| [`dotfiles/ai/.codex/AGENTS.md`](./dotfiles/ai/.codex/AGENTS.md)                   | Global collaboration, voice, and change-discipline guidance.                     |
+| [`dotfiles/ai/.codex/config.shared.toml`](./dotfiles/ai/.codex/config.shared.toml) | Portable Codex settings not owned by the model policy.                           |
+| `~/.codex/config.local.toml`                                                       | Machine-specific settings, including project trust and local paths.              |
+| `~/.codex/config.toml`                                                             | Generated output; edit its source inputs instead.                                |
 
-An automation may declare `preflight-file` beneath `automations/` to compose a reusable readiness
-and fail-closed error contract before its task-specific prompt. The managed daily plan and morning
-closeout use this to verify required Codex task operations before planning or archival; the owning
-skills still define the actual workflow and safety gates.
+Local configuration may add settings, but cannot override exact keys owned by the shared file or
+model policy. Work on Task uses native metadata when available and a labeled content assessment
+when needed; explicit user choices take precedence. See [model routing](./references/model-routing.md)
+for fallback metadata, selection verification, and escalation boundaries.
 
-### Tanaab Repositories
+## CLI Options
 
-Tanaab repository selection is empty by default. Repeat `--tanaab` to clone editable repositories
-from `@tanaabased` into matching paths under `~/tanaab`:
-
-```sh
-piroboot \
-  --op-token "$OP_TOKEN" \
-  --tanaab canon \
-  --tanaab agentbox
-```
-
-Existing selected checkouts are fast-forwarded only when doing so is safe. Plugin-link detection is
-separate and examines verified existing `@tanaabased` checkouts on every run, even when no new
-repositories are selected.
-
-## `agentbox` Hosts
-
-`me` treats a machine as an installed [`agentbox`](https://github.com/tanaabased/agentbox) host only
-when both `/opt/tanaab/agentbox/bin/health.sh` and
-`/Library/LaunchDaemons/dev.tanaab.agentbox.health.plist` are present. A source checkout alone does
-not mark the machine as an `agentbox` host.
-
-On a detected host, the final `me` Brewfile apply preserves inherited Homebrew Bundle cask skips and
-also skips:
-
-- `1password`
-- `tailscale-app`
-
-The beta `1password-cli@beta` cask remains installed for service-account-backed SSH-key retrieval,
-while `agentbox` keeps its formula-backed `tailscaled` runtime in control. Any host that already has
-the Homebrew `tailscale` formula also skips `tailscale-app`, even without the complete `agentbox`
-marker pair, so the formula and desktop cask never conflict.
-
-## Post-Bootstrap Setup
-
-Complete these app-backed steps after bootstrap.
-
-### 1Password
-
-These desktop-app steps are not required on a detected `agentbox` host.
-
-- Open 1Password, sign in, and unlock it.
-- Enable Developer > Integrate with 1Password CLI.
-- Enable Developer > Show 1Password Developer experience.
-- Use the Brewfile-provided beta 1Password CLI; 1Password Environments require beta CLI support.
-- Confirm `op` can access the signed-in account with a read-only check such as `op vault list`.
-
-### Tailscale
-
-Detected `agentbox` hosts and workstations with the Homebrew `tailscale` formula use their existing
-`tailscaled` runtime instead of `Tailscale.app`.
-
-- When using the desktop app, open Tailscale, sign in, and connect this machine to the `tanaab.dev`
-  tailnet.
-- Confirm `tailscale status --json` reports the local node as running and online.
-
-### Codex
-
-- Open the Brewfile-provided Codex desktop app and sign in.
-- Install `piroplugin` from `Pirostore`. If Canon was selected, install `tanaab` as well.
-- Connect the GitHub app connector as `pirog`.
-- Connect the monday.com app connector as `Michael Pirog` for this `me` environment.
-- Ask Codex to run `$piro-automation check`, then approve the exact sync plan when the declarative
-  automation set should be reconciled.
-
-### Verification
-
-After completing the checklist, ask Codex to run `$piro-me-doctor`. The Doctor may trigger macOS,
-Codex, or 1Password permission prompts while it verifies local desktop-app access; approve those
-prompts only when you intentionally requested the diagnosis.
-
-## Configuration Reference
-
-CLI options override environment variables, which override defaults. Run the hosted help for the
-exact current contract:
-
-```sh
-/bin/bash -c "$(curl -fsSL https://boot.pirog.me/boot.sh)" piroboot --help
-```
+CLI options override environment variables, which override defaults.
 
 ### `--ssh-key`
 
@@ -173,15 +96,6 @@ exact current contract:
 | Default     | `vmruk4ny353aly6tbom7z3v2hy/id_pirog,vmruk4ny353aly6tbom7z3v2hy/id_agentbox1`          |
 | Values      | Repeatable `vault/item[:filename]` option or comma-separated environment-variable list |
 | Description | Installs private SSH keys from 1Password.                                              |
-
-Repeat `--ssh-key` to select more than one item:
-
-```sh
-piroboot \
-  --op-token "$OP_TOKEN" \
-  --ssh-key "vmruk4ny353aly6tbom7z3v2hy/id_pirog" \
-  --ssh-key "vmruk4ny353aly6tbom7z3v2hy/id_agentbox1"
-```
 
 The optional filename overrides the destination filename under `~/.ssh`. Without it, the 1Password
 item name is used.
@@ -195,13 +109,8 @@ item name is used.
 | Values      | 1Password service account token                             |
 | Description | Authenticates private SSH-key retrieval from 1Password.     |
 
-The token is required while the configured SSH-key list is non-empty. The option-first form is:
-
-```sh
-piroboot --op-token "$OP_TOKEN"
-```
-
-Use the environment-variable form when keeping the token out of shell history matters:
+The token is required while the configured SSH-key list is non-empty. To avoid passing its value
+as a command-line argument:
 
 ```sh
 PIROME_OP_TOKEN="$OP_TOKEN" piroboot
@@ -230,6 +139,10 @@ Each name maps deterministically to `git@github.com:tanaabased/<repo>.git` and
 `~/tanaab/<repo>`. Local paths, release versions, source selectors, and falsey disable values are
 not supported.
 
+Hosted runs use `~/tanaab/me`; running `boot.sh` from a valid source checkout uses it without updating it.
+Existing canonical or selected Tanaab checkouts are refreshed only when clean, on `main`, tracking
+`origin/main`, and connected to the expected origin. Otherwise local work is preserved.
+
 ### `-y`, `--yes`
 
 | Field       | Value                                      |
@@ -238,10 +151,6 @@ not supported.
 | Default     | unset                                      |
 | Values      | `--yes` or a truthy environment value      |
 | Description | Accepts the plan and runs without prompts. |
-
-```sh
-piroboot --op-token "$OP_TOKEN" --yes
-```
 
 ### `--force`
 
@@ -268,19 +177,11 @@ Debug output masks the 1Password token and does not log raw arguments.
 
 ### `--version`
 
-Prints the running wrapper version and exits:
-
-```sh
-piroboot --version
-```
+Prints the running wrapper version and exits.
 
 ### `-h`, `--help`
 
-Prints the current public CLI and environment-variable contract and exits:
-
-```sh
-piroboot --help
-```
+Prints the public CLI and environment-variable contract and exits.
 
 ### `CI`
 
@@ -291,105 +192,35 @@ piroboot --help
 | Values      | Truthy environment value                    |
 | Description | Runs the wrapper in noninteractive CI mode. |
 
-## `me` Checkout
+## Utilities
 
-When `boot.sh` runs from a valid source checkout, it uses that checkout in place and does not update
-it. A hosted run uses `~/tanaab/me`, cloning `git@github.com:pirog/me.git` there when the checkout
-does not exist.
-
-An existing canonical checkout is refreshed only when it is clean, on `main`, tracking
-`origin/main`, and connected to `@pirog/me`. Otherwise the wrapper warns and uses the current
-checkout without resetting, merging, rebasing, deleting, or overwriting local work.
-
-The resolved checkout must contain `boot.sh`, `Brewfile`, `dotfiles/`, and
-`.codex-plugin/plugin.json` before the machine profile is applied.
-
-## Tanaab Repository Checkouts
-
-Selected repositories are cloned over SSH into `~/tanaab/<repo>`. An existing target must be a Git
-checkout; the wrapper never deletes or replaces it, including under `--force`.
-
-An existing selected checkout is refreshed only when it is clean, on `main`, tracking
-`origin/main`, and connected to the expected `@tanaabased/<repo>` origin. The wrapper otherwise
-warns and preserves the current branch, commits, and local work.
-
-After repository materialization, every run scans direct Git checkouts under `~/tanaab` whose
-origins match `@tanaabased/<directory-name>`. A checkout containing
-`.codex-plugin/plugin.json` receives a generated link under the resolved `me` payload's
-`dotfiles/ai/.codex/plugins/` directory. The manifest's `name` determines the link name, so the
-`canon` repository correctly becomes the `tanaab` plugin link.
-
-If a verified checkout removes its plugin manifest, generated and installed symlinks resolving
-exactly to that checkout are removed. If the manifest exists but is malformed, existing links are
-preserved and a warning is emitted. Regular files, directories, and links pointing elsewhere are
-never replaced. These links prepare local plugin sources; they do not install or enable plugins in
-Codex.
-
-## Codex Configuration And Plugin Sync
-
-The Codex configuration uses these owned inputs and generated output:
-
-- `MODEL_ROUTING.yaml` owns model, effort and Fast-mode defaults plus task-routing mappings.
-- `dotfiles/ai/.codex/config.shared.toml` is repository-owned and contains other portable settings.
-- `~/.codex/config.local.toml` is machine-owned and contains project trust, local paths,
-  notifications, marketplace paths, plugin cache paths, and other machine-specific values.
-- `~/.codex/config.toml` is generated from the policy, shared and local inputs; do not edit it directly.
-
-Custom Codex TUI syntax themes live under `dotfiles/ai/.codex/themes/`. Tanaab Solarized Dark is the
-default and preserves ANSI syntax colors from the active terminal palette while supplying its own
-Warp-matched diff backgrounds. When using Tanaab Dark, Tanaab Light, or Tanaab Solarized Light,
-switch `[tui].theme` to `ansi` so Codex follows the active Warp palette without applying those
-dark-specific fills.
-
-Local configuration may add settings alongside shared tables, but it may not override an exact key
-owned by the shared file or model policy.
-
-Use `ai:sync` to restow `dotfiles/ai` into `$HOME` and regenerate the installed Codex
-configuration:
+Run these from the `me` checkout. Pick the operation you need; running the whole block is not a
+maintenance ritual.
 
 ```sh
+# regenerate codex configuration and restow the ai dotfiles into your home directory
 bun run ai:sync
-```
 
-Set `TANAAB_CODEX_CONFIG_SYNC=false` or pass `--no-codex-config` to `aisync` when a restow should
-skip configuration generation.
-
-Plugin cache management is separate:
-
-```sh
+# validate the source plugin, skills, automation manifest, and model policy
 bun run codex:validate
+
+# compare the installed plugin cache with the source
 bun run codex:check
+
+# refresh the installed plugin cache after source changes
 bun run codex:sync
+
+# verify that the refreshed cache matches
+bun run codex:check
+
+# validate scheduled-task definitions without changing live automations
+bun run automations:validate
 ```
 
-- `codex:validate` validates the source plugin manifest, skills, MCP stub, automation manifest, and
-  workflow references.
-- `codex:check` compares the installed `piroplugin` cache with the managed source surface.
-- `codex:sync` refreshes that installed cache when local plugin changes should become available to
-  Codex.
-
-After a plugin cache refresh, restart Codex when the current app session does not pick up the changed
-plugin assets automatically.
-
-### Model Defaults
-
-[`MODEL_ROUTING.yaml`](./MODEL_ROUTING.yaml) owns shared model, reasoning and Fast-mode defaults,
-plus Low/Medium/High task mappings. `config.shared.toml` retains other portable settings; do not
-duplicate policy-owned keys there or in `config.local.toml`. Apply changes through `ai:sync` after reviewing differences from the live configuration,
-then verify a new task without a model override. Existing task model selections are independent.
-
-Work on Task classifies briefly in its current conversation and resolves native creation arguments
-from the same policy. Native metadata is optional; structured fallback and labeled content assessment
-support repositories without custom fields. See [model routing](./references/model-routing.md) for
-precedence, overrides and effective-selection verification. Refresh the plugin cache with
-`codex:sync` / `codex:check` after policy or skill changes. No separate classifier or automatic
-escalation runs; a reasoning blocker may prompt a recommendation for your approval.
-
-Entries in [`AUTOMATIONS.yaml`](./AUTOMATIONS.yaml) that omit model or reasoning overrides inherit
-the effective Codex defaults during reconciliation. Use the
-[`$piro-automation` workflow](./skills/automation/SKILL.md) to check and apply that drift; changing
-the shared file alone does not update saved automations.
-
-OpenClaw model settings are machine-owned and configured separately. `ai:sync` does not change
-them; provider access, fallback preservation, and fresh-session verification belong to that local
-rollout.
+- `ai:sync` changes installed configuration; `codex:sync` changes the plugin cache. After model-policy
+  changes, use both and verify the defaults in a new task. Existing task selections remain unchanged.
+- To restow without regenerating configuration, use `bun run ai:sync --no-codex-config`.
+- Saved automations require a separate `$piro-automation check` and approved reconciliation in Codex.
+  Editing defaults or validating the manifest does not update them.
+- Restart Codex if it does not pick up refreshed plugin assets. OpenClaw settings are separate and
+  are not changed by these utilities.
