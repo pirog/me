@@ -103,15 +103,13 @@ describe('lib/automation-manifest', () => {
     assert.match(morningPrompt, /GitHub Read Access/);
     assert.match(morningPrompt, /Codex Task Access/);
     assert.match(morningPrompt, /list_threads\(limit=50\)/);
-    assert.match(morningPrompt, /Wrong identity or incomplete, malformed, or untrustworthy/);
-    assert.match(morningPrompt, /capped or unavailable\s+Codex listing limits cleanup/);
-    assert.match(morningPrompt, /window`, `plan`, and `commit`/);
-    assert.match(morningPrompt, /Advance the cutoff only after complete GitHub reporting/);
-    assert.match(morningPrompt, /reread it immediately before mutation/);
-    assert.match(morningPrompt, /## Completed Issues/);
-    assert.match(morningPrompt, /## Merged Changes/);
-    assert.match(morningPrompt, /## Completed Work Size/);
+    assert.match(morningPrompt, /preceding scheduled Morning Closeout boundary/);
+    assert.match(morningPrompt, /pull-request merge does not imply issue completion/);
+    assert.match(morningPrompt, /capped or unavailable Codex\s+listing limits cleanup coverage/);
+    assert.match(morningPrompt, /repeat the exact target read immediately before archival/);
+    assert.match(morningPrompt, /## Completed Work/);
     assert.match(morningPrompt, /## Codex Cleanup/);
+    assert.match(morningPrompt, /## Completed Capacity/);
     assert.match(morningPrompt, /## Coverage and Limitations/);
     assert.ok(
       morningPrompt.indexOf('# AUTOMATION PREFLIGHT') < morningPrompt.indexOf('# MORNING CLOSEOUT'),
@@ -209,32 +207,26 @@ describe('lib/automation-manifest', () => {
     assert.match(planWork, /partial or unavailable listing[\s\S]*blocks creation/);
   });
 
-  it('should statically separate Morning Closeout reporting from task cleanup', async () => {
+  it('should keep Morning Closeout GitHub reporting separate from task cleanup', async () => {
     const closeout = await readFile(
       path.join(REPO_ROOT, 'skills', 'morning-closeout', 'SKILL.md'),
       'utf8',
     );
 
-    assert.match(closeout, /GitHub owns delivery and completion evidence/);
-    assert.match(closeout, /exact half-open reporting interval `start < event <= end`/);
-    assert.match(closeout, /githubCoverage\.complete: true/);
+    assert.match(closeout, /GitHub issues and pull requests are the completion\s+source/);
+    assert.match(closeout, /exact half-open interval `start < event <= end`/);
     assert.match(
       closeout,
-      /include an unassigned issue only when a verified delivery relationship/,
+      /include an unassigned issue only when GitHub verifies that a merged pull request authored by\s+`pirog` delivered it/,
     );
-    assert.match(closeout, /advances the cutoff to `end`/);
-    assert.match(closeout, /A reclosure has a new event key/);
-    assert.match(
-      closeout,
-      /Start current-host Codex cleanup discovery with `list_threads\(limit=50\)`/,
-    );
-    assert.match(closeout, /valid capped result is partial/);
-    assert.match(closeout, /process only exact visible candidates/);
+    assert.match(closeout, /Start current-host cleanup discovery with `list_threads\(limit=50\)`/);
+    assert.match(closeout, /valid capped result is partial but usable/);
     assert.match(
       closeout,
       /Immediately before each archive-mode\s+handoff, read the exact target again/,
     );
-    assert.match(closeout, /unavailable or malformed discovery blocks cleanup mutation/);
+    assert.match(closeout, /unavailable or malformed listing blocks cleanup\s+mutation/);
+    assert.match(closeout, /Do not add a report engine, persistent event ledger/);
   });
 
   it('should resolve prompt files only from automations', async () => {

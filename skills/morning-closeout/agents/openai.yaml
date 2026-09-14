@@ -4,6 +4,6 @@ interface:
   icon_small: '../../assets/composer-icon.svg'
   icon_large: '../../assets/icon-large.png'
   brand_color: '#db2777'
-  default_prompt: 'Use $piro-morning-closeout to report attributable GitHub issue closures and pull-request merges for the exact interval, then independently pass each eligible Codex task through $piro-clean-up-task and archive only preservation-gated tasks when requested.'
+  default_prompt: 'Use $piro-morning-closeout to report attributable GitHub completions since the previous closeout boundary, then independently pass each eligible Codex task through $piro-clean-up-task and archive only preservation-gated tasks when requested.'
 policy:
   allow_implicit_invocation: false

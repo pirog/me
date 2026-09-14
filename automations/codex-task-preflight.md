@@ -16,9 +16,7 @@ Classify outcomes before deciding whether to start the task body:
   transient or malformed result; use the authorized-context recovery in the owning reference.
 - **Soft degradation:** a valid capped listing, incomplete pagination, missing optional metadata, or
   one unavailable optional provider. Continue useful independent read-only work only where the task
-  body permits it, and report the exact limitation. When the owning workflow defines independent
-  reporting and cleanup lanes, do not let one lane's optional provider suppress a complete result
-  from the other.
+  body permits it, and report the exact limitation.
 - **Hard failure:** wrong identity; every required provider unavailable after recovery; malformed or
   untrustworthy final data; a failed exact target read immediately before mutation; or ambiguous or
   destructive target safety. Stop at the owning boundary without treating the failure as empty data.
