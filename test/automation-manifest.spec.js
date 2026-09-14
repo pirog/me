@@ -103,9 +103,14 @@ describe('lib/automation-manifest', () => {
     assert.match(morningPrompt, /GitHub Read Access/);
     assert.match(morningPrompt, /Codex Task Access/);
     assert.match(morningPrompt, /list_threads\(limit=50\)/);
-    assert.match(morningPrompt, /active-task discovery was\s+incomplete/);
+    assert.match(morningPrompt, /preceding scheduled Morning\s+Closeout boundary/);
+    assert.match(morningPrompt, /pull-request merge does not imply issue completion/);
+    assert.match(morningPrompt, /capped\s+or unavailable Codex listing limits cleanup/);
     assert.match(morningPrompt, /Repeat the exact target read immediately before its archival/);
-    assert.match(morningPrompt, /Do not begin candidate discovery/);
+    assert.match(morningPrompt, /## Archived Work/);
+    assert.match(morningPrompt, /## Retained Tasks/);
+    assert.match(morningPrompt, /## Completed Capacity/);
+    assert.match(morningPrompt, /## Coverage and Limitations/);
     assert.ok(
       morningPrompt.indexOf('# AUTOMATION PREFLIGHT') < morningPrompt.indexOf('# MORNING CLOSEOUT'),
     );
@@ -202,20 +207,25 @@ describe('lib/automation-manifest', () => {
     assert.match(planWork, /partial or unavailable listing[\s\S]*blocks creation/);
   });
 
-  it('should statically keep Morning Closeout safe under capped task coverage', async () => {
+  it('should keep Morning Closeout GitHub reporting separate from task cleanup', async () => {
     const closeout = await readFile(
       path.join(REPO_ROOT, 'skills', 'morning-closeout', 'SKILL.md'),
       'utf8',
     );
 
-    assert.match(closeout, /Start current-host discovery with `list_threads\(limit=50\)`/);
+    assert.match(closeout, /Discover completed issues and merged pull requests across/);
+    assert.match(closeout, /exact interval `start < event <= end`/);
+    assert.match(
+      closeout,
+      /unassigned issues with a verified delivery\s+pull request authored by `pirog`/,
+    );
+    assert.match(closeout, /Start current-host cleanup discovery with `list_threads\(limit=50\)`/);
     assert.match(closeout, /valid capped result is partial but usable/);
-    assert.match(closeout, /process only candidates proved by exact visible reads/);
     assert.match(
       closeout,
       /Immediately before each archive-mode\s+handoff, read the exact target again/,
     );
-    assert.match(closeout, /unavailable\s+or malformed listing stops before archival/);
+    assert.match(closeout, /unavailable\s+or malformed listing blocks cleanup but leaves/);
   });
 
   it('should resolve prompt files only from automations', async () => {

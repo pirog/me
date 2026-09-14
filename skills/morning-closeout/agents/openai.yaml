@@ -1,9 +1,9 @@
 interface:
   display_name: 'Morning Closeout'
-  short_description: 'Pirobased safe daily task archival and reporting.'
+  short_description: 'Pirobased GitHub completion reporting and safe task cleanup.'
   icon_small: '../../assets/composer-icon.svg'
   icon_large: '../../assets/icon-large.png'
   brand_color: '#db2777'
-  default_prompt: 'Use $piro-morning-closeout to discover exact eligible Codex tasks on this host, pass each one separately through $piro-clean-up-task, archive only preservation-gated tasks when requested, and report verified completed Work size.'
+  default_prompt: 'Use $piro-morning-closeout to report attributable GitHub completions since the previous closeout boundary, then independently pass each eligible Codex task through $piro-clean-up-task and archive only preservation-gated tasks when requested.'
 policy:
   allow_implicit_invocation: false
