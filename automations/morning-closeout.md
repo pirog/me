@@ -1,69 +1,54 @@
 # MORNING CLOSEOUT
 
 Run the Piro morning closeout for the current local date.
-Use `$piro-morning-closeout` in archive mode and follow its complete safety contract.
+Use `$piro-morning-closeout` in archive mode and follow its complete current contract.
 Managed automation id: `morning-closeout`.
 
 ## Required preflight capabilities
 
 - `$piro-morning-closeout` and `$piro-clean-up-task` with their complete current contracts.
-- Native Codex operations for current-host active and pinned task listing, exact task reading,
-  archival, and archived-task read-back under
-  [`Codex Task Access`](../references/codex-task-access.md).
-- Native GitHub issue reads for optional completed-capacity evidence. Apply
-  [`GitHub Read Access`](../references/github-read-access.md) connector-first. A wrong identity hard
-  fails; an unavailable optional provider degrades capacity evidence. Verify the CLI route only when
-  an archived issue actually requires its Work size fallback.
+- Trustworthy native GitHub identity and reads for issue closures, pull-request merges, verified
+  delivery relationships, and complete pagination. Apply
+  [`GitHub Read Access`](../references/github-read-access.md) connector-first and require `pirog`.
+  Wrong identity or incomplete, malformed, or untrustworthy final GitHub data hard fails the run.
+- Read access to [`WORK_REPOS.md`](../WORK_REPOS.md). Use `pirog/*` and `tanaabased/*`, exclude
+  `tanaabased/big-test-bucket`, and explicitly exclude `lando/*` for this scheduled invocation.
+- Bun plus the installed `$piro-morning-closeout` helper for versioned reporting state outside Git.
+- Native Codex operations for current-host task listing, exact reads, archival, and archived-task
+  read-back under [`Codex Task Access`](../references/codex-task-access.md). A capped or unavailable
+  Codex listing limits cleanup but does not suppress a complete GitHub report.
 
-Use only listing and reading during preflight. Do not begin candidate discovery or archival when the
-shared automation preflight fails.
+Use only reads during preflight. Capture the run start once before discovery. Never test readiness
+with a GitHub write, task mutation, or state checkpoint.
 
-Start with `list_threads(limit=50)`. A valid capped result is usable partial evidence: do not repeat
-the identical read, process only exact visible candidates, and state `active-task discovery was
-incomplete`. An unavailable or malformed listing, ambiguous identity, or failed exact read before
-archival stops mutation.
+Run the helper's `window`, `plan`, and `commit` modes through standard-input JSON as directed by the
+skill. Discover GitHub from the bounded overlap, report only events inside the exact interval, and
+exhaust every page. Advance the cutoff only after complete GitHub reporting passes the plan-digest
+check. Preserve that reporting success if later Codex cleanup degrades or fails.
 
-Work only on Codex tasks visible on the current local host.
-Inspect active tasks and pinned tasks before selecting any candidate.
-Never target this currently running task.
-Never interrupt a running task.
-Never unpin a task.
+Report qualifying completed issues and merged changes independently, with every attribution reason
+and shared assignment. A merge does not complete an issue. GitHub closure reports provider state,
+not an independent acceptance audit. Count only verified Work size from qualifying completed issues;
+list PR-only work, report tasks, body-only or unavailable sizes, and already credited issues as
+exclusions. Report a reclosure without crediting the same issue's Work size twice.
 
-Consider two candidate classes:
+For cleanup, start with `list_threads(limit=50)`, inspect pinned tasks, and work only on the current
+local host. Never target this task, interrupt a running task, or unpin anything. Consider only idle
+Codex-managed Git worktrees and earlier projectless reports carrying an exact managed automation
+marker. Read each exact candidate, reread it immediately before mutation, and hand it separately to
+`$piro-clean-up-task` in archive mode. Preserve every cleanup gate and retain blocked work.
 
-1. Idle Codex-managed Git worktree tasks that may have completed their declared work.
-2. Every earlier projectless report task whose original assignment contains one of these exact markers:
-   - `Managed by pirog/me AUTOMATIONS.yaml (id: morning-closeout).`
-   - `Managed by pirog/me AUTOMATIONS.yaml (id: daily-work-plan).`
+Do not merge pull requests, close or assign issues, delete branches or worktrees, edit repositories,
+or repair missing evidence through writes. Runtime reporting state is the only non-Codex mutation.
 
-Do not select a report from its title alone.
-Read each candidate and prove its exact task id, environment, original assignment, and current state.
-Repeat the exact target read immediately before its archival attempt.
-Read or unread state is not an archival gate; record it when exposed, but do not infer it or retain an otherwise eligible earlier report because it may be unread.
-For a prior managed report, treat the delivered report as its declared outcome; unchosen optional recommendations do not by themselves make that report incomplete.
-Retain a report whose run failed or whose own required report output is incomplete.
-Hand each exact candidate to `$piro-clean-up-task` separately in archive mode.
-Apply all of Clean Up Task's preservation gates without weakening or duplicating them.
-If one candidate is ineligible, retain it, record the exact blocker, and continue with independent candidates.
-Stop the run on a native task-operation failure or other systemic failure that makes later results unsafe.
+Return `# MORNING CLOSEOUT — <local YYYY-MM-DD>` with:
 
-Do not merge pull requests, close issues, delete branches, prune refs, delete worktrees, or modify repository files.
-Do not archive pinned, running, ambiguous, dirty disposable, or otherwise unpreserved tasks.
-Archived task transcripts remain the source of truth for their preserved conversation outcomes.
-
-For each archived work task, record its exact task id and title, repository, source issue or pull request, delivered outcome, and archival verification.
-Record Work size only when the exact source issue exposes a verified current Work size.
-Sum only those verified issue Work sizes.
-Do not estimate missing Work size or treat it as time, effort completed, or a productivity score.
-Exclude report-only tasks, pull-request-only tasks, and unknown sizes from the sum and list those exclusions.
-
-Return a concise report titled `# MORNING CLOSEOUT — <local YYYY-MM-DD>` with these sections:
-
-- `## Archived Work`
-- `## Retained Tasks`
-- `## Completed Capacity`
+- `## Completed Issues`
+- `## Merged Changes`
+- `## Completed Work Size`
+- `## Codex Cleanup`
 - `## Coverage and Limitations`
 
-State explicitly when no task was eligible.
-State whether active-task discovery was complete.
-End by confirming the exact classes of state that were not changed.
+State the actor, scope, exact interval, GitHub checkpoint result, independent GitHub and Codex
+coverage, every exclusion, and the state deliberately left unchanged. Omit private transcripts,
+local task ids, credentials, and machine-specific paths from public evidence.

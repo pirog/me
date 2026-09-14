@@ -1,0 +1,77 @@
+{
+  "baseline": {
+    "activeTasks": [],
+    "archivedTasks": [
+      {
+        "source": "pirog/me#58",
+        "title": "Give Codex a consistent pirog voice for human-facing prose"
+      }
+    ],
+    "archivedWorkReported": [],
+    "completedWorkSize": 0
+  },
+  "mergeRun": {
+    "actor": "pirog",
+    "githubCoverage": {
+      "complete": true,
+      "scopes": ["pirog/*", "tanaabased/*", "-tanaabased/big-test-bucket", "-lando/*"]
+    },
+    "issueClosures": [],
+    "pullRequestMerges": [
+      {
+        "assignees": [],
+        "author": "pirog",
+        "linkedIssues": [
+          {
+            "assignees": ["pirog"],
+            "number": 58,
+            "relationship": "tracks",
+            "repository": "pirog/me",
+            "verified": true
+          }
+        ],
+        "mergedAt": "2026-09-10T20:30:07.000Z",
+        "number": 61,
+        "repository": "pirog/me",
+        "title": "#58: simplify voice guidance and collaborator personality"
+      }
+    ],
+    "repositoryPolicy": {
+      "excludedRepositories": ["tanaabased/big-test-bucket"],
+      "includedOwners": ["pirog", "tanaabased"],
+      "includedRepositories": []
+    },
+    "runStartedAt": "2026-09-11T08:00:00.000Z",
+    "timeZone": "America/New_York"
+  },
+  "closureRun": {
+    "actor": "pirog",
+    "githubCoverage": {
+      "complete": true,
+      "scopes": ["pirog/*", "tanaabased/*", "-tanaabased/big-test-bucket", "-lando/*"]
+    },
+    "issueClosures": [
+      {
+        "assignees": ["pirog"],
+        "closedAt": "2026-09-11T10:58:53.000Z",
+        "deliveryPullRequests": [],
+        "number": 58,
+        "repository": "pirog/me",
+        "state": "closed",
+        "title": "give Codex a consistent pirog voice for human-facing prose",
+        "workSize": {
+          "reason": "body-only fallback is not verified native Work size",
+          "status": "endpoint-unavailable"
+        }
+      }
+    ],
+    "pullRequestMerges": [],
+    "repositoryPolicy": {
+      "excludedRepositories": ["tanaabased/big-test-bucket"],
+      "includedOwners": ["pirog", "tanaabased"],
+      "includedRepositories": []
+    },
+    "runStartedAt": "2026-09-12T08:00:00.000Z",
+    "timeZone": "America/New_York"
+  }
+}
