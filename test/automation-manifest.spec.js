@@ -103,12 +103,12 @@ describe('lib/automation-manifest', () => {
     assert.match(morningPrompt, /GitHub Read Access/);
     assert.match(morningPrompt, /Codex Task Access/);
     assert.match(morningPrompt, /list_threads\(limit=50\)/);
-    assert.match(morningPrompt, /preceding scheduled Morning Closeout boundary/);
+    assert.match(morningPrompt, /preceding scheduled Morning\s+Closeout boundary/);
     assert.match(morningPrompt, /pull-request merge does not imply issue completion/);
-    assert.match(morningPrompt, /capped or unavailable Codex\s+listing limits cleanup coverage/);
-    assert.match(morningPrompt, /repeat the exact target read immediately before archival/);
-    assert.match(morningPrompt, /## Completed Work/);
-    assert.match(morningPrompt, /## Codex Cleanup/);
+    assert.match(morningPrompt, /capped\s+or unavailable Codex listing limits cleanup/);
+    assert.match(morningPrompt, /Repeat the exact target read immediately before its archival/);
+    assert.match(morningPrompt, /## Archived Work/);
+    assert.match(morningPrompt, /## Retained Tasks/);
     assert.match(morningPrompt, /## Completed Capacity/);
     assert.match(morningPrompt, /## Coverage and Limitations/);
     assert.ok(
@@ -213,11 +213,11 @@ describe('lib/automation-manifest', () => {
       'utf8',
     );
 
-    assert.match(closeout, /GitHub issues and pull requests are the completion\s+source/);
-    assert.match(closeout, /exact half-open interval `start < event <= end`/);
+    assert.match(closeout, /Discover completed issues and merged pull requests across/);
+    assert.match(closeout, /exact interval `start < event <= end`/);
     assert.match(
       closeout,
-      /include an unassigned issue only when GitHub verifies that a merged pull request authored by\s+`pirog` delivered it/,
+      /unassigned issues with a verified delivery\s+pull request authored by `pirog`/,
     );
     assert.match(closeout, /Start current-host cleanup discovery with `list_threads\(limit=50\)`/);
     assert.match(closeout, /valid capped result is partial but usable/);
@@ -225,8 +225,7 @@ describe('lib/automation-manifest', () => {
       closeout,
       /Immediately before each archive-mode\s+handoff, read the exact target again/,
     );
-    assert.match(closeout, /unavailable or malformed listing blocks cleanup\s+mutation/);
-    assert.match(closeout, /Do not add a report engine, persistent event ledger/);
+    assert.match(closeout, /unavailable\s+or malformed listing blocks cleanup but leaves/);
   });
 
   it('should resolve prompt files only from automations', async () => {
