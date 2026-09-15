@@ -215,6 +215,9 @@ bun run codex:check
 
 # validate scheduled-task definitions without changing live automations
 bun run automations:validate
+
+# compare saved automations with the manifest and current Codex defaults
+bun run automations:check
 ```
 
 - `ai:sync` changes installed configuration; `codex:sync` changes the plugin cache. After model-policy
@@ -222,5 +225,8 @@ bun run automations:validate
 - To restow without regenerating configuration, use `bun run ai:sync --no-codex-config`.
 - Saved automations require a separate `$piro-automation check` and approved reconciliation in Codex.
   Editing defaults or validating the manifest does not update them.
+- `automations:check` reads saved settings without writing; exit 1 with a plan means drift.
+  Ask `$piro-automation` to sync to apply the plan through Codex and check again. Model defaults are
+  copied at sync time because the native tool currently requires explicit model and reasoning values.
 - Restart Codex if it does not pick up refreshed plugin assets. OpenClaw settings are separate and
   are not changed by these utilities.

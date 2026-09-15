@@ -5,6 +5,7 @@ import path from 'node:path';
 
 import { loadAutomationManifest } from '../../../lib/automation-manifest.js';
 import { buildAutomationPlan } from '../../../lib/automation-plan.js';
+import { readAutomationState } from '../lib/read-automation-state.js';
 
 function parseArgs(args) {
   const options = { command: args[0] ?? null, repoRoot: process.cwd() };
@@ -26,10 +27,11 @@ function parseArgs(args) {
 
 function usage() {
   return [
-    'Usage: automation-task.js <validate|plan> [--repo-root <path>]',
+    'Usage: automation-task.js <validate|check|plan> [--repo-root <path>]',
     '',
     'Commands:',
     '  validate  validate AUTOMATIONS.yaml and resolved prompt files',
+    '  check     compare saved automations with the manifest (exit 1 for drift)',
     '  plan      read observed automation JSON from stdin and emit a deterministic plan',
   ].join('\n');
 }
@@ -61,8 +63,8 @@ async function main() {
     );
     return;
   }
-  if (options.command === 'plan') {
-    const input = await readJsonStdin();
+  if (options.command === 'plan' || options.command === 'check') {
+    const input = options.command === 'check' ? await readAutomationState() : await readJsonStdin();
     const plan = buildAutomationPlan({
       actualTasks: input.actualTasks,
       defaults: input.defaults,
@@ -70,6 +72,7 @@ async function main() {
       projects: input.projects ?? [],
     });
     console.log(JSON.stringify(plan, null, 2));
+    if (options.command === 'check' && plan.actions.length) process.exitCode = 1;
     return;
   }
 

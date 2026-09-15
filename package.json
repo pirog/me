@@ -32,6 +32,7 @@
     "build": "bun ./scripts/build-dist.js",
     "ai:sync": "bun ./bin/aisync.js",
     "automations:validate": "bun ./skills/automation/scripts/automation-task.js validate",
+    "automations:check": "bun ./skills/automation/scripts/automation-task.js check",
     "codex:check": "bun ./bin/codexsync.js check",
     "codex:validate": "bun ./bin/codexsync.js validate",
     "codex:sync": "bun ./bin/codexsync.js sync",

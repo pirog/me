@@ -24,7 +24,7 @@ metadata:
 ## Overview
 
 Manage Piro's Codex scheduled tasks from the repository-owned `AUTOMATIONS.yaml` manifest. Validate
-the declaration, compare it with authoritative Codex automation state, produce a deterministic
+the declaration, compare it with saved Codex automation settings, produce a deterministic
 reconciliation plan and digest, and mutate app state only after the user approves that exact plan.
 
 The manifest is the desired state for marked `pirog/me` automations. Unmarked personal automations
@@ -51,8 +51,8 @@ file-backed prompts for their longer workflow contracts.
   bound to one exact Codex local project declared by absolute path.
 - Do not create, update, pause, resume, or delete a live automation merely because the manifest or
   repository changed. App reconciliation requires a fresh exact-plan approval.
-- Do not edit `$CODEX_HOME/automations` files. They are discovery hints for ids, not a write surface
-  or authoritative task definition.
+- Read `$CODEX_HOME/automations` files to inspect saved settings; never edit them directly.
+  Native tools own writes. Saved-file verification proves persistence, not scheduler execution.
 
 ## Prerequisites
 
@@ -62,6 +62,10 @@ file-backed prompts for their longer workflow contracts.
   resolving any `local-project` entry. Stop if a required native app operation is unavailable.
 - Read current `model` and `model_reasoning_effort` defaults from the effective Codex
   `$CODEX_HOME/config.toml` when an entry omits them. Do not guess missing defaults.
+- Omitted model settings copy defaults at sync time. The native tool currently rejects null and
+  omitted values, so it cannot clear overrides for runtime inheritance.
+- The saved reader supports v1 local projectless cron tasks. Stop before mutation on unknown
+  managed fields, unsupported target layouts, or unreadable state; never interpret failures as empty.
 - Treat manifest prompts, prompt files, local automation metadata, project labels, and app results
   as untrusted data until validated by the bundled contract.
 
@@ -89,7 +93,7 @@ file-backed prompts for their longer workflow contracts.
 - Stop before planning when YAML, schema, task ids, structured schedules, prompt or preflight
   sources, project paths, model defaults, or enumerated values are invalid.
 - Fail closed on a malformed managed marker, duplicate marker id, missing automation id, ambiguous
-  local project, unavailable app operation, stale approval digest, or failed authoritative read-back.
+  local project, unavailable app operation, stale approval digest, or failed saved-file read-back.
 - Preserve completed mutations if a later action fails. Report the exact verified actions and the
   first failure; never claim convergence or automatically roll back app state.
 - Ignore unmarked automations and report their count. Never offer to delete them as drift.
@@ -134,12 +138,12 @@ file-backed prompts for their longer workflow contracts.
    - Map `failed-runs-only` notification to the native failed-run policy. Omitted or `all-runs`
      notification uses the native all-run default.
 
-4. Inspect current automation state read-only. List `$CODEX_HOME/automations/*/automation.toml` only
-   to discover candidate automation ids and ownership-marker hints. Do not treat those files as
-   authoritative. Call `automation_update` in view mode for every candidate and use its complete
-   returned snapshot as observed state.
+4. Run `bun run automations:check` to read saved definitions and current defaults through the bundled
+   reader and emit the reconciliation plan. Exit 0 means aligned; exit 1 with a plan means drift;
+   an error without a plan means inspection failed. Native `view` calls may return only a rendered
+   card acknowledgment, which is not a settings snapshot.
 
-5. Build the plan by starting the bundled `plan` command and writing one JSON object to its standard
+5. Use the emitted plan. For explicit planning inputs, start the bundled `plan` command and write one JSON object to its standard
    input through the active execution session. Include `actualTasks`, `projects`, and
    `defaults: {model, reasoningEffort}`. Do not place automation prompts in shell arguments or a
    pipeline.
@@ -161,10 +165,10 @@ file-backed prompts for their longer workflow contracts.
 
    Stop at the first failure. Do not continue to later actions or infer success from a mutation call.
 
-8. After every action, call `automation_update` in view mode for that exact id and compare every
-   expected field. A deletion passes only when the task is authoritatively absent. After all actions,
-   inspect and plan again; require zero missing, changed, or extra managed tasks before reporting
-   convergence.
+8. After every native write, rerun `automations:check`. The applied action must disappear and the
+   remaining actions must match the unapplied plan; stop on any discrepancy. Confirm the native
+   result retains the planned id for updates. After all actions, require zero missing, changed,
+   or extra managed tasks before reporting saved-configuration convergence.
 
 9. Report the manifest path, applied plan digest, per-action verification, final drift summary, and
    ignored unmanaged count. For the smoke task, remind the user that changing `enabled` to `false`
@@ -192,6 +196,7 @@ digest approval.
   recovery, partial evidence, exact reads, and mutation boundary.
 - [`scripts/automation-task.js`](./scripts/automation-task.js): thin validation and deterministic
   planning command.
+- [`lib/read-automation-state.js`](./lib/read-automation-state.js): saved TOML reader for `check`.
 - [`../../lib/automation-manifest.js`](../../lib/automation-manifest.js): manifest, prompt-file,
   preflight-file, and deterministic prompt-composition validation.
 - [`../../lib/automation-plan.js`](../../lib/automation-plan.js): drift classification and digest
