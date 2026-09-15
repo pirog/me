@@ -7,12 +7,7 @@
 ## PIROG
 
 - @tanaab/openclaw-agent-system + emori
-  - 0.7.0
-    - post prompt optimizer?
-    - better branch names 42-something-2-dobun
-    - status command?
-
-  - 0.9.0
+  - 0.8.0
     - setup task and emori setup of setup task?
     - `gog` tool
 
@@ -74,18 +69,20 @@
 
 ## EMORI ISSUES
 
-- leia upgrade and agentbox cutover?
-
 - @lando/leia
   - milestone?
   - dev cli?
   - CJS/esm CI test against builds + source?
+  - scope?
 
 - @tanaab/merge
-  - pilot task-decomposer
-    - scaffold
-      - pirog for secrets and github and initial release?
-    - ts to npm? bun based?
+  - merge arrys as main feature?
+  - prerelease always edge?
+  - scope?
+
+- @tanaab/component-playground
+  - migrate tms one
+    - decouple styling
 
 - @tanaab/actions?
   - for reusable actions
@@ -97,10 +94,6 @@
 
 - @tanaab/codex-tools?
   - codex-sync utils?
-
-- @tanaab/component-playground
-  - migrate tms one
-    - decouple styling
 
 - @tanaab/\*
   - go through all repos and normalize with new project skill
