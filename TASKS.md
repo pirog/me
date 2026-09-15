@@ -1,22 +1,24 @@
 # TASKS
 
+## NEW LIFE
+
+- IBKR/trading view/tradezella stuff?
+
 ## PIROG
 
 - @tanaab/openclaw-agent-system + emori
-  - new account?
   - 0.7.0
-    - setup task and emori setup of setup task?
-
     - post prompt optimizer?
     - better branch names 42-something-2-dobun
     - status command?
 
   - 0.9.0
-    - cron system?
+    - setup task and emori setup of setup task?
+    - `gog` tool
 
   - 0.8.0
-    - `gog` tool
-    - backups & memory?
+    - cron system and emori cron?
+    - backups
 
     - dictation
       - issue until supported by subscription?
@@ -39,10 +41,10 @@
   - API endpoints
   - backups and scheduling
     - setup creates cron job?
-  - local mem0? podman for now or postgres directly
   - explore migration to MCP as base tooling layer?
 
 - @pirog/me
+  - better plans and reports?
   - read only email summarizer?
   - blog like pirog skill
 
@@ -50,22 +52,20 @@
     - openclaw plugin skills metadata?
 
 - @tanaab/emori
-  - get new openai account for emori?
-  - improve voice skill?
-  - cron jobs?
   - add a simple agent-system install test?
+
+  - cron jobs?
+
+  - backup stuff memories?
+  - backup system?
+
+  - improve voice skill?
   - brave search API?
   - discord
   - skill audit and trim?
   - automate emori improvements?
   - some plugins to install for her?
-  - backup system?
   - local postgres?
-  - memories?
-  - memory diffs
-  - backup stuff memories?
-
-  - incorporate log into memories system once we have backups?
 
   - push back on irrelevant issues?
 
@@ -78,6 +78,8 @@
 
 - @lando/leia
   - milestone?
+  - dev cli?
+  - CJS/esm CI test against builds + source?
 
 - @tanaab/merge
   - pilot task-decomposer
