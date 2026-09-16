@@ -39,6 +39,19 @@
         "authentication": "ON_INSTALL"
       },
       "category": "Tanaab-based"
+    },
+    {
+      "name": "leia",
+      "source": {
+        "source": "npm",
+        "package": "@lando/leia",
+        "version": "2.0.0"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Testing"
     }
   ]
 }

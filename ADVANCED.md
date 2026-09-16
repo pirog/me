@@ -43,6 +43,19 @@ Codex TUI defaults to Tanaab Solarized Dark. When using another Warp theme, set 
 `ansi` in [the shared configuration](./dotfiles/ai/.codex/config.shared.toml) so syntax and diff
 colors follow the terminal instead of retaining dark-specific fills.
 
+### Plugins
+
+The `ai` dotpkg installs the Pirostore catalog and its local source links; it does not install or
+enable plugins. Every entry is optional and selected in Codex. npm-backed plugins require the `npm`
+CLI and its registry configuration; Codex downloads them without running package lifecycle scripts.
+
+| Plugin                                               | Source                        | Installation | Provides                                                               |
+| ---------------------------------------------------- | ----------------------------- | ------------ | ---------------------------------------------------------------------- |
+| [`piroplugin`](./.codex-plugin/plugin.json)          | Local `me` checkout           | Optional     | Personal workflow, planning, voice, and machine-profile skills.        |
+| [`agentbox`](https://github.com/tanaabased/agentbox) | Verified local checkout       | Optional     | Agentbox host setup and diagnostic skills.                             |
+| [`tanaab`](https://github.com/tanaabased/canon)      | Verified local Canon checkout | Optional     | Shared Tanaab authoring and project-management skills.                 |
+| [`leia`](https://github.com/lando/leia)              | `@lando/leia@2.0.0` from npm  | Optional     | Scenario skills and assets; projects manage their Leia CLI separately. |
+
 ### Skills
 
 [`piroplugin`](./.codex-plugin/plugin.json) puts these skills to work in Codex. Invoke them by name;
@@ -59,10 +72,6 @@ each has a defined job, not a general license to meddle. Follow the links for wo
 | [`piro-skill-author`](./skills/skill-author/)         | Skill authoring and optimization.                                                                  |
 | [`piro-voice`](./skills/voice/)                       | Human-facing prose with conviction, irreverence, and wit; code and structured data stay untouched. |
 | [`piro-work-on-task`](./skills/work-on-task/)         | Issue or PR assessment and planning in a Codex worktree, with policy-based model selection.        |
-
-Bootstrap prepares local plugin sources, including verified Tanaab checkouts with plugin manifests.
-Source links do not install or enable plugins; do that in Codex. The paired
-[`tanaab` plugin](https://github.com/tanaabased/canon) supplies shared authoring skills.
 
 ### Configuration Files
 

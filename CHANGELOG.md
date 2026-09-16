@@ -1,5 +1,7 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+- Added `@lando/leia@2.0.0` to Pirostore as an optional pinned npm plugin. [#73](https://github.com/pirog/me/issues/73)
+
 ## v1.0.0-beta.11 - [September 13, 2026](https://github.com/pirog/me/releases/tag/v1.0.0-beta.11)
 
 ### Model Routing
