@@ -46,6 +46,11 @@ jobs:
       - name: Put prepared scripts on PATH
         shell: bash
         run: echo "$PWD/dist" >> "$GITHUB_PATH"
+      - name: Install Node for Leia
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          package-manager-cache: false
       - name: Run Leia-backed example
         shell: bash
         env:
