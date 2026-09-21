@@ -14,28 +14,15 @@
   },
   "type": "module",
   "bin": {
-    "aisync": "./bin/aisync.js",
-    "codexsync": "./bin/codexsync.js"
-  },
-  "dependencies": {},
-  "devDependencies": {
-    "@eslint/js": "^10.0.1",
-    "@lando/leia": "2.0.0",
-    "eslint": "^10.10.0",
-    "eslint-config-prettier": "^10.1.1",
-    "globals": "^17.12.0",
-    "mocha": "^12.0.2",
-    "prettier": "^3.9.8",
-    "shellcheck": "^4.1.0"
+    "aisync": "./bin/aisync.js"
   },
   "scripts": {
     "build": "bun ./scripts/build-dist.js",
     "ai:sync": "bun ./bin/aisync.js",
     "automations:validate": "bun ./skills/automation/scripts/automation-task.js validate",
     "automations:check": "bun ./skills/automation/scripts/automation-task.js check",
-    "codex:check": "bun ./bin/codexsync.js check",
-    "codex:validate": "bun ./bin/codexsync.js validate",
-    "codex:sync": "bun ./bin/codexsync.js sync",
+    "codex:check": "bun ./node_modules/.bin/codex-tools cache check",
+    "codex:sync": "bun ./node_modules/.bin/codex-tools cache sync",
     "format:check": "prettier . --check --ignore-unknown",
     "format:write": "prettier . --write --ignore-unknown",
     "leia": "bun ./node_modules/.bin/leia",
@@ -44,5 +31,37 @@
     "lint:shellcheck": "shellcheck boot.sh",
     "test": "bun run test:unit",
     "test:unit": "bunx --bun mocha \"test/**/*.spec.js\" \"skills/*/test/**/*.spec.js\""
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@lando/leia": "2.0.0",
+    "@tanaab/codex-tools": "^1.0.0-beta.1",
+    "eslint": "^10.10.0",
+    "eslint-config-prettier": "^10.1.1",
+    "globals": "^17.12.0",
+    "mocha": "^12.0.2",
+    "prettier": "^3.9.8",
+    "shellcheck": "^4.1.0"
+  },
+  "codexTools": {
+    "marketplace": "pirostore",
+    "managedPaths": [
+      ".codex-plugin",
+      ".mcp.json",
+      "ACTORS.md",
+      "AGENTS.md",
+      "AUTOMATIONS.yaml",
+      "GOALS.md",
+      "MODEL_ROUTING.yaml",
+      "WORK_REPOS.md",
+      "assets",
+      "automations",
+      "bin",
+      "lib",
+      "package.json",
+      "references",
+      "skills",
+      "utils"
+    ]
   }
 }

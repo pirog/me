@@ -221,7 +221,7 @@ digest approval.
   project resolution, deterministic digests, and every planned lifecycle action. Treat prompt tests
   as static contract checks rather than runtime task-operation proof.
 - Run `bun run test` followed by `bun run lint`.
-- Run `bun run codex:validate`, then the repository's `codex:check` / `codex:sync` /
+- Complete the repository's `codex:check` / `codex:sync` /
   `codex:check` cache-convergence cycle when installed plugin-cache mutation is authorized.
 - Do not create a live smoke automation as repository validation. Live creation remains a separate
   exact-plan approval through this skill.

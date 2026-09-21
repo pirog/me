@@ -377,7 +377,7 @@ deliverable. This skill creates and starts work; it never archives an existing t
 
 - Run
   `bun skills/skill-author/scripts/validate-skill.js --skill-dir skills/work-on-task --type workflow`.
-- Run `bun run codex:validate`, then complete the repository's `codex:check` / `codex:sync` /
+- Complete the repository's `codex:check` / `codex:sync` /
   `codex:check` convergence cycle before a live invocation.
 - Cover missing-project handoff, exact issue startup, same-repository pull-request startup, duplicate
   protection, unsafe branch values, and the Plan Work selection handoff. Verify exact source,

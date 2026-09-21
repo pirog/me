@@ -278,7 +278,7 @@ creates a Codex task, or implements work.
 
 - Run
   `bun skills/skill-author/scripts/validate-skill.js --skill-dir skills/find-work --type workflow`.
-- Run `bun run test`, then `bun run lint`. Run `bun run codex:validate`, then complete the
+- Run `bun run test`, then `bun run lint`. Complete the
   `codex:check` / `codex:sync` / `codex:check` convergence cycle before live use.
 - Review and record static scenarios for the default multi-actor set; exact `pirog`, exact
   `emoriwan`, and multiple-handle filters; unknown and unavailable actors; workload balancing;
