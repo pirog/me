@@ -323,8 +323,8 @@ gap that native GitHub and Codex operations cannot handle.
 - [`$piro-work-on-task`](../work-on-task/SKILL.md): exact per-source Codex task creation, assessment,
   and verification owner after selection.
 - [`agents/openai.yaml`](./agents/openai.yaml): Codex presentation and default planning prompt.
-- [`composer-icon.svg`](../../assets/composer-icon.svg) and
-  [`icon-large.png`](../../assets/icon-large.png): shared plugin presentation assets.
+- [`composer-icon.svg`](./assets/composer-icon.svg) and
+  [`icon-large.png`](./assets/icon-large.png): shared plugin presentation assets.
 
 ## Validation
 

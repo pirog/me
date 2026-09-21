@@ -202,8 +202,8 @@ report engine or persistent event ledger, or reclaim worktrees directly.
 - [`GitHub Issue Work Size Resolution`](../../references/github-issue-work-size.md): shared native
   provider order, canonical value interpretation, exclusions, and reporting contract.
 - [`agents/openai.yaml`](./agents/openai.yaml): Codex presentation and explicit-invocation policy.
-- [`composer-icon.svg`](../../assets/composer-icon.svg) and
-  [`icon-large.png`](../../assets/icon-large.png): shared plugin presentation assets.
+- [`composer-icon.svg`](./assets/composer-icon.svg) and
+  [`icon-large.png`](./assets/icon-large.png): shared plugin presentation assets.
 
 ## Validation
 

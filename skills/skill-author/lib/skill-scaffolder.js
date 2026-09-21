@@ -1,4 +1,4 @@
-import { copyFile, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
+import { copyFile, mkdir, readFile, rm, stat, symlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 import formatSkillValidationReport from '../utils/format-skill-validation-report.js';
@@ -166,7 +166,9 @@ export async function initializeSkill(options) {
   const agentsDir = path.join(skillDir, 'agents');
   const assetsDir = path.join(skillDir, 'assets');
   await mkdir(agentsDir, { recursive: true });
-  if (!reuseSharedPluginIcons) {
+  if (reuseSharedPluginIcons) {
+    await symlink('../../assets', assetsDir, 'dir');
+  } else {
     await mkdir(assetsDir, { recursive: true });
   }
 
@@ -185,8 +187,8 @@ export async function initializeSkill(options) {
   const openAiContent = makeOpenAiYaml({
     defaultPrompt,
     displayName,
-    iconLarge: reuseSharedPluginIcons ? '../../assets/icon-large.png' : undefined,
-    iconSmall: reuseSharedPluginIcons ? '../../assets/composer-icon.svg' : undefined,
+    iconLarge: reuseSharedPluginIcons ? './assets/icon-large.png' : undefined,
+    iconSmall: reuseSharedPluginIcons ? './assets/composer-icon.svg' : undefined,
     shortDescription: makeShortSkillDescription(normalizedDescription),
   });
 
