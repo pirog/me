@@ -20,7 +20,7 @@
   "dependencies": {},
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@lando/leia": "2.0.0-beta.1",
+    "@lando/leia": "2.0.0",
     "eslint": "^10.10.0",
     "eslint-config-prettier": "^10.1.1",
     "globals": "^17.12.0",
