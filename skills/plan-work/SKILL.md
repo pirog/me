@@ -331,7 +331,7 @@ gap that native GitHub and Codex operations cannot handle.
 - Run
   `bun skills/skill-author/scripts/validate-skill.js --skill-dir skills/plan-work --type workflow`.
 - Run `bun run test`, then `bun run lint` because Plan Work's root planning inputs are part of the
-  managed plugin cache contract. Run `bun run codex:validate`, then complete the `codex:check` /
+  managed plugin cache contract. Complete the `codex:check` /
   `codex:sync` / `codex:check` convergence cycle before live use.
 - Review static scenarios for missing or incomplete `WORK_REPOS.md`, explicit objective, exact
   milestone filtering, `GOALS.md` fallback, priority repositories, every current-invocation scope

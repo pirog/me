@@ -221,6 +221,6 @@ report engine or persistent event ledger, or reclaim worktrees directly.
   archived, while issue #58 remains a separate later closure.
 - Confirm capacity follows the shared provider sequence, deduplicates one completed issue referenced
   twice, and excludes pull-request-only work and unavailable Work size.
-- Run `bun run codex:validate`, then complete the repository's `codex:check` / `codex:sync` /
+- Complete the repository's `codex:check` / `codex:sync` /
   `codex:check` convergence cycle before live scheduled use.
 - Do not run Leia unless the user explicitly requests it.

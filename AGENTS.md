@@ -27,8 +27,8 @@ its Codex plugin bundle.
 - `MODEL_ROUTING.yaml` owns shared Codex model, effort and Fast-mode defaults plus complexity-tier
   mappings. `references/model-routing.md` owns assessment and native selection guidance. Keep model
   literals out of skill instructions; configuration generation and Work on Task consume this policy.
-- `.codex-plugin/`, plugin source directories, `package.json`, and the Codex sync implementation own
-  the `piroplugin` package and managed cache surface.
+- `.codex-plugin/`, plugin source directories, and `package.json` own the `piroplugin` package.
+  `package.json#codexTools` selects its managed cache payload; the shared Codex Tools CLI owns syncing.
 - `AUTOMATIONS.yaml` owns desired Codex scheduled-task state. `skills/automation/` owns validation,
   drift planning, approval-gated reconciliation, and read-back verification. Automation prompts of
   at most 25 physical lines may stay inline; longer prompts must use `prompt-file` and live under
@@ -85,8 +85,9 @@ its Codex plugin bundle.
   details into this file. `examples/inputs`, `examples/payload`, and `examples/tanaab` own the public
   interface, payload lifecycle, repository lifecycle, and plugin-link behavior respectively.
 - Never run Leia locally unless the user explicitly requests it.
-- Use `bun run codex:validate` and `bun run codex:check` for managed plugin changes. When the check
-  reports cache drift, use `bun run codex:sync` and rerun the check.
+- Use `bun run codex:check` for managed plugin changes. When the check reports cache drift, use
+  `bun run codex:sync` and rerun the check. Plugin validation belongs to the shared
+  `tanaabased/actions/validate-codex-plugin@v1` action in CI, not a local wrapper.
 - Use `bun run ai:sync` only to generate and restow the live Stow-owned AI surface under
   `dotfiles/ai`; it is separate from plugin-cache sync.
 - Treat `$piro-me-doctor` as read-only diagnosis. Read its `SKILL.md` before changing or using it,
@@ -108,7 +109,8 @@ its Codex plugin bundle.
 - Run the narrowest reliable checks first and broaden only when risk justifies it.
 - Run `bun run test` for JavaScript library or helper changes before `bun run lint`.
 - Use `bun run lint` for routine validation and `git diff --check` when text churn is plausible.
-- For managed plugin changes, run `bun run codex:validate` and complete the check/sync/check cycle.
+- For managed plugin changes, complete the check/sync/check cycle and verify the shared plugin
+  validation action in CI; report when remote validation has not run.
 - Run `bun run ai:sync` only when live home-directory restow is part of the requested work.
 - Treat `bun run build` as CI-owned unless release or `dist/` verification is explicitly requested.
 - Report when plugin sync, `ai:sync`, agent restart, Leia, or `bun run build` is intentionally skipped.

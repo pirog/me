@@ -250,7 +250,7 @@ filesystem garbage collector, abandonment override, bulk collector, or scheduled
 
 - Run
   `bun skills/skill-author/scripts/validate-skill.js --skill-dir skills/clean-up-task --type workflow`.
-- Run `bun run codex:validate`, then complete the repository's `codex:check` / `codex:sync` /
+- Complete the repository's `codex:check` / `codex:sync` /
   `codex:check` convergence cycle before live use.
 - Cover PR, Git-without-PR, conversation-only, and retained-checkout outcomes. Confirm that every
   applicable preservation gate passes before archival and that retained environments remain

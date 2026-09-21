@@ -210,9 +210,6 @@ maintenance ritual.
 # regenerate codex configuration and restow the ai dotfiles into your home directory
 bun run ai:sync
 
-# validate the source plugin, skills, automation manifest, and model policy
-bun run codex:validate
-
 # compare the installed plugin cache with the source
 bun run codex:check
 
@@ -231,6 +228,10 @@ bun run automations:check
 
 - `ai:sync` changes installed configuration; `codex:sync` changes the plugin cache. After model-policy
   changes, use both and verify the defaults in a new task. Existing task selections remain unchanged.
+- Cache scripts call the development dependency `@tanaab/codex-tools` directly; payload selection
+  lives in `package.json#codexTools`. Use `bun run codex:sync --dry-run` to preview changes, or add
+  `--cache-path <path> --missing-target create` for a disposable raw copy, not a plugin installation.
+  Plugin validation runs through `tanaabased/actions/validate-codex-plugin@v1` in CI.
 - To restow without regenerating configuration, use `bun run ai:sync --no-codex-config`.
 - Saved automations require a separate `$piro-automation check` and approved reconciliation in Codex.
   Editing defaults or validating the manifest does not update them.

@@ -25,8 +25,6 @@ jobs:
         run: bun run lint
       - name: Run unit tests
         run: bun run test
-      - name: Validate repository policy
-        run: bun run codex:validate
       - name: Validate generic Codex plugin contract
         uses: tanaabased/actions/validate-codex-plugin@v1
       - name: Export sitemap metadata
@@ -42,8 +40,6 @@ jobs:
           sync-token: ${{ secrets.TANAAB_COAXIUM_INJECTOR }}
       - name: Verify prepared formatting
         run: bun run format:check
-      - name: Validate prepared repository policy
-        run: bun run codex:validate
       - name: Validate prepared generic Codex plugin contract
         uses: tanaabased/actions/validate-codex-plugin@v1
       - name: Publish Codex plugin archive
