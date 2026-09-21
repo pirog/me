@@ -17,19 +17,22 @@ jobs:
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
+          ref: ${{ github.sha }}
       - name: Install Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version-file: .bun-version
+        uses: tanaabased/actions/setup-bun@v1
       - name: Install dependencies
         run: bun install --frozen-lockfile --ignore-scripts
-      - name: Validate Codex plugin
+      - name: Validate repository policy
         run: bun run codex:validate
+      - name: Validate generic Codex plugin contract
+        uses: tanaabased/actions/validate-codex-plugin@v1
       - name: Prepare release-shaped build
-        uses: tanaabased/prepare-release-action@v1
+        uses: tanaabased/actions/publish-repo@v1
         with:
-          version: dev
-          sync: false
+          dry-run: true
+          version: ${{ env.STAMPED_VERSION }}
+          release-date: ${{ github.event.pull_request.created_at }}
+          release-url: ${{ github.event.pull_request.html_url }}
           commands: |
             bun run lint
             bun run build
@@ -38,8 +41,10 @@ jobs:
             bun run format:write
       - name: Verify prepared formatting
         run: bun run format:check
-      - name: Validate prepared Codex plugin
+      - name: Validate prepared repository policy
         run: bun run codex:validate
+      - name: Validate prepared generic Codex plugin contract
+        uses: tanaabased/actions/validate-codex-plugin@v1
       - name: Verify stamped release entrypoint
         shell: bash
         run: |
@@ -58,27 +63,22 @@ jobs:
           test -s dist/llms.txt
           grep -F 'https://boot.pirog.me/llms.txt' dist/sitemap.xml
           grep -F 'Allow: /llms.txt' dist/robots.txt
-      - name: Install production dependencies
-        run: |
-          rm -rf node_modules
-          bun install --production --frozen-lockfile --ignore-scripts
       - name: Package release archive
-        env:
-          RELEASE_ARCHIVE: piroplugin-${{ env.STAMPED_VERSION }}.tar.gz
-        run: |
-          tar \
-            --exclude-vcs \
-            -czf "${RUNNER_TEMP}/${RELEASE_ARCHIVE}" \
-            -C "${GITHUB_WORKSPACE}" \
-            .
+        id: publish-plugin
+        uses: tanaabased/actions/publish-codex-plugin@v1
+        with:
+          dry-run: true
+          archive-name: piroplugin-${{ env.STAMPED_VERSION }}.tar.gz
+          dependency-policy: include-production
+          release-tag: ${{ env.STAMPED_VERSION }}
       - name: Verify release archive contents
         env:
-          RELEASE_ARCHIVE: piroplugin-${{ env.STAMPED_VERSION }}.tar.gz
+          RELEASE_ARCHIVE: ${{ steps.publish-plugin.outputs.archive-path }}
         run: |
-          tar -tzf "${RUNNER_TEMP}/${RELEASE_ARCHIVE}" | grep -F '.codex-plugin/plugin.json'
-          tar -tzf "${RUNNER_TEMP}/${RELEASE_ARCHIVE}" | grep -F 'dist/boot.sh'
-          tar -tzf "${RUNNER_TEMP}/${RELEASE_ARCHIVE}" | grep -F 'dist/llms.txt'
-          if tar -tzf "${RUNNER_TEMP}/${RELEASE_ARCHIVE}" | grep -E '(^|/)node_modules/(@lando/leia|@eslint/js|eslint|eslint-config-prettier|globals|mocha|prettier|shellcheck)/'; then
+          tar -tzf "${RELEASE_ARCHIVE}" | grep -F '.codex-plugin/plugin.json'
+          tar -tzf "${RELEASE_ARCHIVE}" | grep -F 'dist/boot.sh'
+          tar -tzf "${RELEASE_ARCHIVE}" | grep -F 'dist/llms.txt'
+          if tar -tzf "${RELEASE_ARCHIVE}" | grep -E '(^|/)node_modules/(@lando/leia|@eslint/js|eslint|eslint-config-prettier|globals|mocha|prettier|shellcheck)/'; then
             echo 'release archive must not include dev dependencies' >&2
             exit 1
           fi
