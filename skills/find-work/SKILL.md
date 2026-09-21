@@ -271,8 +271,8 @@ creates a Codex task, or implements work.
   provider order, canonical value interpretation, exclusions, and reporting contract.
 - [`$piro-plan-work`](../plan-work/SKILL.md): assigned-work owner and Work size capacity semantics.
 - [`agents/openai.yaml`](./agents/openai.yaml): Codex presentation and default prompt.
-- [`composer-icon.svg`](../../assets/composer-icon.svg) and
-  [`icon-large.png`](../../assets/icon-large.png): shared plugin presentation assets.
+- [`composer-icon.svg`](./assets/composer-icon.svg) and
+  [`icon-large.png`](./assets/icon-large.png): shared plugin presentation assets.
 
 ## Validation
 

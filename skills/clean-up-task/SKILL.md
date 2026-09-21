@@ -243,8 +243,8 @@ filesystem garbage collector, abandonment override, bulk collector, or scheduled
 
 - [`agents/openai.yaml`](./agents/openai.yaml): Codex presentation, default prompt, and
   explicit-invocation policy.
-- [`composer-icon.svg`](../../assets/composer-icon.svg) and
-  [`icon-large.png`](../../assets/icon-large.png): shared plugin presentation assets.
+- [`composer-icon.svg`](./assets/composer-icon.svg) and
+  [`icon-large.png`](./assets/icon-large.png): shared plugin presentation assets.
 
 ## Validation
 

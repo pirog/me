@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { execFile } from 'node:child_process';
-import { lstat, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { lstat, mkdir, mkdtemp, readFile, readlink, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { promisify } from 'node:util';
@@ -224,9 +224,10 @@ describe('skills/skill-author scaffolding', () => {
       'utf8',
     );
 
-    assert.match(openAiContent, /icon_small: "\.\.\/\.\.\/assets\/composer-icon\.svg"/);
-    assert.match(openAiContent, /icon_large: "\.\.\/\.\.\/assets\/icon-large\.png"/);
-    await assert.rejects(lstat(path.join(generated.skillDir, 'assets')));
+    assert.match(openAiContent, /icon_small: "\.\/assets\/composer-icon\.svg"/);
+    assert.match(openAiContent, /icon_large: "\.\/assets\/icon-large\.png"/);
+    assert.equal((await lstat(path.join(generated.skillDir, 'assets'))).isSymbolicLink(), true);
+    assert.equal(await readlink(path.join(generated.skillDir, 'assets')), '../../assets');
   });
 
   it('should reject missing or malformed OpenClaw metadata and accept real requirement gates', async () => {

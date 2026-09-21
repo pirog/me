@@ -36,7 +36,7 @@ skill-folder/
 ├── utils/         # optional independently testable units
 ├── test/          # optional flat skill-owned tests and support
 ├── templates/     # optional, only when unique to this skill
-├── assets/        # optional, only when unique to this skill
+├── assets/        # optional local assets or link to shared plugin assets
 └── references/    # optional, only when unique to this skill
 ```
 
@@ -116,7 +116,7 @@ skill-folder/
 - `[error]` Repo-level operational script filenames must end in `-cli.js` or `-task.js`; import-only modules belong in `lib/` or `utils/` instead of using a `-lib.js` suffix under `scripts/`.
 - `[warn]` Keep support material local to the owning skill by default.
 - `[warn]` Hoist support material to repo root only on proven reuse across live surfaces, repo-wide contract or tooling status, or standalone human value.
-- `[warn]` When multiple plugin-contained skills use identical presentation icons, prefer shared plugin-root assets and relative metadata paths; retain skill-local icons for standalone or uniquely branded skills.
+- `[warn]` When multiple plugin-contained skills use identical presentation icons, prefer shared plugin-root assets through a skill-local `assets` symlink and `./assets/...` metadata paths; retain copied skill-local icons for standalone or uniquely branded skills.
 - `[warn]` Machine-readable data should live with the smallest justified owner. Hoist it into repo-root `references/` only when multiple live consumers or independent human value justify it.
 - `[error]` Bundleable repo scripts must import shared templates, assets, and machine-readable canon explicitly so `bun build` can follow the dependency graph.
 - `[warn]` Keep the default scaffold minimal.
