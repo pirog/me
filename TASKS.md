@@ -1,34 +1,43 @@
 # TASKS
 
-## NEW LIFE
-
-- IBKR/trading view/tradezella stuff?
-
 ## PIROG
 
+- @pirog/me
+  - codex tools/agent system install?
+  - convert to agent-system agent.yaml format?
+  - update models?
+  - release as package?
+
+  - morning closeout?
+  - better plans and reports?
+  - read only email summarizer?
+  - blog like pirog skill
+
 - @tanaab/openclaw-agent-system + emori
-  - 0.8.0
-    - setup task and emori setup of setup task?
-    - `gog` tool
+  - 0.7.0
+    - codex support?
+    - setup tasks for me/emori?
+    - docs cleanup/guidance pass/release?
+    - speed up security tests?
 
   - 0.8.0
-    - cron system and emori cron?
+    - automations?
     - backups
-
-    - dictation
-      - issue until supported by subscription?
+    - `gog` tool
+    - cron system and emori cron?
 
     - theme?
+    - better voice actuator? rewrite messages?
 
-  - `generic-tool` system?
+  - 0.9.0
+    - `generic-tool` system?
+    - pr-review flow
+    - complete issue + plan flow
+      - plan mode need to be able to transition to work mode with plan prompt injection?
+    - complete auto flow?
 
-  - complete issue + plan flow
-    - plan mode need to be able to transition to work mode with plan prompt injection?
-  - complete auto flow
-
-  - pr flow
-  - pr-review flow
   - pr link?
+  - pr flow
 
   - assigned to review support?
   - "random" comment anywhere support?
@@ -37,17 +46,21 @@
   - backups and scheduling
     - setup creates cron job?
   - explore migration to MCP as base tooling layer?
-
-- @pirog/me
-  - better plans and reports?
-  - read only email summarizer?
-  - blog like pirog skill
-
-  - pirog-ify for openclaw/agent-system?
-    - openclaw plugin skills metadata?
+  - macos backups?
 
 - @tanaab/emori
-  - add a simple agent-system install test?
+  - bubbblewrap?
+  - release as package?
+  - install agent as openclaw plugin?
+  - emphasis beltalowda creol
+
+  - setup?
+    - setting up worktrees?
+    - brew deps
+    - memory db
+    - plugins and config?
+    - canon linking?
+    - others?
 
   - cron jobs?
 
@@ -67,64 +80,41 @@
   - other issues/goals
     - bootstrap.md.template?
 
-## EMORI ISSUES
+- @tanaab/canon
+  - vue skill updates
+    - testing?
+    - actions?
+  - codex skill updates
+    - testing with codex cli?
+    - actions?
+  - install in openclaw?
+  - update canon skill?
+  - basically it updates lists every day?
+  - update repo skill && automation?
+  - agent-system/agent creation skill?
+  - some kind of blocked issue automation task?
+  - codify better automation skills like task management/blocked/etc
 
-- @lando/leia
-  - milestone?
-  - dev cli?
-  - CJS/esm CI test against builds + source?
-  - scope?
+## AGENTS
 
-- @tanaab/merge
-  - merge arrys as main feature?
-  - prerelease always edge?
-  - scope?
+- setup SMUTLORD bug fixer agent
+- setup TEMENOS canon enforcement && PR agent
+- setup TBD? admin/daily agent
+
+## EMORI ISSUES?
 
 - @tanaab/component-playground
-  - migrate tms one
-    - decouple styling
+  - redirects
+  - about/project url?
+  - optimizer? project stnadard?
+  - domain setup?
+  - release/trusted pub/netlify/etc
+  - docs/deploy/netlify/build.env?
 
-- @tanaab/actions?
-  - for reusable actions
-  - release-npm
-  - release-clawhub
-  - release-github
-  - npm-pack
-  - ssh-key-gen
+  - badges: 34a6ccb8-9d9f-44e7-a5bf-99a47fc54e5f
 
-- @tanaab/codex-tools?
-  - codex-sync utils?
-
-- @tanaab/\*
-  - go through all repos and normalize with new project skill
-  - change to @tanaab npm namespacing via project optimizer
-  - bump to latest bun
-  - create @tanaabased/codex-plugin-validator-action@v1
-  - update all scripts that are fundamentally complex to bun cli?
-  - catch all email routing and AI triage?
-  - cli plugin installation now available in codex
-  - known_hosts for github?
-  - hosted scripts with better macos.sh and unsupported.sh routing?
-  - stdin -> script ruins NONINTERACTIVE for all hosted scripts!
-  - refresh on readme structure wrt pics and badges
-  - add similar badges + circle pic?
-  - get emori to rework our repos for improved guidance on CLI usage and llms.txt?
-  - pictures and badges inc netlify (use connector?) as needed
-  - llm.txts
-  - usage quickstart with bash -s
-  - bun trusting
-  - document personal agentbox cli example?
-  - falsey shoudl include skip?
-  - github known hosts for scripts that ssh clone eg pirog/me
-  - run bootbox in --quiet mode for all wrapper scripts
-  - helper tags for repos with similar flows?
-    - canon list of tags?
-    - bootbox
-    - hosted-scripts
-
-- @tanaab/goals?
-  - place for "hidden" tickets and goal setting?
-  - better name?
+  - add to vue/vite skill?
+  - improved milestone?
 
 - @tanaab/agentbox
   - openclaw agentbox plugin?
@@ -142,8 +132,52 @@
     - caddy install
     - install and configure needed openclaw plugins eg agent-os?
 
-- @tanaab/<persona>-template
-  - agent templates to see a repo
+- @tanaab/bootbox
+  - warning if keys exist?
+  - make into bun cli as well?
+
+- @tanaab/template-netscript
+  - AGENTS.md starter
+  - llms?
+
+- @tanaab/goals?
+  - place for "hidden" tickets and goal setting?
+  - better name?
+
+## TEMENOS ISSUES?
+
+- @tanaab/\*
+  - updates to node-version/bun-version?
+  - go through all repos and normalize with new project skill
+  - change to @tanaab npm namespacing via project optimizer
+  - bump to latest bun
+  - create @tanaabased/codex-plugin-validator-action@v1
+  - update all scripts that are fundamentally complex to bun cli?
+  - catch all email routing and AI triage?
+  - cli plugin installation now available in codex
+  - known_hosts for github?
+  - refresh on readme structure wrt pics and badges
+  - get emori to rework our repos for improved guidance on CLI usage and llms.txt?
+  - pictures and badges inc netlify (use connector?) as needed
+
+  - document personal agentbox cli example?
+  - falsey shoudl include skip?
+  - helper tags for repos with similar flows?
+    - canon list of tags?
+    - bootbox
+    - hosted-scripts
+
+  - hosted-script concerns
+    - run bootbox in --quiet mode for all wrapper scripts
+    - usage quickstart with bash -s
+    - bun trusting
+    - llm.txts
+    - add similar badges + circle pic?
+    - stdin -> script ruins NONINTERACTIVE for all hosted scripts!
+    - hosted scripts with better macos.sh and unsupported.sh routing?
+    - readme?
+
+## MILESTONE 1
 
 - @tanaab/theme
   - codex terminal theme?
@@ -194,17 +228,7 @@
       - more padding
       - png kit
 
-- @tanaab/bootbox
-  - warning if keys exist?
-  - make into bun cli as well?
-
 - @tanaab/website
   - rebase on THEME
   - get blog rolling
     - rss/etc
-
-- @tanaab/template-netscript
-  - AGENTS.md starter
-  - llms?
-
-- @tanaab/config-system?
