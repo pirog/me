@@ -44,6 +44,20 @@ duplicate or target verification and read the exact target again. A failed exact
 target, unsafe environment, or destructive uncertainty blocks that mutation. Partial planning
 coverage never carries forward as mutation authorization.
 
+### Recurring-task preservation
+
+Before archival, inspect native automation metadata or read the current host's saved
+`$CODEX_HOME/automations/*/automation.toml` definitions (default `~/.codex/automations`). Do not
+edit those files. Protect every `target_thread_id`, including paused and unmanaged heartbeats.
+A heartbeat invocation in the exact task history also identifies a persistent automation task:
+retain it even if its saved schedule is missing. A completed turn is not a completed recurring task.
+
+Refresh this check immediately before archival. If automation state cannot be read reliably, skip
+cleanup and report the limitation; independent reporting can continue. Never pause, delete, detach,
+or archive a recurring task as routine cleanup. Retiring one needs an explicit automation-retirement
+request. Only a proven standalone run, not its persistent automation task, can be a prior-report
+cleanup candidate.
+
 ## Static scenarios
 
 - `list_threads(limit=50)` returns fewer than 50 non-pinned tasks and trustworthy task records; use

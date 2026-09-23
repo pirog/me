@@ -49,6 +49,7 @@ async function planShippedAutomations() {
           reasoningEffort: sharedConfig.model_reasoning_effort,
         },
         projects: [],
+        threadTargets: { 'morning-closeout': 'closeout-task', 'daily-work-plan': 'daily-task' },
       }),
     );
   });
@@ -81,16 +82,24 @@ describe('lib/automation-manifest', () => {
 
     const plan = await planShippedAutomations();
     const automations = new Map(plan.actions.map((action) => [action.manifestId, action.expected]));
-    for (const automation of automations.values()) {
-      assert.equal(automation.model, 'gpt-6-astra');
-      assert.equal(automation.reasoningEffort, 'high');
+    const sharedConfig = modelRoutingConfig(await loadModelRoutingPolicy());
+    assert.equal(automations.get('smoke-test').model, sharedConfig.model);
+    assert.equal(
+      automations.get('smoke-test').reasoningEffort,
+      sharedConfig.model_reasoning_effort,
+    );
+    for (const id of ['morning-closeout', 'daily-work-plan']) {
+      assert.equal(automations.get(id).kind, 'heartbeat');
+      assert.equal(automations.get(id).model, undefined);
+      assert.equal(automations.get(id).reasoningEffort, undefined);
     }
+    assert.deepEqual(plan.blockers, []);
     assert.equal(automations.get('smoke-test').status, 'PAUSED');
     assert.equal(automations.get('smoke-test').projectId, null);
     assert.equal(automations.get('smoke-test').rrule, 'RRULE:FREQ=MINUTELY;INTERVAL=15');
     assert.equal(automations.get('morning-closeout').status, 'ACTIVE');
     assert.equal(automations.get('morning-closeout').name, '🧹 MORNING CLOSEOUT');
-    assert.equal(automations.get('morning-closeout').projectId, null);
+    assert.equal(automations.get('morning-closeout').targetThreadId, 'closeout-task');
     const morningPrompt = automations.get('morning-closeout').prompt;
     assert.match(morningPrompt, /# AUTOMATION PREFLIGHT/);
     assert.match(morningPrompt, /# ❌ AUTOMATION ERROR/);
@@ -120,7 +129,7 @@ describe('lib/automation-manifest', () => {
     );
     assert.equal(automations.get('daily-work-plan').status, 'ACTIVE');
     assert.equal(automations.get('daily-work-plan').name, '📋 DAILY WORK PLAN');
-    assert.equal(automations.get('daily-work-plan').projectId, null);
+    assert.equal(automations.get('daily-work-plan').targetThreadId, 'daily-task');
     const dailyPrompt = automations.get('daily-work-plan').prompt;
     assert.match(dailyPrompt, /# AUTOMATION PREFLIGHT/);
     assert.match(dailyPrompt, /# ❌ AUTOMATION ERROR/);
@@ -247,6 +256,44 @@ describe('lib/automation-manifest', () => {
     const manifest = await loadAutomationManifest({ parseYaml: JSON.parse, repoRoot });
 
     assert.equal(manifest.automations[0].prompt, 'Write the note.');
+  });
+
+  it('should reject invalid kinds and heartbeat settings owned by its target task', async () => {
+    const task = {
+      id: 'daily',
+      kind: 'heartbeat',
+      enabled: true,
+      name: 'Daily',
+      prompt: 'Report.',
+      schedule: { frequency: 'daily', at: '05:00' },
+    };
+    for (const override of [
+      { kind: 'unknown' },
+      { model: 'gpt-test' },
+      { reasoning: 'high' },
+      { 'local-project': { path: '/tmp/project' } },
+    ]) {
+      const repoRoot = await createRepo({
+        'schema-version': 1,
+        automations: [{ ...task, ...override }],
+      });
+      await assert.rejects(loadAutomationManifest({ parseYaml: JSON.parse, repoRoot }));
+    }
+  });
+
+  it('should statically protect recurring tasks in both cleanup entrypoints', async () => {
+    const contract = await readFile(
+      path.join(REPO_ROOT, 'references/codex-task-access.md'),
+      'utf8',
+    );
+    assert.match(contract, /including paused and unmanaged heartbeats/);
+    assert.match(contract, /retain it even if its saved schedule is missing/);
+    assert.match(contract, /Refresh this check immediately before archival/);
+    assert.match(contract, /skip\s+cleanup/);
+    for (const skill of ['clean-up-task', 'morning-closeout']) {
+      const content = await readFile(path.join(REPO_ROOT, 'skills', skill, 'SKILL.md'), 'utf8');
+      assert.match(content, /recurring-task preservation/);
+    }
   });
 
   it('should compose a reusable preflight before the task prompt', async () => {

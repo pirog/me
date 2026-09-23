@@ -70,6 +70,7 @@ async function main() {
       defaults: input.defaults,
       desiredTasks: manifest.automations,
       projects: input.projects ?? [],
+      threadTargets: input.threadTargets ?? {},
     });
     console.log(JSON.stringify(plan, null, 2));
     if (options.command === 'check' && plan.actions.length) process.exitCode = 1;

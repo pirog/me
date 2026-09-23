@@ -37,15 +37,18 @@ Inspect active tasks and pinned tasks before selecting any candidate.
 Never target this currently running task.
 Never interrupt a running task.
 Never unpin a task.
+Apply Codex Task Access's recurring-task preservation check before selection and again before archival.
+Never archive a persistent heartbeat task, including paused automations or tasks whose schedule is missing.
 
 Consider two cleanup candidate classes:
 
 1. Idle Codex-managed Git worktree tasks that may have completed their declared work.
-2. Every earlier projectless report task whose original assignment contains one of these exact markers:
+2. Earlier projectless standalone report runs whose original assignment contains one of these exact markers:
    - `Managed by pirog/me AUTOMATIONS.yaml (id: morning-closeout).`
    - `Managed by pirog/me AUTOMATIONS.yaml (id: daily-work-plan).`
 
 Do not select a report from its title alone.
+Require standalone-run provenance; retain ambiguous or heartbeat-backed reports even after a completed turn.
 Read each candidate and prove its exact task id, environment, original assignment, and current state.
 Repeat the exact target read immediately before its archival attempt.
 Read or unread state is not an archival gate; record it when exposed, but do not infer it or retain an otherwise eligible earlier report because it may be unread.

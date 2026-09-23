@@ -71,6 +71,9 @@ filesystem garbage collector, abandonment override, bulk collector, or scheduled
   task id under its approved interactive or repository-managed scheduled request.
 - Require native Codex task operations that can list, read, archive, and read back the exact task.
   Stop if those operations are unavailable or the task identity cannot be proved.
+- Apply [recurring-task preservation](../../references/codex-task-access.md#recurring-task-preservation).
+  A heartbeat target is not eligible, whether active, paused, or missing its schedule. Routine
+  cleanup must not retire an automation as a side effect of archiving its task.
 - Require the target to be idle, active rather than already archived, and absent from the pinned
   task list. Do not unpin, interrupt, wake, restore, or otherwise change task state to make it
   eligible.
@@ -188,7 +191,8 @@ filesystem garbage collector, abandonment override, bulk collector, or scheduled
    and failed gate, the exact mutations already performed, expected post-archive environment
    behavior, and all retained state. In **assess** mode, stop here.
 
-8. In **archive** mode, archive only the resolved Codex task through the native task operation, then
+8. In **archive** mode, refresh recurring-task preservation and read the exact target again.
+   Archive only the resolved eligible Codex task through the native task operation, then
    verify that the exact task appears in archived tasks and no unrelated active task changed. If
    archival fails or cannot be read back, report the failure and retain every other state.
 

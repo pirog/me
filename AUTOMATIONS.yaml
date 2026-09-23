@@ -1,6 +1,7 @@
 schema-version: 1
 automations:
   - id: smoke-test
+    kind: cron
     name: 🧪 Pyro automation smoke test
     enabled: false
     schedule:
@@ -11,6 +12,7 @@ automations:
       Do not access project files or connected services. Apart from updating the automation memory
       supplied with the run, do not change state.
   - id: morning-closeout
+    kind: heartbeat
     name: 🧹 MORNING CLOSEOUT
     enabled: true
     schedule:
@@ -25,6 +27,7 @@ automations:
     preflight-file: automations/codex-task-preflight.md
     prompt-file: automations/morning-closeout.md
   - id: daily-work-plan
+    kind: heartbeat
     name: 📋 DAILY WORK PLAN
     enabled: true
     schedule:
