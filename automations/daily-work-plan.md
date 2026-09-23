@@ -3,6 +3,7 @@
 Prepare the Piro daily work plan for the current local date.
 This is a projectless planning task; do not edit repository files.
 Managed automation id: `daily-work-plan`.
+This is a persistent recurring task. Completing today's report does not make this task eligible for archival.
 
 ## Required preflight capabilities
 

@@ -64,6 +64,7 @@ describe('skills/automation/lib/read-automation-state', () => {
         notificationPolicy: null,
         destination: 'local',
         projectId: null,
+        targetThreadId: null,
       },
     );
     assert.deepEqual(
@@ -89,6 +90,33 @@ describe('skills/automation/lib/read-automation-state', () => {
       readAutomationState({ codexHome: path.join(codexHome, 'missing') }),
       /ENOENT/,
     );
+  });
+
+  it('should read heartbeat bindings without synthesizing cron settings', async () => {
+    const heartbeat =
+      saved
+        .replace('kind = "cron"', 'kind = "heartbeat"')
+        .split('\n')
+        .filter(
+          (line) => !/^(model|reasoning_effort|execution_environment|target |cwds)/.test(line),
+        )
+        .join('\n') + 'target_thread_id = "persistent-task"\n';
+    await writeFile(savedPath, heartbeat);
+    const { actualTasks } = await readAutomationState({ codexHome });
+    assert.equal(actualTasks[0].kind, 'heartbeat');
+    assert.equal(actualTasks[0].destination, 'thread');
+    assert.equal(actualTasks[0].targetThreadId, 'persistent-task');
+    assert.equal(actualTasks[0].model, null);
+    assert.equal(actualTasks[0].executionEnvironment, null);
+    for (const invalid of [
+      heartbeat.replace('persistent-task', ''),
+      heartbeat + 'model = "gpt-test"\n',
+      heartbeat + 'unknown = true\n',
+      saved + 'target_thread_id = "wrong"\n',
+    ]) {
+      await writeFile(savedPath, invalid);
+      await assert.rejects(readAutomationState({ codexHome }));
+    }
   });
 
   it('should detect and then clear drift through the existing planner on fresh reads', async () => {

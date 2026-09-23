@@ -101,14 +101,15 @@ turns a failed candidate into an abandonment decision, or mutates external deliv
 
 5. Exclude the calling task, every running or pending task, every pinned task, tasks on another
    host, and entries whose exact task id or environment cannot be read back. Do not change state to
-   make an excluded task eligible.
+   make an excluded task eligible. Apply Codex Task Access's recurring-task preservation check:
+   exclude persistent heartbeat tasks, including paused automations and tasks with missing schedules.
 
 6. Build cleanup candidates from exactly two classes:
    - **managed-worktree work:** an idle active Codex task whose native task and project metadata
      prove a Codex-managed Git worktree;
-   - **prior managed report:** an idle projectless task whose original assignment contains one of
-     the exact report-automation markers. Require native scheduled or automation provenance when it
-     is exposed. Its declared deliverable is the completed report, so unchosen optional
+   - **prior managed report:** an idle projectless standalone run whose original assignment contains
+     one of the exact report-automation markers. Require evidence that this is a standalone run,
+     not a persistent heartbeat task; retain ambiguous provenance. Its declared deliverable is the completed report, so unchosen optional
      recommendations do not by themselves make it incomplete; a failed run or missing required
      report output remains incomplete. Include every earlier exact managed report regardless of
      read state. Never select a report from title similarity alone.
@@ -160,7 +161,7 @@ turns a failed candidate into an abandonment decision, or mutates external deliv
 - Current-host task discovery is complete or its exact limitation is visible.
 - Every candidate has one exact task id, is idle, active, unpinned, is not the caller, and belongs to
   one permitted candidate class through read-back evidence.
-- Every earlier exact managed report is assessed regardless of read state; an unavailable read flag
+- Every earlier exact standalone managed report is assessed regardless of read state; an unavailable read flag
   remains unknown and does not block archival.
 - Each candidate is handed to Clean Up Task separately; no coordinator inference replaces its
   environment, outcome, preservation, or archive verification gates.
@@ -212,6 +213,8 @@ report engine or persistent event ledger, or reclaim worktrees directly.
 - Confirm static scenarios cover a mixed list containing the caller, a running task, a pinned task,
   one eligible worktree task, one blocked worktree task, an exact prior managed report, and a
   title-only report lookalike. Only the two preservation-gated exact candidates may archive.
+- Confirm active, paused, unmanaged, and missing-schedule heartbeat tasks remain unarchived after
+  a completed report, and unreadable automation state skips cleanup without suppressing reporting.
 - Confirm a valid 50-result listing with no pagination processes only exact visible candidates and
   reports `active-task discovery was incomplete` without an invalid 100 probe or repeated capped
   read. Confirm malformed results, unavailable current-host sources, failed exact pre-archive reads,

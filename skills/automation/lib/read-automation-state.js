@@ -15,6 +15,7 @@ const FIELD_NAMES = {
   reasoning_effort: 'reasoningEffort',
   execution_environment: 'executionEnvironment',
   notification_policy: 'notificationPolicy',
+  target_thread_id: 'targetThreadId',
 };
 const METADATA = ['version', 'target', 'cwds', 'created_at', 'updated_at'];
 
@@ -29,18 +30,27 @@ function normalize(saved, id) {
   const marker = parseManagedAutomationPrompt(saved.prompt);
   if (marker.malformed) throw new Error(`automation ${id} has a malformed ownership marker.`);
   if (!marker.managed) return { id, prompt: saved.prompt };
+  const heartbeat = saved.kind === 'heartbeat';
+  const supportedTarget = heartbeat
+    ? typeof saved.target_thread_id === 'string' &&
+      !!saved.target_thread_id.trim() &&
+      ['execution_environment', 'target', 'cwds', 'model', 'reasoning_effort'].every(
+        (key) => saved[key] === undefined,
+      )
+    : saved.kind === 'cron' &&
+      saved.target_thread_id === undefined &&
+      saved.execution_environment === 'local' &&
+      saved.target?.type === 'projectless' &&
+      Object.keys(saved.target).length === 1 &&
+      JSON.stringify(saved.cwds) === '["~"]';
   if (
     Object.keys(saved).some((key) => !Object.hasOwn(FIELD_NAMES, key) && !METADATA.includes(key)) ||
     saved.version !== 1 ||
     saved.id !== id ||
-    saved.kind !== 'cron' ||
-    saved.execution_environment !== 'local' ||
-    saved.target?.type !== 'projectless' ||
-    Object.keys(saved.target).length !== 1 ||
-    JSON.stringify(saved.cwds) !== '["~"]'
+    !supportedTarget
   ) {
     throw new Error(
-      `automation ${id} has unsupported saved settings; only v1 local projectless cron tasks are supported.`,
+      `automation ${id} has unsupported saved settings; expected a v1 thread heartbeat or local projectless cron task.`,
     );
   }
   if (
@@ -62,7 +72,7 @@ function normalize(saved, id) {
         saved[savedName] ?? null,
       ]),
     ),
-    destination: 'local',
+    destination: heartbeat ? 'thread' : 'local',
     projectId: null,
   };
 }

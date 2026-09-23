@@ -158,4 +158,67 @@ describe('lib/automation-plan', () => {
     const input = { actualTasks: [], defaults: DEFAULTS, desiredTasks: [desired()] };
     assert.equal(buildAutomationPlan(input).digest, buildAutomationPlan(input).digest);
   });
+
+  it('should require an explicit target for missing heartbeats and include it in approval', () => {
+    const input = { actualTasks: [], defaults: {}, desiredTasks: [desired({ kind: 'heartbeat' })] };
+    const blocked = buildAutomationPlan(input);
+    assert.equal(blocked.blockers.length, 1);
+    assert.equal(blocked.actions[0].expected.targetThreadId, null);
+    const plan = buildAutomationPlan({ ...input, threadTargets: { 'smoke-test': 'task-a' } });
+    assert.deepEqual(plan.blockers, []);
+    assert.equal(plan.actions[0].expected.destination, 'thread');
+    assert.equal(plan.actions[0].expected.targetThreadId, 'task-a');
+    for (const field of ['model', 'reasoningEffort', 'projectId', 'executionEnvironment']) {
+      assert.equal(Object.hasOwn(plan.actions[0].expected, field), false);
+    }
+    assert.notEqual(plan.digest, blocked.digest);
+    assert.notEqual(
+      plan.digest,
+      buildAutomationPlan({ ...input, threadTargets: { 'smoke-test': 'task-b' } }).digest,
+    );
+  });
+
+  it('should preserve heartbeat targets through prompt updates, pauses, and resumes', () => {
+    const task = desired({ kind: 'heartbeat' });
+    const created = buildAutomationPlan({
+      actualTasks: [],
+      defaults: {},
+      desiredTasks: [task],
+      threadTargets: { 'smoke-test': 'persistent-task' },
+    });
+    const actual = { ...created.actions[0].expected, id: 'native-id' };
+    const input = { actualTasks: [actual], defaults: DEFAULTS, desiredTasks: [task] };
+    assert.deepEqual(buildAutomationPlan(input).actions, []);
+    for (const [override, type] of [
+      [{ prompt: 'New report.' }, 'update'],
+      [{ enabled: false }, 'pause'],
+    ]) {
+      const plan = buildAutomationPlan({ ...input, desiredTasks: [{ ...task, ...override }] });
+      assert.equal(plan.actions[0].type, type);
+      assert.equal(plan.actions[0].automationId, 'native-id');
+      assert.equal(plan.actions[0].expected.targetThreadId, 'persistent-task');
+      const applied = { ...plan.actions[0].expected, id: 'native-id' };
+      assert.deepEqual(
+        buildAutomationPlan({
+          ...input,
+          actualTasks: [applied],
+          desiredTasks: [{ ...task, ...override }],
+        }).actions,
+        [],
+      );
+    }
+    assert.equal(
+      buildAutomationPlan({ ...input, actualTasks: [{ ...actual, status: 'PAUSED' }] }).actions[0]
+        .type,
+      'resume',
+    );
+    assert.throws(
+      () => buildAutomationPlan({ ...input, threadTargets: { 'smoke-test': 'other-task' } }),
+      /cannot silently change/,
+    );
+    assert.throws(
+      () => buildAutomationPlan({ ...input, desiredTasks: [desired()] }),
+      /explicit kind migration/,
+    );
+  });
 });
