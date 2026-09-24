@@ -55,7 +55,8 @@ turns a failed candidate into an abandonment decision, or mutates external deliv
 ## Preconditions
 
 - Require trustworthy GitHub identity and read access under
-  [`GitHub Read Access`](../../references/github-read-access.md). Require actor `pirog` and read
+  [`GitHub Read Access`](../../references/github-read-access.md), using the profile actor from
+  [`Selected Agent Profile`](../../references/agent-profile.md). Read
   [`WORK_REPOS.md`](../../WORK_REPOS.md). The managed schedule uses `pirog/*` and `tanaabased/*`,
   excluding `tanaabased/big-test-bucket` and `lando/*`.
 - Require native Codex operations that can list active and pinned tasks, read exact tasks, archive
@@ -87,11 +88,11 @@ turns a failed candidate into an abandonment decision, or mutates external deliv
 
 3. Discover completed issues and merged pull requests across every reviewed repository and exhaust
    pagination. Keep exact `closedAt` and `mergedAt` events inside the interval. Include issues
-   assigned to `pirog`, including shared assignments; unassigned issues with a verified delivery
-   pull request authored by `pirog`; and pull requests authored by or assigned to `pirog`, or linked
-   to a `pirog`-assigned issue. State each inclusion reason and shared responsibility. Deduplicate
-   canonical GitHub URLs within the report. Incomplete or untrustworthy discovery is a reporting
-   failure, not an empty result.
+   assigned to the profile actor, including shared assignments; unassigned issues with a verified
+   delivery pull request authored by the profile actor; and pull requests authored by or assigned
+   to that actor, or linked to an issue assigned to that actor. State each inclusion reason and
+   shared responsibility. Deduplicate canonical GitHub URLs within the report. Incomplete or
+   untrustworthy discovery is a reporting failure, not an empty result.
 
 4. Start current-host cleanup discovery with `list_threads(limit=50)` and follow Codex Task Access.
    Record whether discovery is complete. A valid capped result is partial but usable: do not repeat

@@ -17,6 +17,18 @@
       "category": "Pirobased"
     },
     {
+      "name": "agent-system",
+      "source": {
+        "source": "local",
+        "path": "./.codex/plugins/agent-system"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Tanaab-based"
+    },
+    {
       "name": "agentbox",
       "source": {
         "source": "local",

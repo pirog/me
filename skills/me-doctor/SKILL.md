@@ -91,12 +91,14 @@ services, mutate connector data, or validate the Agentbox product.
 3. Present each group once. Omit passing leaf checks unless the user asks for full detail. List every
    issue and warning with its explanation and cataloged remediation.
 
-4. Discover the GitHub connector tools and run a read-only authenticated identity probe. This is a
-   required Codex integration. Require both:
-   - GitHub login `pirog`
-   - GitHub user ID `713424`
+4. Resolve the profile actor through [`Selected Agent Profile`](../../references/agent-profile.md).
+   Discover the GitHub connector tools and run a read-only authenticated identity probe under
+   [`GitHub Read Access`](../../references/github-read-access.md). Require both:
+   - GitHub login matching the selected profile actor
+   - GitHub user ID `713424` (the existing account safeguard; unsupported by the manifest schema)
 
-   Missing tools, failed authentication, or an identity mismatch make the final result not ready.
+   Missing or inactive profile context, missing tools, failed authentication, or an identity mismatch
+   make the final result not ready. Continue independent local diagnosis without repairing the binding.
 
 5. Discover `automation_update` and inspect declarative automation state read-only:
    - Validate `AUTOMATIONS.yaml` with the bundled `$piro-automation` command.
@@ -142,7 +144,7 @@ services, mutate connector data, or validate the Agentbox product.
    Required Codex integration
 
    - ✅ piroplugin
-   - ✅ GitHub connector: `pirog` / `713424`
+   - ✅ GitHub connector: selected profile actor / `713424`
    - ✅ Declarative automations: converged
 
    Optional capabilities
@@ -184,7 +186,8 @@ services, mutate connector data, or validate the Agentbox product.
   remediation.
 - Every active group was represented; passing leaf checks were hidden by default.
 - Every local failure or warning and every connector mismatch was reported with a focused next step.
-- GitHub identity matched `pirog` / `713424`, or the final result was not ready.
+- GitHub identity matched the selected profile actor and user ID `713424`, or the final result was
+  not ready.
 - Declarative automation validation and the read-only drift plan converged, or the final result was
   not ready with `$piro-automation` remediation.
 - monday identity matched `Michael Pirog` / `71211606`, or the mismatch was reported as a warning.

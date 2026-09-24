@@ -8,8 +8,9 @@ This is a persistent recurring task. Completing today's report does not make thi
 ## Required preflight capabilities
 
 - `$piro-plan-work` and `$piro-find-work` with their complete current contracts.
-- Native GitHub connector reads authenticated as `pirog`, including complete issue and pull-request
-  discovery within the approved scope. Apply [`GitHub Read Access`](../references/github-read-access.md)
+- Native GitHub connector reads authenticated as the selected profile actor, including complete
+  issue and pull-request discovery within the approved scope. Apply
+  [`GitHub Read Access`](../references/github-read-access.md)
   connector-first; verify the CLI route only if connector recovery or a required Work size fallback
   actually reaches it.
 - Native Codex task listing and exact reading under
