@@ -88,6 +88,8 @@ See [CLI Options](./ADVANCED.md#cli-options) for defaults, environment variables
 - Review Agent System's hook through `/hooks`, start a fresh task, then ask:
   `Use $agent-system-codex-binding to bind this plugin to /Users/pirog/tanaab/me.`
   Confirm the checkout containing [`agent.yaml`](./agent.yaml), then start a fresh task to load pirog's identity.
+- Run `$agent-system-doctor` to check profile drift after local source changes; run
+  `$agent-system-install` to apply the declared setup steps.
 - Ask Codex to run `$piro-automation check` and review the plan before approving live sync.
   Run `$piro-me-doctor` for read-only profile and automation-drift diagnosis; approve access prompts
   only when you intentionally requested the check.

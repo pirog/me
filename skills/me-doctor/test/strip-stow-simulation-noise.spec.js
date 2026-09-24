@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 
-import stripStowSimulationNoise from '../utils/strip-stow-simulation-noise.js';
+import stripStowSimulationNoise from '../../../utils/strip-stow-simulation-noise.js';
 
-describe('skills/me-doctor/utils/strip-stow-simulation-noise', () => {
+describe('utils/strip-stow-simulation-noise', () => {
   it('should remove only the simulation disclaimer', () => {
     assert.equal(
       stripStowSimulationNoise(
