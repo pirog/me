@@ -6,7 +6,7 @@ set -euo pipefail
 #
 #   $ ./boot.sh --op-token "$OP_TOKEN"
 #   $ ./boot.sh --op-token "$OP_TOKEN" --ssh-key vmruk4ny353aly6tbom7z3v2hy/id_agentbox1
-#   $ ./boot.sh --op-token "$OP_TOKEN" --tanaab canon --tanaab agentbox
+#   $ ./boot.sh --op-token "$OP_TOKEN" --tanaab canon:codex-plugin --tanaab openclaw-agent-system:codex-plugin-build
 #   $ PIROME_DEBUG=1 ./boot.sh --op-token "$OP_TOKEN" --yes
 #
 # option precedence: cli options override environment variables, which override defaults.
@@ -262,6 +262,8 @@ declare -a SSH_KEYS_TO_INSTALL=()
 declare -a SSH_KEYS_TO_OVERWRITE=()
 declare -a SSH_KEYS_TO_SKIP=()
 declare -a TANAAB_REPOS=()
+declare -a TANAAB_PLUGIN_REPOS=()
+declare -a TANAAB_PLUGIN_BUILD_REPOS=()
 declare -a ME_APPLY_DOTPKGS=()
 declare -a ME_APPLY_CASK_SKIPS=()
 declare -a PLANNED_ACTIONS=()
@@ -352,7 +354,7 @@ Usage: ${tty_dim}[NONINTERACTIVE=1] [CI=1]${tty_reset} ${tty_bold}${SCRIPT_NAME}
 ${tty_tp}Options:${tty_reset}
   --ssh-key        installs 1password ssh keys as vault/item[:filename] ${tty_dim}[default: ${ssh_keys_display}]${tty_reset}
   --op-token       auths with 1password service account token ${tty_dim}[default: ${op_token_display}]${tty_reset}
-  --tanaab         clones or safely updates a repeatable @tanaabased repository name ${tty_dim}[default: ${tanaab_repos_display}]${tty_reset}
+  --tanaab         clones or safely updates a repeatable @tanaabased repository name[:codex-plugin[-build]] ${tty_dim}[default: ${tanaab_repos_display}]${tty_reset}
   --version        shows version of this script
   --debug          shows debug messages ${tty_dim}[default: ${debug_display}]${tty_reset}
   --force          forces supported bootbox operations ${tty_dim}[default: ${force_display}]${tty_reset}
@@ -841,14 +843,27 @@ legacy_tanaab_source_value() {
 }
 
 validate_tanaab_repos() {
+  local selection
   local repo
+  local mode
+  local -a repos=()
 
   dedupe_array_values TANAAB_REPOS
   if [[ "${#TANAAB_REPOS[@]}" -eq 0 ]]; then
     return 0
   fi
 
-  for repo in "${TANAAB_REPOS[@]}"; do
+  for selection in "${TANAAB_REPOS[@]}"; do
+    repo="${selection%%:*}"
+    mode=""
+    if [[ "${selection}" == *:* ]]; then
+      mode="${selection#*:}"
+      case "${mode}" in
+        codex-plugin | codex-plugin-build) ;;
+        *) abort "tanaab value ${tty_ts}${selection}${tty_reset} has an unsupported suffix; use ${tty_ts}:codex-plugin${tty_reset} or ${tty_ts}:codex-plugin-build${tty_reset}." ;;
+      esac
+    fi
+
     if legacy_tanaab_source_value "${repo}"; then
       abort "tanaab value ${tty_ts}${repo}${tty_reset} must name a repository in ${tty_ts}@${TANAAB_GITHUB_ORG}${tty_reset}; source modes and falsey disable values are no longer supported."
     fi
@@ -860,7 +875,19 @@ validate_tanaab_repos() {
     if [[ "${#repo}" -gt 100 || ! "${repo}" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]]; then
       abort "tanaab value ${tty_ts}${repo}${tty_reset} must be a safe GitHub repository name containing only letters, numbers, dots, underscores, or hyphens."
     fi
+
+    if ! array_contains_value repos "${repo}"; then
+      repos+=("${repo}")
+    fi
+    if [[ -n "${mode}" ]] && ! array_contains_value TANAAB_PLUGIN_REPOS "${repo}"; then
+      TANAAB_PLUGIN_REPOS+=("${repo}")
+    fi
+    if [[ "${mode}" == codex-plugin-build ]] && ! array_contains_value TANAAB_PLUGIN_BUILD_REPOS "${repo}"; then
+      TANAAB_PLUGIN_BUILD_REPOS+=("${repo}")
+    fi
   done
+
+  TANAAB_REPOS=("${repos[@]}")
 }
 
 discover_me_apply_payload() {
@@ -1350,6 +1377,18 @@ plan_me_apply() {
   fi
 }
 
+plan_tanaab_plugin_installs() {
+  local repo
+
+  for repo in "${TANAAB_PLUGIN_REPOS[@]}"; do
+    plan_action "${tty_tp}install${tty_reset} frozen Bun dependencies for ${tty_ts}@${TANAAB_GITHUB_ORG}/${repo}${tty_reset} without lifecycle scripts"
+    if array_contains_value TANAAB_PLUGIN_BUILD_REPOS "${repo}"; then
+      plan_action "${tty_tp}build${tty_reset} ${tty_ts}@${TANAAB_GITHUB_ORG}/${repo}${tty_reset}"
+    fi
+    plan_action "${tty_tp}install${tty_reset} ${tty_ts}@${TANAAB_GITHUB_ORG}/${repo}${tty_reset} as a Codex plugin"
+  done
+}
+
 run_bootbox_for_me_apply() {
   local dotpkg
   local -a bootbox_args=(--brewfile "${ME_APPLY_BREWFILE}")
@@ -1364,6 +1403,38 @@ run_bootbox_for_me_apply() {
   else
     bootbox_run_or_abort "bootbox failed while applying me payload ${tty_ts}$(me_payload_display)${tty_reset}." "${bootbox_args[@]}"
   fi
+}
+
+install_tanaab_codex_plugins() {
+  local repo
+  local repo_dir
+  local node_prefix
+  local brew_prefix
+
+  [[ "${#TANAAB_PLUGIN_REPOS[@]}" -gt 0 ]] || return 0
+  node_prefix="$(brew --prefix node@26)" || abort "could not locate Homebrew node@26 for Codex plugin installation."
+  brew_prefix="$(brew --prefix)" || abort "could not locate Homebrew for Codex plugin installation."
+  [[ -x "${node_prefix}/bin/node" && -x "${brew_prefix}/bin/bun" ]] || abort "Homebrew Node and Bun must be available for Codex plugin installation."
+
+  for repo in "${TANAAB_PLUGIN_REPOS[@]}"; do
+    repo_dir="$(tanaab_repo_target_path "${repo}")"
+    [[ -f "${repo_dir}/.codex-plugin/plugin.json" ]] || abort "@${TANAAB_GITHUB_ORG}/${repo} does not declare a Codex plugin."
+    [[ -f "${repo_dir}/bun.lock" && -f "${repo_dir}/package.json" ]] || abort "@${TANAAB_GITHUB_ORG}/${repo} needs package.json and bun.lock for Codex plugin setup."
+    if array_contains_value TANAAB_PLUGIN_BUILD_REPOS "${repo}"; then
+      jq -e '.scripts.build | type == "string" and length > 0' "${repo_dir}/package.json" >/dev/null || abort "@${TANAAB_GITHUB_ORG}/${repo} does not declare a build script."
+    fi
+
+    (
+      cd "${repo_dir}"
+      export PATH="${node_prefix}/bin:${brew_prefix}/bin:${PATH}"
+      execute bun install --frozen-lockfile --ignore-scripts
+      if array_contains_value TANAAB_PLUGIN_BUILD_REPOS "${repo}"; then
+        execute bun run build
+      fi
+      [[ -x ./node_modules/.bin/codex-tools ]] || abort "@${TANAAB_GITHUB_ORG}/${repo} needs @tanaab/codex-tools as an installed dependency."
+      execute ./node_modules/.bin/codex-tools install .
+    )
+  done
 }
 
 plan_action() {
@@ -1737,6 +1808,7 @@ plan_wrapper_execution() {
   plan_tanaab_repos
   plan_plugin_reconciliation
   plan_me_apply
+  plan_tanaab_plugin_installs
 }
 
 prepare_bootbox_script() {
@@ -1860,6 +1932,7 @@ main() {
   debug raw ME_APPLY_BREWFILE="$(me_apply_brewfile_display)"
   debug raw ME_APPLY_DOTPKGS="$(array_join "," ME_APPLY_DOTPKGS)"
   run_bootbox_for_me_apply
+  install_tanaab_codex_plugins
   run_me_post_bootstrap_summary
 }
 

@@ -36,12 +36,14 @@ Provide a 1Password service account token and run the hosted bootstrap:
 
 ```sh
 /bin/bash -c "$(curl -fsSL https://boot.pirog.me/boot.sh)" piroboot \
-  --op-token "$OP_TOKEN"
+  --op-token "$OP_TOKEN" \
+  --tanaab canon:codex-plugin \
+  --tanaab openclaw-agent-system:codex-plugin-build
 ```
 
-The default run installs the configured SSH keys and applies the Brewfile and dotfiles to `$HOME`.
-Tanaab repositories are opt-in. Installed `agentbox` and formula-backed Tailscale hosts retain their
-existing services; see [Dependencies](./ADVANCED.md#dependencies).
+Without `--tanaab`, boot installs the configured SSH keys, Brewfile, and dotfiles. Installed
+`agentbox` and formula-backed Tailscale hosts retain their existing services; see
+[Dependencies](./ADVANCED.md#dependencies).
 
 ## Usage
 
@@ -67,7 +69,7 @@ piroboot --help
 | ------------ | --------------------------------------------------------------------------- |
 | `--op-token` | Authenticate private SSH-key retrieval.                                     |
 | `--ssh-key`  | Select a `vault/item[:filename]`; repeat for multiple keys.                 |
-| `--tanaab`   | Select a repository from `@tanaabased`; repeat for multiple repositories.   |
+| `--tanaab`   | Select a repository from `@tanaabased`, optionally with an action suffix.   |
 | `--yes`      | Accept the plan without prompts.                                            |
 | `--force`    | Replace supported Bootbox targets and SSH keys, never repository checkouts. |
 | `--debug`    | Show debug output with secrets masked.                                      |
@@ -81,11 +83,8 @@ See [CLI Options](./ADVANCED.md#cli-options) for defaults, environment variables
   check access with `op vault list`.
 - **Tailscale:** if using the desktop app, sign in and join `tanaab.dev`. Leave formula-backed services
   in place; `tailscale status --json` should report the local node running and online.
-- **Codex:** sign in and install `piroplugin` and `agent-system` from Pirostore; install `tanaab` too
-  if you selected Canon. For Agent System, select `--tanaab openclaw-agent-system` during bootstrap
-  and prepare its runtime using the upstream
-  [development instructions](https://github.com/tanaabased/openclaw-agent-system/blob/main/DEVELOPMENT.md).
-  Connect GitHub as `pirog` and monday.com as `Michael Pirog`.
+- **Codex:** sign in and install `piroplugin` from Pirostore. The qualified `--tanaab` selections above
+  install Canon and Agent System from source. Connect GitHub as `pirog` and monday.com as `Michael Pirog`.
 - Review Agent System's hook through `/hooks`, start a fresh task, then ask:
   `Use $agent-system-codex-binding to bind this plugin to /Users/pirog/tanaab/me.`
   Confirm the checkout containing [`agent.yaml`](./agent.yaml), then start a fresh task to load pirog's identity.
