@@ -4,10 +4,6 @@ Use this contract whenever a Piroplugin workflow requires native GitHub reads, a
 CLI reads, or both. This is a read-only access check. It never changes authentication, connector
 configuration, repository state, or GitHub objects.
 
-Resolve the expected operator through [Selected Agent Profile](./agent-profile.md) before any
-identity-dependent read. Use its **profile actor**, then verify the live account below. A missing,
-inactive, or incomplete profile is a readiness failure, not permission to guess the operator.
-
 Prove connector access and CLI access independently when the owning workflow actually needs both. A
 working connector does not prove that `gh` can reach the API, and a working CLI does not replace a
 connector-first workflow. Do not preflight the CLI merely because it is a documented fallback; use

@@ -75,13 +75,11 @@ deliverable. This skill creates and starts work; it never archives an existing t
   from the immediately preceding plan and clearly requested task creation using natural language such
   as `queue`, `start`, or `spin up`. A plan, recommendation, historical selection, or fuzzy row
   reference does not satisfy the gate.
-- Resolve the profile actor through [`Selected Agent Profile`](../../references/agent-profile.md).
-  Use [`GitHub Read Access`](../../references/github-read-access.md) to verify the native connector
-  against that actor, then fetch the source read-only. Stop if profile context or the connector is
-  unavailable, the identity differs, or the source is not open.
+- Use the native GitHub connector to confirm that its current login is `pirog`, then fetch the source
+  read-only. Stop if the connector is unavailable, the identity differs, or the source is not open.
 - For a pull request, require its base and head repository to normalize to the same `owner/repo`, a
-  non-empty head branch and head commit, and the profile actor to have push access to that repository.
-  Before the head branch appears in any command, refspec, task field, task prompt, or later push guidance,
+  non-empty head branch and head commit, and `pirog` to have push access to that repository. Before
+  the head branch appears in any command, refspec, task field, task prompt, or later push guidance,
   compare it as data against the exact shell-safe allowlist `^[A-Za-z0-9][A-Za-z0-9._/-]*$`. Reject
   `$`, backticks, quotes, whitespace, shell metacharacters, and any other non-matching character
   without constructing a command from the value. Then require the allowlisted value to pass Git
@@ -322,8 +320,7 @@ deliverable. This skill creates and starts work; it never archives an existing t
 - The current user request explicitly authorizes creating one separate Codex task and the exact
   issue branch or pull-request head-ref refresh needed to start it, either directly or through the
   exact current `$piro-plan-work` selection boundary.
-- GitHub identity matches the selected profile actor; the canonical source is one open issue or
-  same-repository pull request.
+- GitHub identity is `pirog`; the canonical source is one open issue or same-repository pull request.
 - The saved project is selected by normalized GitHub `origin`, not by its display label.
 - Missing-project output uses `~/tanaab/<repo>`, never overwrites an existing path, and contains an
   exact clone command only when the expected checkout is absent, followed by manual Codex setup and

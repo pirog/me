@@ -20,9 +20,6 @@ its Codex plugin bundle.
 
 ## Sources Of Truth
 
-- `agent.yaml` owns supported operator identity metadata. Agent System's explicit Codex binding
-  selects the canonical workspace; `references/agent-profile.md` owns Piroplugin consumption.
-  Never select identity from the current task directory or duplicate the manifest in the plugin cache.
 - `boot.sh` owns the hosted wrapper; its executable examples own the observable bootstrap contract.
 - `Brewfile` owns the base Homebrew inventory, `Brewfile.openclaw` owns opt-in OpenClaw development
   dependencies, and top-level packages under `dotfiles/` own installed user configuration.

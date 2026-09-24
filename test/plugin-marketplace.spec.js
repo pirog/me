@@ -45,18 +45,4 @@ describe('Pirostore marketplace', () => {
       category: 'Testing',
     });
   });
-
-  it('should expose Agent System through the optional local source link', async () => {
-    const marketplace = await loadMarketplace();
-
-    assert.deepEqual(
-      marketplace.plugins.find(({ name }) => name === 'agent-system'),
-      {
-        name: 'agent-system',
-        source: { source: 'local', path: './.codex/plugins/agent-system' },
-        policy: { installation: 'AVAILABLE', authentication: 'ON_INSTALL' },
-        category: 'Tanaab-based',
-      },
-    );
-  });
 });

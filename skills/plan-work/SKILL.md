@@ -18,10 +18,9 @@ metadata:
 
 ## Overview
 
-Build one bounded work plan from open GitHub issues assigned to the profile actor and open pull
-requests that assign or request review from that actor. Use [`WORK_REPOS.md`](../../WORK_REPOS.md)
-for ordered priority repositories, default discovery scopes, current-invocation scope decisions,
-and explicit narrowing.
+Build one bounded work plan from open GitHub issues assigned to `pirog` and open pull requests that
+assign or request review from `pirog`. Use [`WORK_REPOS.md`](../../WORK_REPOS.md) for ordered priority
+repositories, default discovery scopes, current-invocation scope decisions, and explicit narrowing.
 
 Use an explicit objective or GitHub milestone when supplied; otherwise use the current objective and
 near-term priorities in [`GOALS.md`](../../GOALS.md). Rank actionable issues, recommend the strongest
@@ -58,10 +57,9 @@ gap that native GitHub and Codex operations cannot handle.
 
 ## Preconditions
 
-- Resolve the profile actor through [`Selected Agent Profile`](../../references/agent-profile.md).
-  Require the native GitHub connector to match that actor under
-  [`GitHub Read Access`](../../references/github-read-access.md). Stop on unavailable profile context
-  or an identity mismatch; verify CLI access only when the workflow needs it.
+- Require the native GitHub connector, confirm its current login is `pirog`, and stop on an identity
+  mismatch. Apply [`GitHub Read Access`](../../references/github-read-access.md) lazily when connector
+  recovery or a CLI-only fallback is actually needed.
 - Use native Codex task listing and exact reading for commitment and duplicate detection under
   [`Codex Task Access`](../../references/codex-task-access.md). Plan-only mode may continue with the
   explicitly bounded degradation below; starting selected work still requires a fresh trustworthy
@@ -107,9 +105,9 @@ gap that native GitHub and Codex operations cannot handle.
      objective for this plan.
 
 4. Discover every open candidate in the approved scope through the native GitHub connector:
-   - issues assigned to the profile actor;
-   - pull requests assigned to the profile actor; and
-   - pull requests with a review request for the profile actor.
+   - issues assigned to `pirog`;
+   - pull requests assigned to `pirog`; and
+   - pull requests with a review request for `pirog`.
 
    Follow pagination to exhaustion. If the available connector truncates results or cannot prove a
    complete search, report the incomplete scope and do not claim the plan covers all assigned work.
@@ -278,8 +276,7 @@ gap that native GitHub and Codex operations cannot handle.
 
 ## Checkpoints
 
-- GitHub identity matches the selected profile actor; candidate discovery is complete or explicitly
-  reported incomplete.
+- GitHub identity is `pirog`; candidate discovery is complete or explicitly reported incomplete.
 - Codex commitment coverage is labeled complete, partial, unavailable, or untrustworthy; partial and
   unavailable plan-only results use unknown capacity, map no unproved commitments, and recommend at
   most one conditional issue.

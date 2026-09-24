@@ -129,11 +129,9 @@ filesystem garbage collector, abandonment override, bulk collector, or scheduled
 6. Apply the selected evidence profile.
 
    ### PR deliverable
-   - Resolve the profile actor through [`Selected Agent Profile`](../../references/agent-profile.md)
-     and verify the available GitHub surface against it under
-     [`GitHub Read Access`](../../references/github-read-access.md). Stop on unavailable profile context
-     or an identity mismatch. Fetch the exact pull request and repository metadata. Require the PR
-     to be merged, with a final head commit, recorded merge commit, merged timestamp, and base branch equal to the base repository's
+   - Use the available GitHub surface to verify that the current identity is `pirog`, then fetch the
+     exact pull request and repository metadata. Require the PR to be merged, with a final head
+     commit, recorded merge commit, merged timestamp, and base branch equal to the base repository's
      current default branch.
    - Require the task repository to normalize to the PR's base repository. Keep fork-backed PRs
      outside this first version because their source and preservation routing differ from the

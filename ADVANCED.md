@@ -49,48 +49,13 @@ The `ai` dotpkg installs the Pirostore catalog and its local source links; it do
 enable plugins. Every entry is optional and selected in Codex. npm-backed plugins require the `npm`
 CLI and its registry configuration; Codex downloads them without running package lifecycle scripts.
 
-| Plugin                                                                | Source                         | Installation | Provides                                                               |
-| --------------------------------------------------------------------- | ------------------------------ | ------------ | ---------------------------------------------------------------------- |
-| [`piroplugin`](./.codex-plugin/plugin.json)                           | Local `me` checkout            | Optional     | Personal workflow, planning, voice, and machine-profile skills.        |
-| [`agent-system`](https://github.com/tanaabased/openclaw-agent-system) | Verified local source checkout | Optional     | Explicit profile binding and shared non-secret identity context.       |
-| [`agentbox`](https://github.com/tanaabased/agentbox)                  | Verified local checkout        | Optional     | Agentbox host setup and diagnostic skills.                             |
-| [`tanaab`](https://github.com/tanaabased/canon)                       | Verified local Canon checkout  | Optional     | Shared Tanaab authoring and project-management skills.                 |
-| [`leia`](https://github.com/lando/leia)                               | `@lando/leia@2.0.0` from npm   | Optional     | Scenario skills and assets; projects manage their Leia CLI separately. |
-
-### Agent profile
-
-[`agent.yaml`](./agent.yaml) declares the operator identity and expected GitHub account. Install
-Agent System from Pirostore's verified `~/tanaab/openclaw-agent-system` source link; no published
-package is required. The source checkout must contain the built `dist/codex/codex-runtime.js`,
-`hooks/hooks.json`, and packaged `skills/codex-binding` workflow. Follow upstream
-[development guidance](https://github.com/tanaabased/openclaw-agent-system/blob/main/DEVELOPMENT.md)
-when preparing or updating that runtime.
-
-Install from Pirostore in Codex, or run `codex plugin add --json -- agent-system@pirostore`.
-Me's Stow-linked catalog is discovered from the home directory; preserve that registration instead
-of registering its resolved dotfiles directory as a second Pirostore source. Codex Tools 1.0 rejects
-that symlink/source combination during installation. Use its shared cache check/sync/check commands
-from the Agent System checkout with `--marketplace pirostore`, and Me's `bun run codex:check` /
-`bun run codex:sync` for Piroplugin. Inspect installed and enabled state plus the cached binder,
-runtime, and hook. A source link or synchronized raw directory alone does not establish installation.
-
-Review the installed hook through `/hooks`; trust belongs to its exact definition and must be
-reviewed again when that definition changes. In a fresh task, invoke `$agent-system-codex-binding`
-with `/Users/pirog/tanaab/me`, review the manifest preview, confirm, and inspect the saved binding.
-The canonical checkout must already contain the reviewed manifest. Binding a worktree would make
-its eventual removal an identity outage. See upstream
-[binding and recovery](https://github.com/tanaabased/openclaw-agent-system/blob/main/ADVANCED.md#codex-workspace-binding).
-
-Start a fresh task in Me and one in another project or worktree. Both must receive the same active
-workspace and identity through the trusted hook, even if the other directory has its own manifest.
-Verify the profile avatar resolves from that workspace and Piroplugin's skills can still read their
-packaged resources. A missing or invalid binding stops identity-dependent workflows; repair the
-manifest or use the binder to deliberately rebind, then start a fresh task.
-
-The hook loads metadata without registering an OpenClaw agent, resolving secrets, or running setup.
-[Profile consumption](./references/agent-profile.md) keeps connector authentication and live checks
-separate. Git dotfiles still own conditional authorship and signing; monday account safeguards,
-voice, goals, planning registries, and model routing keep their existing owners.
+| Plugin                                                                | Source                        | Installation | Provides                                                               |
+| --------------------------------------------------------------------- | ----------------------------- | ------------ | ---------------------------------------------------------------------- |
+| [`piroplugin`](./.codex-plugin/plugin.json)                           | Local `me` checkout           | Optional     | Personal workflow, planning, voice, and machine-profile skills.        |
+| [`agent-system`](https://github.com/tanaabased/openclaw-agent-system) | Verified local checkout       | Optional     | Pirog identity through Codex workspace binding.                        |
+| [`agentbox`](https://github.com/tanaabased/agentbox)                  | Verified local checkout       | Optional     | Agentbox host setup and diagnostic skills.                             |
+| [`tanaab`](https://github.com/tanaabased/canon)                       | Verified local Canon checkout | Optional     | Shared Tanaab authoring and project-management skills.                 |
+| [`leia`](https://github.com/lando/leia)                               | `@lando/leia@2.0.0` from npm  | Optional     | Scenario skills and assets; projects manage their Leia CLI separately. |
 
 ### Skills
 
@@ -111,19 +76,19 @@ each has a defined job, not a general license to meddle. Follow the links for wo
 
 ### Configuration Files
 
-| File                                                                               | Owns                                                                                      |
-| ---------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| [`agent.yaml`](./agent.yaml)                                                       | Supported operator identity and expected GitHub account, loaded from the bound workspace. |
-| [`GOALS.md`](./GOALS.md)                                                           | Direction, priorities, and deferrals.                                                     |
-| [`ACTORS.md`](./ACTORS.md)                                                         | Reviewed work-planning actors and their goals sources.                                    |
-| [`WORK_REPOS.md`](./WORK_REPOS.md)                                                 | Repository priorities and discovery scope.                                                |
-| [`MODEL_ROUTING.yaml`](./MODEL_ROUTING.yaml)                                       | Default model, reasoning effort, Fast mode, and complexity-tier mappings.                 |
-| [`AUTOMATIONS.yaml`](./AUTOMATIONS.yaml)                                           | Desired schedules, status, and prompt sources for managed Codex tasks.                    |
-| [`automations/`](./automations/)                                                   | Task prompts and shared readiness checks with bounded recovery and safety stops.          |
-| [`dotfiles/ai/.codex/AGENTS.md`](./dotfiles/ai/.codex/AGENTS.md)                   | Global collaboration, voice, and change-discipline guidance.                              |
-| [`dotfiles/ai/.codex/config.shared.toml`](./dotfiles/ai/.codex/config.shared.toml) | Portable Codex settings not owned by the model policy.                                    |
-| `~/.codex/config.local.toml`                                                       | Machine-specific settings, including project trust and local paths.                       |
-| `~/.codex/config.toml`                                                             | Generated output; edit its source inputs instead.                                         |
+| File                                                                               | Owns                                                                             |
+| ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| [`agent.yaml`](./agent.yaml)                                                       | Pirog identity for Agent System.                                                 |
+| [`GOALS.md`](./GOALS.md)                                                           | Direction, priorities, and deferrals.                                            |
+| [`ACTORS.md`](./ACTORS.md)                                                         | Reviewed work-planning actors and their goals sources.                           |
+| [`WORK_REPOS.md`](./WORK_REPOS.md)                                                 | Repository priorities and discovery scope.                                       |
+| [`MODEL_ROUTING.yaml`](./MODEL_ROUTING.yaml)                                       | Default model, reasoning effort, Fast mode, and complexity-tier mappings.        |
+| [`AUTOMATIONS.yaml`](./AUTOMATIONS.yaml)                                           | Desired schedules, status, and prompt sources for managed Codex tasks.           |
+| [`automations/`](./automations/)                                                   | Task prompts and shared readiness checks with bounded recovery and safety stops. |
+| [`dotfiles/ai/.codex/AGENTS.md`](./dotfiles/ai/.codex/AGENTS.md)                   | Global collaboration, voice, and change-discipline guidance.                     |
+| [`dotfiles/ai/.codex/config.shared.toml`](./dotfiles/ai/.codex/config.shared.toml) | Portable Codex settings not owned by the model policy.                           |
+| `~/.codex/config.local.toml`                                                       | Machine-specific settings, including project trust and local paths.              |
+| `~/.codex/config.toml`                                                             | Generated output; edit its source inputs instead.                                |
 
 Local configuration may add settings, but cannot override exact keys owned by the shared file or
 model policy. Work on Task uses native metadata when available and a labeled content assessment

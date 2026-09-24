@@ -82,14 +82,13 @@ See [CLI Options](./ADVANCED.md#cli-options) for defaults, environment variables
 - **Tailscale:** if using the desktop app, sign in and join `tanaab.dev`. Leave formula-backed services
   in place; `tailscale status --json` should report the local node running and online.
 - **Codex:** sign in and install `piroplugin` and `agent-system` from Pirostore; install `tanaab` too
-  if you selected Canon. Agent System uses the local `openclaw-agent-system` source checkout;
-  select it with `--tanaab openclaw-agent-system` during bootstrap and prepare its Codex runtime
-  using the upstream development instructions. See [Agent profile](./ADVANCED.md#agent-profile).
-  Connect GitHub as declared in [`agent.yaml`](./agent.yaml) and monday.com as `Michael Pirog`.
+  if you selected Canon. For Agent System, select `--tanaab openclaw-agent-system` during bootstrap
+  and prepare its runtime using the upstream
+  [development instructions](https://github.com/tanaabased/openclaw-agent-system/blob/main/DEVELOPMENT.md).
+  Connect GitHub as `pirog` and monday.com as `Michael Pirog`.
 - Review Agent System's hook through `/hooks`, start a fresh task, then ask:
   `Use $agent-system-codex-binding to bind this plugin to /Users/pirog/tanaab/me.`
-  Confirm that canonical checkout in the preview and start another fresh task to load the profile.
-  A disposable implementation worktree is not the profile workspace.
+  Confirm the checkout containing [`agent.yaml`](./agent.yaml), then start a fresh task to load pirog's identity.
 - Ask Codex to run `$piro-automation check` and review the plan before approving live sync.
   Run `$piro-me-doctor` for read-only profile and automation-drift diagnosis; approve access prompts
   only when you intentionally requested the check.

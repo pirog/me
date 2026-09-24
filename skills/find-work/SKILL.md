@@ -44,7 +44,7 @@ creates a Codex task, or implements work.
 
 ## When Not to Use
 
-- Do not use this workflow to plan work already assigned to the profile actor; use `$piro-plan-work`.
+- Do not use this workflow to plan work already assigned to `pirog`; use `$piro-plan-work`.
 - Do not use it to start one exact issue or pull request, revise an issue, or author a new task.
 - Do not assign or unassign issues, invite collaborators, grant access, edit repositories, queue
   Codex tasks, implement work, or create an automation.
@@ -56,10 +56,8 @@ creates a Codex task, or implements work.
 
 ## Preconditions
 
-- Resolve the profile actor through [`Selected Agent Profile`](../../references/agent-profile.md).
-  Require the native GitHub connector to match that actor under
-  [`GitHub Read Access`](../../references/github-read-access.md). Stop on unavailable profile context,
-  an unavailable connector, or an identity mismatch.
+- Require the native GitHub connector, confirm its current login is `pirog`, and stop on an
+  unavailable connector or identity mismatch.
 - Require `ACTORS.md` to define exact handles, actor kinds, concise focuses, goals sources, and its
   live-verification boundary. Require `WORK_REPOS.md` to define priority repositories, default
   discovery scopes, current-invocation decisions, explicit narrowing, and authority boundaries.
@@ -237,8 +235,7 @@ creates a Codex task, or implements work.
 
 ## Checkpoints
 
-- GitHub identity matches the selected profile actor; `ACTORS.md` and `WORK_REPOS.md` were available
-  and complete.
+- GitHub identity is `pirog`; `ACTORS.md` and `WORK_REPOS.md` were available and complete.
 - Every report records an explicit current decision for every decision scope in `WORK_REPOS.md`.
 - The exact actor set is visible; unknown, unavailable, or ineligible actors were not substituted.
 - Candidate and workload discovery exhausted pagination or reported exact incomplete coverage.
@@ -293,5 +290,5 @@ creates a Codex task, or implements work.
   run; complete no-match output; and proof of no GitHub, access, repository, task, goal, registry, or
   automation mutation.
 - Confirm the portfolio boundary remains clear: Find Work recommends actors for unassigned issues;
-  Plan Work plans work assigned to the profile actor and alone may queue exact selected Codex tasks.
+  Plan Work plans work assigned to `pirog` and alone may queue exact selected Codex tasks.
 - Do not run Leia for this skill unless the user explicitly requests it.

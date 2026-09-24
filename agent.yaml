@@ -2,8 +2,6 @@ schema-version: 1
 agent:
   id: pirog
   name: Mike Pirog
-  email: mike@tanaab.dev
-  description: Personal operator profile for pirog across Codex projects.
   avatar: assets/icon-large-circle.png
 github:
   host: github.com

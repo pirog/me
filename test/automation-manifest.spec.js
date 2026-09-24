@@ -226,7 +226,7 @@ describe('lib/automation-manifest', () => {
     assert.match(closeout, /exact interval `start < event <= end`/);
     assert.match(
       closeout,
-      /unassigned issues with a verified\s+delivery pull request authored by the profile actor/,
+      /unassigned issues with a verified delivery\s+pull request authored by `pirog`/,
     );
     assert.match(closeout, /Start current-host cleanup discovery with `list_threads\(limit=50\)`/);
     assert.match(closeout, /valid capped result is partial but usable/);

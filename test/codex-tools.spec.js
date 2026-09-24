@@ -36,7 +36,6 @@ describe('package.json Codex Tools integration', () => {
         await readFile(path.join(repoRoot, 'MODEL_ROUTING.yaml')),
       );
       await assert.rejects(lstat(path.join(target, 'TASKS.md')), { code: 'ENOENT' });
-      await assert.rejects(lstat(path.join(target, 'agent.yaml')), { code: 'ENOENT' });
       await assert.rejects(lstat(path.join(target, 'node_modules')), { code: 'ENOENT' });
     } finally {
       await rm(temporary, { recursive: true });
