@@ -25,6 +25,7 @@ describe('Pirostore marketplace', () => {
       marketplace.plugins.map(({ name, category }) => ({ name, category })),
       [
         { name: 'piroplugin', category: 'Pirobased' },
+        { name: 'agent-system', category: 'Tanaab-based' },
         { name: 'agentbox', category: 'Tanaab-based' },
         { name: 'tanaab', category: 'Tanaab-based' },
         { name: 'leia', category: 'Testing' },

@@ -1,0 +1,8 @@
+schema-version: 1
+agent:
+  id: pirog
+  name: Mike Pirog
+  avatar: assets/icon-large-circle.png
+github:
+  host: github.com
+  username: pirog

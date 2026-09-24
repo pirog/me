@@ -49,12 +49,13 @@ The `ai` dotpkg installs the Pirostore catalog and its local source links; it do
 enable plugins. Every entry is optional and selected in Codex. npm-backed plugins require the `npm`
 CLI and its registry configuration; Codex downloads them without running package lifecycle scripts.
 
-| Plugin                                               | Source                        | Installation | Provides                                                               |
-| ---------------------------------------------------- | ----------------------------- | ------------ | ---------------------------------------------------------------------- |
-| [`piroplugin`](./.codex-plugin/plugin.json)          | Local `me` checkout           | Optional     | Personal workflow, planning, voice, and machine-profile skills.        |
-| [`agentbox`](https://github.com/tanaabased/agentbox) | Verified local checkout       | Optional     | Agentbox host setup and diagnostic skills.                             |
-| [`tanaab`](https://github.com/tanaabased/canon)      | Verified local Canon checkout | Optional     | Shared Tanaab authoring and project-management skills.                 |
-| [`leia`](https://github.com/lando/leia)              | `@lando/leia@2.0.0` from npm  | Optional     | Scenario skills and assets; projects manage their Leia CLI separately. |
+| Plugin                                                                | Source                        | Installation | Provides                                                               |
+| --------------------------------------------------------------------- | ----------------------------- | ------------ | ---------------------------------------------------------------------- |
+| [`piroplugin`](./.codex-plugin/plugin.json)                           | Local `me` checkout           | Optional     | Personal workflow, planning, voice, and machine-profile skills.        |
+| [`agent-system`](https://github.com/tanaabased/openclaw-agent-system) | Verified local checkout       | Optional     | Pirog identity through Codex workspace binding.                        |
+| [`agentbox`](https://github.com/tanaabased/agentbox)                  | Verified local checkout       | Optional     | Agentbox host setup and diagnostic skills.                             |
+| [`tanaab`](https://github.com/tanaabased/canon)                       | Verified local Canon checkout | Optional     | Shared Tanaab authoring and project-management skills.                 |
+| [`leia`](https://github.com/lando/leia)                               | `@lando/leia@2.0.0` from npm  | Optional     | Scenario skills and assets; projects manage their Leia CLI separately. |
 
 ### Skills
 
@@ -77,6 +78,7 @@ each has a defined job, not a general license to meddle. Follow the links for wo
 
 | File                                                                               | Owns                                                                             |
 | ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| [`agent.yaml`](./agent.yaml)                                                       | Pirog identity for Agent System.                                                 |
 | [`GOALS.md`](./GOALS.md)                                                           | Direction, priorities, and deferrals.                                            |
 | [`ACTORS.md`](./ACTORS.md)                                                         | Reviewed work-planning actors and their goals sources.                           |
 | [`WORK_REPOS.md`](./WORK_REPOS.md)                                                 | Repository priorities and discovery scope.                                       |
