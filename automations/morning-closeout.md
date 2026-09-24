@@ -9,8 +9,7 @@ Managed automation id: `morning-closeout`.
 - `$piro-morning-closeout` and `$piro-clean-up-task` with their complete current contracts.
 - Trustworthy GitHub identity and reads for completed issues, merged pull requests, delivery
   relationships, and complete pagination. Apply
-  [`GitHub Read Access`](../references/github-read-access.md) connector-first and require the selected
-  profile actor.
+  [`GitHub Read Access`](../references/github-read-access.md) connector-first and require `pirog`.
 - Read access to [`WORK_REPOS.md`](../WORK_REPOS.md). Use `pirog/*` and `tanaabased/*`, exclude
   `tanaabased/big-test-bucket`, and exclude `lando/*` for this scheduled invocation.
 - Native Codex operations for current-host active and pinned task listing, exact task reading,
