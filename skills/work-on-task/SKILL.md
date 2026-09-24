@@ -138,12 +138,12 @@ deliverable. This skill creates and starts work; it never archives an existing t
    Do not create a branch, refresh a PR ref, create a task, or execute the displayed setup steps.
 
 6. With one saved project resolved, follow [Codex Model Routing](../../references/model-routing.md)
-   and read [the shared policy](../../MODEL_ROUTING.yaml). Select the model and effort, honoring
-   explicit user selections, and report a brief evidence-based reason. Check existing native tasks
-   for the exact canonical source; report a match rather than creating an unrequested duplicate.
+   to invoke `$agent-system-model-routing`, or its lightweight manifest fallback when unavailable.
+   Resolve the model and effort, honoring explicit user selections, and report the decision source.
+   Check existing native tasks for the exact canonical source; report a match rather than creating an unrequested duplicate.
 
    Compose a one- or two-sentence routing note for the child assessment, for example:
-   `> **Model routing:** Terra / medium — Low complexity (native); localized README update.`
+   `> **Model routing:** <model> / <effort> — Low complexity (native); localized README update.`
    Name the metadata source (native or body fallback), label content-based complexity as assessed,
    or say complexity is unset when using the default route. If selection differs from the metadata-implied route,
    include the original complexity and actual reason for the departure, such as an explicit user
@@ -362,7 +362,8 @@ deliverable. This skill creates and starts work; it never archives an existing t
 
 ## Bundled Resources
 
-- [`MODEL_ROUTING.yaml`](../../MODEL_ROUTING.yaml): shared defaults and complexity mappings.
+- [`agent.yaml`](../../agent.yaml): Me profile defaults and complexity mappings; use the routing
+  reference to select the authoritative manifest.
 - [`Codex Model Routing`](../../references/model-routing.md): bounded assessment, metadata fallback,
   native selection, verification and escalation boundaries.
 - [`GitHub Issue Work Size Resolution`](../../references/github-issue-work-size.md) and

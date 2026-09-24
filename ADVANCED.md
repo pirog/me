@@ -78,22 +78,23 @@ each has a defined job, not a general license to meddle. Follow the links for wo
 
 | File                                                                               | Owns                                                                             |
 | ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| [`agent.yaml`](./agent.yaml)                                                       | Pirog identity for Agent System.                                                 |
+| [`agent.yaml`](./agent.yaml)                                                       | Pirog identity and default/complexity model profiles for Agent System.           |
 | [`GOALS.md`](./GOALS.md)                                                           | Direction, priorities, and deferrals.                                            |
 | [`ACTORS.md`](./ACTORS.md)                                                         | Reviewed work-planning actors and their goals sources.                           |
 | [`WORK_REPOS.md`](./WORK_REPOS.md)                                                 | Repository priorities and discovery scope.                                       |
-| [`MODEL_ROUTING.yaml`](./MODEL_ROUTING.yaml)                                       | Default model, reasoning effort, Fast mode, and complexity-tier mappings.        |
 | [`AUTOMATIONS.yaml`](./AUTOMATIONS.yaml)                                           | Desired schedules, status, and prompt sources for managed Codex tasks.           |
 | [`automations/`](./automations/)                                                   | Task prompts and shared readiness checks with bounded recovery and safety stops. |
 | [`dotfiles/ai/.codex/AGENTS.md`](./dotfiles/ai/.codex/AGENTS.md)                   | Global collaboration, voice, and change-discipline guidance.                     |
-| [`dotfiles/ai/.codex/config.shared.toml`](./dotfiles/ai/.codex/config.shared.toml) | Portable Codex settings not owned by the model policy.                           |
+| [`dotfiles/ai/.codex/config.shared.toml`](./dotfiles/ai/.codex/config.shared.toml) | Portable Codex settings, including service tier and Fast mode.                   |
 | `~/.codex/config.local.toml`                                                       | Machine-specific settings, including project trust and local paths.              |
 | `~/.codex/config.toml`                                                             | Generated output; edit its source inputs instead.                                |
 
 Local configuration may add settings, but cannot override exact keys owned by the shared file or
-model policy. Work on Task uses native metadata when available and a labeled content assessment
-when needed; explicit user choices take precedence. See [model routing](./references/model-routing.md)
-for fallback metadata, selection verification, and escalation boundaries.
+manifest's default model and effort. AI sync reads `models.default` from its owning Me checkout's
+`agent.yaml`, removing `openai/` from the model id for Codex; it needs no Agent System installation.
+Tier profiles do not populate the generated config. Work on Task delegates to Agent System when
+available and uses a small manifest-based fallback otherwise; explicit user choices take precedence.
+See [model routing](./references/model-routing.md) for fallback metadata, selection verification, and escalation boundaries.
 
 ## CLI Options
 
@@ -228,7 +229,7 @@ bun run automations:validate
 bun run automations:check
 ```
 
-- `ai:sync` changes installed configuration; `codex:sync` changes the plugin cache. After model-policy
+- `ai:sync` changes installed configuration; `codex:sync` changes the plugin cache. After model-profile
   changes, use both and verify the defaults in a new task. Existing task selections remain unchanged.
 - Cache scripts call the development dependency `@tanaab/codex-tools` directly; payload selection
   lives in `package.json#codexTools`. Use `bun run codex:sync --dry-run` to preview changes, or add

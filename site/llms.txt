@@ -12,7 +12,7 @@
 
 - [Skills](https://github.com/pirog/me/tree/main/skills): Current workflows and approval boundaries.
 - [Voice](https://raw.githubusercontent.com/pirog/me/main/skills/voice/SKILL.md): Default guidance for human-facing prose.
-- [Model policy](https://raw.githubusercontent.com/pirog/me/main/MODEL_ROUTING.yaml): Model, effort, Fast-mode defaults, and complexity mappings.
+- [Agent manifest](https://raw.githubusercontent.com/pirog/me/main/agent.yaml): Identity and default/complexity model and effort profiles.
 - [Model routing](https://raw.githubusercontent.com/pirog/me/main/references/model-routing.md): Classification, overrides, and native selection.
 - [Goals](https://raw.githubusercontent.com/pirog/me/main/GOALS.md): Direction and priorities.
 - [Actors](https://raw.githubusercontent.com/pirog/me/main/ACTORS.md): Reviewed work-planning actors.
