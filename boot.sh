@@ -1380,6 +1380,7 @@ plan_me_apply() {
 plan_tanaab_plugin_installs() {
   local repo
 
+  [[ "${#TANAAB_PLUGIN_REPOS[@]}" -gt 0 ]] || return 0
   for repo in "${TANAAB_PLUGIN_REPOS[@]}"; do
     plan_action "${tty_tp}install${tty_reset} frozen Bun dependencies for ${tty_ts}@${TANAAB_GITHUB_ORG}/${repo}${tty_reset} without lifecycle scripts"
     if array_contains_value TANAAB_PLUGIN_BUILD_REPOS "${repo}"; then
