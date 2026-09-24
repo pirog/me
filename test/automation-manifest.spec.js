@@ -6,7 +6,8 @@ import path from 'node:path';
 import { promisify } from 'node:util';
 
 import { loadAutomationManifest } from '../lib/automation-manifest.js';
-import { loadModelRoutingPolicy, modelRoutingConfig } from '../lib/model-routing-policy.js';
+import { loadAgentModels } from '../lib/agent-models.js';
+import agentModelsConfig from '../utils/agent-models-config.js';
 
 const execFileAsync = promisify(execFile);
 const REPO_ROOT = path.resolve(import.meta.dirname, '..');
@@ -19,7 +20,7 @@ const AUTOMATION_TASK_PATH = path.join(
 );
 
 async function planShippedAutomations() {
-  const sharedConfig = modelRoutingConfig(await loadModelRoutingPolicy());
+  const sharedConfig = agentModelsConfig(await loadAgentModels());
 
   return new Promise((resolve, reject) => {
     const child = spawn('bun', [AUTOMATION_TASK_PATH, 'plan'], { cwd: REPO_ROOT });
@@ -82,7 +83,7 @@ describe('lib/automation-manifest', () => {
 
     const plan = await planShippedAutomations();
     const automations = new Map(plan.actions.map((action) => [action.manifestId, action.expected]));
-    const sharedConfig = modelRoutingConfig(await loadModelRoutingPolicy());
+    const sharedConfig = agentModelsConfig(await loadAgentModels());
     assert.equal(automations.get('smoke-test').model, sharedConfig.model);
     assert.equal(
       automations.get('smoke-test').reasoningEffort,

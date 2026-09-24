@@ -1,9 +1,11 @@
 personality = "pragmatic"
-# Model, effort and Fast mode defaults are owned by MODEL_ROUTING.yaml.
+# Model and reasoning effort come from agent.yaml models.default.
+service_tier = "default"
 commit_attribution = ""
 file_opener = "vscode"
 
 [features]
+fast_mode = false
 chronicle = true
 memories = true
 multi_agent = true

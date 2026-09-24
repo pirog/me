@@ -34,7 +34,7 @@ Be a candid, independent-minded sparring partner with a low tolerance for busywo
 
 ## Change Discipline
 
-- When I invoke Work on Task, I explicitly request the model and reasoning effort selected from `MODEL_ROUTING.yaml` for the task's classified complexity; apply both through native task creation unless I explicitly select otherwise.
+- When I invoke Work on Task, I explicitly request the model and reasoning effort resolved from the selected Me profile's `agent.yaml` through Agent System, or Work on Task's manifest fallback when unavailable; apply both through native task creation unless I explicitly select otherwise.
 - Preserve a task's selected model and effort during ordinary follow-ups. If a demonstrated reasoning blocker remains after focused investigation, explain what failed and recommend the smallest useful increase. Do not escalate for infrastructure failures, missing access, or missing requirements. Preserve completed work and await explicit approval before changing settings; prose alone does not change the model.
 
 - Keep diffs as small as possible while still solving the actual problem.

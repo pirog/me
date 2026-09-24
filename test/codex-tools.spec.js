@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { execFile } from 'node:child_process';
-import { lstat, mkdtemp, readFile, rm } from 'node:fs/promises';
+import { lstat, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { promisify } from 'node:util';
@@ -26,14 +26,18 @@ describe('package.json Codex Tools integration', () => {
 
       assert.equal((await invoke('codex:sync', '--dry-run')).ok, true);
       await assert.rejects(lstat(target), { code: 'ENOENT' });
+      await mkdir(target);
+      await writeFile(path.join(target, 'MODEL_ROUTING.yaml'), 'retired policy');
       assert.equal((await invoke('codex:sync')).ok, true);
       assert.equal((await invoke('codex:check')).ok, true);
       for (const relative of packageJson.codexTools.managedPaths) {
+        if (relative === 'MODEL_ROUTING.yaml') continue;
         await lstat(path.join(target, relative));
       }
+      await assert.rejects(lstat(path.join(target, 'MODEL_ROUTING.yaml')), { code: 'ENOENT' });
       assert.deepEqual(
-        await readFile(path.join(target, 'MODEL_ROUTING.yaml')),
-        await readFile(path.join(repoRoot, 'MODEL_ROUTING.yaml')),
+        await readFile(path.join(target, 'agent.yaml')),
+        await readFile(path.join(repoRoot, 'agent.yaml')),
       );
       await assert.rejects(lstat(path.join(target, 'TASKS.md')), { code: 'ENOENT' });
       await assert.rejects(lstat(path.join(target, 'node_modules')), { code: 'ENOENT' });
