@@ -29,13 +29,16 @@ consumed in CI, and most scenarios mutate GitHub-hosted macOS runners.
   reconciliation.
 - `agentbox` owns installed-Agentbox detection, formula-backed Tailscale preservation, and automatic
   desktop-cask skips.
+- `openclaw` owns Agent System installation and convergence for the checked-out pirog profile.
+- `codex` owns packaged plugin installation, binding, and SessionStart context for that profile.
 - Add coverage to the narrowest existing example that owns the behavior. Add a new example only when
   the behavior needs incompatible bootstrap inputs, crosses enough domains to blur an existing
   example, or intentionally needs another successful `boot.sh` run.
 
 ## Mutating Examples
 
-- Mutating examples should run the prepared `boot.sh` entrypoint once unless the example explicitly
+- Profile examples use isolated runtime state without running the workstation bootstrap.
+- Bootstrap examples should run the prepared `boot.sh` entrypoint once unless the example explicitly
   owns rerun, idempotency, or payload lifecycle behavior.
 - Use one representative input form for a runtime flow. Prove CLI and environment spellings in
   `inputs` instead of repeating the machine-seeding path.
