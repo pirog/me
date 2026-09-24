@@ -22,6 +22,11 @@ describe('lib/profile-setup', () => {
     await writeFile(path.join(root, 'Brewfile'), 'brew "stow"\n');
     await writeFile(path.join(root, '.bun-version'), `${globalThis.Bun.version}\n`);
     const brew = path.join(bin, 'brew');
+    for (const command of ['curl', 'git', 'stow', 'zsh']) {
+      const executable = path.join(bin, command);
+      await writeFile(executable, '#!/bin/sh\nexit 0\n');
+      await chmod(executable, 0o755);
+    }
     await writeFile(
       brew,
       `#!/bin/sh\nif [ "$1" = list ]; then exit 1; fi\nif [ "$1" = bundle ]; then exit 0; fi\nif [ "$2" = oven-sh/bun/bun ]; then echo '${bunPrefix}'; exit 0; fi\nif [ "$2" = node@26 ]; then echo '${nodePrefix}'; exit 0; fi\nexit 2\n`,
