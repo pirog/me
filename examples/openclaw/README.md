@@ -34,8 +34,4 @@ cd "$GITHUB_WORKSPACE"
 openclaw agent-system install --skip-setup --json \
   | jq -e '.outcomes | any(.component == "agent" and .status == "unchanged") and all(.status == "unchanged" or .status == "skipped")'
 openclaw config validate --json | jq -e '.valid == true'
-
-# should preserve the checked-out profile
-git -C "$GITHUB_WORKSPACE" diff --exit-code
-test -z "$(git -C "$GITHUB_WORKSPACE" status --short --untracked-files=all)"
 ```

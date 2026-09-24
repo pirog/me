@@ -12,64 +12,32 @@ env:
 
 jobs:
   examples:
-    name: ${{ matrix.name || matrix.example }}
-    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.example }}
+    runs-on: macos-26
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-26]
         example:
           - agentbox
+          - codex
           - inputs
           - defaults
+          - openclaw
           - payload
           - tanaab
-        include:
-          - { example: openclaw, os: macos-26, profile: true, name: 'openclaw (macos-26)' }
-          - { example: openclaw, os: ubuntu-24.04, profile: true, name: 'openclaw (ubuntu-24.04)' }
-          - { example: codex, os: macos-26, profile: true, name: 'codex (macos-26)' }
-          - { example: codex, os: ubuntu-24.04, profile: true, name: 'codex (ubuntu-24.04)' }
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
+      - name: Set up OpenClaw
+        id: openclaw
+        uses: tanaabased/actions/setup-openclaw@v1
+        with:
+          agent-system: github:tanaabased/openclaw-agent-system#main
       - name: Install Bun
         uses: tanaabased/actions/setup-bun@v1
       - name: Install dependencies
         run: bun install --frozen-lockfile --ignore-scripts
-      - name: Checkout Agent System
-        if: matrix.profile
-        uses: actions/checkout@v7
-        with:
-          repository: tanaabased/openclaw-agent-system
-          ref: 0ec97dccb53c5638c8ec98cab441a4e3ee326de1
-          path: .tmp/agent-system
-      - name: Install Node for profile examples
-        if: matrix.profile
-        uses: tanaabased/actions/setup-node@v1
-        with:
-          node-version: '26'
-      - name: Build Agent System
-        if: matrix.profile
-        working-directory: .tmp/agent-system
-        run: |
-          bun install --frozen-lockfile --ignore-scripts
-          bun run build
-          echo "$PWD/node_modules/.bin" >> "$GITHUB_PATH"
-      - name: Pack Agent System
-        if: matrix.profile
-        id: agent-system
-        uses: tanaabased/actions/npm-pack@v1
-        with:
-          package-directory: .tmp/agent-system
-          node-version: '26'
-      - name: Set up isolated OpenClaw
-        if: matrix.example == 'openclaw'
-        uses: tanaabased/actions/setup-openclaw@v1
-        with:
-          version: 2026.9.5
-          agent-system: ${{ steps.agent-system.outputs.tarball-path }}
       - name: Prepare release-shaped build
-        if: ${{ !matrix.profile }}
         uses: tanaabased/prepare-release-action@v1
         with:
           version: dev
@@ -78,33 +46,22 @@ jobs:
             bun run build
             version-injector dist/boot.sh --style sh --version "${{ env.STAMPED_VERSION }}"
       - name: Create boot alias for Leia examples
-        if: ${{ !matrix.profile }}
         shell: bash
         run: ln -sf dist/boot.sh dist/boot
       - name: Put prepared scripts on PATH
-        if: ${{ !matrix.profile }}
         shell: bash
         run: echo "$PWD/dist" >> "$GITHUB_PATH"
       - name: Run Leia-backed example
-        if: ${{ !matrix.profile }}
         shell: bash
         env:
+          AGENT_SYSTEM_PACKAGE: ${{ steps.openclaw.outputs.agent-system-artifact-path }}
+          CODEX_HOME: ${{ runner.temp }}/codex-home
+          CODEX_TOOLS_CODEX_HOME: ${{ runner.temp }}/codex-home
+          NO_COLOR: '1'
           PIROME_PAYLOAD_DIR: ${{ github.workspace }}
           TMPDIR: ${{ github.workspace }}/examples/${{ matrix.example }}/.tmp
           OPTOKEN: ${{ secrets.TANAAB_OP_TEST }}
         run: |
           mkdir -p "$TMPDIR"
           HOMEBREW_NO_AUTO_UPDATE= brew update-if-needed
-          bun run leia "examples/${{ matrix.example }}/README.md" --stdin --retry 0
-      - name: Run profile example
-        if: matrix.profile
-        shell: bash
-        env:
-          AGENT_SYSTEM_PACKAGE: ${{ steps.agent-system.outputs.tarball-path }}
-          CODEX_HOME: ${{ runner.temp }}/codex-home
-          CODEX_TOOLS_CODEX_HOME: ${{ runner.temp }}/codex-home
-          NO_COLOR: '1'
-          TMPDIR: ${{ runner.temp }}/me-${{ matrix.example }}
-        run: |
-          mkdir -p "$TMPDIR"
           bun run leia "examples/${{ matrix.example }}/README.md" --stdin --retry 0

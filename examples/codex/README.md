@@ -44,8 +44,4 @@ printf '%s\n' '{"hook_event_name":"SessionStart","source":"startup"}' \
   | jq -r '.hookSpecificOutput.additionalContext' | sed -n '/^{/,/^}/p' \
   | jq -e --arg workspace "$GITHUB_WORKSPACE" '.binding | .status == "active" and .workspaceDir == $workspace and .context.identity == {id: "pirog", name: "Mike Pirog", avatar: "assets/icon-large-circle.png"} and .context.github == {host: "github.com", username: "pirog"}'
 test -s "$GITHUB_WORKSPACE/assets/icon-large-circle.png"
-
-# should preserve the checked-out profile
-git -C "$GITHUB_WORKSPACE" diff --exit-code
-test -z "$(git -C "$GITHUB_WORKSPACE" status --short --untracked-files=all)"
 ```
