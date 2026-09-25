@@ -36,7 +36,7 @@
     "@eslint/js": "^10.0.1",
     "@lando/leia": "2.0.0",
     "@openai/codex": "0.154.0",
-    "@tanaab/codex-tools": "^1.0.0",
+    "@tanaab/codex-tools": "^1.0.2",
     "eslint": "^10.10.0",
     "eslint-config-prettier": "^10.1.1",
     "globals": "^17.12.0",
