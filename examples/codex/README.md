@@ -1,8 +1,8 @@
 # Codex Example
 
 Install the packaged Agent System plugin in disposable Codex state and bind the checked-out
-pirog profile. The packaged hook output is checked directly; interactive skill use and native hook
-trust are separate manual checks, with no model login needed here.
+pirog profile. Run its setup steps and check the packaged hook output directly; interactive skill
+use and native hook trust are separate manual checks, with no model login needed here.
 
 ## Setup
 
@@ -35,6 +35,26 @@ node "$runtime" binding bind --plugin-data "$TMPDIR/plugin-data" --workspace "$G
   | jq -e '.status == "bound"'
 node "$runtime" binding inspect --plugin-data "$TMPDIR/plugin-data" \
   | jq -e --arg workspace "$GITHUB_WORKSPACE" '.status == "bound" and .binding.workspaceDir == $workspace and .preview.manifest.status == "valid" and .preview.manifest.agentId == "pirog"'
+
+# should inspect every pirog setup step through standalone codex
+set -o pipefail
+runtime="$(jq -r .cachePath "$TMPDIR/cache.json")/dist/codex/codex-runtime.js"
+env -u OPTOKEN -u OP_SERVICE_ACCOUNT_TOKEN node "$runtime" setup inspect --plugin-data "$TMPDIR/plugin-data" \
+  | jq -e '.status == "inspected" and [.findings[].stepId] == ["brewfile", "dotfiles", "codex-config", "piroplugin", "tanaab-plugin", "agent-system-plugin"] and all(.findings[]; .code == "setup-healthy" or .code == "setup-drift")'
+
+# should install every pirog setup step through standalone codex
+set -o pipefail
+runtime="$(jq -r .cachePath "$TMPDIR/cache.json")/dist/codex/codex-runtime.js"
+env -u OPTOKEN -u OP_SERVICE_ACCOUNT_TOKEN node "$runtime" setup install --plugin-data "$TMPDIR/plugin-data" \
+  | jq -e '.status == "installed" and [.outcomes[].stepId] == ["brewfile", "dotfiles", "codex-config", "piroplugin", "tanaab-plugin", "agent-system-plugin"] and all(.outcomes[]; .code == "setup-applied" or .code == "setup-unchanged")'
+
+# should find pirog setup converged on repeat inspection and install
+set -o pipefail
+runtime="$(jq -r .cachePath "$TMPDIR/cache.json")/dist/codex/codex-runtime.js"
+env -u OPTOKEN -u OP_SERVICE_ACCOUNT_TOKEN node "$runtime" setup inspect --plugin-data "$TMPDIR/plugin-data" \
+  | jq -e '.status == "inspected" and (.findings | length) == 6 and all(.findings[]; .code == "setup-healthy")'
+env -u OPTOKEN -u OP_SERVICE_ACCOUNT_TOKEN node "$runtime" setup install --plugin-data "$TMPDIR/plugin-data" \
+  | jq -e '.status == "installed" and (.outcomes | length) == 6 and all(.outcomes[]; .code == "setup-unchanged")'
 
 # should load pirog identity through the packaged session start hook
 set -o pipefail
