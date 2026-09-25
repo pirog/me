@@ -1,4 +1,26 @@
 schema-version: 1
+
+agent:
+  id: pirog
+  name: Mike Pirog
+  avatar: assets/icon-large-circle.png
+github:
+  host: github.com
+  username: pirog
+models:
+  default:
+    model: openai/gpt-6-astra
+    effort: high
+  low:
+    model: openai/gpt-6-luna
+    effort: medium
+  medium:
+    model: openai/gpt-6-sol
+    effort: high
+  high:
+    model: openai/gpt-6-astra
+    effort: high
+
 setup:
   steps:
     - id: brewfile
@@ -37,23 +59,3 @@ setup:
         args:
           [scripts/setup.js, apply, plugin, openclaw-agent-system, agent-system, optional, build]
         timeout-seconds: 900
-agent:
-  id: pirog
-  name: Mike Pirog
-  avatar: assets/icon-large-circle.png
-github:
-  host: github.com
-  username: pirog
-models:
-  default:
-    model: openai/gpt-6-astra
-    effort: high
-  low:
-    model: openai/gpt-6-luna
-    effort: medium
-  medium:
-    model: openai/gpt-6-sol
-    effort: high
-  high:
-    model: openai/gpt-6-astra
-    effort: high
