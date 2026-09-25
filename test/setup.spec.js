@@ -183,4 +183,61 @@ describe('lib/setup', () => {
       process.env.PATH = originalPath;
     }
   });
+
+  it('should sync a newly installed source plugin before reporting healthy', async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), 'me-setup-root-'));
+    const home = await mkdtemp(path.join(os.tmpdir(), 'me-setup-home-'));
+    const links = path.join(root, 'dotfiles', 'ai', '.codex', 'plugins');
+    const cli = path.join(root, 'node_modules', '.bin', 'codex-tools');
+    const bin = path.join(home, 'bin');
+    const log = path.join(home, 'codex-tools-args');
+    const installed = path.join(home, 'installed');
+    const synced = path.join(home, 'synced');
+    await mkdir(links, { recursive: true });
+    await mkdir(path.dirname(cli), { recursive: true });
+    await mkdir(bin);
+    await symlink(path.relative(links, root), path.join(links, 'piroplugin'));
+    await writeFile(path.join(bin, 'bun'), '#!/bin/sh\nexit 0\n');
+    await chmod(path.join(bin, 'bun'), 0o755);
+    await writeFile(
+      cli,
+      `#!/bin/sh
+if [ "$1" = status ]; then
+  if [ -e '${installed}' ]; then
+    echo '{"ok":true,"inspection":{"installed":true,"enabled":true}}'
+    exit 0
+  fi
+  echo '{"ok":false,"inspection":{"installed":false,"enabled":false}}'
+  exit 1
+fi
+if [ "$1" = install ]; then
+  echo install >> '${log}'
+  touch '${installed}'
+  exit 0
+fi
+if [ "$1" = cache ] && [ "$2" = sync ]; then
+  echo sync >> '${log}'
+  touch '${synced}'
+  exit 0
+fi
+if [ "$1" = cache ] && [ "$2" = check ]; then
+  test -e '${synced}'
+  exit $?
+fi
+exit 2
+`,
+    );
+    await chmod(cli, 0o755);
+    const originalPath = process.env.PATH;
+    process.env.PATH = `${bin}:${originalPath}`;
+    try {
+      const args = ['plugin', 'me', 'piroplugin'];
+      assert.equal(await runSetup(['check', ...args], { root, home }), 1);
+      assert.equal(await runSetup(['apply', ...args], { root, home }), 0);
+      assert.equal(await readFile(log, 'utf8'), 'install\nsync\n');
+      assert.equal(await runSetup(['check', ...args], { root, home }), 0);
+    } finally {
+      process.env.PATH = originalPath;
+    }
+  });
 });
