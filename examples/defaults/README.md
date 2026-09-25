@@ -71,15 +71,15 @@ test -f "$PIROME_PAYLOAD_DIR/boot.sh"
 ! test -e "$HOME/tanaab/canon"
 
 # should stow the hyperdrive config from the me payload
-test -L "$HOME/.config/hyperdrive"
-test "$(python3 -c 'import os, sys; print(os.path.realpath(sys.argv[1]))' "$HOME/.config/hyperdrive")" = "$PIROME_PAYLOAD_DIR/dotfiles/hyperdrive/.config/hyperdrive"
-test -f "$HOME/.config/hyperdrive/config.yaml"
+test -d "$HOME/.config/hyperdrive" && ! test -L "$HOME/.config/hyperdrive"
+test -L "$HOME/.config/hyperdrive/config.yaml"
+test "$(python3 -c 'import os, sys; print(os.path.realpath(sys.argv[1]))' "$HOME/.config/hyperdrive/config.yaml")" = "$PIROME_PAYLOAD_DIR/dotfiles/hyperdrive/.config/hyperdrive/config.yaml"
 cmp -s "$HOME/.config/hyperdrive/config.yaml" "$PIROME_PAYLOAD_DIR/dotfiles/hyperdrive/.config/hyperdrive/config.yaml"
 
 # should stow the lando config from the me payload
-test -L "$HOME/.config/lando"
-test "$(python3 -c 'import os, sys; print(os.path.realpath(sys.argv[1]))' "$HOME/.config/lando")" = "$PIROME_PAYLOAD_DIR/dotfiles/lando/.config/lando"
-test -f "$HOME/.config/lando/config.yaml"
+test -d "$HOME/.config/lando" && ! test -L "$HOME/.config/lando"
+test -L "$HOME/.config/lando/config.yaml"
+test "$(python3 -c 'import os, sys; print(os.path.realpath(sys.argv[1]))' "$HOME/.config/lando/config.yaml")" = "$PIROME_PAYLOAD_DIR/dotfiles/lando/.config/lando/config.yaml"
 cmp -s "$HOME/.config/lando/config.yaml" "$PIROME_PAYLOAD_DIR/dotfiles/lando/.config/lando/config.yaml"
 
 # should not generate a tanaab plugin link without a matching checkout
