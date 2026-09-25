@@ -1,10 +1,21 @@
 import assert from 'node:assert/strict';
-import { lstat, mkdir, mkdtemp, readFile, stat, writeFile } from 'node:fs/promises';
+import {
+  appendFile,
+  chmod,
+  lstat,
+  mkdir,
+  mkdtemp,
+  readFile,
+  stat,
+  symlink,
+  writeFile,
+} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import {
+  checkCodexConfig,
   GENERATED_MARKER,
   syncCodexConfig,
   validatePortableSharedConfig,
@@ -130,6 +141,60 @@ describe('lib/codex-config-sync', () => {
     assert.match(content, new RegExp(`^# ${GENERATED_MARKER}`));
     assert.match(content, /personality = "pragmatic"/);
     assert.match(content, /\[features\]\nmemories = true/);
+  });
+
+  it('should inspect generated content and permissions without writing', async () => {
+    const paths = await tempConfigPaths();
+    await writeFile(paths.sharedPath, 'personality = "pragmatic"\n');
+
+    assert.equal(await checkCodexConfig({ ...paths, parseToml }), false);
+    await sync(paths);
+    assert.equal(await checkCodexConfig({ ...paths, parseToml }), true);
+
+    await writeFile(paths.sharedPath, 'personality = "revised"\n');
+    assert.equal(await checkCodexConfig({ ...paths, parseToml }), false);
+    assert.match(await readFile(paths.outputPath, 'utf8'), /personality = "pragmatic"/);
+
+    await sync(paths);
+    await chmod(paths.outputPath, 0o644);
+    assert.equal(await checkCodexConfig({ ...paths, parseToml }), false);
+  });
+
+  it('should accept and preserve native Codex plugin entries while syncing required settings', async () => {
+    const paths = await tempConfigPaths();
+    await writeFile(
+      paths.sharedPath,
+      'personality = "pragmatic"\n\n[features]\nfast_mode = false\n',
+    );
+    await syncCodexConfig(paths);
+    await appendFile(
+      paths.outputPath,
+      '\n[marketplaces.pirostore]\nsource = "local"\n\n[plugins."piroplugin@pirostore"]\nenabled = true\n',
+    );
+
+    assert.equal(await checkCodexConfig(paths), true);
+
+    await writeFile(paths.sharedPath, 'personality = "revised"\n\n[features]\nfast_mode = false\n');
+    assert.equal(await checkCodexConfig(paths), false);
+
+    await syncCodexConfig(paths);
+    const installed = globalThis.Bun.TOML.parse(await readFile(paths.outputPath, 'utf8'));
+    assert.equal(installed.personality, 'revised');
+    assert.equal(installed.features.fast_mode, false);
+    assert.deepEqual(installed.marketplaces.pirostore, { source: 'local' });
+    assert.deepEqual(installed.plugins['piroplugin@pirostore'], { enabled: true });
+    assert.equal(await checkCodexConfig(paths), true);
+  });
+
+  it('should block setup repair when installed config is a symlink', async () => {
+    const paths = await tempConfigPaths();
+    const target = path.join(paths.root, 'other.toml');
+    await writeFile(paths.sharedPath, 'personality = "pragmatic"\n');
+    await writeFile(target, `# ${GENERATED_MARKER}\npersonality = "other"\n`);
+    await symlink(target, paths.outputPath);
+
+    await assert.rejects(checkCodexConfig({ ...paths, parseToml }), /symbolic link/);
+    assert.match(await readFile(target, 'utf8'), /personality = "other"/);
   });
 
   it('should merge non-overlapping keys from shared and local tables', async () => {

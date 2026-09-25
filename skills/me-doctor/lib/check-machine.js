@@ -24,7 +24,7 @@ import findOnePasswordTokenEnvKeys, {
 } from '../utils/find-one-password-token-env-keys.js';
 import formatOnePasswordCommandError from '../utils/format-one-password-command-error.js';
 import parseBrewfileEntries from '../utils/parse-brewfile-entries.js';
-import stripStowSimulationNoise from '../utils/strip-stow-simulation-noise.js';
+import stripStowSimulationNoise from '../../../utils/strip-stow-simulation-noise.js';
 import withoutOnePasswordTokenFallbacks from '../utils/without-one-password-token-fallbacks.js';
 
 export { default as formatReport } from '../utils/format-doctor-report.js';

@@ -1,4 +1,42 @@
 schema-version: 1
+setup:
+  steps:
+    - id: brewfile
+      check: [bun, scripts/setup.js, check, brewfile]
+      apply:
+        command: bun
+        args: [scripts/setup.js, apply, brewfile]
+        timeout-seconds: 1800
+    - id: dotfiles
+      check: [bun, scripts/setup.js, check, dotfiles]
+      apply: [bun, scripts/setup.js, apply, dotfiles]
+    - id: codex-config
+      runtimes: [codex]
+      check: [bun, scripts/setup.js, check, config]
+      apply: [bun, scripts/setup.js, apply, config]
+    - id: piroplugin
+      runtimes: [codex]
+      check: [bun, scripts/setup.js, check, plugin, me, piroplugin]
+      apply:
+        command: bun
+        args: [scripts/setup.js, apply, plugin, me, piroplugin]
+        timeout-seconds: 900
+    - id: tanaab-plugin
+      runtimes: [codex]
+      check: [bun, scripts/setup.js, check, plugin, canon, tanaab, optional]
+      apply:
+        command: bun
+        args: [scripts/setup.js, apply, plugin, canon, tanaab, optional]
+        timeout-seconds: 900
+    - id: agent-system-plugin
+      runtimes: [codex]
+      check:
+        [bun, scripts/setup.js, check, plugin, openclaw-agent-system, agent-system, optional, build]
+      apply:
+        command: bun
+        args:
+          [scripts/setup.js, apply, plugin, openclaw-agent-system, agent-system, optional, build]
+        timeout-seconds: 900
 agent:
   id: pirog
   name: Mike Pirog

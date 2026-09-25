@@ -22,7 +22,7 @@ const HOMEBREW_CELLAR = '/opt/homebrew/Cellar';
 const HOMEBREW_CACHE = '/Users/tester/Library/Caches/Homebrew';
 const BUN_PREFIX = '/opt/homebrew/opt/bun';
 const BUN_PATH = path.join(BUN_PREFIX, 'bin', 'bun');
-const BUN_REAL_PATH = '/opt/homebrew/Cellar/bun/1.3.14/bin/bun';
+const BUN_REAL_PATH = '/opt/homebrew/Cellar/bun/1.4.2/bin/bun';
 const LEGACY_BUN_PATH = path.join(HOME_DIR, '.bun', 'bin', 'bun');
 const NODE_PREFIX = '/opt/homebrew/opt/node@26';
 const NODE_PATH = path.join(NODE_PREFIX, 'bin', 'node');
@@ -109,7 +109,7 @@ function makeDeps({
   agentbox = false,
   agentboxHealthExecutable = true,
   brewfile = DEFAULT_BREWFILE,
-  bunVersion = '1.3.14',
+  bunVersion = '1.4.2',
   commands = [...REQUIRED_COMMANDS, 'op', 'tailscale'],
   configExists = true,
   configMode = 0o100600,
@@ -239,7 +239,7 @@ async function runCheck(options = {}) {
     homeDir: HOME_DIR,
     repoRoot: REPO_ROOT,
     runtimeExecutable: options.runtimeExecutable ?? BUN_REAL_PATH,
-    runtimeVersion: options.runtimeVersion ?? '1.3.14',
+    runtimeVersion: options.runtimeVersion ?? '1.4.2',
   });
 }
 
@@ -333,13 +333,13 @@ describe('skills/me-doctor/lib/check-machine', () => {
 
   it('should require the running Bun version to match .bun-version', async () => {
     const current = await runCheck();
-    const stale = await runCheck({ runtimeVersion: '1.3.13' });
+    const stale = await runCheck({ runtimeVersion: '1.4.1' });
     const missingPin = await runCheck({ bunVersion: null });
 
     assert.equal(findCheck(current, 'bun_version').status, 'pass');
-    assert.match(findCheck(current, 'bun_version').message, /1\.3\.14/);
+    assert.match(findCheck(current, 'bun_version').message, /1\.4\.2/);
     assert.equal(findCheck(stale, 'bun_version').status, 'fail');
-    assert.match(findCheck(stale, 'bun_version').message, /expected 1\.3\.14/);
+    assert.match(findCheck(stale, 'bun_version').message, /expected 1\.4\.2/);
     assert.equal(findCheck(missingPin, 'bun_version').status, 'fail');
     assert.equal(stale.ok, false);
     assert.equal(missingPin.ok, false);

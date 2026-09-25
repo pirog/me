@@ -81,6 +81,7 @@ PIROME_TANAAB="canon" boot.sh --tanaab agentbox --tanaab bootbox --help | grep -
 if PIROME_TANAAB="canon" boot.sh --tanaab agentbox --help | grep -F "[default: canon"; then exit 1; fi
 boot.sh --tanaabs "canon,agentbox" --help | grep -F -- "--tanaab" | grep -F "[default: canon,agentbox]"
 boot.sh --tanaab canon --tanaab canon --help | grep -F -- "--tanaab" | grep -F "[default: canon]"
+boot.sh --tanaab canon:codex-plugin --tanaab openclaw-agent-system:codex-plugin-build --help | grep -F -- "--tanaab" | grep -F "[default: canon:codex-plugin,openclaw-agent-system:codex-plugin-build]"
 
 # should show force and debug input precedence
 PIROME_FORCE=1 boot.sh --help | grep -F -- "--force" | grep -F "[default: on]"
@@ -186,6 +187,15 @@ command_status="$?"
 set -e
 printf "%s\n" "$output"
 printf "%s\n" "$output" | grep -F "must be a safe GitHub repository name"
+test "$command_status" -ne 0
+
+# should reject unsupported tanaab action suffixes before bootstrap
+set +e
+output="$(boot.sh --tanaab canon:build 2>&1)"
+command_status="$?"
+set -e
+printf "%s\n" "$output"
+printf "%s\n" "$output" | grep -F "has an unsupported suffix"
 test "$command_status" -ne 0
 
 # should reject the removed me source option

@@ -132,20 +132,24 @@ Debug and planning output mask the token.
 
 ### `--tanaab`
 
-| Field       | Value                                                                   |
-| ----------- | ----------------------------------------------------------------------- |
-| Environment | `PIROME_TANAAB`                                                         |
-| Default     | none                                                                    |
-| Values      | Repeatable repository name or comma-separated environment-variable list |
-| Description | Clones or safely updates repositories from `@tanaabased`.               |
+| Field       | Value                                                                      |
+| ----------- | -------------------------------------------------------------------------- |
+| Environment | `PIROME_TANAAB`                                                            |
+| Default     | none                                                                       |
+| Values      | Repeatable `repo[:codex-plugin[-build]]`; comma-separated environment list |
+| Description | Clones or safely updates repositories from `@tanaabased`.                  |
 
 The first CLI occurrence replaces the environment-sourced list. Additional occurrences append,
-and duplicate names are collapsed while preserving their first position.
+and duplicate names are collapsed while preserving their first position. The build suffix wins when
+the same repo is selected more than once.
 
 ```sh
-piroboot --op-token "$OP_TOKEN" --tanaab canon --tanaab agentbox
+piroboot --op-token "$OP_TOKEN" --tanaab canon:codex-plugin --tanaab openclaw-agent-system:codex-plugin-build
 PIROME_TANAAB="canon,agentbox" piroboot --op-token "$OP_TOKEN"
 ```
+
+The action suffix installs frozen Bun dependencies without lifecycle scripts, then installs the
+checkout with Codex Tools. `:codex-plugin-build` also runs `bun run build` first.
 
 Each name maps deterministically to `git@github.com:tanaabased/<repo>.git` and
 `~/tanaab/<repo>`. Local paths, release versions, source selectors, and falsey disable values are
@@ -208,6 +212,9 @@ Prints the public CLI and environment-variable contract and exits.
 
 Run these from the `me` checkout. Pick the operation you need; running the whole block is not a
 maintenance ritual.
+
+The bound [`agent.yaml`](./agent.yaml) declares shared Brewfile and dotfile checks, plus Codex
+configuration and plugin checks; Agent System Doctor checks them and Install applies drift.
 
 ```sh
 # regenerate codex configuration and restow the ai dotfiles into your home directory
