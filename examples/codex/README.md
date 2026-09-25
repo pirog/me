@@ -12,6 +12,10 @@ boot.sh \
   --op-token "$OPTOKEN" \
   --ssh-key 'omfsw2uztmi2xqpid5g3kiv6ba/id_test' \
   --force
+test -d "$HOME/.codex" && ! test -L "$HOME/.codex"
+test -d "$HOME/.codex/plugins" && ! test -L "$HOME/.codex/plugins"
+test -L "$HOME/.codex/AGENTS.md"
+test -L "$HOME/.codex/plugins/piroplugin"
 
 # should install and enable the packaged agent system plugin
 set -o pipefail

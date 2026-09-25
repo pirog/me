@@ -1,6 +1,15 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { chmod, mkdtemp, mkdir, readFile, symlink, writeFile } from 'node:fs/promises';
+import {
+  chmod,
+  mkdtemp,
+  mkdir,
+  readFile,
+  readlink,
+  rm,
+  symlink,
+  writeFile,
+} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
@@ -52,7 +61,10 @@ describe('lib/setup', () => {
     const bin = path.join(home, 'bin');
     const stow = path.join(bin, 'stow');
     await mkdir(bin);
-    await mkdir(path.join(root, 'dotfiles', 'ai'), { recursive: true });
+    const sourceCodex = path.join(root, 'dotfiles', 'ai', '.codex');
+    const homeCodex = path.join(home, '.codex');
+    await mkdir(path.join(sourceCodex, 'plugins'), { recursive: true });
+    await mkdir(path.join(homeCodex, 'plugins'), { recursive: true });
     await writeFile(
       stow,
       '#!/bin/sh\necho "WARNING: in simulation mode so not modifying filesystem."\n',
@@ -62,12 +74,24 @@ describe('lib/setup', () => {
     process.env.PATH = `${bin}:${originalPath}`;
     try {
       assert.equal(await runSetup(['check', 'dotfiles'], { root, home }), 0);
+      await rm(homeCodex, { recursive: true });
+      await symlink(sourceCodex, homeCodex);
+      assert.equal(await runSetup(['check', 'dotfiles'], { root, home }), 1);
+      assert.equal(await runSetup(['apply', 'dotfiles'], { root, home }), 2);
+      assert.equal(await readlink(homeCodex), sourceCodex);
+      await rm(homeCodex);
+      await mkdir(homeCodex);
+      await symlink(path.join(sourceCodex, 'plugins'), path.join(homeCodex, 'plugins'));
+      assert.equal(await runSetup(['check', 'dotfiles'], { root, home }), 1);
+      await rm(path.join(homeCodex, 'plugins'));
+      await mkdir(path.join(homeCodex, 'plugins'));
       await writeFile(stow, '#!/bin/sh\necho "LINK: .codex/config.shared.toml"\n');
       assert.equal(await runSetup(['check', 'dotfiles'], { root, home }), 1);
       const log = path.join(home, 'stow-args');
       await writeFile(stow, `#!/bin/sh\nprintf '%s\\n' "$@" > '${log}'\n`);
       assert.equal(await runSetup(['apply', 'dotfiles'], { root, home }), 0);
       assert.match(await readFile(log, 'utf8'), /--restow/);
+      assert.match(await readFile(log, 'utf8'), /--no-folding/);
     } finally {
       process.env.PATH = originalPath;
     }
