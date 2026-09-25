@@ -37,7 +37,8 @@ consumed in CI, and most scenarios mutate GitHub-hosted macOS runners.
 
 ## Mutating Examples
 
-- Profile examples use isolated runtime state without running the workstation bootstrap.
+- Profile examples use isolated runtime state. The Codex example runs bootstrap first because its
+  setup checks require a seeded machine.
 - Bootstrap examples should run the prepared `boot.sh` entrypoint once unless the example explicitly
   owns rerun, idempotency, or payload lifecycle behavior.
 - Use one representative input form for a runtime flow. Prove CLI and environment spellings in
