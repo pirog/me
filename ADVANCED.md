@@ -9,10 +9,10 @@ What you get, what you can change, and which command actually changes it. Start 
 
 [`Brewfile`](./Brewfile) is the shopping list for applications and command-line tools.
 [Bootbox](https://github.com/tanaabased/bootbox) prepares the prerequisites before `me` applies it.
-The profile and Me Doctor require Node 26, pinned in Homebrew and [`.tool-versions`](./.tool-versions).
+The profile requires Node 26, pinned in Homebrew and [`.tool-versions`](./.tool-versions).
 
 [`Brewfile.openclaw`](./Brewfile.openclaw) is a manually installed, optional bundle containing
-`openclaw-cli`, `clawhub`, and the native OpenClaw app. Bootstrap and Me Doctor leave it alone;
+`openclaw-cli`, `clawhub`, and the native OpenClaw app. Bootstrap and repeatable setup leave it alone;
 it does not provision an agent identity, workspace, runtime configuration, or Gateway.
 
 On installed [`agentbox`](https://github.com/tanaabased/agentbox) hosts, `me` skips the 1Password and
@@ -51,7 +51,7 @@ CLI and its registry configuration; Codex downloads them without running package
 
 | Plugin                                                                | Source                        | Installation | Provides                                                               |
 | --------------------------------------------------------------------- | ----------------------------- | ------------ | ---------------------------------------------------------------------- |
-| [`piroplugin`](./.codex-plugin/plugin.json)                           | Local `me` checkout           | Optional     | Personal workflow, planning, voice, and machine-profile skills.        |
+| [`piroplugin`](./.codex-plugin/plugin.json)                           | Local `me` checkout           | Optional     | Personal workflow, planning, and voice skills.                         |
 | [`agent-system`](https://github.com/tanaabased/openclaw-agent-system) | Verified local checkout       | Optional     | Pirog identity through Codex workspace binding.                        |
 | [`agentbox`](https://github.com/tanaabased/agentbox)                  | Verified local checkout       | Optional     | Agentbox host setup and diagnostic skills.                             |
 | [`tanaab`](https://github.com/tanaabased/canon)                       | Verified local Canon checkout | Optional     | Shared Tanaab authoring and project-management skills.                 |
@@ -67,7 +67,6 @@ each has a defined job, not a general license to meddle. Follow the links for wo
 | [`piro-automation`](./skills/automation/)             | Scheduled-task validation, drift checks, and approval-gated sync.                                  |
 | [`piro-clean-up-task`](./skills/clean-up-task/)       | Archiving a finished task after checking that its work is preserved.                               |
 | [`piro-find-work`](./skills/find-work/)               | Goal-aware recommendations for unassigned GitHub issues.                                           |
-| [`piro-me-doctor`](./skills/me-doctor/)               | Read-only machine-profile and automation-drift diagnosis.                                          |
 | [`piro-morning-closeout`](./skills/morning-closeout/) | Completed-work reporting and eligible task cleanup.                                                |
 | [`piro-plan-work`](./skills/plan-work/)               | Assigned-work planning and queuing tasks you select.                                               |
 | [`piro-skill-author`](./skills/skill-author/)         | Skill authoring and optimization.                                                                  |
