@@ -4,12 +4,12 @@ import { chmod, mkdtemp, mkdir, readFile, symlink, writeFile } from 'node:fs/pro
 import os from 'node:os';
 import path from 'node:path';
 
-import { runProfileSetup } from '../lib/profile-setup.js';
+import { runSetup } from '../lib/setup.js';
 
-describe('lib/profile-setup', () => {
+describe('lib/setup', () => {
   it('should detect Brewfile and Bun pin drift without changing packages', async () => {
-    const root = await mkdtemp(path.join(os.tmpdir(), 'me-profile-root-'));
-    const home = await mkdtemp(path.join(os.tmpdir(), 'me-profile-home-'));
+    const root = await mkdtemp(path.join(os.tmpdir(), 'me-setup-root-'));
+    const home = await mkdtemp(path.join(os.tmpdir(), 'me-setup-home-'));
     const bin = path.join(home, 'bin');
     const bunPrefix = path.join(home, 'bun-formula');
     const nodePrefix = path.join(home, 'node-formula');
@@ -36,17 +36,17 @@ describe('lib/profile-setup', () => {
     const originalPath = process.env.PATH;
     process.env.PATH = `${bin}:${originalPath}`;
     try {
-      assert.equal(await runProfileSetup(['check', 'brewfile'], { root, home }), 0);
+      assert.equal(await runSetup(['check', 'brewfile'], { root, home }), 0);
       await writeFile(path.join(root, '.bun-version'), '0.0.0\n');
-      assert.equal(await runProfileSetup(['check', 'brewfile'], { root, home }), 1);
+      assert.equal(await runSetup(['check', 'brewfile'], { root, home }), 1);
     } finally {
       process.env.PATH = originalPath;
     }
   });
 
   it('should distinguish an unchanged Stow simulation from pending links', async () => {
-    const root = await mkdtemp(path.join(os.tmpdir(), 'me-profile-root-'));
-    const home = await mkdtemp(path.join(os.tmpdir(), 'me-profile-home-'));
+    const root = await mkdtemp(path.join(os.tmpdir(), 'me-setup-root-'));
+    const home = await mkdtemp(path.join(os.tmpdir(), 'me-setup-home-'));
     const bin = path.join(home, 'bin');
     const stow = path.join(bin, 'stow');
     await mkdir(bin);
@@ -59,12 +59,12 @@ describe('lib/profile-setup', () => {
     const originalPath = process.env.PATH;
     process.env.PATH = `${bin}:${originalPath}`;
     try {
-      assert.equal(await runProfileSetup(['check', 'dotfiles'], { root, home }), 0);
+      assert.equal(await runSetup(['check', 'dotfiles'], { root, home }), 0);
       await writeFile(stow, '#!/bin/sh\necho "LINK: .codex/config.shared.toml"\n');
-      assert.equal(await runProfileSetup(['check', 'dotfiles'], { root, home }), 1);
+      assert.equal(await runSetup(['check', 'dotfiles'], { root, home }), 1);
       const log = path.join(home, 'stow-args');
       await writeFile(stow, `#!/bin/sh\nprintf '%s\\n' "$@" > '${log}'\n`);
-      assert.equal(await runProfileSetup(['apply', 'dotfiles'], { root, home }), 0);
+      assert.equal(await runSetup(['apply', 'dotfiles'], { root, home }), 0);
       assert.match(await readFile(log, 'utf8'), /--restow/);
     } finally {
       process.env.PATH = originalPath;
@@ -72,28 +72,28 @@ describe('lib/profile-setup', () => {
   });
 
   it('should skip a declared optional source plugin only when no checkout or link exists', async () => {
-    const root = await mkdtemp(path.join(os.tmpdir(), 'me-profile-root-'));
-    const home = await mkdtemp(path.join(os.tmpdir(), 'me-profile-home-'));
+    const root = await mkdtemp(path.join(os.tmpdir(), 'me-setup-root-'));
+    const home = await mkdtemp(path.join(os.tmpdir(), 'me-setup-home-'));
     const args = ['check', 'plugin', 'canon', 'tanaab', 'optional'];
 
-    assert.equal(await runProfileSetup(args, { root, home }), 0);
+    assert.equal(await runSetup(args, { root, home }), 0);
     await mkdir(path.join(root, 'dotfiles', 'ai', '.codex', 'plugins'), { recursive: true });
     await symlink(
       'missing-source',
       path.join(root, 'dotfiles', 'ai', '.codex', 'plugins', 'tanaab'),
     );
-    assert.equal(await runProfileSetup(args, { root, home }), 2);
+    assert.equal(await runSetup(args, { root, home }), 2);
   });
 
   it('should reject malformed step declarations before any work', async () => {
-    assert.equal(await runProfileSetup(['check', 'plugin', '../canon', 'tanaab']), 2);
-    assert.equal(await runProfileSetup(['check', 'dotfiles', 'unexpected']), 2);
-    assert.equal(await runProfileSetup(['repair', 'dotfiles']), 2);
+    assert.equal(await runSetup(['check', 'plugin', '../canon', 'tanaab']), 2);
+    assert.equal(await runSetup(['check', 'dotfiles', 'unexpected']), 2);
+    assert.equal(await runSetup(['repair', 'dotfiles']), 2);
   });
 
   it('should check local plugin installation and cache drift', async () => {
-    const root = await mkdtemp(path.join(os.tmpdir(), 'me-profile-root-'));
-    const home = await mkdtemp(path.join(os.tmpdir(), 'me-profile-home-'));
+    const root = await mkdtemp(path.join(os.tmpdir(), 'me-setup-root-'));
+    const home = await mkdtemp(path.join(os.tmpdir(), 'me-setup-home-'));
     const source = path.join(home, 'tanaab', 'canon');
     const links = path.join(root, 'dotfiles', 'ai', '.codex', 'plugins');
     const cli = path.join(root, 'node_modules', '.bin', 'codex-tools');
@@ -115,24 +115,24 @@ describe('lib/profile-setup', () => {
     );
     await chmod(cli, 0o755);
     const args = ['check', 'plugin', 'canon', 'tanaab', 'optional'];
-    assert.equal(await runProfileSetup(args, { root, home }), 0);
+    assert.equal(await runSetup(args, { root, home }), 0);
 
     await writeFile(
       cli,
       '#!/bin/sh\nif [ "$1" = status ]; then echo \'{"ok":true,"inspection":{"installed":true,"enabled":true}}\'; exit 0; fi\nexit 1\n',
     );
-    assert.equal(await runProfileSetup(args, { root, home }), 1);
+    assert.equal(await runSetup(args, { root, home }), 1);
 
     await writeFile(
       cli,
       '#!/bin/sh\necho \'{"ok":false,"inspection":{"installed":false,"enabled":false}}\'\nexit 1\n',
     );
-    assert.equal(await runProfileSetup(args, { root, home }), 0);
+    assert.equal(await runSetup(args, { root, home }), 0);
   });
 
   it('should sync an installed source plugin cache on apply', async () => {
-    const root = await mkdtemp(path.join(os.tmpdir(), 'me-profile-root-'));
-    const home = await mkdtemp(path.join(os.tmpdir(), 'me-profile-home-'));
+    const root = await mkdtemp(path.join(os.tmpdir(), 'me-setup-root-'));
+    const home = await mkdtemp(path.join(os.tmpdir(), 'me-setup-home-'));
     const links = path.join(root, 'dotfiles', 'ai', '.codex', 'plugins');
     const cli = path.join(root, 'node_modules', '.bin', 'codex-tools');
     const bin = path.join(home, 'bin');
@@ -151,10 +151,7 @@ describe('lib/profile-setup', () => {
     const originalPath = process.env.PATH;
     process.env.PATH = `${bin}:${originalPath}`;
     try {
-      assert.equal(
-        await runProfileSetup(['apply', 'plugin', 'me', 'piroplugin'], { root, home }),
-        0,
-      );
+      assert.equal(await runSetup(['apply', 'plugin', 'me', 'piroplugin'], { root, home }), 0);
       assert.match(await readFile(log, 'utf8'), /^cache\nsync\n/);
     } finally {
       process.env.PATH = originalPath;
