@@ -49,8 +49,14 @@ node "$runtime" binding inspect --plugin-data "$TMPDIR/plugin-data" \
 # should install every pirog setup step through standalone codex
 set -o pipefail
 runtime="$(jq -r .cachePath "$TMPDIR/cache.json")/dist/codex/codex-runtime.js"
-node "$runtime" setup install --plugin-data "$TMPDIR/plugin-data" \
-  | jq -e '.status == "installed" and [.outcomes[].stepId] == ["brewfile", "dotfiles", "codex-config", "piroplugin", "tanaab-plugin", "agent-system-plugin"] and all(.outcomes[]; .code == "setup-applied" or .code == "setup-unchanged")'
+if ! node "$runtime" setup install --plugin-data "$TMPDIR/plugin-data" \
+  | jq -e '.status == "installed" and [.outcomes[].stepId] == ["brewfile", "dotfiles", "codex-config", "piroplugin", "tanaab-plugin", "agent-system-plugin"] and all(.outcomes[]; .code == "setup-applied" or .code == "setup-unchanged")'; then
+  cd "$GITHUB_WORKSPACE"
+  bun scripts/setup.js apply plugin me piroplugin || true
+  ./node_modules/.bin/codex-tools install "$GITHUB_WORKSPACE" --json \
+    | jq '{ok, status, issue, remaining: [.remaining[]?.operation], nativeError}' || true
+  exit 1
+fi
 
 # should find every pirog setup step healthy after install
 set -o pipefail
