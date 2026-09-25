@@ -83,7 +83,7 @@ See [CLI Options](./ADVANCED.md#cli-options) for defaults, environment variables
   check access with `op vault list`.
 - **Tailscale:** if using the desktop app, sign in and join `tanaab.dev`. Leave formula-backed services
   in place; `tailscale status --json` should report the local node running and online.
-- **Codex:** sign in and install `piroplugin` from Pirostore. The qualified `--tanaab` selections above
+- **Codex:** sign in and install `piroplugin` from Pirostore. The qualified `--tanaab` selections in Quickstart
   install Canon and Agent System from source. Connect GitHub as `pirog` and monday.com as `Michael Pirog`.
 - Review Agent System's hook through `/hooks`, start a fresh task, then ask:
   `Use $agent-system-codex-binding to bind this plugin to /Users/pirog/tanaab/me.`
