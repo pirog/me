@@ -1,5 +1,6 @@
 # Shared command environment for login and interactive shells.
-if [[ -z "${HOMEBREW_PREFIX:-}" && -x /opt/homebrew/bin/brew ]]; then
+# Login startup can reorder PATH even when Homebrew variables are inherited.
+if [[ -x /opt/homebrew/bin/brew ]]; then
   eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
