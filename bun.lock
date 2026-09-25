@@ -208,7 +208,7 @@
 
     "@stablelib/base64": ["@stablelib/base64@1.0.1", "", {}, "sha512-1bnPQqSxSuc3Ii6MhBysoWCg58j97aUjuCSZrGSmDxNqtytIi0k8utUenAwTZN4V5mXXYGsVUI9zeBqy+jBOSQ=="],
 
-    "@tanaab/codex-tools": ["@tanaab/codex-tools@1.0.0", "", { "dependencies": { "@types/node": "^24.0.0" }, "bin": { "codex-tools": "dist/codex-tools" } }, "sha512-WCmIwRD+RMe2DOkpyFhuiYGNpugYSLRiITbkPwpFg0/Oxs7qrxcuoiZr+vcrhLjblw3XpnjAUc4c0wiA5kc8WQ=="],
+    "@tanaab/codex-tools": ["@tanaab/codex-tools@1.0.1", "", { "dependencies": { "@types/node": "^24.0.0" }, "bin": { "codex-tools": "dist/codex-tools" } }, "sha512-qdNpsydJRWvuqgeThgPeG3J7nyxSJpwBQLT5GQ4Etm4Cp/bU0t6AgQaqobDbh+0kv9nCsFlxGy1ShXfaLpjt3A=="],
 
     "@tokenizer/inflate": ["@tokenizer/inflate@0.4.1", "", { "dependencies": { "debug": "^4.4.3", "token-types": "^6.1.1" } }, "sha512-2mAv+8pkG6GIZiF1kNg1jAjh27IDxEPKwdGul3snfztFerfPGI1LjDezZp3i7BElXompqEtPmoPx6c2wgtWsOA=="],
 
