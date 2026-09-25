@@ -2,14 +2,12 @@ schema-version: 1
 setup:
   steps:
     - id: brewfile
-      runtimes: [codex]
       check: [bun, scripts/setup.js, check, brewfile]
       apply:
         command: bun
         args: [scripts/setup.js, apply, brewfile]
         timeout-seconds: 1800
     - id: dotfiles
-      runtimes: [codex]
       check: [bun, scripts/setup.js, check, dotfiles]
       apply: [bun, scripts/setup.js, apply, dotfiles]
     - id: codex-config

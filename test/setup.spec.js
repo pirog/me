@@ -16,11 +16,12 @@ describe('lib/setup', () => {
     await mkdir(bin);
     await mkdir(path.join(bunPrefix, 'bin'), { recursive: true });
     await mkdir(path.join(nodePrefix, 'bin'), { recursive: true });
-    await symlink(process.execPath, path.join(bunPrefix, 'bin', 'bun'));
+    await writeFile(path.join(bunPrefix, 'bin', 'bun'), '#!/bin/sh\necho 9.8.7\n');
+    await chmod(path.join(bunPrefix, 'bin', 'bun'), 0o755);
     await writeFile(path.join(nodePrefix, 'bin', 'node'), '#!/bin/sh\necho v26.1.0\n');
     await chmod(path.join(nodePrefix, 'bin', 'node'), 0o755);
     await writeFile(path.join(root, 'Brewfile'), 'brew "stow"\n');
-    await writeFile(path.join(root, '.bun-version'), `${globalThis.Bun.version}\n`);
+    await writeFile(path.join(root, '.bun-version'), '9.8.7\n');
     const brew = path.join(bin, 'brew');
     for (const command of ['curl', 'git', 'stow', 'zsh']) {
       const executable = path.join(bin, command);
@@ -37,6 +38,7 @@ describe('lib/setup', () => {
     process.env.PATH = `${bin}:${originalPath}`;
     try {
       assert.equal(await runSetup(['check', 'brewfile'], { root, home }), 0);
+      assert.equal(await runSetup(['apply', 'brewfile'], { root, home }), 0);
       await writeFile(path.join(root, '.bun-version'), '0.0.0\n');
       assert.equal(await runSetup(['check', 'brewfile'], { root, home }), 1);
     } finally {

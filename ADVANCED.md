@@ -213,9 +213,8 @@ Prints the public CLI and environment-variable contract and exits.
 Run these from the `me` checkout. Pick the operation you need; running the whole block is not a
 maintenance ritual.
 
-The bound [`agent.yaml`](./agent.yaml) also declares Codex setup checks for Brewfile packages,
-dotfiles, generated configuration, and local source plugins; Agent System Doctor checks them and
-Agent System Install applies drift.
+The bound [`agent.yaml`](./agent.yaml) declares shared Brewfile and dotfile checks, plus Codex
+configuration and plugin checks; Agent System Doctor checks them and Install applies drift.
 
 ```sh
 # regenerate codex configuration and restow the ai dotfiles into your home directory
