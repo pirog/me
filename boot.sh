@@ -1371,9 +1371,6 @@ plan_me_payload() {
 }
 
 plan_me_apply() {
-  if [[ ! -d "${HOME}/.codex" || ! -d "${HOME}/.codex/plugins" ]]; then
-    plan_action "${tty_tp}create${tty_reset} real ${tty_ts}~/.codex${tty_reset} and ${tty_ts}~/.codex/plugins${tty_reset} state directories before stowing"
-  fi
   plan_action "${tty_tp}run${tty_reset} ${tty_ts}bootbox${tty_reset} against the ${tty_ts}me${tty_reset} payload at ${tty_ts}$(me_payload_display)${tty_reset} using its ${tty_ts}Brewfile${tty_reset} and dotpkgs on ${tty_ts}~${tty_reset}"
   if [[ -n "${ME_HOMEBREW_BUNDLE_CASK_SKIP}" ]]; then
     plan_action "${tty_tp}skip${tty_reset} Homebrew casks ${tty_ts}$(array_join ", " ME_APPLY_CASK_SKIPS)${tty_reset} during the ${tty_ts}me${tty_reset} Brewfile apply"
@@ -1407,21 +1404,6 @@ run_bootbox_for_me_apply() {
   else
     bootbox_run_or_abort "bootbox failed while applying me payload ${tty_ts}$(me_payload_display)${tty_reset}." "${bootbox_args[@]}"
   fi
-}
-
-validate_codex_state_directories() {
-  local state_dir
-
-  for state_dir in "${HOME}/.codex" "${HOME}/.codex/plugins"; do
-    if [[ -L "${state_dir}" || ( -e "${state_dir}" && ! -d "${state_dir}" ) ]]; then
-      abort "Codex state path ${tty_ts}$(display_home_path "${state_dir}")${tty_reset} must be a real directory; refusing to replace existing content."
-    fi
-  done
-}
-
-ensure_codex_state_directories() {
-  validate_codex_state_directories
-  execute mkdir -p "${HOME}/.codex/plugins"
 }
 
 install_tanaab_codex_plugins() {
@@ -1910,7 +1892,6 @@ main() {
   parse_args "$@"
   validate_inputs
   validate_platform
-  validate_codex_state_directories
   apply_noninteractive_mode
   prepare_me_apply_cask_skips
 
@@ -1951,7 +1932,6 @@ main() {
   discover_me_apply_payload
   debug raw ME_APPLY_BREWFILE="$(me_apply_brewfile_display)"
   debug raw ME_APPLY_DOTPKGS="$(array_join "," ME_APPLY_DOTPKGS)"
-  ensure_codex_state_directories
   run_bootbox_for_me_apply
   install_tanaab_codex_plugins
   run_me_post_bootstrap_summary
