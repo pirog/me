@@ -56,7 +56,7 @@ node "$runtime" setup install --plugin-data "$TMPDIR/plugin-data" \
 set -o pipefail
 runtime="$(jq -r .cachePath "$TMPDIR/cache.json")/dist/codex/codex-runtime.js"
 node "$runtime" setup inspect --plugin-data "$TMPDIR/plugin-data" \
-  | jq -e '.status == "inspected" and (.findings | length) == 6 and all(.findings[]; .code == "setup-healthy")'
+  | jq -e 'if .status == "inspected" and (.findings | length) == 6 and all(.findings[]; .code == "setup-healthy") then true else error("setup inspect: \(.)") end'
 
 # should load pirog identity through the packaged session start hook
 set -o pipefail
