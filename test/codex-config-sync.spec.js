@@ -1,5 +1,15 @@
 import assert from 'node:assert/strict';
-import { chmod, lstat, mkdir, mkdtemp, readFile, stat, symlink, writeFile } from 'node:fs/promises';
+import {
+  appendFile,
+  chmod,
+  lstat,
+  mkdir,
+  mkdtemp,
+  readFile,
+  stat,
+  symlink,
+  writeFile,
+} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -148,6 +158,32 @@ describe('lib/codex-config-sync', () => {
     await sync(paths);
     await chmod(paths.outputPath, 0o644);
     assert.equal(await checkCodexConfig({ ...paths, parseToml }), false);
+  });
+
+  it('should accept and preserve native Codex plugin entries while syncing required settings', async () => {
+    const paths = await tempConfigPaths();
+    await writeFile(
+      paths.sharedPath,
+      'personality = "pragmatic"\n\n[features]\nfast_mode = false\n',
+    );
+    await syncCodexConfig(paths);
+    await appendFile(
+      paths.outputPath,
+      '\n[marketplaces.pirostore]\nsource = "local"\n\n[plugins."piroplugin@pirostore"]\nenabled = true\n',
+    );
+
+    assert.equal(await checkCodexConfig(paths), true);
+
+    await writeFile(paths.sharedPath, 'personality = "revised"\n\n[features]\nfast_mode = false\n');
+    assert.equal(await checkCodexConfig(paths), false);
+
+    await syncCodexConfig(paths);
+    const installed = globalThis.Bun.TOML.parse(await readFile(paths.outputPath, 'utf8'));
+    assert.equal(installed.personality, 'revised');
+    assert.equal(installed.features.fast_mode, false);
+    assert.deepEqual(installed.marketplaces.pirostore, { source: 'local' });
+    assert.deepEqual(installed.plugins['piroplugin@pirostore'], { enabled: true });
+    assert.equal(await checkCodexConfig(paths), true);
   });
 
   it('should block setup repair when installed config is a symlink', async () => {
