@@ -44,19 +44,6 @@ The `ai` dotpkg installs the [Pirostore catalog](./dotfiles/ai/.agents/plugins/m
 and its local source links. Catalog entries are optional; making them available does not install or
 enable them. The catalog owns the configured sources and versions.
 
-`piroplugin` is packaged for npm as `@pirog/me`; its Codex plugin name stays `piroplugin`.
-The workstation bootstrap keeps using the editable local checkout. After the first npm release,
-you can instead install the published plugin through Codex Tools:
-
-```sh
-npx --yes --package=@tanaab/codex-tools@1 -- codex-tools install npm:@pirog/me@edge --marketplace pirostore
-```
-
-Use `@edge` for prereleases, `@latest` for stable releases, or an exact version. Repeat the command
-with the desired version to upgrade; source-cache sync does not upgrade npm packages. Keep the
-same marketplace identity when switching sources. The npm package supplies plugin resources;
-workstation bootstrap and Agent System setup still use the `me` Git checkout.
-
 | Plugin                                                                | Provides                                                               |
 | --------------------------------------------------------------------- | ---------------------------------------------------------------------- |
 | [`agent-system`](https://github.com/tanaabased/openclaw-agent-system) | Profile binding, setup checks and repairs, and model routing.          |
@@ -69,6 +56,12 @@ workstation bootstrap and Agent System setup still use the `me` Git checkout.
 
 [`piroplugin`](./.codex-plugin/plugin.json) ships these skills for Codex. Invoke them by name;
 each has a defined job, not a general license to meddle. Follow the links for workflows and approval boundaries.
+
+For skills-only installation:
+
+```sh
+npx --yes --package=@tanaab/codex-tools@1 -- codex-tools install npm:@pirog/me@latest --marketplace pirostore
+```
 
 | Skill                                                 | Owns                                                                                               |
 | ----------------------------------------------------- | -------------------------------------------------------------------------------------------------- |

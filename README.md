@@ -36,7 +36,7 @@ For the full inventory, see [Inventory](./INVENTORY.md).
 
 ## Quickstart
 
-For operator and Codex profiles, start by providing a 1Password service account token and running
+For operator and Codex profiles, provide a 1Password service account token and run
 the hosted bootstrap. It installs applications and dotfiles and retrieves the configured private
 SSH keys from 1Password:
 
@@ -49,6 +49,12 @@ SSH keys from 1Password:
 
 For operator-only setup, omit the two `--tanaab` selections. For full command usage, see
 [Piroboot](./PIROBOOT.md).
+
+For skills-only installation:
+
+```sh
+npx --yes --package=@tanaab/codex-tools@1 -- codex-tools install npm:@pirog/me@latest --marketplace pirostore
+```
 
 ## After Pirobooting
 
@@ -64,8 +70,7 @@ Complete the following manual setup tasks for your operator profile, Codex profi
 
 ### As Codex Profile
 
-- Sign into Codex and install `piroplugin` from Pirostore; see [plugin sources](./INVENTORY.md#plugins)
-  for the npm alternative. Confirm that Agent System
+- Sign into Codex and install `piroplugin` from Pirostore. Confirm that Agent System
   (`agent-system`) and Canon (`tanaab`) are installed and enabled; the qualified `--tanaab`
   selections in Quickstart install both from source.
 - Connect GitHub as `pirog` and monday.com as `Michael Pirog`.
