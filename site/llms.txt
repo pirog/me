@@ -4,8 +4,9 @@
 
 ## Documentation
 
-- [README](https://raw.githubusercontent.com/pirog/me/main/README.md): Setup, common usage, and component overview.
-- [Advanced](https://raw.githubusercontent.com/pirog/me/main/ADVANCED.md): What gets installed, which files own the settings, CLI options, and sync utilities.
+- [README](https://raw.githubusercontent.com/pirog/me/main/README.md): Setup, component overview, and development utilities.
+- [Piroboot](https://raw.githubusercontent.com/pirog/me/main/PIROBOOT.md): Bootstrap command usage, host behavior, and CLI options.
+- [Inventory](https://raw.githubusercontent.com/pirog/me/main/INVENTORY.md): Shipped components and the files that own their configuration.
 - [Changelog](https://raw.githubusercontent.com/pirog/me/main/CHANGELOG.md): Upcoming changes and release history.
 
 ## Work System

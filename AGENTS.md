@@ -53,8 +53,9 @@ its Codex plugin bundle.
 - `TASKS.md` is informal cross-repository planning scratch. It is not a durable contract, current
   state proof, or authorization source; preserve unrelated edits and keep it outside the managed
   plugin cache.
-- `README.md` owns the primary setup journey, including post-bootstrap setup. `ADVANCED.md` owns
-  installed-component inventories, CLI options, and sync utilities.
+- `README.md` owns the primary setup journey, post-bootstrap setup, and development utilities.
+  `PIROBOOT.md` owns bootstrap command usage and CLI options. `INVENTORY.md` owns installed-component
+  inventories and configuration entrypoints.
 - `examples/**/README.md` are Leia-backed executable CI contracts. Read `examples/AGENTS.md` before
   changing them.
 - `site/llms.txt`, `scripts/build-dist.js`, and release workflows own published output; `dist/` is
@@ -71,7 +72,7 @@ its Codex plugin bundle.
   shell secrets, or local token fallbacks.
 - Do not edit, regenerate, stage, or commit `dist/` during routine work. Change its source inputs and
   leave generated output to CI unless release-shaped verification is explicitly requested.
-- Treat `--help` as the public bootstrap contract. Check `README.md`, `ADVANCED.md`, and affected
+- Treat `--help` as the public bootstrap contract. Check `README.md`, `PIROBOOT.md`, and affected
   examples when public options, environment variables, help, planning, or failure text changes.
 - Keep development and CI-only inputs hidden. Preserve `PIROME_*` as the public wrapper namespace
   and use `BOOTBOX_*` only for internal delegation.
