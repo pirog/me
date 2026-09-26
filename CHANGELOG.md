@@ -1,5 +1,7 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+## v1.0.0-beta.12 - [September 26, 2026](https://github.com/pirog/me/releases/tag/v1.0.0-beta.12)
+
 ### Features
 
 - Added an Agent System profile in `agent.yaml` for repeatable setup checks and focused repairs. [#86](https://github.com/pirog/me/pull/86) [#88](https://github.com/pirog/me/pull/88)
