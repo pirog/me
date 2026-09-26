@@ -184,6 +184,51 @@ describe('lib/setup', () => {
     }
   });
 
+  it('should emit bounded safe operation diagnostics only in runner debug mode', async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), 'me-setup-root-'));
+    const home = await mkdtemp(path.join(os.tmpdir(), 'me-setup-home-'));
+    const links = path.join(root, 'dotfiles', 'ai', '.codex', 'plugins');
+    const cli = path.join(root, 'node_modules', '.bin', 'codex-tools');
+    const bin = path.join(home, 'bin');
+    await mkdir(links, { recursive: true });
+    await mkdir(path.dirname(cli), { recursive: true });
+    await mkdir(bin);
+    await symlink(path.relative(links, root), path.join(links, 'piroplugin'));
+    await writeFile(path.join(bin, 'bun'), '#!/bin/sh\nexit 0\n');
+    await chmod(path.join(bin, 'bun'), 0o755);
+    await writeFile(
+      cli,
+      `#!/bin/sh\nif [ "$1" = status ]; then echo '{"ok":true,"inspection":{"installed":true,"enabled":true}}'; exit 0; fi\necho 'permission denied token=super-secret' >&2\necho '${'x'.repeat(20000)}' >&2\nexit 1\n`,
+    );
+    await chmod(cli, 0o755);
+    const originalPath = process.env.PATH;
+    const originalDebug = process.env.RUNNER_DEBUG;
+    let stderr = '';
+    const originalWrite = process.stderr.write;
+    process.stderr.write = (chunk) => {
+      stderr += chunk;
+      return true;
+    };
+    process.env.PATH = `${bin}:${originalPath}`;
+    try {
+      delete process.env.RUNNER_DEBUG;
+      assert.equal(await runSetup(['apply', 'plugin', 'me', 'piroplugin'], { root, home }), 2);
+      assert.doesNotMatch(stderr, /debug: setup operation=/);
+      assert.match(stderr, /^plugin: .* failed \(1\)\.$/m);
+      stderr = '';
+      process.env.RUNNER_DEBUG = '1';
+      assert.equal(await runSetup(['apply', 'plugin', 'me', 'piroplugin'], { root, home }), 2);
+      assert.match(stderr, /debug: setup operation=plugin\.cache-sync reason=access was denied/);
+      assert.doesNotMatch(stderr, /super-secret|permission denied|x{100}/);
+      assert.ok(Buffer.byteLength(stderr) < 500);
+    } finally {
+      process.stderr.write = originalWrite;
+      process.env.PATH = originalPath;
+      if (originalDebug === undefined) delete process.env.RUNNER_DEBUG;
+      else process.env.RUNNER_DEBUG = originalDebug;
+    }
+  });
+
   it('should sync a newly installed source plugin before reporting healthy', async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), 'me-setup-root-'));
     const home = await mkdtemp(path.join(os.tmpdir(), 'me-setup-home-'));
