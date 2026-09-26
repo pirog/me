@@ -1,6 +1,17 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
 - Added `@lando/leia@2.0.0` to Pirostore as an optional pinned npm plugin. [#73](https://github.com/pirog/me/issues/73)
+- Added a shared `agent.yaml` profile with repeatable Codex setup checks and repairs through Agent System. [#86](https://github.com/pirog/me/pull/86) [#88](https://github.com/pirog/me/pull/88)
+- Added explicit bootstrap actions to install local Codex plugins and build plugins that need preparation. [#88](https://github.com/pirog/me/pull/88)
+- Fixed Homebrew command precedence in shells that inherit an existing Homebrew environment. [#92](https://github.com/pirog/me/pull/92)
+- Fixed Morning Closeout omitting GitHub completions when their Codex tasks were absent or already archived. [#70](https://github.com/pirog/me/pull/70)
+- Fixed automation reconciliation to read saved Codex state directly.
+- Fixed task cleanup archiving recurring heartbeat tasks after a completed report. [#84](https://github.com/pirog/me/issues/84)
+- Removed the duplicate Me Doctor skill in favor of Agent System Doctor and Install. [#94](https://github.com/pirog/me/pull/94)
+- Removed the temporary `.codex` directory bootstrap guard. [#93](https://github.com/pirog/me/pull/93)
+- Updated Work on Task routing and Codex defaults to use Agent System model profiles from `agent.yaml`. [#87](https://github.com/pirog/me/pull/87)
+- Updated plugin cache checks and refreshes to use shared Codex Tools. [#79](https://github.com/pirog/me/pull/79)
+- Updated release publication so repository and plugin delivery can be retried independently. [#95](https://github.com/pirog/me/issues/95)
 
 ## v1.0.0-beta.11 - [September 13, 2026](https://github.com/pirog/me/releases/tag/v1.0.0-beta.11)
 
