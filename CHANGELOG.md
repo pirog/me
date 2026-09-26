@@ -1,18 +1,35 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
-- Added `@lando/leia@2.0.0` to Pirostore as an optional pinned npm plugin. [#73](https://github.com/pirog/me/issues/73)
-- Added a shared `agent.yaml` profile with repeatable Codex setup checks and repairs through Agent System. [#86](https://github.com/pirog/me/pull/86) [#88](https://github.com/pirog/me/pull/88)
-- Added explicit bootstrap actions to install local Codex plugins and build plugins that need preparation. [#88](https://github.com/pirog/me/pull/88)
+### Features
+
+- Added an Agent System profile in `agent.yaml` for repeatable setup checks and focused repairs. [#86](https://github.com/pirog/me/pull/86) [#88](https://github.com/pirog/me/pull/88)
+- Added bootstrap actions to install local Codex plugins and build plugins that need preparation. [#88](https://github.com/pirog/me/pull/88)
+
+### Codex Plugins
+
+- Added Agent System to Pirostore as an optional local plugin. [#86](https://github.com/pirog/me/pull/86)
+- Added Leia 2.0 to Pirostore as an optional pinned npm plugin. [#74](https://github.com/pirog/me/pull/74) [#76](https://github.com/pirog/me/pull/76)
+- Added skills-only installation through the public `@pirog/me` npm package, retaining the `piroplugin` identity. [#96](https://github.com/pirog/me/pull/96)
+
+### Bug Fixes
+
+- Fixed AI configuration sync overwriting native Codex marketplace and plugin settings. [#88](https://github.com/pirog/me/pull/88)
+- Fixed automation reconciliation to read saved Codex state directly.
 - Fixed Homebrew command precedence in shells that inherit an existing Homebrew environment. [#92](https://github.com/pirog/me/pull/92)
 - Fixed Morning Closeout omitting GitHub completions when their Codex tasks were absent or already archived. [#70](https://github.com/pirog/me/pull/70)
-- Fixed automation reconciliation to read saved Codex state directly.
 - Fixed task cleanup archiving recurring heartbeat tasks after a completed report. [#84](https://github.com/pirog/me/issues/84)
-- Removed the duplicate Me Doctor skill in favor of Agent System Doctor and Install. [#94](https://github.com/pirog/me/pull/94)
-- Removed the temporary `.codex` directory bootstrap guard. [#93](https://github.com/pirog/me/pull/93)
-- Updated Work on Task routing and Codex defaults to use Agent System model profiles from `agent.yaml`. [#87](https://github.com/pirog/me/pull/87)
-- Updated plugin cache checks and refreshes to use shared Codex Tools. [#79](https://github.com/pirog/me/pull/79)
-- Updated plugin distribution to the public `@pirog/me` npm package while retaining the `piroplugin` identity.
-- Updated release publication so repository and plugin delivery can be retried independently. [#95](https://github.com/pirog/me/issues/95)
+
+### Improvements
+
+- Added heartbeat-aware automation reconciliation that preserves task bindings through updates, pauses, and resumes. [#84](https://github.com/pirog/me/issues/84)
+- Reorganized setup guidance, moving the component inventory to `INVENTORY.md` and the Piroboot CLI reference to `PIROBOOT.md`. [#96](https://github.com/pirog/me/pull/96)
+- Replaced `$piro-me-doctor` with `$agent-system-doctor` and `$agent-system-install` for profile checks and repairs. [#94](https://github.com/pirog/me/pull/94)
+- Updated Work on Task routing and Codex defaults to use Agent System's `agent.yaml` profiles, replacing `MODEL_ROUTING.yaml`. [#87](https://github.com/pirog/me/pull/87)
+
+### Developer Notes
+
+- Updated `codex:check` and `codex:sync` to use shared Codex Tools instead of the repository's custom cache-sync implementation. [#79](https://github.com/pirog/me/pull/79)
+- Updated repository and npm publishing to validate and run independently, allowing either delivery to be retried on its own. [#96](https://github.com/pirog/me/pull/96)
 
 ## v1.0.0-beta.11 - [September 13, 2026](https://github.com/pirog/me/releases/tag/v1.0.0-beta.11)
 
