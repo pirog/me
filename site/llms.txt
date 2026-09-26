@@ -24,6 +24,6 @@
 
 - [Hosted bootstrap](https://boot.pirog.me/boot.sh): The self-contained macOS setup script.
 - [Repository](https://github.com/pirog/me): Source and executable examples.
-- [Releases](https://github.com/pirog/me/releases): Published versions and plugin archives.
+- [Releases](https://github.com/pirog/me/releases): Version history; new plugin releases are distributed through npm as `@pirog/me`.
 - [Issues](https://github.com/pirog/me/issues): Bugs and feature requests.
 - [Bootbox](https://github.com/tanaabased/bootbox): Generic bootstrap implementation.

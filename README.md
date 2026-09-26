@@ -64,7 +64,8 @@ Complete the following manual setup tasks for your operator profile, Codex profi
 
 ### As Codex Profile
 
-- Sign into Codex and install `piroplugin` from Pirostore. Confirm that Agent System
+- Sign into Codex and install `piroplugin` from Pirostore; see [plugin sources](./INVENTORY.md#plugins)
+  for the npm alternative. Confirm that Agent System
   (`agent-system`) and Canon (`tanaab`) are installed and enabled; the qualified `--tanaab`
   selections in Quickstart install both from source.
 - Connect GitHub as `pirog` and monday.com as `Michael Pirog`.
@@ -125,8 +126,8 @@ feature requests.
 
 ## Changelog
 
-See [`CHANGELOG.md`](./CHANGELOG.md) for release history and
-[GitHub releases](https://github.com/pirog/me/releases) for published artifacts.
+See [`CHANGELOG.md`](./CHANGELOG.md) and [GitHub releases](https://github.com/pirog/me/releases) for
+release history. New `piroplugin` releases ship through npm; see [plugin sources](./INVENTORY.md#plugins).
 
 ## Maintainers
 

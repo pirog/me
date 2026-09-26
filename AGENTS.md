@@ -38,6 +38,9 @@ its Codex plugin bundle.
   read-only checks and focused repairs.
 - `.codex-plugin/`, plugin source directories, and `package.json` own the `piroplugin` package.
   `package.json#codexTools` selects its managed cache payload; the shared Codex Tools CLI owns syncing.
+- `package.json#files` selects the npm payload. npm release preparation materializes the
+  symlinked skill icons in the CI checkout because npm omits symlinks.
+  npm ships the Codex plugin, while bootstrap and Agent System setup use the editable Git checkout.
 - `AUTOMATIONS.yaml` owns desired Codex scheduled-task state. `skills/automation/` owns validation,
   drift planning, approval-gated reconciliation, and read-back verification. Automation prompts of
   at most 25 physical lines may stay inline; longer prompts must use `prompt-file` and live under
@@ -98,6 +101,10 @@ its Codex plugin bundle.
   `tanaabased/actions/validate-codex-plugin@v1` action in CI, not a local wrapper.
 - Use `bun run ai:sync` only to generate and restow the live Stow-owned AI surface under
   `dotfiles/ai`; it is separate from plugin-cache sync.
+- Publish `piroplugin` through npm using `publish-npm`; do not use `publish-codex-plugin`.
+  Keep repository and npm publication independent, with source and Codex validation at the start
+  of each job and formatting checks inside preparation commands. Pack directly from the prepared
+  checkout. Use the npm publication dry run in PRs and avoid duplicate completion probes.
 
 ## Shared Issue Flow
 

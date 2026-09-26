@@ -11,6 +11,7 @@
 - Removed the temporary `.codex` directory bootstrap guard. [#93](https://github.com/pirog/me/pull/93)
 - Updated Work on Task routing and Codex defaults to use Agent System model profiles from `agent.yaml`. [#87](https://github.com/pirog/me/pull/87)
 - Updated plugin cache checks and refreshes to use shared Codex Tools. [#79](https://github.com/pirog/me/pull/79)
+- Updated plugin distribution to the public `@pirog/me` npm package while retaining the `piroplugin` identity.
 - Updated release publication so repository and plugin delivery can be retried independently. [#95](https://github.com/pirog/me/issues/95)
 
 ## v1.0.0-beta.11 - [September 13, 2026](https://github.com/pirog/me/releases/tag/v1.0.0-beta.11)
