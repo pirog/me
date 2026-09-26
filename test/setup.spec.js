@@ -39,12 +39,27 @@ describe('lib/setup', () => {
     }
     await writeFile(
       brew,
-      `#!/bin/sh\nif [ "$1" = list ]; then exit 1; fi\nif [ "$1" = bundle ]; then exit 0; fi\nif [ "$2" = oven-sh/bun/bun ]; then echo '${bunPrefix}'; exit 0; fi\nif [ "$2" = node@26 ]; then echo '${nodePrefix}'; exit 0; fi\nexit 2\n`,
+      `#!/bin/sh
+if [ "$1" = list ]; then exit 1; fi
+if [ "$1" = bundle ]; then
+  if [ "$2" = check ]; then
+    [ "$HOMEBREW_NO_AUTO_UPDATE" = 1 ] || exit 1
+  else
+    [ "$HOMEBREW_NO_AUTO_UPDATE" = 0 ] || exit 2
+  fi
+  exit 0
+fi
+if [ "$2" = oven-sh/bun/bun ]; then echo '${bunPrefix}'; exit 0; fi
+if [ "$2" = node@26 ]; then echo '${nodePrefix}'; exit 0; fi
+exit 2
+`,
     );
     await chmod(brew, 0o755);
 
     const originalPath = process.env.PATH;
+    const originalAutoUpdate = process.env.HOMEBREW_NO_AUTO_UPDATE;
     process.env.PATH = `${bin}:${originalPath}`;
+    process.env.HOMEBREW_NO_AUTO_UPDATE = '0';
     try {
       assert.equal(await runSetup(['check', 'brewfile'], { root, home }), 0);
       assert.equal(await runSetup(['apply', 'brewfile'], { root, home }), 0);
@@ -52,6 +67,8 @@ describe('lib/setup', () => {
       assert.equal(await runSetup(['check', 'brewfile'], { root, home }), 1);
     } finally {
       process.env.PATH = originalPath;
+      if (originalAutoUpdate === undefined) delete process.env.HOMEBREW_NO_AUTO_UPDATE;
+      else process.env.HOMEBREW_NO_AUTO_UPDATE = originalAutoUpdate;
     }
   });
 
