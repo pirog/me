@@ -37,6 +37,55 @@ jobs:
             version-injector dist/boot.sh --style sh --version "${{ env.STAMPED_VERSION }}"
             version-injector .codex-plugin/plugin.json --style json --version "${{ env.STAMPED_VERSION }}"
             bun run format:write
+            bun run format:check
+      - name: Validate prepared generic Codex plugin contract
+        uses: tanaabased/actions/validate-codex-plugin@v1
+      - name: Verify stamped release entrypoint
+        shell: bash
+        run: |
+          boot_version="$(bash ./dist/boot.sh --version)"
+          printf 'boot=%s\n' "$boot_version"
+          test "$boot_version" = "${{ env.STAMPED_VERSION }}"
+      - name: Verify stamped plugin manifest
+        shell: bash
+        run: |
+          plugin_version="v$(bun --eval 'const plugin = JSON.parse(await Bun.file(".codex-plugin/plugin.json").text()); console.log(plugin.version)')"
+          printf 'plugin=%s\n' "$plugin_version"
+          test "$plugin_version" = "${{ env.STAMPED_VERSION }}"
+      - name: Verify published metadata
+        shell: bash
+        run: |
+          test -s dist/llms.txt
+          grep -F 'https://boot.pirog.me/llms.txt' dist/sitemap.xml
+          grep -F 'Allow: /llms.txt' dist/robots.txt
+
+  plugin:
+    name: Codex plugin archive
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Install Bun
+        uses: tanaabased/actions/setup-bun@v1
+      - name: Install dependencies
+        run: bun install --frozen-lockfile --ignore-scripts
+      - name: Validate generic Codex plugin contract
+        uses: tanaabased/actions/validate-codex-plugin@v1
+      - name: Prepare plugin release
+        uses: tanaabased/actions/prepare-release@v1
+        with:
+          version: ${{ env.STAMPED_VERSION }}
+          release-date: ${{ github.event.pull_request.created_at }}
+          release-url: ${{ github.event.pull_request.html_url }}
+          commands: |
+            bun run lint
+            bun run build
+            version-injector dist/boot.sh --style sh --version "${{ env.STAMPED_VERSION }}"
+            version-injector .codex-plugin/plugin.json --style json --version "${{ env.STAMPED_VERSION }}"
+            bun run format:write
       - name: Verify prepared formatting
         run: bun run format:check
       - name: Validate prepared generic Codex plugin contract

@@ -6,10 +6,11 @@ on:
       - published
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  release:
+  validate:
+    name: Validate release
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
@@ -27,9 +28,26 @@ jobs:
         run: bun run test
       - name: Validate generic Codex plugin contract
         uses: tanaabased/actions/validate-codex-plugin@v1
+
+  publish-repo:
+    name: Publish repo
+    needs: validate
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Install Bun
+        uses: tanaabased/actions/setup-bun@v1
+      - name: Install dependencies
+        run: bun install --frozen-lockfile --ignore-scripts
       - name: Export sitemap metadata
         run: echo "SITEMAP_LASTMOD=${{ github.event.release.published_at }}" >> "${GITHUB_ENV}"
-      - name: Publish repository
+      - name: Publish repo
         uses: tanaabased/actions/publish-repo@v1
         with:
           commands: |
@@ -37,12 +55,42 @@ jobs:
             version-injector dist/boot.sh --style sh --version "${{ github.event.release.tag_name }}"
             version-injector .codex-plugin/plugin.json --style json --version "${{ github.event.release.tag_name }}"
             bun run format:write
+            bun run format:check
           sync-token: ${{ secrets.TANAAB_COAXIUM_INJECTOR }}
+      - name: Validate prepared generic Codex plugin contract
+        uses: tanaabased/actions/validate-codex-plugin@v1
+
+  publish-plugin:
+    name: Publish Codex plugin
+    needs: validate
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Install Bun
+        uses: tanaabased/actions/setup-bun@v1
+      - name: Install dependencies
+        run: bun install --frozen-lockfile --ignore-scripts
+      - name: Export sitemap metadata
+        run: echo "SITEMAP_LASTMOD=${{ github.event.release.published_at }}" >> "${GITHUB_ENV}"
+      - name: Prepare plugin release
+        uses: tanaabased/actions/prepare-release@v1
+        with:
+          commands: |
+            bun run build
+            version-injector dist/boot.sh --style sh --version "${{ github.event.release.tag_name }}"
+            version-injector .codex-plugin/plugin.json --style json --version "${{ github.event.release.tag_name }}"
+            bun run format:write
       - name: Verify prepared formatting
         run: bun run format:check
       - name: Validate prepared generic Codex plugin contract
         uses: tanaabased/actions/validate-codex-plugin@v1
-      - name: Publish Codex plugin archive
+      - name: Publish Codex plugin
         uses: tanaabased/actions/publish-codex-plugin@v1
         with:
           archive-name: piroplugin-${{ github.event.release.tag_name }}.tar.gz
