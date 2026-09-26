@@ -1,6 +1,6 @@
 # `me`
 
-> Pirog's tools, habits, and prejudices, made portable: a macOS workstation profile and a Codex work system with priorities and a point of view.
+> pirog, codified: dotfiles, skills, Codex plugins, workflows, and automations.
 
 ## Documentation
 

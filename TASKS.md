@@ -2,78 +2,19 @@
 
 ## PIROG
 
-- @pirog/me
-  - codex tools/agent system install?
-  - convert to agent-system agent.yaml format?
-  - update models?
-  - release as package?
-
-  - morning closeout?
-  - better plans and reports?
-  - read only email summarizer?
-  - blog like pirog skill
-
-- @tanaab/openclaw-agent-system + emori
-  - 0.7.0
-    - codex support?
-    - setup tasks for me/emori?
-    - docs cleanup/guidance pass/release?
-    - speed up security tests?
-
-  - 0.8.0
-    - automations?
-    - backups
-    - `gog` tool
-    - cron system and emori cron?
-
-    - theme?
-    - better voice actuator? rewrite messages?
-
-  - 0.9.0
-    - `generic-tool` system?
-    - pr-review flow
-    - complete issue + plan flow
-      - plan mode need to be able to transition to work mode with plan prompt injection?
-    - complete auto flow?
-
-  - pr link?
-  - pr flow
-
-  - assigned to review support?
-  - "random" comment anywhere support?
-  - git encrypted keys?
-  - API endpoints
-  - backups and scheduling
-    - setup creates cron job?
-  - explore migration to MCP as base tooling layer?
-  - macos backups?
-
 - @tanaab/emori
-  - bubbblewrap?
-  - release as package?
-  - install agent as openclaw plugin?
+  - docs, do we need setup?
   - emphasis beltalowda creol
-
-  - setup?
-    - setting up worktrees?
-    - brew deps
-    - memory db
-    - plugins and config?
-    - canon linking?
-    - others?
+  - release as package?
 
   - cron jobs?
 
   - backup stuff memories?
   - backup system?
 
-  - improve voice skill?
-  - brave search API?
-  - discord
   - skill audit and trim?
   - automate emori improvements?
-  - some plugins to install for her?
-  - local postgres?
+  - install agent as openclaw plugin?
 
   - push back on irrelevant issues?
 
@@ -95,13 +36,56 @@
   - some kind of blocked issue automation task?
   - codify better automation skills like task management/blocked/etc
 
+- @tanaab/openclaw-agent-system
+  - 0.8.0
+    - backups
+    - setup-file?
+    - `gog` tool
+
+    - cron/automations?
+    - theme?
+    - better voice actuator? rewrite messages?
+    - add hooks reconciliation to doctor?
+
+  - 0.9.0
+    - `generic-tool` system?
+    - pr-review flow
+    - complete issue + plan flow
+      - plan mode need to be able to transition to work mode with plan prompt injection?
+    - complete auto flow?
+
+  - 0.10.0
+    - decsision model with jev?
+
+  - pr link?
+  - pr flow
+
+  - assigned to review support?
+  - "random" comment anywhere support?
+  - git encrypted keys?
+  - API endpoints
+  - backups and scheduling
+    - setup creates cron job?
+  - explore migration to MCP as base tooling layer?
+  - macos backups?
+
+- @pirog/me
+  - morning closeout?
+  - better plans and reports?
+  - read only email summarizer?
+  - blog like pirog skill
+
 ## AGENTS
 
 - setup SMUTLORD bug fixer agent
 - setup TEMENOS canon enforcement && PR agent
 - setup TBD? admin/daily agent
+- discord
 
 ## EMORI ISSUES?
+
+- @tanaab/actions
+  - audit for codex-publish then remove?
 
 - @tanaab/component-playground
   - redirects
@@ -114,7 +98,7 @@
   - badges: 34a6ccb8-9d9f-44e7-a5bf-99a47fc54e5f
 
   - add to vue/vite skill?
-  - improved milestone?
+  - improved milestone new issues?
 
 - @tanaab/agentbox
   - openclaw agentbox plugin?
