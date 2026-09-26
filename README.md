@@ -11,28 +11,34 @@
   <img src="https://img.shields.io/badge/Codex-piroplugin-00c88a" alt="Codex plugin: piroplugin" />
 </p>
 
-`me` gives a Mac pirog's tools, habits, and prejudices—and gives Codex a job beyond producing
+`me` gives a Mac pirog's tools, dotfiles, habits, and prejudices—and gives Codex a job beyond producing
 agreeable paragraphs. Workstation setup, goal-driven planning, sensible model selection, and prose
 with a pulse, all in one editable profile.
+
+Use it as an operator profile for a person at a Mac, a Codex profile, or an OpenClaw profile
+(coming soon).
 
 > Supports macOS 26 or newer.
 
 ## Overview
 
-- Put the workstation in order: applications, dotfiles, and 1Password-backed SSH keys, with
-  [Bootbox](https://github.com/tanaabased/bootbox) doing the bootstrap work.
-- Choose work by its contribution to your goals, not its talent for filling an issue queue.
-  Plan assigned or unassigned work and assess issues or PRs in dedicated Codex tasks.
-- Reserve heavier task models for harder problems. Configure model and effort mappings once;
-  override them when you have a reason.
-- Give human-facing prose a point of view. Pirog Voice brings conviction and wit to replies,
-  documentation, and GitHub discussions; the global guidance supplies the willingness to push back.
-- Keep planning, closeout, and profile checks in working order, with explicit approval boundaries.
-- Let Codex TUI, Vim, Visual Studio Code, and Warp look as though they belong on the same machine.
+`me` ships with these components:
+
+| Component                                                 | Includes                                                                                       |
+| --------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| [Codex Plugins](./INVENTORY.md#plugins)                   | Optional plugins from the [Pirostore catalog](./dotfiles/ai/.agents/plugins/marketplace.json). |
+| [Configuration Files](./INVENTORY.md#configuration-files) | Identity, setup, goals, actors, repository scope, automations, and model profiles.             |
+| [Dependencies](./INVENTORY.md#dependencies)               | Base applications and runtimes, plus optional OpenClaw tooling.                                |
+| [Dotfiles](./INVENTORY.md#dotfiles)                       | Shell, editor, terminal, Git, SSH, and Codex configuration.                                    |
+| [Skills](./INVENTORY.md#skills)                           | Planning, task lifecycle, Voice, and automation management.                                    |
+
+For the full inventory, see [Inventory](./INVENTORY.md).
 
 ## Quickstart
 
-Provide a 1Password service account token and run the hosted bootstrap:
+For operator and Codex profiles, provide a 1Password service account token and run
+the hosted bootstrap. It installs applications and dotfiles and retrieves the configured private
+SSH keys from 1Password:
 
 ```sh
 /bin/bash -c "$(curl -fsSL https://boot.pirog.me/boot.sh)" piroboot \
@@ -41,87 +47,82 @@ Provide a 1Password service account token and run the hosted bootstrap:
   --tanaab openclaw-agent-system:codex-plugin-build
 ```
 
-Without `--tanaab`, boot installs the configured SSH keys, Brewfile, and dotfiles. Installed
-`agentbox` and formula-backed Tailscale hosts retain their existing services; see
-[Dependencies](./ADVANCED.md#dependencies).
+For operator-only setup, omit the two `--tanaab` selections. For full command usage, see
+[Piroboot](./PIROBOOT.md).
 
-## Usage
-
-For repeated use, install the script in a directory you manage on `PATH`:
+For skills-only installation:
 
 ```sh
-mkdir -p "$HOME/.local/bin"
-curl -fsSL https://boot.pirog.me/boot.sh -o "$HOME/.local/bin/piroboot"
-chmod +x "$HOME/.local/bin/piroboot"
-
-# select an ssh key and two tanaab repositories
-piroboot \
-  --op-token "$OP_TOKEN" \
-  --ssh-key "vmruk4ny353aly6tbom7z3v2hy/id_pirog" \
-  --tanaab canon \
-  --tanaab agentbox
-
-# show all options and environment variables
-piroboot --help
+npx --yes --package=@tanaab/codex-tools@1 -- codex-tools install npm:@pirog/me@latest --marketplace pirostore
 ```
 
-| Option       | Use                                                                         |
-| ------------ | --------------------------------------------------------------------------- |
-| `--op-token` | Authenticate private SSH-key retrieval.                                     |
-| `--ssh-key`  | Select a `vault/item[:filename]`; repeat for multiple keys.                 |
-| `--tanaab`   | Select a repository from `@tanaabased`, optionally with an action suffix.   |
-| `--yes`      | Accept the plan without prompts.                                            |
-| `--force`    | Replace supported Bootbox targets and SSH keys, never repository checkouts. |
-| `--debug`    | Show debug output with secrets masked.                                      |
+## After Pirobooting
 
-See [CLI Options](./ADVANCED.md#cli-options) for defaults, environment variables, and checkout safety.
+Complete the following manual setup tasks for your operator profile, Codex profile, or both.
 
-## After Bootstrap
+### As Operator
 
-- **1Password:** on desktop hosts, sign in, unlock, and enable Developer > Integrate with 1Password CLI
-  and Show 1Password Developer experience. Keep the supplied beta CLI for 1Password Environments;
+- **1Password:** sign in, unlock, and enable Developer > Integrate with 1Password CLI and
+  Show 1Password Developer experience. Keep the supplied beta CLI for 1Password Environments;
   check access with `op vault list`.
-- **Tailscale:** if using the desktop app, sign in and join `tanaab.dev`. Leave formula-backed services
-  in place; `tailscale status --json` should report the local node running and online.
-- **Codex:** sign in and install `piroplugin` from Pirostore. The qualified `--tanaab` selections in Quickstart
-  install Canon and Agent System from source. Connect GitHub as `pirog` and monday.com as `Michael Pirog`.
-- Review Agent System's hook through `/hooks`, start a fresh task, then ask:
+- **Tailscale:** if using the desktop app, sign in and join `tanaab.dev`. Leave formula-backed
+  services in place; `tailscale status --json` should report the local node running and online.
+
+### As Codex Profile
+
+- Sign into Codex and install `piroplugin` from Pirostore. Confirm that Agent System
+  (`agent-system`) and Canon (`tanaab`) are installed and enabled; the qualified `--tanaab`
+  selections in Quickstart install both from source.
+- Connect GitHub as `pirog` and monday.com as `Michael Pirog`.
+- Review and authorize Agent System's hook through `/hooks`, then start a fresh task.
+- Ask Codex:
   `Use $agent-system-codex-binding to bind this plugin to /Users/pirog/tanaab/me.`
   Confirm the checkout containing [`agent.yaml`](./agent.yaml), then start a fresh task to load pirog's identity.
-- Run `$agent-system-doctor` to check profile drift after local source changes; run
-  `$agent-system-install` to apply the declared setup steps.
-- Ask Codex to run `$piro-automation check` and review the plan before approving live sync.
-
-## Components
-
-| Component                                                | Includes                                                                 |
-| -------------------------------------------------------- | ------------------------------------------------------------------------ |
-| [Dependencies](./ADVANCED.md#dependencies)               | Base applications and runtimes, plus optional OpenClaw tooling.          |
-| [Dotfiles](./ADVANCED.md#dotfiles)                       | Shell, editor, terminal, Git, SSH, and Codex configuration.              |
-| [Skills](./ADVANCED.md#skills)                           | Planning, task lifecycle, model routing, Voice, and profile maintenance. |
-| [Configuration Files](./ADVANCED.md#configuration-files) | Goals, actors, repository scope, automations, and shared model policy.   |
-
-Find Work recommends unassigned issues; Plan Work organizes assigned work. Work on Task opens the
-selected issue or PR for assessment, and Morning Closeout checks completed work and delegates safe
-retirement to Clean Up Task. The point is to finish useful work, not administer an ever more exquisite queue.
-
-To try routing, ask Codex to use `$piro-work-on-task` with an issue URL. It selects a model and
-reasoning effort and explains the choice, including when its assessment differs from metadata.
-The new task begins with assessment and planning; implementation still needs your go-ahead.
+- Run `$agent-system-doctor` to check the profile. If it reports drift, run
+  `$agent-system-install` to apply the declared setup steps, then run Doctor again.
 
 ## Development
 
+Use the runtimes declared in [`.tool-versions`](./.tool-versions), then work from the `me` checkout:
+
 ```sh
+# prepare the checkout
 git clone git@github.com:pirog/me.git
 cd me
-bun install
+bun install --frozen-lockfile --ignore-scripts
+
+# run tests and static checks
 bun run test
 bun run lint
+
+# apply only the operations needed for your changes
+
+# regenerate codex configuration and restow ai dotfiles into your home directory
+bun run ai:sync
+
+# refresh and verify the installed plugin cache
+bun run codex:sync
+bun run codex:check
+
+# validate automation definitions without changing live schedules
+bun run automations:validate
+
+# check saved automations for drift without changing live schedules
+bun run automations:check
 ```
 
-See [Utilities](./ADVANCED.md#utilities) to regenerate Codex configuration, refresh the plugin cache,
-or validate automation definitions. `bun run build` and Leia scenarios are CI-owned by default:
-they generate `dist/` or mutate macOS runner state.
+Edit the source files listed in [Inventory](./INVENTORY.md#configuration-files), rather than generated
+configuration.
+
+After model-profile changes, refresh both AI configuration and the plugin cache, then check the
+defaults in a fresh Codex task. Existing task selections remain unchanged. Saved automations require
+separate reconciliation through [`$piro-automation`](./skills/automation/); changing defaults or
+validating the manifest does not update them.
+
+For broader profile drift, use Agent System Doctor and Install as described
+[above](#as-codex-profile). `bun run build` and Leia scenarios are CI-owned by default: they generate
+`dist/` or mutate macOS runner state. Read [the example guidance](./examples/AGENTS.md) before changing
+executable examples.
 
 ## Issues, Questions and Support
 
@@ -130,8 +131,8 @@ feature requests.
 
 ## Changelog
 
-See [`CHANGELOG.md`](./CHANGELOG.md) for release history and
-[GitHub releases](https://github.com/pirog/me/releases) for published artifacts.
+See [`CHANGELOG.md`](./CHANGELOG.md) and [GitHub releases](https://github.com/pirog/me/releases) for
+release history. New `piroplugin` releases ship through npm; see [plugin sources](./INVENTORY.md#plugins).
 
 ## Maintainers
 

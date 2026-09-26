@@ -1,21 +1,20 @@
 {
   "name": "@pirog/me",
-  "description": "Bootstrap script and release tooling for pirog.me.",
+  "description": "Pirog's Codex profile, planning workflows, and voice skills.",
   "version": "1.0.0-beta.11",
   "author": "Mike Pirog @pirog",
   "license": "MIT",
-  "repository": "https://github.com/pirog/me",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pirog/me.git"
+  },
   "bugs": "https://github.com/pirog/me/issues",
   "homepage": "https://github.com/pirog/me",
   "packageManager": "bun@1.4.2",
-  "private": true,
   "engines": {
     "bun": ">=1.4.2 <1.5.0"
   },
   "type": "module",
-  "bin": {
-    "aisync": "./bin/aisync.js"
-  },
   "scripts": {
     "build": "bun ./scripts/build-dist.js",
     "ai:sync": "bun ./bin/aisync.js",
@@ -66,5 +65,32 @@
       "skills",
       "utils"
     ]
-  }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    ".codex-plugin/plugin.json",
+    ".mcp.json",
+    ".bun-version",
+    ".tool-versions",
+    "ACTORS.md",
+    "AGENTS.md",
+    "AUTOMATIONS.yaml",
+    "CHANGELOG.md",
+    "GOALS.md",
+    "INVENTORY.md",
+    "PIROBOOT.md",
+    "WORK_REPOS.md",
+    "agent.yaml",
+    "assets/",
+    "automations/",
+    "bin/",
+    "lib/",
+    "references/",
+    "skills/",
+    "utils/",
+    "test/automation-manifest.spec.js",
+    "test/automation-plan.spec.js"
+  ]
 }

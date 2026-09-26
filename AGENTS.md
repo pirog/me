@@ -38,6 +38,9 @@ its Codex plugin bundle.
   read-only checks and focused repairs.
 - `.codex-plugin/`, plugin source directories, and `package.json` own the `piroplugin` package.
   `package.json#codexTools` selects its managed cache payload; the shared Codex Tools CLI owns syncing.
+- `package.json#files` selects the npm payload. npm release preparation materializes the
+  symlinked skill icons in the CI checkout because npm omits symlinks.
+  npm ships the Codex plugin, while bootstrap and Agent System setup use the editable Git checkout.
 - `AUTOMATIONS.yaml` owns desired Codex scheduled-task state. `skills/automation/` owns validation,
   drift planning, approval-gated reconciliation, and read-back verification. Automation prompts of
   at most 25 physical lines may stay inline; longer prompts must use `prompt-file` and live under
@@ -53,8 +56,9 @@ its Codex plugin bundle.
 - `TASKS.md` is informal cross-repository planning scratch. It is not a durable contract, current
   state proof, or authorization source; preserve unrelated edits and keep it outside the managed
   plugin cache.
-- `README.md` owns the primary setup journey, including post-bootstrap setup. `ADVANCED.md` owns
-  installed-component inventories, CLI options, and sync utilities.
+- `README.md` owns the primary setup journey, post-bootstrap setup, and development utilities.
+  `PIROBOOT.md` owns bootstrap command usage and CLI options. `INVENTORY.md` owns installed-component
+  inventories and configuration entrypoints.
 - `examples/**/README.md` are Leia-backed executable CI contracts. Read `examples/AGENTS.md` before
   changing them.
 - `site/llms.txt`, `scripts/build-dist.js`, and release workflows own published output; `dist/` is
@@ -71,7 +75,7 @@ its Codex plugin bundle.
   shell secrets, or local token fallbacks.
 - Do not edit, regenerate, stage, or commit `dist/` during routine work. Change its source inputs and
   leave generated output to CI unless release-shaped verification is explicitly requested.
-- Treat `--help` as the public bootstrap contract. Check `README.md`, `ADVANCED.md`, and affected
+- Treat `--help` as the public bootstrap contract. Check `README.md`, `PIROBOOT.md`, and affected
   examples when public options, environment variables, help, planning, or failure text changes.
 - Keep development and CI-only inputs hidden. Preserve `PIROME_*` as the public wrapper namespace
   and use `BOOTBOX_*` only for internal delegation.
@@ -97,6 +101,10 @@ its Codex plugin bundle.
   `tanaabased/actions/validate-codex-plugin@v1` action in CI, not a local wrapper.
 - Use `bun run ai:sync` only to generate and restow the live Stow-owned AI surface under
   `dotfiles/ai`; it is separate from plugin-cache sync.
+- Publish `piroplugin` through npm using `publish-npm`; do not use `publish-codex-plugin`.
+  Keep repository and npm publication independent, with source and Codex validation at the start
+  of each job and formatting checks inside preparation commands. Pack directly from the prepared
+  checkout. Use the npm publication dry run in PRs and avoid duplicate completion probes.
 
 ## Shared Issue Flow
 

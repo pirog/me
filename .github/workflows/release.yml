@@ -5,47 +5,80 @@ on:
     types:
       - published
 
-permissions:
-  contents: write
-
 jobs:
-  release:
+  publish-npm:
+    name: Publish npm
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
         with:
-          fetch-depth: 0
           ref: ${{ github.sha }}
+          fetch-depth: 0
+      - name: Install Node.js
+        uses: tanaabased/actions/setup-node@v1
       - name: Install Bun
         uses: tanaabased/actions/setup-bun@v1
       - name: Install dependencies
         run: bun install --frozen-lockfile --ignore-scripts
-      - name: Lint
-        run: bun run lint
-      - name: Run unit tests
-        run: bun run test
-      - name: Validate generic Codex plugin contract
+      - name: Validate source
+        run: |
+          bun run lint
+          bun run test
+      - name: Validate Codex plugin
         uses: tanaabased/actions/validate-codex-plugin@v1
-      - name: Export sitemap metadata
-        run: echo "SITEMAP_LASTMOD=${{ github.event.release.published_at }}" >> "${GITHUB_ENV}"
-      - name: Publish repository
+      - name: Prepare release
+        uses: tanaabased/actions/prepare-release@v1
+        with:
+          commands: |
+            version-injector .codex-plugin/plugin.json --style json --version "$PREPARE_RELEASE_VERSION"
+            bash -euc "for dir in skills/*/assets; do if [ -L \"$dir\" ]; then rm \"$dir\"; mkdir \"$dir\"; cp assets/composer-icon.svg assets/icon-large.png \"$dir/\"; fi; done"
+            bun run format:write
+            bun run format:check
+      - name: Pack plugin
+        id: pack
+        uses: tanaabased/actions/npm-pack@v1
+      - name: Publish npm
+        uses: tanaabased/actions/publish-npm@v1
+        with:
+          tarball: ${{ steps.pack.outputs.tarball-path }}
+          channel-token: ${{ secrets.TANAAB_NPM_DEPLOY }}
+
+  publish-repo:
+    name: Publish repo
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - name: Install Node.js
+        uses: tanaabased/actions/setup-node@v1
+      - name: Install Bun
+        uses: tanaabased/actions/setup-bun@v1
+      - name: Install dependencies
+        run: bun install --frozen-lockfile --ignore-scripts
+      - name: Validate source
+        run: |
+          bun run lint
+          bun run test
+      - name: Validate Codex plugin
+        uses: tanaabased/actions/validate-codex-plugin@v1
+      - name: Publish repo
         uses: tanaabased/actions/publish-repo@v1
+        env:
+          SITEMAP_LASTMOD: ${{ github.event.release.published_at }}
         with:
           commands: |
             bun run build
-            version-injector dist/boot.sh --style sh --version "${{ github.event.release.tag_name }}"
-            version-injector .codex-plugin/plugin.json --style json --version "${{ github.event.release.tag_name }}"
+            version-injector dist/boot.sh --style sh --version "$PREPARE_RELEASE_VERSION"
+            version-injector .codex-plugin/plugin.json --style json --version "$PREPARE_RELEASE_VERSION"
             bun run format:write
+            bun run format:check
           sync-token: ${{ secrets.TANAAB_COAXIUM_INJECTOR }}
-      - name: Verify prepared formatting
-        run: bun run format:check
-      - name: Validate prepared generic Codex plugin contract
-        uses: tanaabased/actions/validate-codex-plugin@v1
-      - name: Publish Codex plugin archive
-        uses: tanaabased/actions/publish-codex-plugin@v1
-        with:
-          archive-name: piroplugin-${{ github.event.release.tag_name }}.tar.gz
-          dependency-policy: include-production
-          github-token: ${{ github.token }}
-          release-tag: ${{ github.event.release.tag_name }}
