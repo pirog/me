@@ -23,8 +23,6 @@ its Codex plugin bundle.
   treating them as local setup steps.
 - Keep generic bootstrap behavior in Bootbox. Headless setup, SSH hardening, remote-login policy,
   service supervision, and production OpenClaw hosting belong in `agentbox`.
-- Keep setup, token management, connector mutations, releases, Leia, and unrelated machine
-  administration outside Me Doctor.
 
 ## Sources Of Truth
 
@@ -55,8 +53,6 @@ its Codex plugin bundle.
 - `TASKS.md` is informal cross-repository planning scratch. It is not a durable contract, current
   state proof, or authorization source; preserve unrelated edits and keep it outside the managed
   plugin cache.
-- `skills/me-doctor/` and `skills/me-doctor/test/check-machine.spec.js` own profile diagnostic
-  behavior.
 - `README.md` owns the primary setup journey, including post-bootstrap setup. `ADVANCED.md` owns
   installed-component inventories, CLI options, and sync utilities.
 - `examples/**/README.md` are Leia-backed executable CI contracts. Read `examples/AGENTS.md` before
@@ -101,9 +97,6 @@ its Codex plugin bundle.
   `tanaabased/actions/validate-codex-plugin@v1` action in CI, not a local wrapper.
 - Use `bun run ai:sync` only to generate and restow the live Stow-owned AI surface under
   `dotfiles/ai`; it is separate from plugin-cache sync.
-- Treat `$piro-me-doctor` as read-only diagnosis. Read its `SKILL.md` before changing or using it,
-  and keep setup, repair, credential management, connector mutations, and Agentbox or OpenClaw host
-  health outside it.
 
 ## Shared Issue Flow
 
