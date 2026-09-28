@@ -21,5 +21,7 @@ models:
     model: openai/gpt-6-astra
     effort: high
 
-setup:
-  file: ./setup.yaml
+setup-host:
+  file: ./setup-host.yaml
+setup-agent:
+  file: ./setup-agent.yaml

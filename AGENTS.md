@@ -15,9 +15,10 @@ its Codex plugin bundle.
   do not split it into source fragments or require release-time assembly from multiple files.
 - Use `boot.sh` for first-run machine bootstrap: the `me` checkout, Brewfile, dotfiles, access
   material, and explicitly selected Tanaab checkouts and Codex plugin installs.
-- Put post-bootstrap, repeatable checks and focused repairs in `setup.yaml#steps`, referenced by
-  `agent.yaml#setup.file` and scoped to the applicable runtime. Agent System Doctor checks those
-  steps; Agent System Install applies them.
+- Put repeatable host checks and repairs in `setup-host.yaml#steps`, and runtime-scoped agent
+  checks and repairs in `setup-agent.yaml#steps`, referenced by `agent.yaml#setup-host.file` and
+  `agent.yaml#setup-agent.file`. Agent System Doctor checks those steps; Agent System Install
+  applies them after host setup.
   Do not rerun the whole bootstrap to repair one drifting component.
 - Keep Codex sign-in and Agent System binding, connector identity, credential authorization,
   optional service sign-in, and managed automations with their respective owners rather than
@@ -35,8 +36,8 @@ its Codex plugin bundle.
   resolution; `references/model-routing.md` owns Me evidence, native selection and unavailable fallback.
   `dotfiles/ai/.codex/config.shared.toml` owns Codex service tier and Fast mode. Keep model literals
   out of skills; config generation projects only `models.default`.
-- `setup.yaml#steps` declares post-bootstrap convergence; `lib/setup.js` implements its
-  read-only checks and focused repairs.
+- `setup-host.yaml#steps` and `setup-agent.yaml#steps` declare host and agent convergence;
+  `lib/setup.js` implements their read-only checks and focused repairs.
 - `.codex-plugin/`, plugin source directories, and `package.json` own the `piroplugin` package.
   `package.json#codexTools` selects its managed cache payload; the shared Codex Tools CLI owns syncing.
 - `package.json#files` selects the npm payload. npm release preparation materializes the
