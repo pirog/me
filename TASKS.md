@@ -16,6 +16,7 @@
   - release as package?
 
 - @tanaab/canon
+  - long running model truns and fixture generation?
   - jev tools?
   - install in openclaw?
   - update canon skill?
@@ -30,34 +31,38 @@
     - cron/automations?
     - better fixture/CLI audit in testing?
     - backups pruning etc? cli command?
-    - `generic-tool` system?
+
     - pr-review flow
-    - complete issue + plan flow
-      - plan mode need to be able to transition to work mode with plan prompt injection?
+    - assigned to review support?
+
+    - smaller things
+      - backups for codex?
+      - gog cred setup instructions?
+      - timeout for example tests?
+      - backup skill?
+
+  - 0.11.0
+    - public API for other plugins?
+    - rework so everything is API endpoints?
+    - API docs?
+    - API endpoints
+
+  - 0.12.0
+    - plan mode, need to be able to transition to work mode with plan prompt injection?
     - complete auto flow?
+    - `generic-tool` system?
+    - x.com tool?
 
-  - smaller things
-    - backups for codex?
-    - gog cred setup instructions?
-    - timeout for example tests?
-    - backup skill?
-
-- 0.10.0
-  - public API for other plugins?
-  - API docs?
-  - API endpoints
-  - assigned to review support?
-
-- future
-  - pr link?
-  - pr flow
-  - decsision model with jev?
-  - theme?
-  - "random" comment anywhere support?
-  - better voice actuator? rewrite messages?
-  - add hooks reconciliation to doctor?
-  - git encrypted keys?
-  - logo for clients apps?
+  - future
+    - pr link?
+    - pr flow
+    - decsision model with jev?
+    - theme?
+    - "random" comment anywhere support?
+    - better voice actuator? rewrite messages?
+    - add hooks reconciliation to doctor?
+    - git encrypted keys?
+    - logo for clients apps?
 
 - @pirog/me
   - morning closeout?
@@ -118,19 +123,13 @@
 ## TEMENOS ISSUES?
 
 - @tanaab/\*
-  - updates to node-version/bun-version?
-  - go through all repos and normalize with new project skill
-  - change to @tanaab npm namespacing via project optimizer
-  - bump to latest bun
-  - create @tanaabased/codex-plugin-validator-action@v1
-  - update all scripts that are fundamentally complex to bun cli?
-  - catch all email routing and AI triage?
-  - cli plugin installation now available in codex
   - known_hosts for github?
+
+  - go through all repos and normalize with new project skill
+  - update all scripts that are fundamentally complex to bun cli?
   - refresh on readme structure wrt pics and badges
   - get emori to rework our repos for improved guidance on CLI usage and llms.txt?
   - pictures and badges inc netlify (use connector?) as needed
-  - images for actions readmes
 
   - document personal agentbox cli example?
   - falsey shoudl include skip?
