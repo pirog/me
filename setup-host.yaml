@@ -1,0 +1,9 @@
+steps:
+  - id: brewfile
+    check:
+      command: bun
+      args: [scripts/setup.js, check, brewfile]
+    apply:
+      command: bun
+      args: [scripts/setup.js, apply, brewfile]
+      timeout-seconds: 1800

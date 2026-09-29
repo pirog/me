@@ -46,7 +46,7 @@ node "$runtime" binding bind --plugin-data "$TMPDIR/plugin-data" --workspace "$G
 node "$runtime" binding inspect --plugin-data "$TMPDIR/plugin-data" \
   | jq -e --arg workspace "$GITHUB_WORKSPACE" '.status == "bound" and .binding.workspaceDir == $workspace and .preview.manifest.status == "valid" and .preview.manifest.agentId == "pirog"'
 
-# should install every pirog setup step through standalone codex
+# should install host setup before every pirog agent setup step through standalone codex
 set -o pipefail
 runtime="$(jq -r .cachePath "$TMPDIR/cache.json")/dist/codex/codex-runtime.js"
 node "$runtime" setup install --plugin-data "$TMPDIR/plugin-data" \
