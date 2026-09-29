@@ -2,6 +2,31 @@
 
 ## PIROG
 
+- PRIORITY
+  - audit and close PRs as needed
+
+  - start smutlord/Nikolai Borodin agent
+    - gmail
+      - labels and forwarding/team emory
+    - github
+      - add to tanaab and set new primary email for smutlord?
+    - git
+      - SSH keys
+      - signing keys
+    - openai account
+
+    - 1password stuff
+
+    - actual agent repo?
+    - gog setup
+
+  - @tanaab/mmm
+    - mmm milestones
+    - jev account/alpaca accounts?
+
+  - @tanaab/devtool
+    - milestones?
+
 - @tanaab/emori
   - cron jobs?
   - backups
@@ -123,16 +148,13 @@
 ## TEMENOS ISSUES?
 
 - @tanaab/\*
-  - known_hosts for github?
 
   - go through all repos and normalize with new project skill
-  - update all scripts that are fundamentally complex to bun cli?
-  - refresh on readme structure wrt pics and badges
-  - get emori to rework our repos for improved guidance on CLI usage and llms.txt?
-  - pictures and badges inc netlify (use connector?) as needed
 
-  - document personal agentbox cli example?
-  - falsey shoudl include skip?
+  - refresh on readme structure wrt pics and badges
+    - get emori to rework our repos for improved guidance on CLI usage and llms.txt?
+    - pictures and badges inc netlify (use connector?) as needed
+
   - helper tags for repos with similar flows?
     - canon list of tags?
     - bootbox
@@ -147,6 +169,9 @@
     - stdin -> script ruins NONINTERACTIVE for all hosted scripts!
     - hosted scripts with better macos.sh and unsupported.sh routing?
     - readme?
+    - known_hosts for github?
+
+  - update all scripts that are fundamentally complex to bun cli?
 
 ## MILESTONE 1
 
