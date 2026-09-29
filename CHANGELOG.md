@@ -1,5 +1,9 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+- Added sanitized setup failure diagnostics when `RUNNER_DEBUG=1`. [#98](https://github.com/pirog/me/pull/98)
+- Fixed false `Brewfile` drift by disabling automatic Homebrew updates during readiness checks. [#102](https://github.com/pirog/me/pull/102)
+- Moved setup steps out of `agent.yaml` into separate `setup-host.yaml` and `setup-agent.yaml` manifests. [#100](https://github.com/pirog/me/pull/100) [#105](https://github.com/pirog/me/pull/105)
+
 ## v1.0.0-beta.12 - [September 26, 2026](https://github.com/pirog/me/releases/tag/v1.0.0-beta.12)
 
 ### Features

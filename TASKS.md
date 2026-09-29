@@ -3,15 +3,8 @@
 ## PIROG
 
 - @tanaab/emori
-  - docs, do we need setup?
-  - emphasis beltalowda creol
-  - release as package?
-
   - cron jobs?
-
-  - backup stuff memories?
-  - backup system?
-
+  - backups
   - skill audit and trim?
   - automate emori improvements?
   - install agent as openclaw plugin?
@@ -20,14 +13,10 @@
 
   - other issues/goals
     - bootstrap.md.template?
+  - release as package?
 
 - @tanaab/canon
-  - vue skill updates
-    - testing?
-    - actions?
-  - codex skill updates
-    - testing with codex cli?
-    - actions?
+  - jev tools?
   - install in openclaw?
   - update canon skill?
   - basically it updates lists every day?
@@ -37,43 +26,45 @@
   - codify better automation skills like task management/blocked/etc
 
 - @tanaab/openclaw-agent-system
-  - 0.8.0
-    - backups
-    - setup-file?
-    - `gog` tool
-
-    - cron/automations?
-    - theme?
-    - better voice actuator? rewrite messages?
-    - add hooks reconciliation to doctor?
-
   - 0.9.0
+    - cron/automations?
+    - better fixture/CLI audit in testing?
+    - backups pruning etc? cli command?
     - `generic-tool` system?
     - pr-review flow
     - complete issue + plan flow
       - plan mode need to be able to transition to work mode with plan prompt injection?
     - complete auto flow?
 
-  - 0.10.0
-    - decsision model with jev?
+  - smaller things
+    - backups for codex?
+    - gog cred setup instructions?
+    - timeout for example tests?
+    - backup skill?
 
+- 0.10.0
+  - public API for other plugins?
+  - API docs?
+  - API endpoints
+  - assigned to review support?
+
+- future
   - pr link?
   - pr flow
-
-  - assigned to review support?
+  - decsision model with jev?
+  - theme?
   - "random" comment anywhere support?
+  - better voice actuator? rewrite messages?
+  - add hooks reconciliation to doctor?
   - git encrypted keys?
-  - API endpoints
-  - backups and scheduling
-    - setup creates cron job?
-  - explore migration to MCP as base tooling layer?
-  - macos backups?
+  - logo for clients apps?
 
 - @pirog/me
   - morning closeout?
   - better plans and reports?
   - read only email summarizer?
   - blog like pirog skill
+  - school calender to gcalendar?
 
 ## AGENTS
 
@@ -84,20 +75,16 @@
 
 ## EMORI ISSUES?
 
-- @tanaab/actions
-  - audit for codex-publish then remove?
-
 - @tanaab/component-playground
+  - better description
   - redirects
   - about/project url?
   - optimizer? project stnadard?
   - domain setup?
   - release/trusted pub/netlify/etc
   - docs/deploy/netlify/build.env?
-
   - badges: 34a6ccb8-9d9f-44e7-a5bf-99a47fc54e5f
 
-  - add to vue/vite skill?
   - improved milestone new issues?
 
 - @tanaab/agentbox
@@ -143,6 +130,7 @@
   - refresh on readme structure wrt pics and badges
   - get emori to rework our repos for improved guidance on CLI usage and llms.txt?
   - pictures and badges inc netlify (use connector?) as needed
+  - images for actions readmes
 
   - document personal agentbox cli example?
   - falsey shoudl include skip?
