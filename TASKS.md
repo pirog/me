@@ -96,7 +96,7 @@
   - openclaw agentbox plugin?
   - format:write fix
 
-  - need to install @tanaabased/agent-system globally once we have it?
+  - need to install @tanaab/openclaw-agent-system globally once we have it?
 
   - longer term
     - make this into a bun binary?
