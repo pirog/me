@@ -1,5 +1,7 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+- Updated npm tag synchronization for `@pirog/me` to use the dedicated `NPM_DEPLOY_TOKEN` credential. [#106](https://github.com/pirog/me/issues/106)
+
 ## v1.0.0-beta.13 - [September 29, 2026](https://github.com/pirog/me/releases/tag/v1.0.0-beta.13)
 
 - Added sanitized setup failure diagnostics when `RUNNER_DEBUG=1`. [#98](https://github.com/pirog/me/pull/98)
