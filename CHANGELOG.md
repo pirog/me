@@ -1,5 +1,7 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+- Updated the medium `agent.yaml` profile to `gpt-6.1-sol` with high reasoning effort. [#110](https://github.com/pirog/me/issues/110)
+
 ## v1.0.0-beta.14 - [September 29, 2026](https://github.com/pirog/me/releases/tag/v1.0.0-beta.14)
 
 - Updated npm tag synchronization for `@pirog/me` to use the dedicated `NPM_DEPLOY_TOKEN` credential. [#106](https://github.com/pirog/me/issues/106)
