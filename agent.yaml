@@ -9,7 +9,7 @@ github:
   username: pirog
 models:
   default:
-    model: openai/gpt-6.1-sol
+    model: openai/gpt-6-astra
     effort: high
   low:
     model: openai/gpt-6-luna
