@@ -10,16 +10,16 @@ import agentModelsConfig from '../utils/agent-models-config.js';
 import validateAgentModels from '../utils/validate-agent-models.js';
 
 describe('agent model configuration', () => {
-  it('should retain Astra defaults with Luna and Sol work profiles', async () => {
+  it('should use Sol 6.1 defaults and medium work with Luna and Astra tiers', async () => {
     const models = await loadAgentModels();
     assert.deepEqual(models, {
-      default: { model: 'openai/gpt-6-astra', effort: 'high' },
+      default: { model: 'openai/gpt-6.1-sol', effort: 'high' },
       low: { model: 'openai/gpt-6-luna', effort: 'medium' },
-      medium: { model: 'openai/gpt-6-sol', effort: 'high' },
+      medium: { model: 'openai/gpt-6.1-sol', effort: 'high' },
       high: { model: 'openai/gpt-6-astra', effort: 'high' },
     });
     assert.deepEqual(agentModelsConfig(models), {
-      model: 'gpt-6-astra',
+      model: 'gpt-6.1-sol',
       model_reasoning_effort: 'high',
     });
   });
