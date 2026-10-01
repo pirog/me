@@ -35,6 +35,7 @@
     - ts
     - deploy/compile
     - test
+    - codex/openclaw?
 
   - bunify
   - compile
