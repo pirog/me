@@ -20,6 +20,8 @@
     - actual agent repo?
     - gog setup
 
+  - discord setup?
+
   - @tanaab/mmm
     - mmm milestones
     - jev account/alpaca accounts?
