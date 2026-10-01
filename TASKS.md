@@ -27,21 +27,26 @@
   - @tanaab/devtool
     - milestones?
 
-- @tanaab/emori
-  - cron jobs?
-  - backups
-  - skill audit and trim?
-  - automate emori improvements?
-  - install agent as openclaw plugin?
+- audit alecs list of companies/etc
 
-  - push back on irrelevant issues?
+- @tanaab/devtool
+  - bunify
+    - bun
+    - ts
+    - deploy/compile
+    - test
 
-  - other issues/goals
-    - bootstrap.md.template?
-  - release as package?
+  - bunify
+  - compile
+    - new actions for code signing etc?
+
+  - complete
 
 - @tanaab/canon
-  - long running model truns and fixture generation?
+  - $tanaab-pr-review
+  - $tanaab-pr-fix
+  - $tanaab-pr-optimize?
+
   - jev tools?
   - install in openclaw?
   - update canon skill?
@@ -51,11 +56,26 @@
   - some kind of blocked issue automation task?
   - codify better automation skills like task management/blocked/etc
 
+- @tanaab/emori
+  - cron jobs?
+  - backups?
+  - skill audit and trim?
+  - automate emori improvements?
+
+  - push back on irrelevant issues?
+  - other issues/goals
+    - bootstrap.md.template?
+
+  - release as package?
+  - install agent as openclaw plugin?
+
 - @tanaab/openclaw-agent-system
   - 0.9.0
-    - cron/automations?
     - better fixture/CLI audit in testing?
-    - backups pruning etc? cli command?
+    - review intake
+    - update fixtures stuff
+
+    - cron/automations?
 
     - pr-review flow
     - assigned to review support?
@@ -90,6 +110,7 @@
     - logo for clients apps?
 
 - @pirog/me
+  - switch automation flows me#109
   - morning closeout?
   - better plans and reports?
   - read only email summarizer?
