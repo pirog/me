@@ -34,13 +34,13 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@lando/leia": "2.0.0",
-    "@openai/codex": "0.157.0",
+    "@openai/codex": "0.160.0",
     "@tanaab/codex-tools": "^1.0.3",
     "eslint": "^10.10.0",
     "eslint-config-prettier": "^10.1.1",
     "globals": "^17.12.0",
     "mocha": "^12.0.2",
-    "openclaw": "2026.9.6",
+    "openclaw": "2026.9.7",
     "prettier": "^3.9.8",
     "shellcheck": "^4.1.0"
   },
