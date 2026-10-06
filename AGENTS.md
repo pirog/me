@@ -40,15 +40,16 @@ its Codex plugin bundle.
   `lib/setup.js` implements their read-only checks and focused repairs.
 - `.codex-plugin/`, plugin source directories, and `package.json` own the `piroplugin` package.
   `package.json#codexTools` selects its managed cache payload; the shared Codex Tools CLI owns syncing.
+  Keep absent `AUTOMATIONS.yaml`, `automations`, and `MODEL_ROUTING.yaml` paths as retirement
+  selectors until old caches no longer need their stale copies removed.
 - `package.json#files` selects the npm payload. npm release preparation materializes the
   symlinked skill icons in the CI checkout because npm omits symlinks.
   npm ships the Codex plugin, while bootstrap and Agent System setup use the editable Git checkout.
-- `AUTOMATIONS.yaml` owns desired Codex scheduled-task state. `skills/automation/` owns validation,
-  drift planning, approval-gated reconciliation, and read-back verification. Automation prompts of
-  at most 25 physical lines may stay inline; longer prompts must use `prompt-file` and live under
-  `automations/`. Reusable readiness and failure handling may use an optional `preflight-file` under
-  `automations/`; it is composed before the task prompt and must not absorb the owning skill's
-  runtime workflow.
+- `agent.yaml#automations` owns desired scheduled state. Agent System Doctor inspects it;
+  Agent System Install plans authorized native app reconciliation and verifies saved settings.
+  Keep the smoke test disabled outside an explicitly authorized validation window. Follow
+  [Agent System's Codex contract](https://github.com/tanaabased/openclaw-agent-system/blob/main/CODEX.md#repository-automations)
+  for ownership, targets, recovery, and execution-evidence limits.
 - `ACTORS.md` owns reviewed work-planning actors and their public goals sources, `WORK_REPOS.md` owns
   priority repositories and discovery-scope policy, and `GOALS.md` owns reviewed direction and
   fallback planning priorities. `skills/plan-work/`, `skills/find-work/`, `skills/work-on-task/`,

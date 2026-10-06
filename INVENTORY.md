@@ -65,7 +65,6 @@ npx --yes --package=@tanaab/codex-tools@1 -- codex-tools install npm:@pirog/me@l
 
 | Skill                                                 | Owns                                                                                               |
 | ----------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| [`piro-automation`](./skills/automation/)             | Scheduled-task validation, drift checks, and approval-gated sync.                                  |
 | [`piro-clean-up-task`](./skills/clean-up-task/)       | Archiving a finished task after checking that its work is preserved.                               |
 | [`piro-find-work`](./skills/find-work/)               | Goal-aware recommendations for unassigned GitHub issues.                                           |
 | [`piro-morning-closeout`](./skills/morning-closeout/) | Completed-work reporting and eligible task cleanup.                                                |
@@ -78,18 +77,16 @@ npx --yes --package=@tanaab/codex-tools@1 -- codex-tools install npm:@pirog/me@l
 
 These are the main configuration entrypoints, rather than every file in the profile.
 
-| File                                                                               | Owns                                                                                |
-| ---------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| [`agent.yaml`](./agent.yaml)                                                       | Identity, model profiles, and repeatable setup checks and repairs for Agent System. |
-| [`GOALS.md`](./GOALS.md)                                                           | Direction, priorities, and deferrals.                                               |
-| [`ACTORS.md`](./ACTORS.md)                                                         | Reviewed work-planning actors and their goals sources.                              |
-| [`WORK_REPOS.md`](./WORK_REPOS.md)                                                 | Repository priorities and discovery scope.                                          |
-| [`AUTOMATIONS.yaml`](./AUTOMATIONS.yaml)                                           | Desired schedules, status, and prompt sources for managed Codex tasks.              |
-| [`automations/`](./automations/)                                                   | Task prompts and shared readiness checks with bounded recovery and safety stops.    |
-| [`dotfiles/ai/.codex/AGENTS.md`](./dotfiles/ai/.codex/AGENTS.md)                   | Global collaboration, voice, and change-discipline guidance.                        |
-| [`dotfiles/ai/.codex/config.shared.toml`](./dotfiles/ai/.codex/config.shared.toml) | Portable Codex settings, including service tier and Fast mode.                      |
-| `~/.codex/config.local.toml`                                                       | Machine-specific settings, including project trust and local paths.                 |
-| `~/.codex/config.toml`                                                             | Generated output; edit its source inputs instead.                                   |
+| File                                                                               | Owns                                                                       |
+| ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| [`agent.yaml`](./agent.yaml)                                                       | Identity, model profiles, setup, and Agent System automation declarations. |
+| [`GOALS.md`](./GOALS.md)                                                           | Direction, priorities, and deferrals.                                      |
+| [`ACTORS.md`](./ACTORS.md)                                                         | Reviewed work-planning actors and their goals sources.                     |
+| [`WORK_REPOS.md`](./WORK_REPOS.md)                                                 | Repository priorities and discovery scope.                                 |
+| [`dotfiles/ai/.codex/AGENTS.md`](./dotfiles/ai/.codex/AGENTS.md)                   | Global collaboration, voice, and change-discipline guidance.               |
+| [`dotfiles/ai/.codex/config.shared.toml`](./dotfiles/ai/.codex/config.shared.toml) | Portable Codex settings, including service tier and Fast mode.             |
+| `~/.codex/config.local.toml`                                                       | Machine-specific settings, including project trust and local paths.        |
+| `~/.codex/config.toml`                                                             | Generated output; edit its source inputs instead.                          |
 
 Local configuration may add settings, but cannot override exact keys owned by the shared file or
 manifest's default model and effort. Edit those sources rather than the generated `~/.codex/config.toml`.
