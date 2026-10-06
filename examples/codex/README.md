@@ -4,6 +4,10 @@ Bootstrap the checked-out pirog profile, then install the packaged Agent System 
 disposable Codex state. Run setup through its binding and check the packaged hook output directly;
 interactive skill use and native hook trust are separate manual checks, with no model login needed here.
 
+Automation checks use a project lookup fixture for the bound checkout and its generated model
+defaults. They prove that only the disabled smoke test is planned and inspection leaves native
+state untouched. Native reconciliation and a real scheduled reply require separate desktop validation.
+
 ## Setup
 
 ```bash
@@ -50,7 +54,7 @@ node "$runtime" binding inspect --plugin-data "$TMPDIR/plugin-data" \
 set -o pipefail
 runtime="$(jq -r .cachePath "$TMPDIR/cache.json")/dist/codex/codex-runtime.js"
 node "$runtime" setup install --plugin-data "$TMPDIR/plugin-data" \
-  | jq -e '.status == "installed" and [.outcomes[].stepId] == ["brewfile", "dotfiles", "codex-config", "piroplugin", "tanaab-plugin", "agent-system-plugin"] and all(.outcomes[]; .code == "setup-applied" or .code == "setup-unchanged")'
+  | jq -e 'if .status == "requires-native-app-sync" and [.outcomes[].stepId] == ["brewfile", "dotfiles", "codex-config", "piroplugin", "tanaab-plugin", "agent-system-plugin"] and all(.outcomes[]; .code == "setup-applied" or .code == "setup-unchanged") then true else error("setup install: \(.)") end'
 
 # should find every pirog setup step healthy after install
 set -o pipefail
@@ -113,4 +117,23 @@ jq -n --slurpfile inspected "$TMPDIR/routing.json" \
   | node "$runtime" model-routing --plugin-data "$TMPDIR/plugin-data" \
   | jq -e --slurpfile inspected "$TMPDIR/routing.json" \
     '.status == "unresolved" and .profile == "default" and .candidate == $inspected[0].profiles.default and .reason == "Insufficient complexity evidence."'
+
+# should plan only the disabled smoke test through the packaged runtime
+set -o pipefail
+runtime="$(jq -r .cachePath "$TMPDIR/cache.json")/dist/codex/codex-runtime.js"
+cd "$GITHUB_WORKSPACE"
+bun -e 'import {loadAgentModels} from "./lib/agent-models.js"; import config from "./utils/agent-models-config.js"; const defaults = config(await loadAgentModels()); await Bun.write(process.env.CODEX_HOME + "/config.toml", `model = ${JSON.stringify(defaults.model)}\nmodel_reasoning_effort = ${JSON.stringify(defaults.model_reasoning_effort)}\n`);'
+jq -n --arg workspace "$GITHUB_WORKSPACE" \
+  '{projects: {schemaVersion: 2, projects: [{projectId: "me-fixture", projectKind: "local", hostId: "local", path: $workspace}]}, threads: []}' > "$TMPDIR/automation-lookups.json"
+node "$runtime" automations list --plugin-data "$TMPDIR/plugin-data" < "$TMPDIR/automation-lookups.json" \
+  | tee "$TMPDIR/automation-plan.json" \
+  | jq -e '.status == "requires-native-app-sync" and [.jobs[] | {id, enabled, declared, applicable, nativeId}] == [{id: "smoke-test", enabled: false, declared: true, applicable: true, nativeId: null}] and (.actions | length) == 1 and (.actions[0] | .manifestId == "smoke-test" and .mode == "create" and .expected.status == "PAUSED" and .expected.kind == "cron" and .expected.projectId == "me-fixture" and .expected.rrule == "FREQ=MINUTELY;INTERVAL=15" and (.expected.prompt | startswith("Reply with \"Pyro automation smoke test passed\" and the current local time.")))'
+
+# should leave native state untouched during repeated automation inspection
+set -o pipefail
+runtime="$(jq -r .cachePath "$TMPDIR/cache.json")/dist/codex/codex-runtime.js"
+node "$runtime" automations inspect --plugin-data "$TMPDIR/plugin-data" < "$TMPDIR/automation-lookups.json" \
+  | jq -e --slurpfile prior "$TMPDIR/automation-plan.json" '.status == $prior[0].status and .digest == $prior[0].digest and .actions == $prior[0].actions and .findings == $prior[0].findings and .telemetry == {execution: "unavailable", delivery: "unavailable"}'
+test ! -d "$CODEX_HOME/automations"
+test -z "$(find "$TMPDIR/plugin-data" -name 'codex-automations-*.json' -print)"
 ```

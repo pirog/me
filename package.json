@@ -18,8 +18,6 @@
   "scripts": {
     "build": "bun ./scripts/build-dist.js",
     "ai:sync": "bun ./bin/aisync.js",
-    "automations:validate": "bun ./skills/automation/scripts/automation-task.js validate",
-    "automations:check": "bun ./skills/automation/scripts/automation-task.js check",
     "codex:check": "bun ./node_modules/.bin/codex-tools cache check",
     "codex:sync": "bun ./node_modules/.bin/codex-tools cache sync",
     "format:check": "prettier . --check --ignore-unknown",
@@ -78,7 +76,6 @@
     ".tool-versions",
     "ACTORS.md",
     "AGENTS.md",
-    "AUTOMATIONS.yaml",
     "CHANGELOG.md",
     "GOALS.md",
     "INVENTORY.md",
@@ -88,13 +85,10 @@
     "setup-host.yaml",
     "setup-agent.yaml",
     "assets/",
-    "automations/",
     "bin/",
     "lib/",
     "references/",
     "skills/",
-    "utils/",
-    "test/automation-manifest.spec.js",
-    "test/automation-plan.spec.js"
+    "utils/"
   ]
 }

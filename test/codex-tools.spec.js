@@ -28,13 +28,21 @@ describe('package.json Codex Tools integration', () => {
       await assert.rejects(lstat(target), { code: 'ENOENT' });
       await mkdir(target);
       await writeFile(path.join(target, 'MODEL_ROUTING.yaml'), 'retired policy');
+      await writeFile(path.join(target, 'AUTOMATIONS.yaml'), 'retired schedules');
+      await mkdir(path.join(target, 'automations'));
+      await writeFile(path.join(target, 'automations', 'daily-work-plan.md'), 'retired prompt');
+      await mkdir(path.join(target, 'skills', 'automation'), { recursive: true });
+      await writeFile(path.join(target, 'skills', 'automation', 'SKILL.md'), 'retired sync skill');
       assert.equal((await invoke('codex:sync')).ok, true);
       assert.equal((await invoke('codex:check')).ok, true);
       for (const relative of packageJson.codexTools.managedPaths) {
-        if (relative === 'MODEL_ROUTING.yaml') continue;
+        if (['MODEL_ROUTING.yaml', 'AUTOMATIONS.yaml', 'automations'].includes(relative)) continue;
         await lstat(path.join(target, relative));
       }
       await assert.rejects(lstat(path.join(target, 'MODEL_ROUTING.yaml')), { code: 'ENOENT' });
+      for (const retired of ['AUTOMATIONS.yaml', 'automations', 'skills/automation']) {
+        await assert.rejects(lstat(path.join(target, retired)), { code: 'ENOENT' });
+      }
       assert.deepEqual(
         await readFile(path.join(target, 'agent.yaml')),
         await readFile(path.join(repoRoot, 'agent.yaml')),

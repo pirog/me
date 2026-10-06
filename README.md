@@ -30,7 +30,7 @@ Use it as an operator profile for a person at a Mac, a Codex profile, or an Open
 | [Configuration Files](./INVENTORY.md#configuration-files) | Identity, setup, goals, actors, repository scope, automations, and model profiles.             |
 | [Dependencies](./INVENTORY.md#dependencies)               | Base applications and runtimes, plus optional OpenClaw tooling.                                |
 | [Dotfiles](./INVENTORY.md#dotfiles)                       | Shell, editor, terminal, Git, SSH, and Codex configuration.                                    |
-| [Skills](./INVENTORY.md#skills)                           | Planning, task lifecycle, Voice, and automation management.                                    |
+| [Skills](./INVENTORY.md#skills)                           | Planning, task lifecycle, and Voice.                                                           |
 
 For the full inventory, see [Inventory](./INVENTORY.md).
 
@@ -80,6 +80,10 @@ Complete the following manual setup tasks for your operator profile, Codex profi
   Confirm the checkout containing [`agent.yaml`](./agent.yaml), then start a fresh task to load pirog's identity.
 - Run `$agent-system-doctor` to check the profile. If it reports drift, run
   `$agent-system-install` to apply the declared setup steps, then run Doctor again.
+- Scheduled work is declared in [`agent.yaml`](./agent.yaml) and reconciled through Agent System
+  Install. The 15-minute smoke test stays disabled outside an explicitly authorized validation
+  window. Doctor checks saved settings; a real scheduled reply is separate evidence.
+  See [Agent System's automation contract](https://github.com/tanaabased/openclaw-agent-system/blob/main/CODEX.md#repository-automations).
 
 ## Development
 
@@ -104,11 +108,6 @@ bun run ai:sync
 bun run codex:sync
 bun run codex:check
 
-# validate automation definitions without changing live schedules
-bun run automations:validate
-
-# check saved automations for drift without changing live schedules
-bun run automations:check
 ```
 
 Edit the source files listed in [Inventory](./INVENTORY.md#configuration-files), rather than generated
@@ -116,7 +115,7 @@ configuration.
 
 After model-profile changes, refresh both AI configuration and the plugin cache, then check the
 defaults in a fresh Codex task. Existing task selections remain unchanged. Saved automations require
-separate reconciliation through [`$piro-automation`](./skills/automation/); changing defaults or
+separate reconciliation through `$agent-system-install`; changing defaults or
 validating the manifest does not update them.
 
 For broader profile drift, use Agent System Doctor and Install as described
