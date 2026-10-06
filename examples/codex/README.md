@@ -127,7 +127,7 @@ jq -n --arg workspace "$GITHUB_WORKSPACE" \
   '{projects: {schemaVersion: 2, projects: [{projectId: "me-fixture", projectKind: "local", hostId: "local", path: $workspace}]}, threads: []}' > "$TMPDIR/automation-lookups.json"
 node "$runtime" automations list --plugin-data "$TMPDIR/plugin-data" < "$TMPDIR/automation-lookups.json" \
   | tee "$TMPDIR/automation-plan.json" \
-  | jq -e '.status == "requires-native-app-sync" and [.jobs[] | {id, enabled, declared, applicable, nativeId}] == [{id: "smoke-test", enabled: false, declared: true, applicable: true, nativeId: null}] and (.actions | length) == 1 and (.actions[0] | .manifestId == "smoke-test" and .mode == "create" and .expected.status == "PAUSED" and .expected.kind == "cron" and .expected.projectId == "me-fixture" and .expected.rrule == "FREQ=MINUTELY;INTERVAL=15" and (.expected.prompt | startswith("Reply with \"Pyro automation smoke test passed\" and the current local time.")))'
+  | jq -e '.status == "requires-native-app-sync" and [.jobs[] | {id, enabled, declared, applicable, nativeId}] == [{id: "smoke-test", enabled: false, declared: true, applicable: true, nativeId: null}] and (.actions | length) == 1 and (.actions[0] | .manifestId == "smoke-test" and .mode == "create" and .expected.status == "PAUSED" and .expected.kind == "cron" and .expected.projectId == "me-fixture" and .expected.rrule == "FREQ=MINUTELY;INTERVAL=15" and (.expected.prompt | startswith("Reply with \"Pyro automation blaze test passed\" and the current local time.")))'
 
 # should leave native state untouched during repeated automation inspection
 set -o pipefail
