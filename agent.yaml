@@ -32,6 +32,6 @@ automations:
     runtimes: [codex]
     schedule: every 15 minutes
     prompt: |
-      Reply with "Pyro automation blaze test passed" and the current local time.
+      Reply with "Pyro automation smoke test passed" and the current local time.
       Do not access project files or connected services. Apart from updating the automation memory
       supplied with the run, do not change state.
