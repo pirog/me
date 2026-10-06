@@ -54,7 +54,7 @@ node "$runtime" binding inspect --plugin-data "$TMPDIR/plugin-data" \
 set -o pipefail
 runtime="$(jq -r .cachePath "$TMPDIR/cache.json")/dist/codex/codex-runtime.js"
 node "$runtime" setup install --plugin-data "$TMPDIR/plugin-data" \
-  | jq -e '.status == "installed" and [.outcomes[].stepId] == ["brewfile", "dotfiles", "codex-config", "piroplugin", "tanaab-plugin", "agent-system-plugin"] and all(.outcomes[]; .code == "setup-applied" or .code == "setup-unchanged")'
+  | jq -e 'if .status == "requires-native-app-sync" and [.outcomes[].stepId] == ["brewfile", "dotfiles", "codex-config", "piroplugin", "tanaab-plugin", "agent-system-plugin"] and all(.outcomes[]; .code == "setup-applied" or .code == "setup-unchanged") then true else error("setup install: \(.)") end'
 
 # should find every pirog setup step healthy after install
 set -o pipefail
