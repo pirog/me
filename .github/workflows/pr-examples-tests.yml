@@ -32,7 +32,7 @@ jobs:
         id: openclaw
         uses: tanaabased/actions/setup-openclaw@v1
         with:
-          agent-system: github:tanaabased/openclaw-agent-system#main
+          agent-system: github:tanaabased/openclaw-agent-system#codex-workflows
       - name: Install Bun
         uses: tanaabased/actions/setup-bun@v1
       - name: Install dependencies

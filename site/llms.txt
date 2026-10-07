@@ -13,7 +13,7 @@
 
 - [Skills](https://github.com/pirog/me/tree/main/skills): Current workflows and approval boundaries.
 - [Voice](https://raw.githubusercontent.com/pirog/me/main/skills/voice/SKILL.md): Default guidance for human-facing prose.
-- [Agent manifest](https://raw.githubusercontent.com/pirog/me/main/agent.yaml): Identity, model profiles, setup, and Agent System automation declarations.
+- [Agent manifest](https://raw.githubusercontent.com/pirog/me/main/.agent-system/agent.yaml): Identity, model profiles, setup, GitHub notification policy, and Agent System automation declarations.
 - [Model routing](https://raw.githubusercontent.com/pirog/me/main/references/model-routing.md): Classification, overrides, and native selection.
 - [Goals](https://raw.githubusercontent.com/pirog/me/main/GOALS.md): Direction and priorities.
 

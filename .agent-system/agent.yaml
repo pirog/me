@@ -7,6 +7,22 @@ agent:
 github:
   host: github.com
   username: pirog
+  notifications:
+    schema-version: 2
+    runtimes: [codex]
+    interval-minutes: 5
+    allowed-repository-owners:
+      - login: tanaabased
+        node-id: O_kgDODNGy1g
+      - login: pirog
+        node-id: MDQ6VXNlcjcxMzQyNA==
+      - login: lando
+        node-id: MDEyOk9yZ2FuaXphdGlvbjMxNjA1NTg0
+    issue-assignment:
+      mode: plan
+      allowed:
+        - login: pirog
+          node-id: MDQ6VXNlcjcxMzQyNA==
 models:
   default:
     model: openai/gpt-6-astra

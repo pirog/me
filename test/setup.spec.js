@@ -35,8 +35,9 @@ describe('lib/setup', () => {
       Object.keys(environment).map((key) => [key, process.env[key]]),
     );
     await mkdir(codex);
+    await mkdir(path.join(root, '.agent-system'));
     await writeFile(
-      path.join(root, 'agent.yaml'),
+      path.join(root, '.agent-system', 'agent.yaml'),
       JSON.stringify({
         'schema-version': 1,
         models: { default: { model: 'openai/fixture-model', effort: 'high' } },
