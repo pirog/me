@@ -1,8 +1,11 @@
 # Codex Example
 
 Bootstrap the checked-out pirog profile, then install the packaged Agent System plugin in
-disposable Codex state. Run setup through its binding and check the packaged hook output directly;
+disposable Codex state. Inspect setup through its binding and check the packaged hook output directly;
 interactive skill use and native hook trust are separate manual checks, with no model login needed here.
+
+The v2 notification adapter is unavailable, so installation must report its blocker. Restore successful
+installation and convergence coverage when the runtime supports this profile, tracked in [#121](https://github.com/pirog/me/issues/121).
 
 Automation checks use a project lookup fixture for the bound checkout and its generated model
 defaults. They prove that only the disabled smoke test is planned and inspection leaves native
@@ -50,17 +53,21 @@ node "$runtime" binding bind --plugin-data "$TMPDIR/plugin-data" --workspace "$G
 node "$runtime" binding inspect --plugin-data "$TMPDIR/plugin-data" \
   | jq -e --arg workspace "$GITHUB_WORKSPACE" '.status == "bound" and .binding.workspaceDir == $workspace and .preview.manifest.status == "valid" and .preview.manifest.agentId == "pirog"'
 
-# should install host setup before every pirog agent setup step through standalone codex
+# should block setup installation while the codex notification adapter is unavailable
 set -o pipefail
 runtime="$(jq -r .cachePath "$TMPDIR/cache.json")/dist/codex/codex-runtime.js"
-node "$runtime" setup install --plugin-data "$TMPDIR/plugin-data" \
-  | jq -e 'if .status == "requires-native-app-sync" and [.outcomes[].stepId] == ["brewfile", "dotfiles", "codex-config", "piroplugin", "tanaab-plugin", "agent-system-plugin"] and all(.outcomes[]; .code == "setup-applied" or .code == "setup-unchanged") then true else error("setup install: \(.)") end'
+if node "$runtime" setup install --plugin-data "$TMPDIR/plugin-data" > "$TMPDIR/setup-blocked.json" 2>&1; then
+  cat "$TMPDIR/setup-blocked.json"
+  exit 1
+fi
+cat "$TMPDIR/setup-blocked.json"
+jq -e '.status == "error" and .code == "github-notification-runtime-unsupported"' "$TMPDIR/setup-blocked.json"
 
-# should find every pirog setup step healthy after install
+# should inspect every pirog setup step alongside the unavailable notification adapter
 set -o pipefail
 runtime="$(jq -r .cachePath "$TMPDIR/cache.json")/dist/codex/codex-runtime.js"
 node "$runtime" setup inspect --plugin-data "$TMPDIR/plugin-data" \
-  | jq -e 'if .status == "inspected" and (.findings | length) == 6 and all(.findings[]; .code == "setup-healthy") then true else error("setup inspect: \(.)") end'
+  | jq -e '[.findings[] | select(.component == "setup")] as $setup | if .status == "inspected" and [$setup[].stepId] == ["brewfile", "dotfiles", "codex-config", "piroplugin", "tanaab-plugin", "agent-system-plugin"] and all($setup[]; .code == "setup-healthy" or .code == "setup-drift") and [.findings[] | select(.component != "setup") | {component, code, status}] == [{component: "github-notifications", code: "github-notification-runtime-unsupported", status: "blocked"}] then true else error("setup inspect: \(.)") end'
 
 # should generate configuration through focused setup repair
 cd "$GITHUB_WORKSPACE"
