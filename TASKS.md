@@ -2,84 +2,51 @@
 
 ## PIROG
 
+- google drive && gog setup
+
+- new approved-actors setups?
+- pr review?
+- me culling additions? other skills we dont need?
+
 - PRIORITY
-  - audit and close PRs as needed
+  - agents/me
+    - automations
+      - get me to review PR for now
+      - backups (needs gog)
+      - morning report (closed, PRs needing review, next up?)
+      - extra curricular activity?
+      - automate emori improvements?
+      - update agents
+      - update canon
+      - push back on irrelevant issues?
+      - explain changes to my repo and canon?
+      - rotate russian words and phrases?
+      - backups (needs gog)
+      - look for bugs and small tasks to do and then self assign
+      - morning report (closed, PRs needing review, next up?)
+      - extra curricular activity?
+      - explain changes to my repo and canon?
 
-  - start smutlord/Nikolai Borodin agent
-    - gmail
-      - labels and forwarding/team emory
-    - github
-      - add to tanaab and set new primary email for smutlord?
-    - git
-      - SSH keys
-      - signing keys
-    - openai account
-
-    - 1password stuff
-
-    - actual agent repo?
-    - gog setup
-
-  - discord setup?
-
-  - @tanaab/mmm
-    - mmm milestones
-    - jev account/alpaca accounts?
-
-  - @tanaab/devtool
-    - milestones?
-
-- audit alecs list of companies/etc
-
-- @tanaab/devtool
-  - bunify
-    - bun
-    - ts
-    - deploy/compile
-    - test
-    - codex/openclaw?
-
-  - bunify
-  - compile
-    - new actions for code signing etc?
-
-  - complete
-
-- @tanaab/canon
-  - $tanaab-pr-review
-  - $tanaab-pr-fix
-  - $tanaab-pr-optimize?
-
-  - jev tools?
-  - install in openclaw?
-  - update canon skill?
-  - basically it updates lists every day?
-  - update repo skill && automation?
-  - agent-system/agent creation skill?
-  - some kind of blocked issue automation task?
-  - codify better automation skills like task management/blocked/etc
-
-- @tanaab/emori
-  - cron jobs?
-  - backups?
-  - skill audit and trim?
-  - automate emori improvements?
-
-  - push back on irrelevant issues?
-  - other issues/goals
-    - bootstrap.md.template?
-
-  - release as package?
-  - install agent as openclaw plugin?
+- @tanaab/smutlord
+  - lint and unit test guidance?
+  - changelog and release stuff?
+  - cannot send as emori imessage?
 
 - @tanaab/openclaw-agent-system
   - 0.9.0
-    - better fixture/CLI audit in testing?
-    - review intake
+    - docs & release?
+
+  - 0.10.0
+    - running gateway access
+    - spacing in install/doctor
+    - Agent-system-github below session?
     - update fixtures stuff
 
-    - cron/automations?
+    - more voice to github comments?
+    - standardized comment/intake/review card and assignment/context
+    - approval issue stub/blocked?
 
+    - discord setup?
     - pr-review flow
     - assigned to review support?
 
@@ -89,17 +56,17 @@
       - timeout for example tests?
       - backup skill?
 
-  - 0.11.0
     - public API for other plugins?
     - rework so everything is API endpoints?
     - API docs?
     - API endpoints
 
-  - 0.12.0
+  - 0.11.0
     - plan mode, need to be able to transition to work mode with plan prompt injection?
     - complete auto flow?
     - `generic-tool` system?
     - x.com tool?
+    - agent-system/agent creation skill?
 
   - future
     - pr link?
@@ -112,9 +79,56 @@
     - git encrypted keys?
     - logo for clients apps?
 
+- @tanaab/canon
+  - $tanaab-pr/task/etc-review
+  - $tanaab-pr-fix
+  - $tanaab-pr-optimize?
+    - tools
+    - alone optimization
+  - $tanaab-canon-improve?
+    - prompt canon?
+    - refresh preferred tools?
+
+  - codify better automation skills like task management/blocked/etc
+  - some kind of blocked issue automation task?
+  - jev tools?
+  - install in openclaw?
+  - update canon skill?
+  - basically it updates lists every day?
+  - update repo skill && automation?
+  - company brain instead?
+
+- @tanaab/emori
+  - release as package?
+  - install agent as openclaw plugin?
+
+- @tanaab/mmm
+  - mmm milestones
+  - jev account/alpaca accounts?
+
+- @tanaab/devtool
+  - runtime
+    - CLI
+      - hook for recipe file?
+    - manifest?
+    - tooling/cache?
+    - components?
+    - debug?
+    - schema?
+    - app/cli
+    - runtime
+    - plugins
+
+  - release
+    - new actions for code signing etc?
+
+  - complete
+
 - @pirog/me
   - switch automation flows me#109
   - morning closeout?
+  - audit skills? findwork/getwork?
+
   - better plans and reports?
   - read only email summarizer?
   - blog like pirog skill
@@ -122,9 +136,8 @@
 
 ## AGENTS
 
-- setup SMUTLORD bug fixer agent
-- setup TEMENOS canon enforcement && PR agent
-- setup TBD? admin/daily agent
+- temenos?
+- setup TBD? admin/daily agent, reuse tanaabot?!
 - discord
 
 ## EMORI ISSUES?
@@ -172,7 +185,6 @@
 ## TEMENOS ISSUES?
 
 - @tanaab/\*
-
   - go through all repos and normalize with new project skill
 
   - refresh on readme structure wrt pics and badges
