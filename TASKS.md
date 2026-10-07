@@ -2,11 +2,12 @@
 
 ## PIROG
 
-- google drive && gog setup
-
-- new approved-actors setups?
-- pr review?
-- me culling additions? other skills we dont need?
+- emori/smutlord backups
+  - emori validate before push?
+- unifyied command stuff?
+  - lowercase
+  - table with padding and not
+  - backups list/selected etc
 
 - PRIORITY
   - agents/me
@@ -34,9 +35,20 @@
 
 - @tanaab/openclaw-agent-system
   - 0.9.0
+    - fixes?
     - docs & release?
 
-  - 0.10.0
+  - 2.x
+    - codex-system
+    - better cards for doctor/install in codex?
+
+    - me culling additions? other skills we dont need?
+    - new approved-actors setups?
+    - pr review?
+    - me
+      - switch to /.agent-system format?
+
+  - ICEBOX
     - running gateway access
     - spacing in install/doctor
     - Agent-system-github below session?
@@ -61,14 +73,12 @@
     - API docs?
     - API endpoints
 
-  - 0.11.0
     - plan mode, need to be able to transition to work mode with plan prompt injection?
     - complete auto flow?
     - `generic-tool` system?
     - x.com tool?
     - agent-system/agent creation skill?
 
-  - future
     - pr link?
     - pr flow
     - decsision model with jev?
@@ -131,6 +141,7 @@
 
   - better plans and reports?
   - read only email summarizer?
+    - labeling for kids/tanaab/etc
   - blog like pirog skill
   - school calender to gcalendar?
 
