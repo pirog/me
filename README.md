@@ -12,7 +12,7 @@
 </p>
 
 `me` gives a Mac pirog's tools, dotfiles, habits, and prejudices—and gives Codex a job beyond producing
-agreeable paragraphs. Workstation setup, goal-driven planning, sensible model selection, and prose
+agreeable paragraphs. Workstation setup, GitHub-backed task work, sensible model selection, and prose
 with a pulse, all in one editable profile.
 
 Use it as an operator profile for a person at a Mac, a Codex profile, or an OpenClaw profile
@@ -27,10 +27,10 @@ Use it as an operator profile for a person at a Mac, a Codex profile, or an Open
 | Component                                                 | Includes                                                                                       |
 | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
 | [Codex Plugins](./INVENTORY.md#plugins)                   | Optional plugins from the [Pirostore catalog](./dotfiles/ai/.agents/plugins/marketplace.json). |
-| [Configuration Files](./INVENTORY.md#configuration-files) | Identity, setup, goals, actors, repository scope, automations, and model profiles.             |
+| [Configuration Files](./INVENTORY.md#configuration-files) | Identity, setup, goals, automations, and model profiles.                                       |
 | [Dependencies](./INVENTORY.md#dependencies)               | Base applications and runtimes, plus optional OpenClaw tooling.                                |
 | [Dotfiles](./INVENTORY.md#dotfiles)                       | Shell, editor, terminal, Git, SSH, and Codex configuration.                                    |
-| [Skills](./INVENTORY.md#skills)                           | Planning, task lifecycle, and Voice.                                                           |
+| [Skills](./INVENTORY.md#skills)                           | Task startup, cleanup, skill authoring, and Voice.                                             |
 
 For the full inventory, see [Inventory](./INVENTORY.md).
 
@@ -101,8 +101,11 @@ bun run lint
 
 # apply only the operations needed for your changes
 
-# regenerate codex configuration and restow ai dotfiles into your home directory
-bun run ai:sync
+# restow dotfiles into your home directory
+bun scripts/setup.js apply dotfiles
+
+# regenerate codex configuration without restowing dotfiles
+bun scripts/setup.js apply config
 
 # refresh and verify the installed plugin cache
 bun run codex:sync

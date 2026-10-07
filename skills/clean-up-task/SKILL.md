@@ -34,8 +34,6 @@ filesystem garbage collector, abandonment override, bulk collector, or scheduled
 ## When to Use
 
 - The user explicitly invokes `$piro-clean-up-task` for one exact finished Codex task.
-- The explicitly invoked `$piro-morning-closeout` coordinator hands off one exact candidate at a
-  time under its current assess or archive request.
 - The preferred input is a ready Codex task id. An exact GitHub pull-request URL may be supplied as
   a deliverable or, when it resolves one unambiguous active task, as a lookup convenience.
 - The desired outcome is either a cleanup eligibility report or archival of the one exact eligible
@@ -48,16 +46,14 @@ filesystem garbage collector, abandonment override, bulk collector, or scheduled
 - Do not invoke this skill implicitly or infer a target from a fuzzy title, repository, branch,
   recent activity, conversational proximity, or plural query.
 - Do not use it for a non-Codex ChatGPT chat, the currently running task, a still-running target,
-  direct bulk archival, general disk cleanup, or automatic stale-task collection outside the
-  exact-candidate sequencing owned by `$piro-morning-closeout`.
+  direct bulk archival, general disk cleanup, or automatic stale-task collection.
 - Do not merge pull requests, close issues, delete local or remote branches, prune Git references,
   unpin tasks, move or convert worktrees, or delete anything under `$CODEX_HOME/worktrees`.
 - Do not treat every URL, commit, file, or comment in task history as a deliverable. Do not archive
   through ambiguous or unpreserved managed-worktree state.
 - Do not add an `archive anyway`, discard, or abandonment path in this version. Surface retained
   work and require a separate future design before intentionally bypassing preservation gates.
-- Do not create or update a scheduled task. This skill remains a one-target preservation gate even
-  when the separate Morning Closeout coordinator invokes it repeatedly.
+- Do not create or update a scheduled task. This skill remains a one-target preservation gate.
 
 ## Preconditions
 
@@ -67,8 +63,7 @@ filesystem garbage collector, abandonment override, bulk collector, or scheduled
 - Default to **assess** mode. A request to check, assess, inspect, or determine readiness authorizes
   only the profile-specific read-only checks and exact ref refreshes declared below. A current
   explicit request to clean up or archive the exact task additionally authorizes archival of that
-  task only. An explicitly invoked `$piro-morning-closeout` may provide that current mode and exact
-  task id under its approved interactive or repository-managed scheduled request.
+  task only.
 - Require native Codex task operations that can list, read, archive, and read back the exact task.
   Stop if those operations are unavailable or the task identity cannot be proved.
 - Apply [recurring-task preservation](../../references/codex-task-access.md#recurring-task-preservation).
@@ -224,8 +219,6 @@ filesystem garbage collector, abandonment override, bulk collector, or scheduled
 - A conversation-only or non-Git result is present in the restorable task transcript, a connected
   durable source, or a verified stable artifact location.
 - Archival occurs only in explicit **archive** mode and after every applicable gate passes.
-- A coordinator invocation still supplies only one exact target; failed candidates never create an
-  abandonment or batch-cleanup exception.
 - External artifact cleanup, abandonment overrides, branch deletion, issue closure, bulk collection,
   and direct worktree deletion remain outside the mutation scope.
 

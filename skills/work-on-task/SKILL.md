@@ -37,10 +37,6 @@ deliverable. This skill creates and starts work; it never archives an existing t
 
 - The user explicitly invokes `$piro-work-on-task` and asks to create a new Codex task for one open
   GitHub issue or pull request.
-- `$piro-plan-work` supplies one exact canonical source from its immediately preceding plan after the
-  user explicitly selects that source and clearly asks to queue, create, start, or otherwise spin up
-  its Codex task. Treat each selected source as a separate invocation and retain this skill's complete
-  preconditions and verification.
 - The desired result is either a precise repository/project setup handoff or a correctly named
   worktree task with an initial assessment and technical plan ready for review.
 - A pull request's head branch belongs to the same repository as its base and should receive any
@@ -49,8 +45,7 @@ deliverable. This skill creates and starts work; it never archives an existing t
 ## When Not to Use
 
 - Do not use this skill implicitly or for requests that only inspect, summarize, create, or edit a
-  GitHub issue or pull request. The only upstream exception is the exact, current, user-authorized
-  `$piro-plan-work` handoff declared above.
+  GitHub issue or pull request.
 - Do not accept arbitrary GitHub URLs, multiple sources, non-GitHub task sources, or pull requests
   whose head branch belongs to a fork.
 - Do not clone a repository, register a Codex project, select work from goals or assignments, or
@@ -70,11 +65,8 @@ deliverable. This skill creates and starts work; it never archives an existing t
   pull request.
 - Require a current explicit request to create the new task. For an issue, this also authorizes its
   exact derived branch. For a pull request, it authorizes refreshing the existing same-repository
-  head ref and starting a detached worktree from it, but not changing or pushing code. An exact
-  `$piro-plan-work` handoff satisfies this gate only when the current user just selected that source
-  from the immediately preceding plan and clearly requested task creation using natural language such
-  as `queue`, `start`, or `spin up`. A plan, recommendation, historical selection, or fuzzy row
-  reference does not satisfy the gate.
+  head ref and starting a detached worktree from it, but not changing or pushing code. A plan,
+  recommendation, historical selection, or fuzzy source reference does not satisfy the gate.
 - Use the native GitHub connector to confirm that its current login is `pirog`, then fetch the source
   read-only. Stop if the connector is unavailable, the identity differs, or the source is not open.
 - For a pull request, require its base and head repository to normalize to the same `owner/repo`, a
@@ -318,8 +310,7 @@ deliverable. This skill creates and starts work; it never archives an existing t
 ## Checkpoints
 
 - The current user request explicitly authorizes creating one separate Codex task and the exact
-  issue branch or pull-request head-ref refresh needed to start it, either directly or through the
-  exact current `$piro-plan-work` selection boundary.
+  issue branch or pull-request head-ref refresh needed to start it.
 - GitHub identity is `pirog`; the canonical source is one open issue or same-repository pull request.
 - The saved project is selected by normalized GitHub `origin`, not by its display label.
 - Missing-project output uses `~/tanaab/<repo>`, never overwrites an existing path, and contains an

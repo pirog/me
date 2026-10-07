@@ -38,10 +38,9 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile --ignore-scripts
       - name: Prepare release-shaped build
-        uses: tanaabased/prepare-release-action@v1
+        uses: tanaabased/actions/prepare-release@v1
         with:
           version: dev
-          sync: false
           commands: |
             bun run build
             version-injector dist/boot.sh --style sh --version "${{ env.STAMPED_VERSION }}"
@@ -51,17 +50,20 @@ jobs:
       - name: Put prepared scripts on PATH
         shell: bash
         run: echo "$PWD/dist" >> "$GITHUB_PATH"
-      - name: Run Leia-backed example
+      - name: Refresh Homebrew when needed
         shell: bash
+        run: HOMEBREW_NO_AUTO_UPDATE= brew update-if-needed
+      - name: Run Leia-backed example
+        uses: tanaabased/actions/run-leia@v1
         env:
           AGENT_SYSTEM_PACKAGE: ${{ steps.openclaw.outputs.agent-system-artifact-path }}
           CODEX_HOME: ${{ runner.temp }}/codex-home
           CODEX_TOOLS_CODEX_HOME: ${{ runner.temp }}/codex-home
           NO_COLOR: '1'
           PIROME_PAYLOAD_DIR: ${{ github.workspace }}
-          TMPDIR: ${{ github.workspace }}/examples/${{ matrix.example }}/.tmp
           OPTOKEN: ${{ secrets.TANAAB_OP_TEST }}
-        run: |
-          mkdir -p "$TMPDIR"
-          HOMEBREW_NO_AUTO_UPDATE= brew update-if-needed
-          bun run leia "examples/${{ matrix.example }}/README.md" --stdin --retry 0
+        with:
+          scenarios: examples/${{ matrix.example }}/README.md
+          shell: bash
+          stdin: 'true'
+          retry: '0'

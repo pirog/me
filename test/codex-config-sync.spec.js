@@ -194,6 +194,7 @@ describe('lib/codex-config-sync', () => {
     await symlink(target, paths.outputPath);
 
     await assert.rejects(checkCodexConfig({ ...paths, parseToml }), /symbolic link/);
+    await assert.rejects(syncCodexConfig({ ...paths, parseToml }), /symbolic link/);
     assert.match(await readFile(target, 'utf8'), /personality = "other"/);
   });
 

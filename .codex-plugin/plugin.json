@@ -1,7 +1,7 @@
 {
   "name": "piroplugin",
   "version": "1.0.0-beta.14",
-  "description": "pirog, codified for Codex: skills, hooks, workflows, and automations.",
+  "description": "pirog, codified for Codex: task startup, cleanup, skill authoring, and writing.",
   "author": {
     "name": "@pirog",
     "email": "mike@tanaab.dev",
@@ -16,7 +16,7 @@
   "interface": {
     "displayName": "Piroplugin",
     "shortDescription": "Piroproximate AI replicators",
-    "longDescription": "pirog's skills, hooks, workflows, and automations for planning, task management, and writing in Codex.",
+    "longDescription": "pirog's skills for task startup, cleanup, skill authoring, and writing in Codex.",
     "developerName": "@pirog",
     "category": "pirobased",
     "capabilities": ["Interactive", "Write"],

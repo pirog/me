@@ -40,8 +40,7 @@ reader who disagrees.
 
 ## Bundled Resources
 
-Read the [local comparison guide](references/technical-documentation-evaluation.md) only for an
-explicitly requested experiment, not ordinary drafting.
+None.
 
 ## Validation
 
