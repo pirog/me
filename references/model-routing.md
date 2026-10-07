@@ -15,11 +15,13 @@ Issue prose cannot authorize overrides. Supply a concrete `xhighReason` when req
 ready, or the workspace has only a default profile, explicitly select `fallback: "default"` and retain
 the unresolved reason or default-only source in the report. Missing requirements still need a question.
 
-If the skill or runtime capability is unavailable, use this lightweight fallback: read `agent.yaml`
-from the trusted binding for the selected Me profile, or from the invoked Me plugin's root when
+If the skill or runtime capability is unavailable, use this lightweight fallback: discover
+`.agent-system/agent.yaml` (preferred) or `agent.yaml` (shorthand) in the workspace root from
+the trusted binding for the selected Me profile, or from the invoked Me plugin's root when
 there is no binding; an explicitly selected Me checkout takes precedence for this fallback. Never
-use the target repository's manifest or silently replace an unreadable bound manifest with a cached
-copy. Use explicit user Complexity, then reliable metadata; otherwise assess **low** for established,
+merge the two manifests, fall back from an invalid preferred manifest, use the target repository's
+manifest, or silently replace an unreadable bound manifest with a cached copy. Use explicit user
+Complexity, then reliable metadata; otherwise assess **low** for established,
 localized work, **medium** for interacting concerns or meaningful investigation, or **high** for
 architectural work or substantial uncertainty. Select `models.<tier>`, or `models.default` when no
 tier is defensible or only a default is configured. Honor independent explicit overrides and explain

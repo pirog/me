@@ -77,12 +77,20 @@ Complete the following manual setup tasks for your operator profile, Codex profi
 - Review and authorize Agent System's hook through `/hooks`, then start a fresh task.
 - Ask Codex:
   `Use $agent-system-codex-binding to bind this plugin to /Users/pirog/tanaab/me.`
-  Confirm the checkout containing [`agent.yaml`](./agent.yaml), then start a fresh task to load pirog's identity.
+  Confirm the workspace root containing [`.agent-system/agent.yaml`](./.agent-system/agent.yaml),
+  then start a fresh task to load pirog's identity. The binding stores the workspace directory and
+  discovers the manifest; moving it into `.agent-system` does not require rebinding.
 - Run `$agent-system-doctor` to check the profile. If it reports drift, run
   `$agent-system-install` to apply the declared setup steps, then run Doctor again.
-- Scheduled work is declared in [`agent.yaml`](./agent.yaml) and reconciled through Agent System
-  Install. The 15-minute smoke test stays disabled outside an explicitly authorized validation
-  window. Doctor checks saved settings; a real scheduled reply is separate evidence.
+- The Codex-only issue-assignment policy prepares self-assignment by `pirog` in `plan` mode.
+  Version 2 notification execution is not implemented yet: Doctor reports
+  `github-notification-runtime-unsupported`, and Install stops before applying setup. Keep this
+  profile inactive until the Agent System adapter is available; native Codex GitHub authorization
+  supplies access.
+- Scheduled work is declared in [`.agent-system/agent.yaml`](./.agent-system/agent.yaml) and
+  reconciled through Agent System Install. The 15-minute smoke test stays disabled outside an
+  explicitly authorized validation window. Doctor checks saved settings; a real scheduled reply
+  is separate evidence.
   See [Agent System's automation contract](https://github.com/tanaabased/openclaw-agent-system/blob/main/CODEX.md#repository-automations).
 
 ## Development

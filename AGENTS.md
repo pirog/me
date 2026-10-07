@@ -15,10 +15,10 @@ its Codex plugin bundle.
   do not split it into source fragments or require release-time assembly from multiple files.
 - Use `boot.sh` for first-run machine bootstrap: the `me` checkout, Brewfile, dotfiles, access
   material, and explicitly selected Tanaab checkouts and Codex plugin installs.
-- Put repeatable host checks and repairs in `setup-host.yaml#steps`, and runtime-scoped agent
-  checks and repairs in `setup-agent.yaml#steps`, referenced by `agent.yaml#setup-host.file` and
-  `agent.yaml#setup-agent.file`. Agent System Doctor checks those steps; Agent System Install
-  applies them after host setup.
+- Put repeatable host checks and repairs in `.agent-system/setup-host.yaml#steps`, and runtime-scoped
+  agent checks and repairs in `.agent-system/setup-agent.yaml#steps`, referenced by
+  `.agent-system/agent.yaml#setup-host.file` and `.agent-system/agent.yaml#setup-agent.file`.
+  Agent System Doctor checks those steps; Agent System Install applies them after host setup.
   Do not rerun the whole bootstrap to repair one drifting component.
 - Keep Codex sign-in and Agent System binding, connector identity, credential authorization,
   optional service sign-in, and managed automations with their respective owners rather than
@@ -32,22 +32,23 @@ its Codex plugin bundle.
 - `Brewfile` owns the base Homebrew inventory, `Brewfile.openclaw` owns opt-in OpenClaw development
   dependencies, and top-level packages under `dotfiles/` own installed user configuration.
 - `dotfiles/theme/colors.json` is the lowest-level portable color source for application themes.
-- `agent.yaml` owns default and complexity-tier model/effort profiles. Agent System owns routing
-  resolution; `references/model-routing.md` owns Me evidence, native selection and unavailable fallback.
+- `.agent-system/agent.yaml` owns default and complexity-tier model/effort profiles. Agent System
+  owns routing resolution; `references/model-routing.md` owns Me evidence, native selection and
+  unavailable fallback.
   `dotfiles/ai/.codex/config.shared.toml` owns Codex service tier and Fast mode. Keep model literals
   out of skills; config generation projects only `models.default`.
-- `setup-host.yaml#steps` and `setup-agent.yaml#steps` declare host and agent convergence;
-  `lib/setup.js` implements their read-only checks and focused repairs.
+- `.agent-system/setup-host.yaml#steps` and `.agent-system/setup-agent.yaml#steps` declare host
+  and agent convergence; `lib/setup.js` implements their read-only checks and focused repairs.
 - `.codex-plugin/`, plugin source directories, and `package.json` own the `piroplugin` package.
   `package.json#codexTools` selects its managed cache payload; the shared Codex Tools CLI owns syncing.
-  Keep absent `ACTORS.md`, `WORK_REPOS.md`, `AUTOMATIONS.yaml`, `automations`, `bin`, and
-  `MODEL_ROUTING.yaml` paths as retirement selectors until old caches no longer need their stale
-  copies removed.
+  Keep absent `ACTORS.md`, `WORK_REPOS.md`, `AUTOMATIONS.yaml`, `automations`, `bin`,
+  `MODEL_ROUTING.yaml`, and the three root YAML manifest paths as retirement selectors until
+  old caches no longer need their stale copies removed.
 - `package.json#files` selects the npm payload. npm release preparation materializes the
   symlinked skill icons in the CI checkout because npm omits symlinks.
   npm ships the Codex plugin, while bootstrap and Agent System setup use the editable Git checkout.
-- `agent.yaml#automations` owns desired scheduled state. Agent System Doctor inspects it;
-  Agent System Install plans authorized native app reconciliation and verifies saved settings.
+- `.agent-system/agent.yaml#automations` owns desired scheduled state. Agent System Doctor
+  inspects it; Agent System Install plans authorized native app reconciliation and verifies saved settings.
   Keep the smoke test disabled outside an explicitly authorized validation window. Follow
   [Agent System's Codex contract](https://github.com/tanaabased/openclaw-agent-system/blob/main/CODEX.md#repository-automations)
   for ownership, targets, recovery, and execution-evidence limits.

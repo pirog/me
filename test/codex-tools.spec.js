@@ -31,6 +31,9 @@ describe('package.json Codex Tools integration', () => {
       await writeFile(path.join(target, 'ACTORS.md'), 'retired actor registry');
       await writeFile(path.join(target, 'WORK_REPOS.md'), 'retired repository registry');
       await writeFile(path.join(target, 'AUTOMATIONS.yaml'), 'retired schedules');
+      for (const manifest of ['agent.yaml', 'setup-host.yaml', 'setup-agent.yaml']) {
+        await writeFile(path.join(target, manifest), 'superseded root manifest');
+      }
       await mkdir(path.join(target, 'bin'));
       await writeFile(path.join(target, 'bin', 'aisync.js'), 'retired sync command');
       await mkdir(path.join(target, 'automations'));
@@ -52,6 +55,9 @@ describe('package.json Codex Tools integration', () => {
             'AUTOMATIONS.yaml',
             'automations',
             'bin',
+            'agent.yaml',
+            'setup-host.yaml',
+            'setup-agent.yaml',
           ].includes(relative)
         )
           continue;
@@ -64,6 +70,9 @@ describe('package.json Codex Tools integration', () => {
         'AUTOMATIONS.yaml',
         'automations',
         'bin',
+        'agent.yaml',
+        'setup-host.yaml',
+        'setup-agent.yaml',
         'skills/automation',
         'skills/find-work',
         'skills/plan-work',
@@ -71,10 +80,12 @@ describe('package.json Codex Tools integration', () => {
       ]) {
         await assert.rejects(lstat(path.join(target, retired)), { code: 'ENOENT' });
       }
-      assert.deepEqual(
-        await readFile(path.join(target, 'agent.yaml')),
-        await readFile(path.join(repoRoot, 'agent.yaml')),
-      );
+      for (const manifest of ['agent.yaml', 'setup-host.yaml', 'setup-agent.yaml']) {
+        assert.deepEqual(
+          await readFile(path.join(target, '.agent-system', manifest)),
+          await readFile(path.join(repoRoot, '.agent-system', manifest)),
+        );
+      }
       await assert.rejects(lstat(path.join(target, 'TASKS.md')), { code: 'ENOENT' });
       await assert.rejects(lstat(path.join(target, 'node_modules')), { code: 'ENOENT' });
     } finally {

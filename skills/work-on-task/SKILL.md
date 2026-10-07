@@ -353,8 +353,8 @@ deliverable. This skill creates and starts work; it never archives an existing t
 
 ## Bundled Resources
 
-- [`agent.yaml`](../../agent.yaml): Me profile defaults and complexity mappings; use the routing
-  reference to select the authoritative manifest.
+- [`.agent-system/agent.yaml`](../../.agent-system/agent.yaml): Me profile defaults and complexity
+  mappings; use the routing reference to select the authoritative manifest.
 - [`Codex Model Routing`](../../references/model-routing.md): bounded assessment, metadata fallback,
   native selection, verification and escalation boundaries.
 - [`GitHub Issue Work Size Resolution`](../../references/github-issue-work-size.md) and

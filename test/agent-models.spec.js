@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
 import { execFile } from 'node:child_process';
-import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { promisify } from 'node:util';
 
 import { loadAgentModels } from '../lib/agent-models.js';
@@ -27,7 +28,12 @@ describe('agent model configuration', () => {
   it('should load the owning profile regardless of the task cwd', async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), 'me-agent-models-'));
     try {
-      await writeFile(path.join(root, 'agent.yaml'), 'schema-version: 99\n');
+      await mkdir(path.join(root, '.agent-system'));
+      await writeFile(path.join(root, '.agent-system', 'agent.yaml'), 'schema-version: 99\n');
+      await writeFile(
+        path.join(root, 'agent.yaml'),
+        'schema-version: 1\nmodels:\n  default:\n    model: openai/stale-root\n    effort: high\n',
+      );
       const moduleUrl = new URL('../lib/agent-models.js', import.meta.url).href;
       const { stdout } = await promisify(execFile)(
         process.execPath,
@@ -39,6 +45,7 @@ describe('agent model configuration', () => {
       );
       assert.deepEqual(JSON.parse(stdout), await loadAgentModels());
       await assert.rejects(loadAgentModels(root), /schema-version/);
+      await assert.rejects(loadAgentModels(pathToFileURL(`${root}/`)), /schema-version/);
       await assert.rejects(loadAgentModels(path.join(root, 'missing')), { code: 'ENOENT' });
     } finally {
       await rm(root, { recursive: true });

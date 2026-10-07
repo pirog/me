@@ -43,6 +43,7 @@
   "codexTools": {
     "marketplace": "pirostore",
     "managedPaths": [
+      ".agent-system",
       ".codex-plugin",
       ".mcp.json",
       "ACTORS.md",
@@ -68,6 +69,7 @@
     "access": "public"
   },
   "files": [
+    ".agent-system/",
     ".codex-plugin/plugin.json",
     ".mcp.json",
     ".bun-version",
@@ -77,9 +79,6 @@
     "GOALS.md",
     "INVENTORY.md",
     "PIROBOOT.md",
-    "agent.yaml",
-    "setup-host.yaml",
-    "setup-agent.yaml",
     "assets/",
     "lib/",
     "references/",

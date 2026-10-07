@@ -74,16 +74,18 @@ npx --yes --package=@tanaab/codex-tools@1 -- codex-tools install npm:@pirog/me@l
 
 These are the main configuration entrypoints, rather than every file in the profile.
 
-| File                                                                               | Owns                                                                       |
-| ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| [`agent.yaml`](./agent.yaml)                                                       | Identity, model profiles, setup, and Agent System automation declarations. |
-| [`GOALS.md`](./GOALS.md)                                                           | Direction, priorities, and deferrals.                                      |
-| [`dotfiles/ai/.codex/AGENTS.md`](./dotfiles/ai/.codex/AGENTS.md)                   | Global collaboration, voice, and change-discipline guidance.               |
-| [`dotfiles/ai/.codex/config.shared.toml`](./dotfiles/ai/.codex/config.shared.toml) | Portable Codex settings, including service tier and Fast mode.             |
-| `~/.codex/config.local.toml`                                                       | Machine-specific settings, including project trust and local paths.        |
-| `~/.codex/config.toml`                                                             | Generated output; edit its source inputs instead.                          |
+| File                                                                               | Owns                                                                                      |
+| ---------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| [`.agent-system/agent.yaml`](./.agent-system/agent.yaml)                           | Identity, model profiles, setup, GitHub notification policy, and automation declarations. |
+| [`GOALS.md`](./GOALS.md)                                                           | Direction, priorities, and deferrals.                                                     |
+| [`dotfiles/ai/.codex/AGENTS.md`](./dotfiles/ai/.codex/AGENTS.md)                   | Global collaboration, voice, and change-discipline guidance.                              |
+| [`dotfiles/ai/.codex/config.shared.toml`](./dotfiles/ai/.codex/config.shared.toml) | Portable Codex settings, including service tier and Fast mode.                            |
+| `~/.codex/config.local.toml`                                                       | Machine-specific settings, including project trust and local paths.                       |
+| `~/.codex/config.toml`                                                             | Generated output; edit its source inputs instead.                                         |
 
 Local configuration may add settings, but cannot override exact keys owned by the shared file or
-manifest's default model and effort. Edit those sources rather than the generated `~/.codex/config.toml`.
+manifest's default model and effort. Me's model loader reads the owning profile to generate those
+app defaults; Agent System resolves model and effort for individual tasks. Edit the sources rather
+than the generated `~/.codex/config.toml`.
 See [model routing](./references/model-routing.md) for task selection and fallback behavior, and
 [Development](./README.md#development) for applying configuration and plugin changes.
