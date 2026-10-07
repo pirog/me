@@ -62,6 +62,14 @@ runtime="$(jq -r .cachePath "$TMPDIR/cache.json")/dist/codex/codex-runtime.js"
 node "$runtime" setup inspect --plugin-data "$TMPDIR/plugin-data" \
   | jq -e 'if .status == "inspected" and (.findings | length) == 6 and all(.findings[]; .code == "setup-healthy") then true else error("setup inspect: \(.)") end'
 
+# should generate configuration through focused setup repair
+cd "$GITHUB_WORKSPACE"
+mkdir -p "$TMPDIR/config"
+cp dotfiles/ai/.codex/config.shared.toml "$TMPDIR/config/shared.toml"
+TANAAB_CODEX_CONFIG_SHARED="$TMPDIR/config/shared.toml" TANAAB_CODEX_CONFIG_LOCAL="$TMPDIR/config/local.toml" TANAAB_CODEX_CONFIG_OUTPUT="$TMPDIR/config/output.toml" bun scripts/setup.js apply config
+TANAAB_CODEX_CONFIG_SHARED="$TMPDIR/config/shared.toml" TANAAB_CODEX_CONFIG_LOCAL="$TMPDIR/config/local.toml" TANAAB_CODEX_CONFIG_OUTPUT="$TMPDIR/config/output.toml" bun scripts/setup.js check config
+test -s "$TMPDIR/config/output.toml"
+
 # should load pirog identity through the packaged session start hook
 set -o pipefail
 plugin_root=$(jq -r .cachePath "$TMPDIR/cache.json")
@@ -79,7 +87,7 @@ printf '%s\n' '{"hook_event_name":"SessionStart","source":"startup"}' \
   | jq -r '.hookSpecificOutput.additionalContext' | sed -n '/^{/,/^}/p' \
   | jq -e '.routingRuntime.argvPrefix[-1] == "model-routing" and (.binding.context.capabilities | index("agent-system-model-routing") != null)'
 
-# should match ai sync defaults to the packaged model projection
+# should match generated configuration defaults to the packaged model projection
 set -o pipefail
 runtime="$(jq -r .cachePath "$TMPDIR/cache.json")/dist/codex/codex-runtime.js"
 printf '%s\n' '{"action":"inspect"}' | node "$runtime" model-routing --plugin-data "$TMPDIR/plugin-data" \

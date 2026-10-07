@@ -49,7 +49,7 @@ enable them. The catalog owns the configured sources and versions.
 | [`agent-system`](https://github.com/tanaabased/openclaw-agent-system) | Profile binding, setup checks and repairs, and model routing.          |
 | [`agentbox`](https://github.com/tanaabased/agentbox)                  | Agentbox host setup and diagnostic skills.                             |
 | [`leia`](https://github.com/lando/leia)                               | Scenario skills and assets; projects manage their Leia CLI separately. |
-| [`piroplugin`](./.codex-plugin/plugin.json)                           | Personal workflow, planning, and voice skills.                         |
+| [`piroplugin`](./.codex-plugin/plugin.json)                           | Personal task lifecycle, skill authoring, and voice skills.            |
 | [`tanaab`](https://github.com/tanaabased/canon)                       | Shared Tanaab authoring and project-management skills.                 |
 
 ### Skills
@@ -63,15 +63,12 @@ For skills-only installation:
 npx --yes --package=@tanaab/codex-tools@1 -- codex-tools install npm:@pirog/me@latest --marketplace pirostore
 ```
 
-| Skill                                                 | Owns                                                                                               |
-| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| [`piro-clean-up-task`](./skills/clean-up-task/)       | Archiving a finished task after checking that its work is preserved.                               |
-| [`piro-find-work`](./skills/find-work/)               | Goal-aware recommendations for unassigned GitHub issues.                                           |
-| [`piro-morning-closeout`](./skills/morning-closeout/) | Completed-work reporting and eligible task cleanup.                                                |
-| [`piro-plan-work`](./skills/plan-work/)               | Assigned-work planning and queuing tasks you select.                                               |
-| [`piro-skill-author`](./skills/skill-author/)         | Skill authoring and optimization.                                                                  |
-| [`piro-voice`](./skills/voice/)                       | Human-facing prose with conviction, irreverence, and wit; code and structured data stay untouched. |
-| [`piro-work-on-task`](./skills/work-on-task/)         | Issue or PR assessment and planning in a Codex worktree, with policy-based model selection.        |
+| Skill                                           | Owns                                                                                               |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| [`piro-clean-up-task`](./skills/clean-up-task/) | Archiving a finished task after checking that its work is preserved.                               |
+| [`piro-skill-author`](./skills/skill-author/)   | Skill authoring and optimization.                                                                  |
+| [`piro-voice`](./skills/voice/)                 | Human-facing prose with conviction, irreverence, and wit; code and structured data stay untouched. |
+| [`piro-work-on-task`](./skills/work-on-task/)   | Issue or PR assessment and planning in a Codex worktree, with policy-based model selection.        |
 
 ### Configuration Files
 
@@ -81,8 +78,6 @@ These are the main configuration entrypoints, rather than every file in the prof
 | ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
 | [`agent.yaml`](./agent.yaml)                                                       | Identity, model profiles, setup, and Agent System automation declarations. |
 | [`GOALS.md`](./GOALS.md)                                                           | Direction, priorities, and deferrals.                                      |
-| [`ACTORS.md`](./ACTORS.md)                                                         | Reviewed work-planning actors and their goals sources.                     |
-| [`WORK_REPOS.md`](./WORK_REPOS.md)                                                 | Repository priorities and discovery scope.                                 |
 | [`dotfiles/ai/.codex/AGENTS.md`](./dotfiles/ai/.codex/AGENTS.md)                   | Global collaboration, voice, and change-discipline guidance.               |
 | [`dotfiles/ai/.codex/config.shared.toml`](./dotfiles/ai/.codex/config.shared.toml) | Portable Codex settings, including service tier and Fast mode.             |
 | `~/.codex/config.local.toml`                                                       | Machine-specific settings, including project trust and local paths.        |

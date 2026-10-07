@@ -16,8 +16,6 @@
 - [Agent manifest](https://raw.githubusercontent.com/pirog/me/main/agent.yaml): Identity, model profiles, setup, and Agent System automation declarations.
 - [Model routing](https://raw.githubusercontent.com/pirog/me/main/references/model-routing.md): Classification, overrides, and native selection.
 - [Goals](https://raw.githubusercontent.com/pirog/me/main/GOALS.md): Direction and priorities.
-- [Actors](https://raw.githubusercontent.com/pirog/me/main/ACTORS.md): Reviewed work-planning actors.
-- [Repository policy](https://raw.githubusercontent.com/pirog/me/main/WORK_REPOS.md): Discovery scope and priorities.
 
 ## Project
 

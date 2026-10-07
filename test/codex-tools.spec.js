@@ -28,19 +28,47 @@ describe('package.json Codex Tools integration', () => {
       await assert.rejects(lstat(target), { code: 'ENOENT' });
       await mkdir(target);
       await writeFile(path.join(target, 'MODEL_ROUTING.yaml'), 'retired policy');
+      await writeFile(path.join(target, 'ACTORS.md'), 'retired actor registry');
+      await writeFile(path.join(target, 'WORK_REPOS.md'), 'retired repository registry');
       await writeFile(path.join(target, 'AUTOMATIONS.yaml'), 'retired schedules');
+      await mkdir(path.join(target, 'bin'));
+      await writeFile(path.join(target, 'bin', 'aisync.js'), 'retired sync command');
       await mkdir(path.join(target, 'automations'));
       await writeFile(path.join(target, 'automations', 'daily-work-plan.md'), 'retired prompt');
       await mkdir(path.join(target, 'skills', 'automation'), { recursive: true });
       await writeFile(path.join(target, 'skills', 'automation', 'SKILL.md'), 'retired sync skill');
+      for (const skill of ['find-work', 'plan-work', 'morning-closeout']) {
+        await mkdir(path.join(target, 'skills', skill), { recursive: true });
+        await writeFile(path.join(target, 'skills', skill, 'SKILL.md'), 'retired planning skill');
+      }
       assert.equal((await invoke('codex:sync')).ok, true);
       assert.equal((await invoke('codex:check')).ok, true);
       for (const relative of packageJson.codexTools.managedPaths) {
-        if (['MODEL_ROUTING.yaml', 'AUTOMATIONS.yaml', 'automations'].includes(relative)) continue;
+        if (
+          [
+            'ACTORS.md',
+            'WORK_REPOS.md',
+            'MODEL_ROUTING.yaml',
+            'AUTOMATIONS.yaml',
+            'automations',
+            'bin',
+          ].includes(relative)
+        )
+          continue;
         await lstat(path.join(target, relative));
       }
       await assert.rejects(lstat(path.join(target, 'MODEL_ROUTING.yaml')), { code: 'ENOENT' });
-      for (const retired of ['AUTOMATIONS.yaml', 'automations', 'skills/automation']) {
+      for (const retired of [
+        'ACTORS.md',
+        'WORK_REPOS.md',
+        'AUTOMATIONS.yaml',
+        'automations',
+        'bin',
+        'skills/automation',
+        'skills/find-work',
+        'skills/plan-work',
+        'skills/morning-closeout',
+      ]) {
         await assert.rejects(lstat(path.join(target, retired)), { code: 'ENOENT' });
       }
       assert.deepEqual(
