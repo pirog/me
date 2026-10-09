@@ -2,13 +2,6 @@
 
 ## PIROG
 
-- emori/smutlord backups
-  - emori validate before push?
-- unifyied command stuff?
-  - lowercase
-  - table with padding and not
-  - backups list/selected etc
-
 - PRIORITY
   - agents/me
     - automations
@@ -36,17 +29,23 @@
 - @tanaab/openclaw-agent-system
   - 0.9.0
     - fixes?
+    - CLI reboot
     - docs & release?
 
-  - 2.x
+  - REBOOT
     - codex-system
-    - better cards for doctor/install in codex?
+      - leia tests?
+      - gitignored local override?
 
-    - me culling additions? other skills we dont need?
+      - better cards for doctor/install in codex?
+      - heartbeat completed quietly message?
+      - model block quote?
+
     - new approved-actors setups?
     - pr review?
     - me
-      - switch to /.agent-system format?
+
+    - later
 
   - ICEBOX
     - running gateway access
