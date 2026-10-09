@@ -1,5 +1,21 @@
 # TASKS
 
+## TAXES
+
+- missing basis info
+
+- hardship on withdrawals (health care?)
+- hsa
+- paid for health insurance
+
+- child care
+
+- business losses webconsulting/tax trading
+- capital gains loses for TTS? april 2025?
+- MTM
+
+My understanding is that 475 election and tax trader status are not the same thing. So I think you might be conflating things there. I think as long as they're valid day trading losses, then they would go on Schedule C. I mean, the 475 election just has to do with, you know, being able to write off year end loses
+
 ## PIROG
 
 - PRIORITY
