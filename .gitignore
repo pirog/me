@@ -27,6 +27,9 @@ dotfiles/ai/.codex/plugins/*
 /.scratch/
 /scratchpad/
 /.worktrees/
+/.agent-system/backups/
+/.agent-system/repositories/
+/.agent-system/worktrees/
 
 # OpenClaw runtime state
 .codex/config.toml
