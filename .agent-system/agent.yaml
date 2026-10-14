@@ -19,7 +19,7 @@ github:
       - login: lando
         node-id: MDEyOk9yZ2FuaXphdGlvbjMxNjA1NTg0
     issue-assignment:
-      mode: plan
+      mode: auto
       allowed:
         - login: pirog
           node-id: MDQ6VXNlcjcxMzQyNA==
