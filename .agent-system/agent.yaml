@@ -9,7 +9,8 @@ github:
   username: pirog
   notifications:
     schema-version: 2
-    runtimes: [codex]
+    runtimes:
+      - codex
     interval-minutes: 5
     allowed-repository-owners:
       - login: tanaabased
@@ -23,6 +24,22 @@ github:
       allowed:
         - login: pirog
           node-id: MDQ6VXNlcjcxMzQyNA==
+      feedback:
+        inherit: true
+        allowed:
+          - login: emoriwan
+            node-id: U_kgDOEUqvpg
+          - login: smutlord
+            node-id: MDQ6VXNlcjMxNTk5ODk0
+      pull-request:
+        recipients:
+          - source: assignment-actor
+            roles:
+              - assignee
+          - login: emoriwan
+            node-id: U_kgDOEUqvpg
+            roles:
+              - reviewer
 models:
   default:
     model: openai/gpt-6-astra
@@ -45,7 +62,8 @@ setup-agent:
 automations:
   - id: smoke-test
     enabled: false
-    runtimes: [codex]
+    runtimes:
+      - codex
     schedule: every 15 minutes
     prompt: |
       Reply with "Pyro automation smoke test passed" and the current local time.
