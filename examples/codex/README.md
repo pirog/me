@@ -4,12 +4,13 @@ Bootstrap the checked-out pirog profile, then install the packaged Agent System 
 disposable Codex state. Inspect setup through its binding and check the packaged hook output directly;
 interactive skill use and native hook trust are separate manual checks, with no model login needed here.
 
-The v2 notification adapter is unavailable, so installation must report its blocker. Restore successful
-installation and convergence coverage when the runtime supports this profile, tracked in [#121](https://github.com/pirog/me/issues/121).
+The packaged runtime supports this profile's v2 Codex notifications. Installation must converge all
+six setup steps while leaving intake activation to the native desktop app.
 
 Automation checks use a project lookup fixture for the bound checkout and its generated model
-defaults. They prove that only the disabled smoke test is planned and inspection leaves native
-state untouched. Native reconciliation and a real scheduled reply require separate desktop validation.
+defaults. They verify the disabled smoke test and enabled issue-assignment intake declaration, including
+the missing native intake chat, without creating schedules. Native reconciliation and a real scheduled
+reply require separate desktop validation.
 
 ## Setup
 
@@ -53,21 +54,24 @@ node "$runtime" binding bind --plugin-data "$TMPDIR/plugin-data" --workspace "$G
 node "$runtime" binding inspect --plugin-data "$TMPDIR/plugin-data" \
   | jq -e --arg workspace "$GITHUB_WORKSPACE" '.status == "bound" and .binding.workspaceDir == $workspace and .preview.manifest.status == "valid" and .preview.manifest.agentId == "pirog"'
 
-# should block setup installation while the codex notification adapter is unavailable
+# should apply host setup before the configured agent setup steps
 set -o pipefail
 runtime="$(jq -r .cachePath "$TMPDIR/cache.json")/dist/codex/codex-runtime.js"
-if node "$runtime" setup install --plugin-data "$TMPDIR/plugin-data" > "$TMPDIR/setup-blocked.json" 2>&1; then
-  cat "$TMPDIR/setup-blocked.json"
-  exit 1
-fi
-cat "$TMPDIR/setup-blocked.json"
-jq -e '.status == "error" and .code == "github-notification-runtime-unsupported"' "$TMPDIR/setup-blocked.json"
+RUNNER_DEBUG=1 node "$runtime" setup install --plugin-data "$TMPDIR/plugin-data" \
+  | tee "$TMPDIR/setup-install.json" \
+  | jq -e 'if .status == "requires-native-app-sync" and [.outcomes[].stepId] == ["brewfile", "dotfiles", "codex-config", "piroplugin", "tanaab-plugin", "agent-system-plugin"] and all(.outcomes[]; .code == "setup-applied" or .code == "setup-unchanged") then true else error("setup install: \(.)") end'
 
-# should inspect every pirog setup step alongside the unavailable notification adapter
+# should inspect healthy setup with intake awaiting native activation
 set -o pipefail
 runtime="$(jq -r .cachePath "$TMPDIR/cache.json")/dist/codex/codex-runtime.js"
-node "$runtime" setup inspect --plugin-data "$TMPDIR/plugin-data" \
-  | jq -e '[.findings[] | select(.component == "setup")] as $setup | if .status == "inspected" and [$setup[].stepId] == ["brewfile", "dotfiles", "codex-config", "piroplugin", "tanaab-plugin", "agent-system-plugin"] and all($setup[]; .code == "setup-healthy" or .code == "setup-drift") and [.findings[] | select(.component != "setup") | {component, code, status}] == [{component: "github-notifications", code: "github-notification-runtime-unsupported", status: "blocked"}] then true else error("setup inspect: \(.)") end'
+RUNNER_DEBUG=1 node "$runtime" setup inspect --plugin-data "$TMPDIR/plugin-data" \
+  | jq -e 'if .status == "inspected" and [.findings[].stepId] == ["brewfile", "dotfiles", "codex-config", "piroplugin", "tanaab-plugin", "agent-system-plugin"] and all(.findings[]; .component == "setup" and .code == "setup-healthy" and .status == "healthy") and .intake.code == "intake-activation-required" then true else error("setup inspect: \(.)") end'
+
+# should leave repeated setup installation unchanged
+set -o pipefail
+runtime="$(jq -r .cachePath "$TMPDIR/cache.json")/dist/codex/codex-runtime.js"
+RUNNER_DEBUG=1 node "$runtime" setup install --plugin-data "$TMPDIR/plugin-data" \
+  | jq -e 'if .status == "requires-native-app-sync" and [.outcomes[].stepId] == ["brewfile", "dotfiles", "codex-config", "piroplugin", "tanaab-plugin", "agent-system-plugin"] and all(.outcomes[]; .code == "setup-unchanged") then true else error("setup convergence: \(.)") end'
 
 # should generate configuration through focused setup repair
 cd "$GITHUB_WORKSPACE"
@@ -133,7 +137,7 @@ jq -n --slurpfile inspected "$TMPDIR/routing.json" \
   | jq -e --slurpfile inspected "$TMPDIR/routing.json" \
     '.status == "unresolved" and .profile == "default" and .candidate == $inspected[0].profiles.default and .reason == "Insufficient complexity evidence."'
 
-# should plan only the disabled smoke test through the packaged runtime
+# should require native chat reconciliation for intake while retaining the disabled smoke test
 set -o pipefail
 runtime="$(jq -r .cachePath "$TMPDIR/cache.json")/dist/codex/codex-runtime.js"
 cd "$GITHUB_WORKSPACE"
@@ -142,7 +146,7 @@ jq -n --arg workspace "$GITHUB_WORKSPACE" \
   '{projects: {schemaVersion: 2, projects: [{projectId: "me-fixture", projectKind: "local", hostId: "local", path: $workspace}]}, threads: []}' > "$TMPDIR/automation-lookups.json"
 node "$runtime" automations list --plugin-data "$TMPDIR/plugin-data" < "$TMPDIR/automation-lookups.json" \
   | tee "$TMPDIR/automation-plan.json" \
-  | jq -e '.status == "requires-native-app-sync" and [.jobs[] | {id, enabled, declared, applicable, nativeId}] == [{id: "smoke-test", enabled: false, declared: true, applicable: true, nativeId: null}] and (.actions | length) == 1 and (.actions[0] | .manifestId == "smoke-test" and .mode == "create" and .expected.status == "PAUSED" and .expected.kind == "cron" and .expected.projectId == "me-fixture" and .expected.rrule == "FREQ=MINUTELY;INTERVAL=15" and (.expected.prompt | startswith("Reply with \"Pyro automation smoke test passed\" and the current local time.")))'
+  | jq -e 'if .status == "requires-native-app-sync" and ([.jobs[] | {id, enabled, declared, applicable, nativeId}] | sort_by(.id)) == [{id: "github-issue-assignment", enabled: true, declared: true, applicable: true, nativeId: null}, {id: "smoke-test", enabled: false, declared: true, applicable: true, nativeId: null}] and .actions == [] and any(.findings[]; .id == "github-issue-assignment" and .code == "automation-thread-sync-required") and .conversations == [{id: "github-issue-assignment", routing: "per-automation", nativeId: null, name: "ISSUE ASSIGNMENTS"}] then true else error("automation plan: \(.)") end'
 
 # should leave native state untouched during repeated automation inspection
 set -o pipefail

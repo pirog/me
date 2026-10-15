@@ -113,14 +113,32 @@ exit 2
 
     const originalPath = process.env.PATH;
     const originalAutoUpdate = process.env.HOMEBREW_NO_AUTO_UPDATE;
+    const originalDebug = process.env.RUNNER_DEBUG;
+    const originalWrite = process.stderr.write;
+    let stderr = '';
+    process.stderr.write = (chunk) => {
+      stderr += chunk;
+      return true;
+    };
     process.env.PATH = `${bin}:${originalPath}`;
     process.env.HOMEBREW_NO_AUTO_UPDATE = '0';
     try {
       assert.equal(await runSetup(['check', 'brewfile'], { root, home }), 0);
       assert.equal(await runSetup(['apply', 'brewfile'], { root, home }), 0);
       await writeFile(path.join(root, '.bun-version'), '0.0.0\n');
+      delete process.env.RUNNER_DEBUG;
       assert.equal(await runSetup(['check', 'brewfile'], { root, home }), 1);
+      assert.equal(stderr, '');
+      process.env.RUNNER_DEBUG = '1';
+      assert.equal(await runSetup(['check', 'brewfile'], { root, home }), 1);
+      assert.match(
+        stderr,
+        /operation=dependencies\.check reason=homebrew bun version does not match/,
+      );
     } finally {
+      process.stderr.write = originalWrite;
+      if (originalDebug === undefined) delete process.env.RUNNER_DEBUG;
+      else process.env.RUNNER_DEBUG = originalDebug;
       process.env.PATH = originalPath;
       if (originalAutoUpdate === undefined) delete process.env.HOMEBREW_NO_AUTO_UPDATE;
       else process.env.HOMEBREW_NO_AUTO_UPDATE = originalAutoUpdate;
