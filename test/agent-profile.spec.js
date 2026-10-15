@@ -7,7 +7,7 @@ const manifestPath = path.join(root, '.agent-system', 'agent.yaml');
 const yaml = async (file) => globalThis.Bun.YAML.parse(await readFile(file, 'utf8'));
 
 describe('.agent-system/agent', () => {
-  it('should declare only Codex self-assignment planning within the pinned owner scope', async () => {
+  it('should declare Codex self-assignment auto mode with approved feedback and pull-request recipients', async () => {
     const manifest = await yaml(manifestPath);
     assert.equal(manifest['schema-version'], 1);
     assert.deepEqual(manifest.github, {
@@ -23,8 +23,21 @@ describe('.agent-system/agent', () => {
           { login: 'lando', 'node-id': 'MDEyOk9yZ2FuaXphdGlvbjMxNjA1NTg0' },
         ],
         'issue-assignment': {
-          mode: 'plan',
+          mode: 'auto',
           allowed: [{ login: 'pirog', 'node-id': 'MDQ6VXNlcjcxMzQyNA==' }],
+          feedback: {
+            inherit: true,
+            allowed: [
+              { login: 'emoriwan', 'node-id': 'U_kgDOEUqvpg' },
+              { login: 'smutlord', 'node-id': 'MDQ6VXNlcjMxNTk5ODk0' },
+            ],
+          },
+          'pull-request': {
+            recipients: [
+              { source: 'assignment-actor', roles: ['assignee'] },
+              { login: 'emoriwan', 'node-id': 'U_kgDOEUqvpg', roles: ['reviewer'] },
+            ],
+          },
         },
       },
     });

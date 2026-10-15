@@ -1,20 +1,32 @@
 # TASKS
 
-## TAXES
+## AGENT SYSTEM
 
-- missing basis info
+- PREMILESTONE
+  - merge into main?
+  - get smutlord and emori and me using new stuff?
 
-- hardship on withdrawals (health care?)
-- hsa
-- paid for health insurance
+  - testing improvement issue?
+  - purge v2 stuff?
 
-- child care
+  - generate 2nd milestone for openclaw and bring it up to parity with codex
 
-- business losses webconsulting/tax trading
-- capital gains loses for TTS? april 2025?
-- MTM
-
-My understanding is that 475 election and tax trader status are not the same thing. So I think you might be conflating things there. I think as long as they're valid day trading losses, then they would go on Schedule C. I mean, the 475 election just has to do with, you know, being able to write off year end loses
+- CLEANUP MILESTONE
+  - github tree tool?
+  - Agent-system-github below session?
+  - openclaw intake status cards like codex?
+  - model routing card/notificaitons?
+  - what about notifiations commands?
+  - session_pairing_probe
+  - better device name?
+  - rmeove sesssion-dispatch subcommand?
+  - device NAME not ID? maybe masked last 4 for id?
+  - 295
+  - me: gitginore directories?
+  - new skill images
+    - use actions as basis?
+  - what about posting an "got the issue" and explanation after assessment?
+  - final card styling pass (backticks on machine names?)
 
 ## PIROG
 
@@ -47,6 +59,7 @@ My understanding is that 475 election and tax trader status are not the same thi
     - fixes?
     - CLI reboot
     - docs & release?
+    - jev to score model?
 
   - REBOOT
     - codex-system
@@ -66,7 +79,6 @@ My understanding is that 475 election and tax trader status are not the same thi
   - ICEBOX
     - running gateway access
     - spacing in install/doctor
-    - Agent-system-github below session?
     - update fixtures stuff
 
     - more voice to github comments?
@@ -105,7 +117,10 @@ My understanding is that 475 election and tax trader status are not the same thi
     - logo for clients apps?
 
 - @tanaab/canon
+  - no workflow dispatch ?
+  - review of validation across projects forlint/unit
   - $tanaab-pr/task/etc-review
+    - look like you are having fun?
   - $tanaab-pr-fix
   - $tanaab-pr-optimize?
     - tools
