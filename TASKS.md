@@ -3,92 +3,29 @@
 ## PIROG
 
 - PRIORITY
-  - agents/me
-    - automations
-      - cleanup nightly task?
-      - get me to review PR for now
-      - extra curricular activity?
-      - automate emori improvements?
-      - update agents
-      - update canon
-      - push back on irrelevant issues?
-      - explain changes to my repo and canon?
-      - rotate russian words and phrases?
-      - look for bugs and small tasks to do and then self assign
-      - morning report (closed, PRs needing review, next up?)
-      - explain changes to my repo and canon?
+  - monday automations redo
+  - get me to review PR for now
+  - update agents
+    - v3 format
+    - personal agent-system skills
+  - update canon
+  - improve agent tests as well?
+  - releases agents, me, canon, agent-system
 
 ## REPOS
 
 - @tanaab/smutlord
+  - extra curricular activity?
   - lint and unit test guidance?
   - changelog and release stuff?
   - cannot send as emori imessage?
+  - rotate russian words and phrases?
+  - look for bugs and small tasks to do and then self assign
 
-- @tanaab/openclaw-agent-system
-  - 0.9.0
-    - public responses for assessment and PR and feedback?
-      - only when feedback enabled?
-      - cards for PRs
-        - tests for replies?
-
-    - 32 pirog
-
-    - backup name? NIGHTLY BACKUP
-    - new skill images
-      - use actions as basis?
-    - final card styling pass (backticks on machine names?)
-    - improve agent tests as well?
-    - cleanup issue after completion?
-    - pr review?
-    - fixes?
-    - updgrade to 10.x?
-    - DOCS DOCS DOCS & release?
-
-  - 0.10.0
-    - jev to score model?
-    - me
-    - later
-
-  - ICEBOX
-    - running gateway access
-    - spacing in install/doctor
-    - update fixtures stuff
-
-    - more voice to github comments?
-    - standardized comment/intake/review card and assignment/context
-    - approval issue stub/blocked?
-
-    - discord setup?
-    - pr-review flow
-    - assigned to review support?
-
-    - smaller things
-      - backups for codex?
-      - gog cred setup instructions?
-      - timeout for example tests?
-      - backup skill?
-
-    - public API for other plugins?
-    - rework so everything is API endpoints?
-    - API docs?
-    - API endpoints
-
-    - plan mode, need to be able to transition to work mode with plan prompt injection?
-    - complete auto flow?
-    - `generic-tool` system?
-    - x.com tool?
-    - agent-system/agent creation skill?
-
-    - pr link?
-    - pr flow
-    - decsision model with jev?
-    - theme?
-    - "random" comment anywhere support?
-    - better voice actuator? rewrite messages?
-    - add hooks reconciliation to doctor?
-    - git encrypted keys?
-    - logo for clients apps?
+- @tanaab/emori
+  - release as package?
+  - install agent as openclaw plugin?
+  - push back on irrelevant issues?
 
 - @tanaab/canon
   - component tests
@@ -116,9 +53,41 @@
   - update repo skill && automation?
   - company brain instead?
 
-- @tanaab/emori
-  - release as package?
-  - install agent as openclaw plugin?
+- @tanaab/openclaw-agent-system
+  - 0.9.0
+    - 371 milestone
+    - some from other 2 milesones
+    - backup name? NIGHTLY BACKUP
+    - new skill images
+      - use actions as basis?
+    - final card styling pass (backticks on machine names?)
+    - cleanup issue after completion?
+    - fixes?
+    - updgrade to 10.x?
+    - DOCS DOCS DOCS & release?
+
+  - 0.10.0
+    - pr review
+    - jev to score model?
+    - me
+    - later
+
+  - ICEBOX
+    - running gateway access
+    - spacing in install/doctor
+    - update fixtures stuff
+    - discord setup?
+    - gog cred setup instructions?
+    - public API for other plugins?
+    - rework so everything is API endpoints?
+    - API docs?
+    - API endpoints
+    - `generic-tool` system?
+    - x.com tool?
+    - agent-system/agent creation skill?
+    - theme?
+    - "random" comment anywhere support?
+    - git encrypted keys?
 
 - @tanaab/mmm
   - mmm milestones
