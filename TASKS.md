@@ -1,41 +1,12 @@
 # TASKS
 
-## AGENT SYSTEM
-
-- PREMILESTONE
-  - merge into main?
-  - get smutlord and emori and me using new stuff?
-
-  - testing improvement issue?
-  - purge v2 stuff?
-
-  - generate 2nd milestone for openclaw and bring it up to parity with codex
-
-- CLEANUP MILESTONE
-  - github tree tool?
-  - Agent-system-github below session?
-  - openclaw intake status cards like codex?
-  - model routing card/notificaitons?
-  - what about notifiations commands?
-  - session_pairing_probe
-  - better device name?
-  - rmeove sesssion-dispatch subcommand?
-  - device NAME not ID? maybe masked last 4 for id?
-  - 295
-  - me: gitginore directories?
-  - new skill images
-    - use actions as basis?
-  - what about posting an "got the issue" and explanation after assessment?
-  - final card styling pass (backticks on machine names?)
-
 ## PIROG
 
 - PRIORITY
   - agents/me
     - automations
+      - cleanup nightly task?
       - get me to review PR for now
-      - backups (needs gog)
-      - morning report (closed, PRs needing review, next up?)
       - extra curricular activity?
       - automate emori improvements?
       - update agents
@@ -43,11 +14,11 @@
       - push back on irrelevant issues?
       - explain changes to my repo and canon?
       - rotate russian words and phrases?
-      - backups (needs gog)
       - look for bugs and small tasks to do and then self assign
       - morning report (closed, PRs needing review, next up?)
-      - extra curricular activity?
       - explain changes to my repo and canon?
+
+## REPOS
 
 - @tanaab/smutlord
   - lint and unit test guidance?
@@ -56,24 +27,27 @@
 
 - @tanaab/openclaw-agent-system
   - 0.9.0
-    - fixes?
-    - CLI reboot
-    - docs & release?
-    - jev to score model?
+    - public responses for assessment and PR and feedback?
+      - only when feedback enabled?
+      - cards for PRs
+        - tests for replies?
 
-  - REBOOT
-    - codex-system
-      - leia tests?
-      - gitignored local override?
+    - 32 pirog
 
-      - better cards for doctor/install in codex?
-      - heartbeat completed quietly message?
-      - model block quote?
-
-    - new approved-actors setups?
+    - backup name? NIGHTLY BACKUP
+    - new skill images
+      - use actions as basis?
+    - final card styling pass (backticks on machine names?)
+    - improve agent tests as well?
+    - cleanup issue after completion?
     - pr review?
-    - me
+    - fixes?
+    - updgrade to 10.x?
+    - DOCS DOCS DOCS & release?
 
+  - 0.10.0
+    - jev to score model?
+    - me
     - later
 
   - ICEBOX
@@ -117,6 +91,10 @@
     - logo for clients apps?
 
 - @tanaab/canon
+  - component tests
+  - what parts of our notifications flow have the most convulated code now and why?
+  - avoid non-unit unit tests like testing githun worjflow files
+  - optimizations.md?
   - no workflow dispatch ?
   - review of validation across projects forlint/unit
   - $tanaab-pr/task/etc-review
