@@ -9,7 +9,7 @@ export default {
   endOfLine: 'lf',
   overrides: [
     {
-      files: '.github/ISSUE_TEMPLATE/*.yml',
+      files: ['.github/ISSUE_TEMPLATE/*.yml', '.agent-system/**/*.{yaml,yml}'],
       options: {
         singleQuote: false,
       },

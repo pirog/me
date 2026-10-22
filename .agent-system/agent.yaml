@@ -7,39 +7,21 @@ agent:
 github:
   host: github.com
   username: pirog
-  notifications:
-    schema-version: 2
-    runtimes:
-      - codex
-    interval-minutes: 5
-    allowed-repository-owners:
-      - login: tanaabased
-        node-id: O_kgDODNGy1g
-      - login: pirog
-        node-id: MDQ6VXNlcjcxMzQyNA==
-      - login: lando
-        node-id: MDEyOk9yZ2FuaXphdGlvbjMxNjA1NTg0
-    issue-assignment:
-      mode: auto
-      allowed:
-        - login: pirog
-          node-id: MDQ6VXNlcjcxMzQyNA==
-      feedback:
-        inherit: true
-        allowed:
-          - login: emoriwan
-            node-id: U_kgDOEUqvpg
-          - login: smutlord
-            node-id: MDQ6VXNlcjMxNTk5ODk0
-      pull-request:
-        recipients:
-          - source: assignment-actor
-            roles:
-              - assignee
-          - login: emoriwan
-            node-id: U_kgDOEUqvpg
-            roles:
-              - reviewer
+  schema-version: 3
+  runtimes:
+    - codex
+  max-concurrent-items: 5
+  allowed-repository-owners:
+    - "@tanaabased"
+    - "@pirog"
+    - "@lando"
+  issue-assignment:
+    mode: auto
+    allowed:
+      - "@pirog"
+    reviewers:
+      - "@emoriwan"
+      - "@smutlord"
 models:
   default:
     model: openai/gpt-6-astra
