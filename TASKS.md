@@ -10,6 +10,12 @@
   - gh script and browser login?
 
 - PRIORITY
+  - CUTOVER STUFF
+    - v3 github schema
+    - notifications reset
+
+  - onepassword for families?
+  - 424?
   - monday automations redo
   - get me to review PR for now
   - update agents
@@ -83,6 +89,7 @@
       - new cli tasks style issues?
       - all agents vs single agent in notifictions reset?
       - still shows interactive afterwards?
+    - skills?
     - backup name? NIGHTLY BACKUP
     - new skill images
       - use actions as basis?
