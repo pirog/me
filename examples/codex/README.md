@@ -59,19 +59,19 @@ set -o pipefail
 runtime="$(jq -r .cachePath "$TMPDIR/cache.json")/dist/codex/codex-runtime.js"
 RUNNER_DEBUG=1 node "$runtime" setup install --plugin-data "$TMPDIR/plugin-data" \
   | tee "$TMPDIR/setup-install.json" \
-  | jq -e 'if .status == "requires-native-app-sync" and [.outcomes[].stepId] == ["brewfile", "dotfiles", "codex-config", "piroplugin", "tanaab-plugin", "agent-system-plugin"] and all(.outcomes[]; .code == "setup-applied" or .code == "setup-unchanged") then true else error("setup install: \(.)") end'
+  | jq -e 'if .status == "requires-native-app-sync" and [.outcomes[] | select(.component == "setup") | .stepId] == ["brewfile", "dotfiles", "codex-config", "piroplugin", "tanaab-plugin", "agent-system-plugin"] and all(.outcomes[] | select(.component == "setup"); .code == "setup-applied" or .code == "setup-unchanged") and any(.outcomes[]; .component == "instance-identity" and .code == "instance-identity-ready" and (.status == "created" or .status == "unchanged")) then true else error("setup install: \(.)") end'
 
 # should inspect healthy setup with intake awaiting native activation
 set -o pipefail
 runtime="$(jq -r .cachePath "$TMPDIR/cache.json")/dist/codex/codex-runtime.js"
 RUNNER_DEBUG=1 node "$runtime" setup inspect --plugin-data "$TMPDIR/plugin-data" \
-  | jq -e 'if .status == "inspected" and [.findings[].stepId] == ["brewfile", "dotfiles", "codex-config", "piroplugin", "tanaab-plugin", "agent-system-plugin"] and all(.findings[]; .component == "setup" and .code == "setup-healthy" and .status == "healthy") and .intake.code == "intake-activation-required" then true else error("setup inspect: \(.)") end'
+  | jq -e 'if .status == "inspected" and [.findings[] | select(.component == "setup") | .stepId] == ["brewfile", "dotfiles", "codex-config", "piroplugin", "tanaab-plugin", "agent-system-plugin"] and all(.findings[] | select(.component == "setup"); .component == "setup" and .code == "setup-healthy" and .status == "healthy") and .intake.code == "intake-activation-required" and any(.findings[]; .component == "instance-identity" and .code == "instance-identity-ready" and .status == "healthy") then true else error("setup inspect: \(.)") end'
 
 # should leave repeated setup installation unchanged
 set -o pipefail
 runtime="$(jq -r .cachePath "$TMPDIR/cache.json")/dist/codex/codex-runtime.js"
 RUNNER_DEBUG=1 node "$runtime" setup install --plugin-data "$TMPDIR/plugin-data" \
-  | jq -e 'if .status == "requires-native-app-sync" and [.outcomes[].stepId] == ["brewfile", "dotfiles", "codex-config", "piroplugin", "tanaab-plugin", "agent-system-plugin"] and all(.outcomes[]; .code == "setup-unchanged") then true else error("setup convergence: \(.)") end'
+  | jq -e 'if .status == "requires-native-app-sync" and [.outcomes[] | select(.component == "setup") | .stepId] == ["brewfile", "dotfiles", "codex-config", "piroplugin", "tanaab-plugin", "agent-system-plugin"] and all(.outcomes[] | select(.component == "setup"); .code == "setup-unchanged") and any(.outcomes[]; .component == "instance-identity" and .code == "instance-identity-ready" and .status == "unchanged") then true else error("setup convergence: \(.)") end'
 
 # should generate configuration through focused setup repair
 cd "$GITHUB_WORKSPACE"
