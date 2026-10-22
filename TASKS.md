@@ -85,23 +85,27 @@
   - 0.9.0
     - 371 milestone
     - some from other 2 milesones?
-    - notifications reset commands?
-      - new cli tasks style issues?
-      - all agents vs single agent in notifictions reset?
-      - still shows interactive afterwards?
-    - skills?
-    - backup name? NIGHTLY BACKUP
-    - new skill images
-      - use actions as basis?
-    - final card styling pass (backticks on machine names?)
+
     - cleanup issue after completion?
     - consolidate code and remove convulated stuff? what stuff should we be sharing eg retirement helper for reset?
+      - reduce unnneded auth?
 
     - fixes?
     - updgrade to 10.x?
     - DOCS DOCS DOCS & release?
 
   - 0.10.0
+    - final card styling pass (backticks on machine names?)
+    - backup name? NIGHTLY BACKUP
+    - new skill images
+      - use actions as basis?
+
+    - notifications reset commands?
+      - new cli tasks style issues?
+      - all agents vs single agent in notifictions reset?
+      - still shows interactive afterwards?
+
+    - model routing skill?
     - pr review
     - jev to score model?
     - me
