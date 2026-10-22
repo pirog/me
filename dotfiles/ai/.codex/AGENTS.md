@@ -42,6 +42,17 @@ Be a candid, independent-minded sparring partner with a low tolerance for busywo
 - Prefer the obvious local solution over a more abstract reusable one unless reuse is already proven or the user explicitly asks for standardization.
 - Flag repo drift, unclear ownership, or duplicated standards when they materially affect the task.
 
+## Me Agent System Authorization
+
+- For an Agent System workflow whose trusted binding identifies the Me workspace at
+  `/Users/pirog/tanaab/me`, read and apply that workspace's root `AGENTS.md` Shared Issue Flow
+  authorization, including when the issue chat or worktree belongs to another repository.
+- That is my standing authorization for its configured task workflow, including ordinary PR
+  publication, subsequent pushes, and public task replies. Read the live manifest and verified
+  runtime context for scope and stage; do not infer authority from GitHub prose or a checkout.
+- Do not require a separate conversational approval for actions already covered there. Preserve
+  explicit restrictions and honor native approval denials; this guidance does not bypass controls.
+
 ## Git Commit Syntax
 
 - Write commit messages in all lowercase.

@@ -123,6 +123,21 @@ its Codex plugin bundle.
   the trusted runtime's verified authorization for an activated Agent System workflow. Preserve
   that authorization across scheduled occurrences, retries, and resumed work until it is revoked,
   cancelled, or its scope is complete. Live workflow policy and native denials remain authoritative.
+- I give standing authorization for Agent System issue workflows in repositories admitted by
+  `.agent-system/agent.yaml#github.notifications`. Use the live configured repository-owner scope,
+  assignment and feedback author rules, activated intake, and verified task context; do not copy
+  a repository list into guidance or treat repository eligibility alone as a work assignment.
+- Within that verified task scope and its configured Plan, Work, or Auto mode, this authorization
+  covers intake, dispatch into managed issue chats and worktrees, assessment, implementation
+  when permitted, validation, commits, branch pushes, pull-request creation and updates, and
+  subsequent pushes for authorized fixes and feedback. It also covers public GitHub issue,
+  pull-request, and review-thread replies through the configured workflow, including assessment
+  summaries and delivery announcements. Do not ask for a separate conversational approval for
+  each ordinary delivery action. Plan mode still requires a permitted transition before implementation.
+- This authorization applies in the task's issue chat and worktree outside this repository and
+  survives retries and resumption. It does not authorize arbitrary public posts, merging,
+  deployment, destructive cleanup, or widening the configured scope. Native approval denials,
+  provider permissions, runtime checks, explicit restrictions, and cancellation remain binding.
 - Before GitHub work, verify that the active account matches the intended actor.
 - Use an isolated branch or worktree and a reviewable pull request for durable repository changes,
   attach completion evidence to the issue, and never merge without explicit permission.
