@@ -18,6 +18,7 @@
   - update canon
   - improve agent tests as well?
   - releases agents, me, canon, agent-system
+  - strip dependabot for openclaw
 
 ## REPOS
 
@@ -48,6 +49,7 @@
   - push back on irrelevant issues?
 
 - @tanaab/canon
+  - leia test scoping ?
   - component tests
   - what parts of our notifications flow have the most convulated code now and why?
   - avoid non-unit unit tests like testing githun worjflow files
