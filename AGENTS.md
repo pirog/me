@@ -127,6 +127,24 @@ its Codex plugin bundle.
 - Use an isolated branch/worktree and a reviewable PR for durable repository changes, retain
   completion evidence on the issue, and never merge without explicit permission.
 
+## Test Design
+
+- Classify assertions by evidence: unit tests execute owned code with controlled inputs;
+  component tests exercise cooperating code through process, filesystem, or platform boundaries;
+  static checks inspect checked-in files without executing the behavior they describe.
+- Keep a static check only for a named correctness, compatibility, safety, or maintenance invariant
+  with a concrete failure consequence that existing owner validation does not cover. Check each
+  assertion separately in mixed specs; a Mocha runner does not make a static check a unit test.
+- Do not duplicate whole configuration blocks, current model choices, plugin inventories or version
+  pins, prose, layout, command spelling, or occurrence counts merely to freeze today's files.
+  Remove assertions without a distinct contract rather than moving them to another suite.
+- Use existing parsers and owning validators. Preserve meaningful checks such as disabled smoke
+  automation, valid configured paths, package/runtime-state boundaries, and documented ordering.
+  Exact output remains appropriate when an owned function's output is the contract. Tests against
+  generated fixtures are not static checks merely because they read files.
+- Audit test changes for lost behavioral or safety coverage. Retained static checks can stay in the
+  existing test command; do not introduce another runner just to classify them.
+
 ## Validation
 
 - Run the narrowest reliable checks first and broaden only when risk justifies it.

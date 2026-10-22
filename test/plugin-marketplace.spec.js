@@ -16,33 +16,24 @@ async function loadMarketplace() {
   return JSON.parse(await readFile(MARKETPLACE_PATH, 'utf8'));
 }
 
-describe('Pirostore marketplace', () => {
-  it('should preserve plugin ordering and pin Leia to the stable npm release', async () => {
+describe('marketplace static invariants', () => {
+  it('should preserve the marketplace identity and documented plugin ordering', async () => {
     const marketplace = await loadMarketplace();
-
     assert.equal(marketplace.name, 'pirostore');
+    const entries = marketplace.plugins.map(({ name, category }) => ({ name, category }));
+    const rank = (category) => {
+      if (category === 'Pirobased') return 0;
+      if (category === 'Tanaab-based') return 1;
+      return 2;
+    };
     assert.deepEqual(
-      marketplace.plugins.map(({ name, category }) => ({ name, category })),
-      [
-        { name: 'piroplugin', category: 'Pirobased' },
-        { name: 'agent-system', category: 'Tanaab-based' },
-        { name: 'agentbox', category: 'Tanaab-based' },
-        { name: 'tanaab', category: 'Tanaab-based' },
-        { name: 'leia', category: 'Testing' },
-      ],
+      entries,
+      entries.toSorted((left, right) => {
+        const categoryOrder = rank(left.category) - rank(right.category);
+        if (categoryOrder) return categoryOrder;
+        if (left.category !== right.category) return 0;
+        return left.name.localeCompare(right.name);
+      }),
     );
-    assert.deepEqual(marketplace.plugins.at(-1), {
-      name: 'leia',
-      source: {
-        source: 'npm',
-        package: '@lando/leia',
-        version: '2.0.0',
-      },
-      policy: {
-        installation: 'AVAILABLE',
-        authentication: 'ON_INSTALL',
-      },
-      category: 'Testing',
-    });
   });
 });
