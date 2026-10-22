@@ -2,6 +2,13 @@
 
 ## PIROG
 
+- TESTS
+  - guidance around scope
+  - guidance around agent system commands?
+
+- TANAABOT?
+  - gh script and browser login?
+
 - PRIORITY
   - monday automations redo
   - get me to review PR for now
@@ -14,7 +21,19 @@
 
 ## REPOS
 
+- @pirog/me
+  - better skill icon format in readme?
+  - morning closeout?
+  - audit skills? findwork/getwork?
+
+  - better plans and reports?
+  - read only email summarizer?
+    - labeling for kids/tanaab/etc
+  - blog like pirog skill
+  - school calender to gcalendar?
+
 - @tanaab/smutlord
+  - better skill icon format?
   - extra curricular activity?
   - lint and unit test guidance?
   - changelog and release stuff?
@@ -23,6 +42,7 @@
   - look for bugs and small tasks to do and then self assign
 
 - @tanaab/emori
+  - better skill icon format?
   - release as package?
   - install agent as openclaw plugin?
   - push back on irrelevant issues?
@@ -56,12 +76,18 @@
 - @tanaab/openclaw-agent-system
   - 0.9.0
     - 371 milestone
-    - some from other 2 milesones
+    - some from other 2 milesones?
+    - notifications reset commands?
+      - new cli tasks style issues?
+      - all agents vs single agent in notifictions reset?
+      - still shows interactive afterwards?
     - backup name? NIGHTLY BACKUP
     - new skill images
       - use actions as basis?
     - final card styling pass (backticks on machine names?)
     - cleanup issue after completion?
+    - consolidate code and remove convulated stuff? what stuff should we be sharing eg retirement helper for reset?
+
     - fixes?
     - updgrade to 10.x?
     - DOCS DOCS DOCS & release?
@@ -110,17 +136,6 @@
     - new actions for code signing etc?
 
   - complete
-
-- @pirog/me
-  - switch automation flows me#109
-  - morning closeout?
-  - audit skills? findwork/getwork?
-
-  - better plans and reports?
-  - read only email summarizer?
-    - labeling for kids/tanaab/etc
-  - blog like pirog skill
-  - school calender to gcalendar?
 
 ## AGENTS
 

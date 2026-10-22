@@ -4,6 +4,7 @@ agent:
   id: pirog
   name: Mike Pirog
   avatar: assets/icon-large-circle.png
+
 github:
   host: github.com
   username: pirog
@@ -22,6 +23,7 @@ github:
     reviewers:
       - "@emoriwan"
       - "@smutlord"
+
 models:
   default:
     model: openai/gpt-6-astra
