@@ -20,6 +20,7 @@ github:
     mode: auto
     allowed:
       - "@pirog"
+      - "@tanaabot"
     reviewers:
       - "@emoriwan"
       - "@smutlord"
