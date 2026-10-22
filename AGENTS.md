@@ -134,6 +134,18 @@ its Codex plugin bundle.
   pull-request, and review-thread replies through the configured workflow, including assessment
   summaries and delivery announcements. Do not ask for a separate conversational approval for
   each ordinary delivery action. Plan mode still requires a permitted transition before implementation.
+- For work authorized above or by my direct request, I authorize attempts through all available
+  Agent System skills, tools, and supported native runtime routes, including the native Git and
+  GitHub commands needed for that work. The named actions are examples, not an exhaustive
+  allowlist; an omitted helper action does not require another conversational approval.
+  This includes source verification, continuation, approved feedback handling, configured PR
+  recipients, public comment replies, progress updates, and delivery/receipt reconciliation.
+- Authorization permits an attempt, not a claim of success or a bypass of another control.
+  Use each capability only in its supported runtime and authorized task scope. Its live manifest
+  policy, workflow stage, trusted identity, operator-only requirements, provider permissions, and
+  native approval review still apply. A tool's availability alone does not direct its use, and a
+  denial must not be retried through another route. Operator-only mutations still require my
+  direct request when their owning contract requires one.
 - This authorization applies in the task's issue chat and worktree outside this repository and
   survives retries and resumption. It does not authorize arbitrary public posts, merging,
   deployment, destructive cleanup, or widening the configured scope. Native approval denials,
