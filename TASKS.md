@@ -3,20 +3,27 @@
 ## PIROG
 
 - PRIORITY
-  - onepassword for families?
-  - 424 timezoen thing
-  - monday automations redo?
+  - tests
+    - strip dependabot for openclaw?
+    - remove agent guidance from emori?
+
+  - TANAABOT?
+    - gh script and browser login?
+    - monday automations redo?
+    - artwork updates?
+
   - update agents 10.6/skills
   - update canon
   - improve agent tests as well?
+
+  - 424 timezoen thing
   - releases agents, me, canon, agent-system
-  - strip dependabot for openclaw
+
+  - onepassword for families?
 
 ## REPOS
 
 - @pirog/me
-  - TANAABOT?
-    - gh script and browser login?
   - better skill icon format in readme?
   - morning closeout?
   - audit skills? findwork/getwork?
