@@ -2,25 +2,11 @@
 
 ## PIROG
 
-- TESTS
-  - guidance around scope
-  - guidance around agent system commands?
-
-- TANAABOT?
-  - gh script and browser login?
-
 - PRIORITY
-  - CUTOVER STUFF
-    - v3 github schema
-    - notifications reset
-
   - onepassword for families?
-  - 424?
-  - monday automations redo
-  - get me to review PR for now
-  - update agents
-    - v3 format
-    - personal agent-system skills
+  - 424 timezoen thing
+  - monday automations redo?
+  - update agents 10.6/skills
   - update canon
   - improve agent tests as well?
   - releases agents, me, canon, agent-system
@@ -29,6 +15,8 @@
 ## REPOS
 
 - @pirog/me
+  - TANAABOT?
+    - gh script and browser login?
   - better skill icon format in readme?
   - morning closeout?
   - audit skills? findwork/getwork?
