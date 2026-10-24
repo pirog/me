@@ -5,19 +5,32 @@
 - PRIORITY
   - tests
     - strip dependabot for openclaw?
-    - remove agent guidance from emori?
+
+  - 0.9.0
+    - updgrade to 10.x?
+      - imessage
+      - memory
+
+    - cleanup issue after completion?
+      - consolidate code and remove convulated stuff? what stuff should we be sharing eg retirement helper for reset?
+      - fixes?
+      - new skill images or colors?
+        - consistent naming etc?
+        - use actions as basis?
+      - DOCS DOCS DOCS & release?
+
+  - update agents 10.6/skills
+  - improve agent tests as well?
+
+  - jev for test selection in GHA?
+
+  - update canon
+  - releases agents, me, canon, agent-system
 
   - TANAABOT?
     - gh script and browser login?
     - monday automations redo?
     - artwork updates?
-
-  - update agents 10.6/skills
-  - update canon
-  - improve agent tests as well?
-
-  - 424 timezoen thing
-  - releases agents, me, canon, agent-system
 
   - onepassword for families?
 
@@ -77,23 +90,9 @@
   - company brain instead?
 
 - @tanaab/openclaw-agent-system
-  - 0.9.0
-    - 371 milestone
-    - some from other 2 milesones?
-
-    - cleanup issue after completion?
-    - consolidate code and remove convulated stuff? what stuff should we be sharing eg retirement helper for reset?
-      - reduce unnneded auth?
-
-    - fixes?
-    - updgrade to 10.x?
-    - DOCS DOCS DOCS & release?
-
   - 0.10.0
     - final card styling pass (backticks on machine names?)
     - backup name? NIGHTLY BACKUP
-    - new skill images
-      - use actions as basis?
 
     - notifications reset commands?
       - new cli tasks style issues?
@@ -108,8 +107,6 @@
 
   - ICEBOX
     - running gateway access
-    - spacing in install/doctor
-    - update fixtures stuff
     - discord setup?
     - gog cred setup instructions?
     - public API for other plugins?
