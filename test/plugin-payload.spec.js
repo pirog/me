@@ -51,7 +51,11 @@ describe('package.json plugin payload', () => {
       ['pack', '--dry-run', '--ignore-scripts', '--json', '--cache', path.join(temporary, 'npm')],
       { cwd: source },
     );
-    const [packed] = JSON.parse(result.stdout);
+    const payload = JSON.parse(result.stdout);
+    const packages = Array.isArray(payload) ? payload : Object.values(payload);
+    assert.equal(packages.length, 1);
+    const [packed] = packages;
+    assert.equal(packed.name, packageJson.name);
     assert.deepEqual(
       packed.files
         .map((file) => file.path)
