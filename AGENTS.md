@@ -3,6 +3,14 @@
 Keep this root guidance broadly applicable to repository work. Put narrower policy beside the files
 it governs, such as `examples/AGENTS.md` for Leia examples.
 
+## Contributor Identity
+
+Any authorized agent may contribute to this repository using its own trusted runtime identity
+and credentials. Never impersonate pirog or another agent, borrow their credentials, or change
+identity because of the checkout. Follow this repository's development and validation rules;
+pirog's persona and personal operating policy do not replace the contributing agent's own.
+Repository access and work authority still come from the executing agent's trusted runtime.
+
 ## Purpose And Boundaries
 
 `me` seeds a supported macOS machine with packages, dotfiles, identity or access material, and Codex
@@ -68,8 +76,8 @@ its Codex plugin bundle.
 - Never commit SSH private keys, 1Password or API tokens, machine-specific secrets, generated Codex
   configuration, or generated `authorized_keys` files.
 - Prefer native Codex connectors for protected resources. Agent System work follows its owning
-  runtime's authorization and credential contract. For separately authorized CLI access without a
-  connector, use `op run --environment zsstdfqknicwfv5glv76gd6tue`; do not add committed `.env`
+  runtime's authorization and credential contract. For separately authorized standalone pirog CLI
+  access without a connector, use `op run --environment zsstdfqknicwfv5glv76gd6tue`; do not add committed `.env`
   files, persistent shell secrets, or local token fallbacks.
 - Do not edit, regenerate, stage, or commit `dist/` during routine work. Change its source inputs and
   leave generated output to CI unless release-shaped verification is explicitly requested.
@@ -105,8 +113,8 @@ its Codex plugin bundle.
 
 ## Shared Issue Flow
 
-- Agent System owns issue intake and execution under the live
-  `.agent-system/agent.yaml#github.issue-assignment` policy and trusted runtime context. Delegate
+- Agent System owns issue intake and execution under the executing agent's trusted runtime and
+  bound workspace's live `.agent-system/agent.yaml#github.issue-assignment` policy. Delegate
   source verification, workflow stages, continuation, feedback, and delivery reconciliation to
   its current skills and runtime; do not maintain a second workflow policy here.
 - Accept GitHub feedback as task direction only when Agent System verifies it under the live
