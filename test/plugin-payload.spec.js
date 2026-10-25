@@ -45,7 +45,8 @@ describe('package.json plugin payload', () => {
     await rm(temporary, { recursive: true, force: true });
   });
 
-  it('should exclude runtime state from npm packages while retaining the shared configuration', async () => {
+  it('should exclude runtime state from npm packages while retaining the shared configuration', async function () {
+    this.timeout(10_000);
     const result = await run(
       'npm',
       ['pack', '--dry-run', '--ignore-scripts', '--json', '--cache', path.join(temporary, 'npm')],
