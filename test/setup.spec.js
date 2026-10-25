@@ -71,7 +71,7 @@ describe('lib/setup', () => {
     }
   });
 
-  it('should detect Brewfile and Bun pin drift without changing packages', async () => {
+  it('should accept compatible Homebrew Bun versions and repair only unsupported versions', async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), 'me-setup-root-'));
     const home = await mkdtemp(path.join(os.tmpdir(), 'me-setup-home-'));
     const bin = path.join(home, 'bin');
@@ -86,6 +86,11 @@ describe('lib/setup', () => {
     await chmod(path.join(nodePrefix, 'bin', 'node'), 0o755);
     await writeFile(path.join(root, 'Brewfile'), 'brew "stow"\n');
     await writeFile(path.join(root, '.bun-version'), '9.8.7\n');
+    await writeFile(
+      path.join(root, 'package.json'),
+      JSON.stringify({ engines: { bun: '>=9.8.6 <9.9.0' } }),
+    );
+    const upgrades = path.join(home, 'brew-upgrades');
     const brew = path.join(bin, 'brew');
     for (const command of ['curl', 'git', 'stow', 'zsh']) {
       const executable = path.join(bin, command);
@@ -96,6 +101,11 @@ describe('lib/setup', () => {
       brew,
       `#!/bin/sh
 if [ "$1" = list ]; then exit 1; fi
+if [ "$1" = upgrade ]; then
+  echo upgrade >> '${upgrades}'
+  printf '#!/bin/sh\necho 9.8.8\n' > '${bunPrefix}/bin/bun'
+  exit 0
+fi
 if [ "$1" = bundle ]; then
   if [ "$2" = check ]; then
     [ "$HOMEBREW_NO_AUTO_UPDATE" = 1 ] || exit 1
@@ -125,7 +135,11 @@ exit 2
     try {
       assert.equal(await runSetup(['check', 'brewfile'], { root, home }), 0);
       assert.equal(await runSetup(['apply', 'brewfile'], { root, home }), 0);
-      await writeFile(path.join(root, '.bun-version'), '0.0.0\n');
+      await writeFile(path.join(bunPrefix, 'bin', 'bun'), '#!/bin/sh\necho 9.8.8\n');
+      assert.equal(await runSetup(['check', 'brewfile'], { root, home }), 0);
+      assert.equal(await runSetup(['apply', 'brewfile'], { root, home }), 0);
+      await assert.rejects(readFile(upgrades), { code: 'ENOENT' });
+      await writeFile(path.join(bunPrefix, 'bin', 'bun'), '#!/bin/sh\necho 9.8.5\n');
       delete process.env.RUNNER_DEBUG;
       assert.equal(await runSetup(['check', 'brewfile'], { root, home }), 1);
       assert.equal(stderr, '');
@@ -133,8 +147,15 @@ exit 2
       assert.equal(await runSetup(['check', 'brewfile'], { root, home }), 1);
       assert.match(
         stderr,
-        /operation=dependencies\.check reason=homebrew bun version does not match/,
+        /operation=dependencies\.check reason=homebrew bun 9\.8\.5.*>=9\.8\.6 <9\.9\.0/,
       );
+      assert.equal(await runSetup(['apply', 'brewfile'], { root, home }), 0);
+      assert.equal(await readFile(upgrades, 'utf8'), 'upgrade\n');
+      assert.equal(await runSetup(['check', 'brewfile'], { root, home }), 0);
+      assert.equal(await runSetup(['apply', 'brewfile'], { root, home }), 0);
+      assert.equal(await readFile(upgrades, 'utf8'), 'upgrade\n');
+      await writeFile(path.join(bunPrefix, 'bin', 'bun'), '#!/bin/sh\necho 9.9.0\n');
+      assert.equal(await runSetup(['check', 'brewfile'], { root, home }), 1);
     } finally {
       process.stderr.write = originalWrite;
       if (originalDebug === undefined) delete process.env.RUNNER_DEBUG;
