@@ -8,7 +8,7 @@ or [Piroboot](./PIROBOOT.md) for bootstrap command usage.
 ### Dependencies
 
 [`Brewfile`](./Brewfile) is the shopping list for applications and command-line tools.
-Runtime requirements are declared in [`.tool-versions`](./.tool-versions).
+Runtime requirements are declared in [`.node-version`](./.node-version) and [`.bun-version`](./.bun-version).
 
 [`Brewfile.openclaw`](./Brewfile.openclaw) is a manually installed, optional bundle containing
 `openclaw-cli`, `clawhub`, and the native OpenClaw app. Bootstrap and repeatable setup leave it alone;
