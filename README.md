@@ -30,7 +30,7 @@ Use it as an operator profile for a person at a Mac, a Codex profile, or an Open
 | [Configuration Files](./INVENTORY.md#configuration-files) | Identity, setup, goals, automations, and model profiles.                                       |
 | [Dependencies](./INVENTORY.md#dependencies)               | Base applications and runtimes, plus optional OpenClaw tooling.                                |
 | [Dotfiles](./INVENTORY.md#dotfiles)                       | Shell, editor, terminal, Git, SSH, and Codex configuration.                                    |
-| [Skills](./INVENTORY.md#skills)                           | Task startup, cleanup, skill authoring, and Voice.                                             |
+| [Skills](./INVENTORY.md#skills)                           | task startup, assessment, implementation, replies, cleanup, skill authoring, and voice.        |
 
 For the full inventory, see [Inventory](./INVENTORY.md).
 

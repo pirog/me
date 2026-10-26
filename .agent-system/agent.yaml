@@ -1,4 +1,5 @@
 schema-version: 1
+debug: true
 
 agent:
   id: pirog
@@ -24,6 +25,14 @@ github:
     reviewers:
       - "@emoriwan"
       - "@smutlord"
+    assessment:
+      skill: piroplugin:piro-issue-assessment
+      guidance:
+        file: .agent-system/guidance/assessment.md
+    implementation:
+      skill: piroplugin:piro-issue-implementation
+    feedback:
+      skill: piroplugin:piro-feedback-reply
 
 models:
   default:

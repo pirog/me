@@ -44,6 +44,7 @@
     "marketplace": "pirostore",
     "managedPaths": [
       ".agent-system/agent.yaml",
+      ".agent-system/guidance",
       ".agent-system/setup-agent.yaml",
       ".agent-system/setup-host.yaml",
       ".codex-plugin",
@@ -72,6 +73,7 @@
   },
   "files": [
     ".agent-system/agent.yaml",
+    ".agent-system/guidance/",
     ".agent-system/setup-agent.yaml",
     ".agent-system/setup-host.yaml",
     ".codex-plugin/plugin.json",

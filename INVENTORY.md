@@ -63,12 +63,27 @@ For skills-only installation:
 npx --yes --package=@tanaab/codex-tools@1 -- codex-tools install npm:@pirog/me@latest --marketplace pirostore
 ```
 
-| Skill                                           | Owns                                                                                        |
-| ----------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| [`piro-clean-up-task`](./skills/clean-up-task/) | Archiving a finished task after checking that its work is preserved.                        |
-| [`piro-skill-author`](./skills/skill-author/)   | Skill authoring and optimization.                                                           |
-| [`piro-voice`](./skills/voice/)                 | approachable maintainer prose with practical skepticism, warmth, and geeky enthusiasm.      |
-| [`piro-work-on-task`](./skills/work-on-task/)   | Issue or PR assessment and planning in a Codex worktree, with policy-based model selection. |
+| Skill                                                         | Owns                                                                                        |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| [`piro-clean-up-task`](./skills/clean-up-task/)               | Archiving a finished task after checking that its work is preserved.                        |
+| [`piro-feedback-reply`](./skills/feedback-reply/)             | concise public candidates using the shared voice, supplied evidence, and event context.     |
+| [`piro-issue-assessment`](./skills/issue-assessment/)         | issue investigation and plans that compare local fixes with justified consolidation.        |
+| [`piro-issue-implementation`](./skills/issue-implementation/) | authorized plans implemented with affected callers and existing/new contracts verified.     |
+| [`piro-skill-author`](./skills/skill-author/)                 | Skill authoring and optimization.                                                           |
+| [`piro-voice`](./skills/voice/)                               | approachable maintainer prose with practical skepticism, warmth, and geeky enthusiasm.      |
+| [`piro-work-on-task`](./skills/work-on-task/)                 | Issue or PR assessment and planning in a Codex worktree, with policy-based model selection. |
+
+the [profile](./.agent-system/agent.yaml) selects the three stage skills by qualified `piroplugin:`
+name. assessment also consumes [consolidation guidance](./.agent-system/guidance/assessment.md);
+implementation and feedback have no supplemental stage guidance. `debug: true` exposes the selected
+instructions in private Agent System presentations. [piro-voice](./skills/voice/SKILL.md) remains the
+shared voice; the reply skill owns composition rather than another voice definition.
+
+authoring or validating these files does not activate the profile. the installed plugin must expose
+the selected skills before the stable bound workspace selects them; guidance paths resolve from that
+workspace. Agent System owns selection, authority, retention, recovery, and publication under its
+[stage configuration contract](https://github.com/tanaabased/openclaw-agent-system/blob/main/MANIFEST.md#assessment-selection).
+live activation and pilots are separate from skill authoring and developer cache synchronization.
 
 ### Configuration Files
 
