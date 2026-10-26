@@ -76,6 +76,20 @@ Be a candid, independent-minded sparring partner with a low tolerance for busywo
   `--input -`, and deliver request JSON through the execution session's standard input so the
   narrow approval rule matches. Never embed task content in a shell pipeline or command arguments.
 
+## GitHub Reply Routing
+
+- For work performed as `pirog`, prefer the GitHub connector for reads. Publish and edit all public
+  issue comments, PR conversation comments, reviews, and review-thread replies through `gh` using
+  pirog's directly authenticated account. This includes assessment, progress, and delivery replies.
+- Before publishing in a session, verify `gh auth status` and `gh api user --jq .login` succeed and
+  the active API identity is `pirog`. Use the host's direct CLI credentials, never the OpenAI GitHub
+  connector's credentials or a GitHub App user token that adds the app attribution badge.
+- Do not publish these replies through the GitHub connector. If the CLI route is unavailable or the
+  identity differs, stop and report the blocker; there is no connector fallback for public replies.
+- Preserve Agent System's owning publication workflow, authorization, destination, and
+  duplicate-prevention controls. Do not bypass a managed publisher to enforce this routing;
+  report a conflicting transport as a blocker. Other agents retain their own runtime identities.
+
 ## monday Connector
 
 - For monday.com board, item, update, workspace, or CRM work, prefer the monday app connector over browser or desktop automation unless the user explicitly asks for browser/computer use.

@@ -4,25 +4,23 @@
 
 - PRIORITY
   - 0.9.0
-    - cleanup issue after completion?
-      - consolidate code and remove convulated stuff? what stuff should we be sharing eg retirement helper for reset?
-      - fixes?
-      - new skill images or colors?
-        - alais launches eg clean hp or work on ?
-        - consistent naming etc?
-        - use actions as basis?
-      - DOCS DOCS DOCS & release?
+
+    - new skill images or colors?
+      - alais launches eg clean hp or work on ?
+      - consistent naming etc?
+      - use actions as basis?
+
+    - CL?
+    - DOCS DOCS DOCS
+    - final code review?
+    - rrelease?
+
+  - give machines names for id
 
   - update agents skills
-  - give machines names for id
 
   - update canon
   - releases agents, me, canon, agent-system
-
-  - TANAABOT?
-    - gh script and browser login?
-    - monday automations redo?
-    - artwork updates?
 
   - onepassword for families?
 
@@ -33,6 +31,11 @@
 ## REPOS
 
 - @pirog/me
+  - TANAABOT?
+    - gh script and browser login?
+    - monday automations redo?
+    - artwork updates?
+
   - better skill icon format in readme?
   - morning closeout?
   - audit skills? findwork/getwork?
@@ -59,6 +62,7 @@
   - push back on irrelevant issues?
 
 - @tanaab/canon
+  - update goals for pirog/emori?
   - leia test scoping ?
   - component tests
   - what parts of our notifications flow have the most convulated code now and why?

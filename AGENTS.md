@@ -75,10 +75,13 @@ its Codex plugin bundle.
   identities, account names, IDs, URLs, package metadata, and connector checks.
 - Never commit SSH private keys, 1Password or API tokens, machine-specific secrets, generated Codex
   configuration, or generated `authorized_keys` files.
-- Prefer native Codex connectors for protected resources. Agent System work follows its owning
-  runtime's authorization and credential contract. For separately authorized standalone pirog CLI
-  access without a connector, use `op run --environment zsstdfqknicwfv5glv76gd6tue`; do not add committed `.env`
-  files, persistent shell secrets, or local token fallbacks.
+- Prefer native Codex connectors for protected-resource reads. For public GitHub replies as `pirog`,
+  follow the GitHub Reply Routing section in `dotfiles/ai/.codex/AGENTS.md`: use directly authenticated
+  `gh`, verify the identity, and never fall back to connector publication. Agent System work retains
+  its owning runtime's authorization and publication controls. For other separately authorized
+  standalone pirog CLI access without a connector, use
+  `op run --environment zsstdfqknicwfv5glv76gd6tue`; do not add committed `.env` files, persistent shell
+  secrets, or local token fallbacks.
 - Do not edit, regenerate, stage, or commit `dist/` during routine work. Change its source inputs and
   leave generated output to CI unless release-shaped verification is explicitly requested.
 - Treat `--help` as the public bootstrap contract. Check `README.md`, `PIROBOOT.md`, and affected
