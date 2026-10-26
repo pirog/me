@@ -3,26 +3,18 @@
 ## PIROG
 
 - PRIORITY
-  - tests
-    - strip dependabot for openclaw?
-
   - 0.9.0
-    - updgrade to 10.x?
-      - imessage
-      - memory
-
     - cleanup issue after completion?
       - consolidate code and remove convulated stuff? what stuff should we be sharing eg retirement helper for reset?
       - fixes?
       - new skill images or colors?
+        - alais launches eg clean hp or work on ?
         - consistent naming etc?
         - use actions as basis?
       - DOCS DOCS DOCS & release?
 
-  - update agents 10.6/skills
-  - improve agent tests as well?
-
-  - jev for test selection in GHA?
+  - update agents skills
+  - give machines names for id
 
   - update canon
   - releases agents, me, canon, agent-system
@@ -33,6 +25,10 @@
     - artwork updates?
 
   - onepassword for families?
+
+## IDEAS
+
+- jev for test selection in GHA?
 
 ## REPOS
 
