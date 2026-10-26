@@ -56,8 +56,9 @@ its Codex plugin bundle.
   Keep `smoke-test` disabled outside an explicitly authorized validation window. This restriction
   does not apply to deliberately assigned intake-test issues.
 - `GOALS.md` owns reviewed direction, priorities, and deferrals. GitHub issues, pull requests, and
-  milestones own actionable work and delivery evidence. `skills/work-on-task/` owns exact-source
-  task startup; `skills/clean-up-task/` owns one-task preservation-gated retirement.
+  milestones own actionable work and delivery evidence. Agent System owns managed task startup
+  and retirement; `references/codex-task-access.md` owns temporary native PR startup and unmanaged
+  Codex archival guidance.
 - `TASKS.md` is informal cross-repository planning scratch. It is not a durable contract, current
   state proof, or authorization source; preserve unrelated edits and keep it outside the managed
   plugin cache.

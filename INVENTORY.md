@@ -44,13 +44,13 @@ The `ai` dotpkg installs the [Pirostore catalog](./dotfiles/ai/.agents/plugins/m
 and its local source links. Catalog entries are optional; making them available does not install or
 enable them. The catalog owns the configured sources and versions.
 
-| Plugin                                                                | Provides                                                               |
-| --------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| [`agent-system`](https://github.com/tanaabased/openclaw-agent-system) | Profile binding, setup checks and repairs, and model routing.          |
-| [`agentbox`](https://github.com/tanaabased/agentbox)                  | Agentbox host setup and diagnostic skills.                             |
-| [`leia`](https://github.com/lando/leia)                               | Scenario skills and assets; projects manage their Leia CLI separately. |
-| [`piroplugin`](./.codex-plugin/plugin.json)                           | Personal task lifecycle, skill authoring, and voice skills.            |
-| [`tanaab`](https://github.com/tanaabased/canon)                       | Shared Tanaab authoring and project-management skills.                 |
+| Plugin                                                                | Provides                                                                  |
+| --------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| [`agent-system`](https://github.com/tanaabased/openclaw-agent-system) | Profile binding, setup checks and repairs, and model routing.             |
+| [`agentbox`](https://github.com/tanaabased/agentbox)                  | Agentbox host setup and diagnostic skills.                                |
+| [`leia`](https://github.com/lando/leia)                               | Scenario skills and assets; projects manage their Leia CLI separately.    |
+| [`piroplugin`](./.codex-plugin/plugin.json)                           | Personal assessment, implementation, replies, skill authoring, and voice. |
+| [`tanaab`](https://github.com/tanaabased/canon)                       | Shared Tanaab authoring and project-management skills.                    |
 
 ### Skills
 
@@ -63,15 +63,19 @@ For skills-only installation:
 npx --yes --package=@tanaab/codex-tools@1 -- codex-tools install npm:@pirog/me@latest --marketplace pirostore
 ```
 
-| Skill                                                         | Owns                                                                                        |
-| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| [`piro-clean-up-task`](./skills/clean-up-task/)               | Archiving a finished task after checking that its work is preserved.                        |
-| [`piro-feedback-reply`](./skills/feedback-reply/)             | concise public candidates using the shared voice, supplied evidence, and event context.     |
-| [`piro-issue-assessment`](./skills/issue-assessment/)         | issue investigation and plans that compare local fixes with justified consolidation.        |
-| [`piro-issue-implementation`](./skills/issue-implementation/) | authorized plans implemented with affected callers and existing/new contracts verified.     |
-| [`piro-skill-author`](./skills/skill-author/)                 | Skill authoring and optimization.                                                           |
-| [`piro-voice`](./skills/voice/)                               | approachable maintainer prose with practical skepticism, warmth, and geeky enthusiasm.      |
-| [`piro-work-on-task`](./skills/work-on-task/)                 | Issue or PR assessment and planning in a Codex worktree, with policy-based model selection. |
+| Skill                                                         | Owns                                                                                    |
+| ------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| [`piro-feedback-reply`](./skills/feedback-reply/)             | concise public candidates using the shared voice, supplied evidence, and event context. |
+| [`piro-issue-assessment`](./skills/issue-assessment/)         | issue investigation and plans that compare local fixes with justified consolidation.    |
+| [`piro-issue-implementation`](./skills/issue-implementation/) | authorized plans implemented with affected callers and existing/new contracts verified. |
+| [`piro-skill-author`](./skills/skill-author/)                 | Skill authoring and optimization.                                                       |
+| [`piro-voice`](./skills/voice/)                               | approachable maintainer prose with practical skepticism, warmth, and geeky enthusiasm.  |
+
+Agent System Task Launch owns issue startup; Task Retirement owns managed retirement. until their
+remaining replacements are released, installed, and demonstrated, use the
+[temporary native task guidance](./references/codex-task-access.md#temporary-native-task-guidance)
+for existing same-repository PR startup and unmanaged Codex archival. [#147](https://github.com/pirog/me/issues/147)
+owns removal of that guidance.
 
 the [profile](./.agent-system/agent.yaml) selects the three stage skills by qualified `piroplugin:`
 name. assessment also consumes [consolidation guidance](./.agent-system/guidance/assessment.md);

@@ -1,5 +1,6 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+- removed `piro-work-on-task` and `piro-clean-up-task`, retaining temporary native PR startup and archival guidance. [#123](https://github.com/pirog/me/issues/123)
 - Updated the medium `agent.yaml` profile to `gpt-6.1-sol` with high reasoning effort. [#110](https://github.com/pirog/me/issues/110)
 
 ## v1.0.0-beta.14 - [September 29, 2026](https://github.com/pirog/me/releases/tag/v1.0.0-beta.14)
