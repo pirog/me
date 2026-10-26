@@ -63,12 +63,12 @@ For skills-only installation:
 npx --yes --package=@tanaab/codex-tools@1 -- codex-tools install npm:@pirog/me@latest --marketplace pirostore
 ```
 
-| Skill                                           | Owns                                                                                               |
-| ----------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| [`piro-clean-up-task`](./skills/clean-up-task/) | Archiving a finished task after checking that its work is preserved.                               |
-| [`piro-skill-author`](./skills/skill-author/)   | Skill authoring and optimization.                                                                  |
-| [`piro-voice`](./skills/voice/)                 | Human-facing prose with conviction, irreverence, and wit; code and structured data stay untouched. |
-| [`piro-work-on-task`](./skills/work-on-task/)   | Issue or PR assessment and planning in a Codex worktree, with policy-based model selection.        |
+| Skill                                           | Owns                                                                                        |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| [`piro-clean-up-task`](./skills/clean-up-task/) | Archiving a finished task after checking that its work is preserved.                        |
+| [`piro-skill-author`](./skills/skill-author/)   | Skill authoring and optimization.                                                           |
+| [`piro-voice`](./skills/voice/)                 | approachable maintainer prose with practical skepticism, warmth, and geeky enthusiasm.      |
+| [`piro-work-on-task`](./skills/work-on-task/)   | Issue or PR assessment and planning in a Codex worktree, with policy-based model selection. |
 
 ### Configuration Files
 
