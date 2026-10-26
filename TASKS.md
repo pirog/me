@@ -87,15 +87,6 @@
 
 - @tanaab/openclaw-agent-system
   - 0.10.0
-    - final card styling pass (backticks on machine names?)
-    - backup name? NIGHTLY BACKUP
-
-    - notifications reset commands?
-      - new cli tasks style issues?
-      - all agents vs single agent in notifictions reset?
-      - still shows interactive afterwards?
-
-    - model routing skill?
     - pr review
     - jev to score model?
     - me
