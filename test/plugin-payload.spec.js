@@ -27,6 +27,9 @@ describe('package.json plugin payload', () => {
     await mkdir(path.join(source, '.agent-system'), { recursive: true });
     await writeFile(path.join(source, 'package.json'), JSON.stringify(packageJson));
     await copyFile(path.join(repoRoot, '.gitignore'), path.join(source, '.gitignore'));
+    for (const relative of ['.node-version', '.bun-version']) {
+      await copyFile(path.join(repoRoot, relative), path.join(source, relative));
+    }
     for (const relative of configuration) {
       await copyFile(path.join(repoRoot, relative), path.join(source, relative));
     }
@@ -57,11 +60,12 @@ describe('package.json plugin payload', () => {
     assert.equal(packages.length, 1);
     const [packed] = packages;
     assert.equal(packed.name, packageJson.name);
+    const packedPaths = packed.files.map((file) => file.path);
+    assert.ok(packedPaths.includes('.node-version'));
+    assert.ok(packedPaths.includes('.bun-version'));
+    assert.ok(!packedPaths.includes('.tool-versions'));
     assert.deepEqual(
-      packed.files
-        .map((file) => file.path)
-        .filter((file) => file.startsWith('.agent-system/'))
-        .sort(),
+      packedPaths.filter((file) => file.startsWith('.agent-system/')).sort(),
       configuration,
     );
   });

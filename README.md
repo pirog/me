@@ -95,7 +95,7 @@ Complete the following manual setup tasks for your operator profile, Codex profi
 
 ## Development
 
-Use the runtimes declared in [`.tool-versions`](./.tool-versions), then work from the `me` checkout:
+Use the runtimes declared in [`.node-version`](./.node-version) and [`.bun-version`](./.bun-version), then work from the `me` checkout:
 
 ```sh
 # prepare the checkout

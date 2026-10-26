@@ -10,7 +10,7 @@
   },
   "bugs": "https://github.com/pirog/me/issues",
   "homepage": "https://github.com/pirog/me",
-  "packageManager": "bun@1.4.3",
+  "packageManager": "bun@1.4.4",
   "engines": {
     "bun": ">=1.4.2 <1.5.0"
   },
@@ -79,7 +79,7 @@
     ".codex-plugin/plugin.json",
     ".mcp.json",
     ".bun-version",
-    ".tool-versions",
+    ".node-version",
     "AGENTS.md",
     "CHANGELOG.md",
     "GOALS.md",
