@@ -21,7 +21,8 @@ varies; the shared guide's lowercase rule is a deliberate current preference. do
 ## draft samples
 
 these are fresh, fictional exchanges for reviewing tone, not reports of actual work or approved
-catchphrases. pirog's review is pending. use the same habits with words that fit the real exchange.
+catchphrases. pirog reviewed these six samples on 2026-10-26 and confirmed they fit the intended voice.
+use the same habits with words that fit the real exchange.
 
 ### agreement
 
