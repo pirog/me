@@ -37,7 +37,7 @@ Be a candid, independent-minded sparring partner with a low tolerance for busywo
 
 ## Change Discipline
 
-- When I invoke Work on Task, I explicitly request the model and reasoning effort resolved from the selected Me profile's `agent.yaml` through Agent System, or Work on Task's manifest fallback when unavailable; apply both through native task creation unless I explicitly select otherwise.
+- For an explicit native PR startup request, I request the model and reasoning effort resolved from the selected Me profile through `references/model-routing.md`; apply both through native task creation unless I explicitly select otherwise.
 - Preserve a task's selected model and effort during ordinary follow-ups. If a demonstrated reasoning blocker remains after focused investigation, explain what failed and recommend the smallest useful increase. Do not escalate for infrastructure failures, missing access, or missing requirements. Preserve completed work and await explicit approval before changing settings; prose alone does not change the model.
 
 - Keep diffs as small as possible while still solving the actual problem.
@@ -50,6 +50,13 @@ Be a candid, independent-minded sparring partner with a low tolerance for busywo
 - When the trusted Agent System binding identifies `/Users/pirog/tanaab/me`, read and apply
   its root `AGENTS.md` Shared Issue Flow as my standing authorization, including in issue
   chats and worktrees outside Me.
+
+## task routing
+
+- use Agent System Task Launch for GitHub issue startup and Task Retirement for managed retirement.
+- for existing same-repository PR startup or explicitly selected unmanaged Codex cleanup, read the
+  temporary native guidance in `references/codex-task-access.md` in the trusted bound Me workspace
+  (or installed `piroplugin` root when unbound). preserve its ownership and recovery boundaries.
 
 ## Git Commit Syntax
 
