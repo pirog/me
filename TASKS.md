@@ -4,24 +4,10 @@
 
 - PRIORITY
   - 0.9.0
-
-    - new skill images or colors?
-      - alais launches eg clean hp or work on ?
-      - consistent naming etc?
-      - use actions as basis?
-
-    - CL?
-    - DOCS DOCS DOCS
     - final code review?
     - rrelease?
 
-  - give machines names for id
-
-  - update agents skills
-
   - update canon
-  - releases agents, me, canon, agent-system
-
   - onepassword for families?
 
 ## IDEAS
@@ -47,22 +33,19 @@
   - school calender to gcalendar?
 
 - @tanaab/smutlord
-  - better skill icon format?
-  - extra curricular activity?
-  - lint and unit test guidance?
-  - changelog and release stuff?
-  - cannot send as emori imessage?
   - rotate russian words and phrases?
   - look for bugs and small tasks to do and then self assign
+  - self improvement issues?
 
 - @tanaab/emori
-  - better skill icon format?
-  - release as package?
-  - install agent as openclaw plugin?
-  - push back on irrelevant issues?
+  - update source repos task?
+  - self improvement issues?
 
 - @tanaab/canon
+  - documentation voice?
+  - canon support more than one owner eg pirog?
   - update goals for pirog/emori?
+    - push back on irrelevant issues?
   - leia test scoping ?
   - component tests
   - what parts of our notifications flow have the most convulated code now and why?
@@ -97,6 +80,7 @@
     - later
 
   - ICEBOX
+    - milestone assigner?
     - running gateway access
     - discord setup?
     - gog cred setup instructions?
