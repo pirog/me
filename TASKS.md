@@ -3,10 +3,7 @@
 ## PIROG
 
 - PRIORITY
-  - 0.9.0
-    - final code review?
-    - rrelease?
-
+  - --debug flag for cleanup gha command?
   - update canon
   - onepassword for families?
 
