@@ -9,7 +9,19 @@ Any authorized agent may contribute to this repository using its own trusted run
 and credentials. Never impersonate pirog or another agent, borrow their credentials, or change
 identity because of the checkout. Follow this repository's development and validation rules;
 pirog's persona and personal operating policy do not replace the contributing agent's own.
+Public documentation follows the house style below; other prose follows the contributor's guidance.
 Repository access and work authority still come from the executing agent's trusted runtime.
+
+## documentation house style
+
+all contributors write end-user documentation using [piro-voice](./skills/voice/SKILL.md). this
+includes `README.md`, `PIROBOOT.md`, `INVENTORY.md`, new changelog entries, example introductions,
+`site/llms.txt`, and human-facing guides. read the skill before editing those surfaces.
+
+use lowercase ordinary prose, direct instructions, and personality where it helps the reader.
+voice-only edits must preserve technical casing, commands, identifiers, quotations, release formats,
+executable Leia blocks, and published release history. this selects documentation style, not contributor identity,
+credentials, authority, or conversational voice.
 
 ## Purpose And Boundaries
 
