@@ -1,11 +1,11 @@
 # Piroboot
 
-Command usage, bootstrap behavior, and the full option reference for [`boot.sh`](./boot.sh).
-Start with the [README](./README.md#quickstart) for first-time setup and the steps after bootstrap.
+the full option reference and host behavior for [`boot.sh`](./boot.sh).
+start with the [README](./README.md#quickstart) for first-time setup and the steps after bootstrap.
 
-## Usage
+## usage
 
-For repeated use, install the script in a directory you manage on `PATH`:
+for repeated use, install the script in a directory you manage on `PATH`:
 
 ```sh
 mkdir -p "$HOME/.local/bin"
@@ -23,124 +23,121 @@ piroboot \
 piroboot --help
 ```
 
-## Bootstrap Behavior
+## bootstrap behavior
 
 [Bootbox](https://github.com/tanaabased/bootbox) prepares the prerequisites before `me` applies its
-Brewfile and dotfiles. Without `--tanaab`, boot installs the configured SSH keys, Brewfile, and dotfiles.
+Brewfile and dotfiles. without `--tanaab`, boot installs the configured SSH keys, Brewfile, and dotfiles.
 
-On installed [`agentbox`](https://github.com/tanaabased/agentbox) hosts, `me` skips the 1Password and
-Tailscale desktop apps but retains the beta 1Password CLI. Any host with the Homebrew `tailscale`
-formula also skips `tailscale-app` to preserve its existing service. A source checkout alone does
+on installed [`agentbox`](https://github.com/tanaabased/agentbox) hosts, `me` skips the 1Password and
+Tailscale desktop apps but retains the beta 1Password CLI. any host with the Homebrew `tailscale`
+formula also skips `tailscale-app` to preserve its existing service. a source checkout alone does
 not qualify as an installed Agentbox host.
 
-## CLI Options
+## CLI options
 
 CLI options override environment variables, which override defaults.
 
 ### `--ssh-key`
 
-| Field       | Value                                                                                  |
+| field       | value                                                                                  |
 | ----------- | -------------------------------------------------------------------------------------- |
-| Environment | `PIROME_SSH_KEY`                                                                       |
-| Default     | `vmruk4ny353aly6tbom7z3v2hy/id_pirog,vmruk4ny353aly6tbom7z3v2hy/id_agentbox1`          |
-| Values      | Repeatable `vault/item[:filename]` option or comma-separated environment-variable list |
-| Description | Installs private SSH keys from 1Password.                                              |
+| environment | `PIROME_SSH_KEY`                                                                       |
+| default     | `vmruk4ny353aly6tbom7z3v2hy/id_pirog,vmruk4ny353aly6tbom7z3v2hy/id_agentbox1`          |
+| values      | repeatable `vault/item[:filename]` option or comma-separated environment-variable list |
+| description | installs private SSH keys from 1Password.                                              |
 
-The optional filename overrides the destination filename under `~/.ssh`. Without it, the 1Password
-item name is used.
+the optional filename selects the destination under `~/.ssh`; otherwise the 1Password item name is used.
 
 ### `--op-token`
 
-| Field       | Value                                                       |
+| field       | value                                                       |
 | ----------- | ----------------------------------------------------------- |
-| Environment | `PIROME_OP_TOKEN`; falls back to `OP_SERVICE_ACCOUNT_TOKEN` |
-| Default     | unset                                                       |
-| Values      | 1Password service account token                             |
-| Description | Authenticates private SSH-key retrieval from 1Password.     |
+| environment | `PIROME_OP_TOKEN`; falls back to `OP_SERVICE_ACCOUNT_TOKEN` |
+| default     | unset                                                       |
+| values      | 1Password service account token                             |
+| description | authenticates private SSH-key retrieval from 1Password.     |
 
-The token is required while the configured SSH-key list is non-empty. To avoid passing its value
-as a command-line argument:
+a token is required when the SSH-key list is non-empty. to keep its value out of command-line arguments:
 
 ```sh
 PIROME_OP_TOKEN="$OP_TOKEN" piroboot
 ```
 
-Debug and planning output mask the token.
+debug and planning output mask the token; raw arguments are not logged.
 
 ### `--tanaab`
 
-| Field       | Value                                                                      |
+| field       | value                                                                      |
 | ----------- | -------------------------------------------------------------------------- |
-| Environment | `PIROME_TANAAB`                                                            |
-| Default     | none                                                                       |
-| Values      | Repeatable `repo[:codex-plugin[-build]]`; comma-separated environment list |
-| Description | Clones or safely updates repositories from `@tanaabased`.                  |
+| environment | `PIROME_TANAAB`                                                            |
+| default     | none                                                                       |
+| values      | repeatable `repo[:codex-plugin[-build]]`; comma-separated environment list |
+| description | clones or safely updates repositories from `@tanaabased`.                  |
 
-The first CLI occurrence replaces the environment-sourced list. Additional occurrences append,
-and duplicate names are collapsed while preserving their first position. The build suffix wins when
-the same repo is selected more than once.
+the first CLI selection replaces the environment list; later selections append. duplicates keep
+their first position, and the build suffix wins when a repo is selected more than once.
 
 ```sh
 piroboot --op-token "$OP_TOKEN" --tanaab canon:codex-plugin --tanaab openclaw-agent-system:codex-plugin-build
 PIROME_TANAAB="canon,agentbox" piroboot --op-token "$OP_TOKEN"
 ```
 
-The action suffix installs frozen Bun dependencies without lifecycle scripts, then installs the
+the action suffix installs frozen Bun dependencies without lifecycle scripts, then installs the
 checkout with Codex Tools. `:codex-plugin-build` also runs `bun run build` first.
 
-Each name maps deterministically to `git@github.com:tanaabased/<repo>.git` and
-`~/tanaab/<repo>`. Local paths, release versions, source selectors, and falsey disable values are
+each name maps to `git@github.com:tanaabased/<repo>.git` and
+`~/tanaab/<repo>`. local paths, release versions, source selectors, and falsey disable values are
 not supported.
 
-Hosted runs use `~/tanaab/me`; running `boot.sh` from a valid source checkout uses it without updating it.
-Existing canonical or selected Tanaab checkouts are refreshed only when clean, on `main`, tracking
-`origin/main`, and connected to the expected origin. Otherwise local work is preserved.
+hosted runs use `~/tanaab/me`; running `boot.sh` from a valid source checkout uses it without updating it.
+existing canonical or selected Tanaab checkouts are refreshed only when clean, on `main`, tracking
+`origin/main`, and connected to the expected origin. otherwise local work is preserved.
 
 ### `-y`, `--yes`
 
-| Field       | Value                                      |
+| field       | value                                      |
 | ----------- | ------------------------------------------ |
-| Environment | `NONINTERACTIVE`                           |
-| Default     | unset                                      |
-| Values      | `--yes` or a truthy environment value      |
-| Description | Accepts the plan and runs without prompts. |
+| environment | `NONINTERACTIVE`                           |
+| default     | unset                                      |
+| values      | `--yes` or a truthy environment value      |
+| description | accepts the plan and runs without prompts. |
 
 ### `--force`
 
-| Field       | Value                                             |
+| field       | value                                             |
 | ----------- | ------------------------------------------------- |
-| Environment | `PIROME_FORCE`                                    |
-| Default     | off                                               |
-| Values      | Flag or truthy environment value                  |
-| Description | Allows supported existing targets to be replaced. |
+| environment | `PIROME_FORCE`                                    |
+| default     | off                                               |
+| values      | flag or truthy environment value                  |
+| description | allows supported existing targets to be replaced. |
 
-`--force` applies to supported Bootbox operations and existing SSH-key destinations. It never
+`--force` applies to supported Bootbox operations and existing SSH-key destinations. it never
 discards or replaces local work in `~/tanaab/me` or any Tanaab repository checkout.
 
 ### `--debug`
 
-| Field       | Value                                  |
+| field       | value                                  |
 | ----------- | -------------------------------------- |
-| Environment | `PIROME_DEBUG`                         |
-| Default     | off                                    |
-| Values      | Flag or truthy environment value       |
-| Description | Shows detailed wrapper debug messages. |
+| environment | `PIROME_DEBUG`                         |
+| default     | off                                    |
+| values      | flag or truthy environment value       |
+| description | shows detailed wrapper debug messages. |
 
-Debug output masks the 1Password token and does not log raw arguments.
+see [token handling](#--op-token) for masking behavior.
 
 ### `--version`
 
-Prints the running wrapper version and exits.
+prints the running wrapper version and exits.
 
 ### `-h`, `--help`
 
-Prints the public CLI and environment-variable contract and exits.
+prints the public CLI and environment-variable contract and exits.
 
 ### `CI`
 
-| Field       | Value                                       |
+| field       | value                                       |
 | ----------- | ------------------------------------------- |
-| Option      | none                                        |
-| Default     | unset                                       |
-| Values      | Truthy environment value                    |
-| Description | Runs the wrapper in noninteractive CI mode. |
+| option      | none                                        |
+| default     | unset                                       |
+| values      | truthy environment value                    |
+| description | runs the wrapper in noninteractive CI mode. |

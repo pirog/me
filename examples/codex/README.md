@@ -1,16 +1,12 @@
-# Codex Example
+# Codex example
 
-Bootstrap the checked-out pirog profile, then install the packaged Agent System plugin in
-disposable Codex state. Inspect setup through its binding and check the packaged hook output directly;
-interactive skill use and native hook trust are separate manual checks, with no model login needed here.
+bootstrap the checked-out pirog profile and install the packaged Agent System plugin in disposable
+Codex state. check binding, setup, packaged hook output, and model routing without a model login.
 
-The packaged runtime supports this profile's v2 Codex notifications. Installation must converge all
-six setup steps while leaving intake activation to the native desktop app.
-
-Automation checks use a project lookup fixture for the bound checkout and its generated model
-defaults. They verify the disabled smoke test and enabled issue-assignment intake declaration, including
-the missing native intake chat, without creating schedules. Native reconciliation and a real scheduled
-reply require separate desktop validation.
+repeated installation must leave setup unchanged. automation checks use a project-lookup fixture
+to inspect the disabled smoke test and enabled intake declaration, including the missing native
+intake chat, without creating schedules. native hook approval, interactive skill use, intake
+activation, and scheduled execution require separate desktop validation.
 
 ## Setup
 

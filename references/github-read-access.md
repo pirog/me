@@ -71,14 +71,3 @@ mismatch occurs.
    host context is unavailable, or the required exact source remains unreadable. Preserve sanitized
    command errors and never run `gh auth login`, `gh auth logout`, token replacement, connector
    reconfiguration, or another authentication mutation as remediation.
-
-## Static Scenarios
-
-- Connector identity and an exact connector read succeed; direct CLI auth and API identity succeed.
-- Connector reads succeed, restricted CLI results conflict, and the authorized direct CLI route
-  succeeds; record and reuse the authorized direct route.
-- Authorized direct execution cannot resolve required login initialization, but the authorized
-  `zsh -lc` route succeeds; record and reuse that route.
-- Connector reads succeed but every CLI route fails; a workflow that requires CLI fallback stops,
-  while a connector-only workflow may continue under its own contract.
-- Any provider reports the wrong actor; stop immediately without trying to reauthenticate.

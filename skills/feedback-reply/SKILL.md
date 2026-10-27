@@ -4,9 +4,9 @@ description: Pirobased concise reply composition using the shared maintainer voi
 license: MIT
 metadata:
   type: generic
-  owner: pirog
+  owner: tanaab
   tags:
-    - pirog
+    - tanaab
     - generic
     - communication
   openclaw:
@@ -22,6 +22,12 @@ compose the shortest complete public candidate from supplied context and outcome
 composition method and turn up the recognizable rhythm of [piro-voice](../voice/SKILL.md). the shared
 voice owns expression; this skill owns the answer. the host owns attribution, authorization, destination,
 validation, and publication.
+
+## Required Reading
+
+read and apply each applicable document before dependent work; reuse complete reads already in context.
+
+- **Before composing a candidate:** read and apply [piro-voice](../voice/SKILL.md).
 
 ## When to Use
 

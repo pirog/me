@@ -1,11 +1,9 @@
-# Agentbox Example
+# Agentbox example
 
-This example verifies that an installed Agentbox host keeps its formula-backed Tailscale runtime
-and skips desktop-only casks during the final `me` Brewfile apply. It also proves that inherited
-Homebrew Bundle cask skips are preserved.
+check that an installed Agentbox host keeps formula-backed Tailscale, skips desktop-only casks,
+and preserves inherited Homebrew Bundle cask skips when `me` applies its Brewfile.
 
-This scenario is intended to run in CI by default. Do not run it locally unless the task explicitly
-calls for a local Leia run.
+run in CI; local Leia execution requires explicit authorization.
 
 ## Setup
 

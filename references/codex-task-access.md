@@ -121,14 +121,3 @@ cleanup and report the limitation; independent reporting can continue. Never pau
 or archive a recurring task as routine cleanup. Retiring one needs an explicit automation-retirement
 request. Only a proven standalone run, not its persistent automation task, can be a prior-report
 cleanup candidate.
-
-## Static scenarios
-
-- `list_threads(limit=50)` returns fewer than 50 non-pinned tasks and trustworthy task records; use
-  the exact visible reads under the owning workflow's normal completeness rules.
-- A valid 50-result response has no pagination or completeness evidence; continue only where the
-  owning read-only workflow permits partial coverage and report the limitation.
-- The listing remains unavailable after bounded recovery; an owning plan-only workflow may return
-  one conditional recommendation when it explicitly permits that degradation.
-- The final listing is malformed or an exact target read fails immediately before mutation; stop at
-  the hard safety boundary without changing task state.

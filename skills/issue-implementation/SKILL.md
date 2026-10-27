@@ -4,9 +4,9 @@ description: Pirobased implementation of an authorized issue plan, including sha
 license: MIT
 metadata:
   type: workflow
-  owner: pirog
+  owner: tanaab
   tags:
-    - pirog
+    - tanaab
     - workflow
     - task-management
   openclaw:
@@ -21,6 +21,12 @@ metadata:
 carry an authorized issue plan through coherent changes and verification in the existing checkout.
 adapt Agent System's substantive implementation method; the host owns authorization, selected
 instructions, result adaptation, retention, recovery, and PR publication.
+
+## Required Reading
+
+read and apply each applicable document before dependent work; reuse complete reads already in context.
+
+- **Before writing human-facing prose:** read and apply [piro-voice](../voice/SKILL.md).
 
 ## When to Use
 

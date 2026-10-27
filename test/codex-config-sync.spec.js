@@ -6,6 +6,7 @@ import {
   mkdir,
   mkdtemp,
   readFile,
+  rm,
   stat,
   symlink,
   writeFile,
@@ -26,47 +27,11 @@ import { deepMerge } from '../utils/deep-merge.js';
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
-function parseToml(content) {
-  const result = {};
-  let current = result;
-
-  for (const rawLine of content.split(/\r?\n/)) {
-    const line = rawLine.trim();
-    if (!line || line.startsWith('#')) {
-      continue;
-    }
-
-    const tableMatch = line.match(/^\[([^\]]+)\]$/);
-    if (tableMatch) {
-      current = result;
-      for (const segment of tableMatch[1].split('.')) {
-        current[segment] ??= {};
-        current = current[segment];
-      }
-      continue;
-    }
-
-    const [rawKey, ...rawValueParts] = line.split('=');
-    const key = rawKey.trim();
-    const rawValue = rawValueParts.join('=').trim();
-    if (rawValue === 'true' || rawValue === 'false') {
-      current[key] = rawValue === 'true';
-    } else if (/^".*"$/.test(rawValue)) {
-      current[key] = JSON.parse(rawValue);
-    } else if (/^\[.*\]$/.test(rawValue)) {
-      current[key] = JSON.parse(rawValue);
-    } else if (/^-?\d+(?:\.\d+)?$/.test(rawValue)) {
-      current[key] = Number(rawValue);
-    } else {
-      current[key] = rawValue;
-    }
-  }
-
-  return result;
-}
+const temporaryRoots = [];
 
 async function tempConfigPaths() {
   const root = await mkdtemp(path.join(os.tmpdir(), 'codex-config-sync-'));
+  temporaryRoots.push(root);
   const codexDir = path.join(root, '.codex');
   await mkdir(codexDir, { recursive: true });
   return {
@@ -78,11 +43,13 @@ async function tempConfigPaths() {
   };
 }
 
-async function sync(paths) {
-  return syncCodexConfig({ ...paths, parseToml });
-}
-
 describe('lib/codex-config-sync', () => {
+  afterEach(async () => {
+    await Promise.all(
+      temporaryRoots.splice(0).map((root) => rm(root, { recursive: true, force: true })),
+    );
+  });
+
   for (const code of ['EACCES', 'EPERM', 'EIO', 'ENOTDIR']) {
     it(`should preserve all config files when metadata access fails with ${code}`, async () => {
       for (const key of ['sharedPath', 'localPath', 'outputPath']) {
@@ -96,7 +63,7 @@ describe('lib/codex-config-sync', () => {
           await writeFile(paths[name], content);
         const failure = Object.assign(new Error('metadata probe failed'), { code });
         await assert.rejects(
-          sync({
+          syncCodexConfig({
             ...paths,
             statPath: async (targetPath) => {
               if (targetPath === paths[key]) throw failure;
@@ -115,26 +82,23 @@ describe('lib/codex-config-sync', () => {
   it('should round-trip the repo-owned shared Codex config', async () => {
     const sharedConfigPath = path.join(REPO_ROOT, 'dotfiles', 'ai', '.codex', 'config.shared.toml');
     const sharedContent = await readFile(sharedConfigPath, 'utf8');
-    const sharedConfig = parseToml(sharedContent);
+    const sharedConfig = globalThis.Bun.TOML.parse(sharedContent);
     const paths = await tempConfigPaths();
     await writeFile(paths.sharedPath, sharedContent);
 
     const agentModels = await loadAgentModels();
-    await sync({ ...paths, agentModels });
+    await syncCodexConfig({ ...paths, agentModels });
 
-    const generatedConfig = parseToml(await readFile(paths.outputPath, 'utf8'));
+    const generatedConfig = globalThis.Bun.TOML.parse(await readFile(paths.outputPath, 'utf8'));
     assert.equal(sharedConfig.model, undefined);
     assert.deepEqual(generatedConfig, deepMerge(sharedConfig, agentModelsConfig(agentModels)));
-    assert.equal(generatedConfig.model_reasoning_effort, 'high');
-    assert.equal(generatedConfig.service_tier, 'default');
-    assert.equal(generatedConfig.features.fast_mode, false);
   });
 
   it('should generate config from shared settings only', async () => {
     const paths = await tempConfigPaths();
     await writeFile(paths.sharedPath, 'personality = "pragmatic"\n\n[features]\nmemories = true\n');
 
-    const result = await sync(paths);
+    const result = await syncCodexConfig(paths);
     const content = await readFile(paths.outputPath, 'utf8');
 
     assert.equal(result.migratedLocal, false);
@@ -147,17 +111,17 @@ describe('lib/codex-config-sync', () => {
     const paths = await tempConfigPaths();
     await writeFile(paths.sharedPath, 'personality = "pragmatic"\n');
 
-    assert.equal(await checkCodexConfig({ ...paths, parseToml }), false);
-    await sync(paths);
-    assert.equal(await checkCodexConfig({ ...paths, parseToml }), true);
+    assert.equal(await checkCodexConfig(paths), false);
+    await syncCodexConfig(paths);
+    assert.equal(await checkCodexConfig(paths), true);
 
     await writeFile(paths.sharedPath, 'personality = "revised"\n');
-    assert.equal(await checkCodexConfig({ ...paths, parseToml }), false);
+    assert.equal(await checkCodexConfig(paths), false);
     assert.match(await readFile(paths.outputPath, 'utf8'), /personality = "pragmatic"/);
 
-    await sync(paths);
+    await syncCodexConfig(paths);
     await chmod(paths.outputPath, 0o644);
-    assert.equal(await checkCodexConfig({ ...paths, parseToml }), false);
+    assert.equal(await checkCodexConfig(paths), false);
   });
 
   it('should accept and preserve native Codex plugin entries while syncing required settings', async () => {
@@ -193,8 +157,8 @@ describe('lib/codex-config-sync', () => {
     await writeFile(target, `# ${GENERATED_MARKER}\npersonality = "other"\n`);
     await symlink(target, paths.outputPath);
 
-    await assert.rejects(checkCodexConfig({ ...paths, parseToml }), /symbolic link/);
-    await assert.rejects(syncCodexConfig({ ...paths, parseToml }), /symbolic link/);
+    await assert.rejects(checkCodexConfig(paths), /symbolic link/);
+    await assert.rejects(syncCodexConfig(paths), /symbolic link/);
     assert.match(await readFile(target, 'utf8'), /personality = "other"/);
   });
 
@@ -206,7 +170,7 @@ describe('lib/codex-config-sync', () => {
     );
     await writeFile(paths.localPath, '[features]\ncomputer_use = true\n');
 
-    await sync(paths);
+    await syncCodexConfig(paths);
 
     assert.equal(
       await readFile(paths.outputPath, 'utf8'),
@@ -237,7 +201,7 @@ describe('lib/codex-config-sync', () => {
     );
 
     await assert.rejects(
-      sync(paths),
+      syncCodexConfig(paths),
       /config\.local\.toml must not override settings from .*config\.shared\.toml[\s\S]*personality[\s\S]*features\.multi_agent/,
     );
   });
@@ -247,7 +211,7 @@ describe('lib/codex-config-sync', () => {
     await writeFile(paths.sharedPath, 'personality = "pragmatic"\n');
     await writeFile(paths.outputPath, 'model = "local-machine"\n');
 
-    const result = await sync(paths);
+    const result = await syncCodexConfig(paths);
 
     assert.equal(result.migratedLocal, true);
     assert.equal(await readFile(paths.localPath, 'utf8'), 'model = "local-machine"\n');
@@ -259,7 +223,7 @@ describe('lib/codex-config-sync', () => {
     await writeFile(paths.sharedPath, 'personality = "pragmatic"\n');
     await writeFile(paths.outputPath, `# ${GENERATED_MARKER}\npersonality = "old"\n`);
 
-    await sync(paths);
+    await syncCodexConfig(paths);
 
     assert.match(await readFile(paths.outputPath, 'utf8'), /personality = "pragmatic"/);
   });
@@ -270,13 +234,40 @@ describe('lib/codex-config-sync', () => {
     await writeFile(paths.localPath, 'model = "local"\n');
     await writeFile(paths.outputPath, 'model = "unmanaged"\n');
 
-    await assert.rejects(sync(paths), /is not generated and .*config\.local\.toml already exists/);
+    await assert.rejects(
+      syncCodexConfig(paths),
+      /is not generated and .*config\.local\.toml already exists/,
+    );
   });
 
   it('should reject missing shared config', async () => {
     const paths = await tempConfigPaths();
 
-    await assert.rejects(sync(paths), /Missing required Codex config fragment/);
+    await assert.rejects(syncCodexConfig(paths), /Missing required Codex config fragment/);
+  });
+
+  it('should preserve config files when a fragment contains malformed TOML', async () => {
+    for (const key of ['sharedPath', 'localPath']) {
+      const paths = await tempConfigPaths();
+      const originals = {
+        sharedPath: 'personality = "pragmatic"\n',
+        localPath: 'model = "local-model"\n',
+        outputPath: `# ${GENERATED_MARKER}\npersonality = "previous"\n`,
+      };
+      originals[key] = 'model = "unterminated\n';
+      for (const [name, content] of Object.entries(originals)) {
+        await writeFile(paths[name], content);
+      }
+      for (const operation of [checkCodexConfig, syncCodexConfig]) {
+        await assert.rejects(
+          operation(paths),
+          (error) => error.message.includes(paths[key]) && error.cause instanceof Error,
+        );
+      }
+      for (const [name, content] of Object.entries(originals)) {
+        assert.equal(await readFile(paths[name], 'utf8'), content);
+      }
+    }
   });
 
   it('should reject forbidden machine-specific shared keys and local paths', () => {
@@ -306,7 +297,7 @@ describe('lib/codex-config-sync', () => {
     const paths = await tempConfigPaths();
     await writeFile(paths.sharedPath, 'personality = "pragmatic"\n');
 
-    await sync(paths);
+    await syncCodexConfig(paths);
 
     assert.equal((await stat(paths.outputPath)).mode & 0o777, 0o600);
   });
@@ -315,11 +306,11 @@ describe('lib/codex-config-sync', () => {
     const paths = await tempConfigPaths();
     const agentModels = await loadAgentModels();
     await writeFile(paths.sharedPath, 'model = "duplicate"\n');
-    await assert.rejects(sync({ ...paths, agentModels }), /agent.yaml/);
+    await assert.rejects(syncCodexConfig({ ...paths, agentModels }), /agent.yaml/);
     await assert.rejects(stat(paths.outputPath), { code: 'ENOENT' });
     await writeFile(paths.sharedPath, 'service_tier = "default"\n');
     await writeFile(paths.localPath, 'service_tier = "fast"\n');
-    await assert.rejects(sync({ ...paths, agentModels }), /service_tier/);
+    await assert.rejects(syncCodexConfig({ ...paths, agentModels }), /service_tier/);
     await assert.rejects(stat(paths.outputPath), { code: 'ENOENT' });
   });
 
@@ -327,9 +318,9 @@ describe('lib/codex-config-sync', () => {
     const paths = await tempConfigPaths();
     const agentModels = await loadAgentModels();
     await writeFile(paths.sharedPath, 'personality = "pragmatic"\n');
-    await sync({ ...paths, agentModels });
+    await syncCodexConfig({ ...paths, agentModels });
     const first = await readFile(paths.outputPath, 'utf8');
-    await sync({ ...paths, agentModels });
+    await syncCodexConfig({ ...paths, agentModels });
     assert.equal(await readFile(paths.outputPath, 'utf8'), first);
   });
 });

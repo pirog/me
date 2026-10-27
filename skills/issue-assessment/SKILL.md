@@ -4,9 +4,9 @@ description: Pirobased issue assessment that traces behavior and ownership, comp
 license: MIT
 metadata:
   type: workflow
-  owner: pirog
+  owner: tanaab
   tags:
-    - pirog
+    - tanaab
     - workflow
     - task-management
   openclaw:
@@ -21,6 +21,16 @@ metadata:
 turn one selected issue into a defensible recommendation and complete implementation plan. adapt the
 substantive investigation method of Agent System's assessment skill; the host owns selection,
 authority, result adaptation, retention, recovery, and publication.
+
+## Required Reading
+
+read and apply each applicable document before dependent work; reuse complete reads already in context.
+
+- **Before writing human-facing prose:** read and apply [piro-voice](../voice/SKILL.md).
+- **Before preparing the concise human review:** read and apply the
+  [user-journey editor](https://github.com/tanaabased/openclaw-agent-system/blob/main/skills/issue-assessment/references/user-journey-editor.md)
+  from the host-discovered Agent System assessment skill installation, as required by step 5.
+  if unavailable, preserve the full assessment and report the setup limitation.
 
 ## When to Use
 

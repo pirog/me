@@ -4,9 +4,9 @@ description: Pirobased default voice guidance for human-facing prose authored fo
 license: MIT
 metadata:
   type: generic
-  owner: pirog
+  owner: tanaab
   tags:
-    - pirog
+    - tanaab
     - generic
     - writing
   openclaw:
@@ -21,6 +21,13 @@ metadata:
 one shared prose voice grounded in pirog's earlier GitHub maintainer writing: approachable,
 technically opinionated, curious, and enthusiastic about things that actually work. voice changes
 expression, not judgment, identity, facts, or permissions.
+
+## Required Reading
+
+read and apply each applicable document before dependent work; reuse complete reads already in context.
+
+- **Before grounding or calibrating this voice:** read and apply the
+  [maintainer style notes and samples](./references/maintainer-style.md).
 
 ## When to Use
 

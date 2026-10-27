@@ -1,11 +1,9 @@
-# Tanaab Example
+# Tanaab example
 
-This example verifies repeatable Tanaab repository materialization, safe refresh behavior, and
-manifest-driven Codex plugin link reconciliation. Local Git URL rewrites keep repository lifecycle
-coverage deterministic while the workflow still runs the real `boot.sh` machine-seeding path.
+check repository cloning, safe refresh, and Codex plugin-link updates through the real `boot.sh`
+flow. local Git URL rewrites keep repository operations deterministic.
 
-This scenario is intended to run in CI by default. Do not run it locally unless the task explicitly
-calls for a local Leia run.
+run in CI; local Leia execution requires explicit authorization.
 
 ## Setup
 
