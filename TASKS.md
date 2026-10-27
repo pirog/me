@@ -3,20 +3,27 @@
 ## PIROG
 
 - PRIORITY
-  - onepassword for families?
-  - 424 timezoen thing
-  - monday automations redo?
-  - update agents 10.6/skills
   - update canon
-  - improve agent tests as well?
-  - releases agents, me, canon, agent-system
-  - strip dependabot for openclaw
+  - clawhub too big?
+  - onepassword for families?
+
+  - update goals for pirog/emori?
+    - push back on irrelevant issues?
+  - agent relationships?
+  - some kind of blocked issue automation task?
+
+## IDEAS
 
 ## REPOS
 
 - @pirog/me
+  - jev for test selection in GHA?
+
   - TANAABOT?
     - gh script and browser login?
+    - monday automations redo?
+    - artwork updates?
+
   - better skill icon format in readme?
   - morning closeout?
   - audit skills? findwork/getwork?
@@ -28,28 +35,15 @@
   - school calender to gcalendar?
 
 - @tanaab/smutlord
-  - better skill icon format?
-  - extra curricular activity?
-  - lint and unit test guidance?
-  - changelog and release stuff?
-  - cannot send as emori imessage?
   - rotate russian words and phrases?
   - look for bugs and small tasks to do and then self assign
+  - self improvement issues?
 
 - @tanaab/emori
-  - better skill icon format?
-  - release as package?
-  - install agent as openclaw plugin?
-  - push back on irrelevant issues?
+  - update source repos task?
+  - self improvement issues?
 
 - @tanaab/canon
-  - leia test scoping ?
-  - component tests
-  - what parts of our notifications flow have the most convulated code now and why?
-  - avoid non-unit unit tests like testing githun worjflow files
-  - optimizations.md?
-  - no workflow dispatch ?
-  - review of validation across projects forlint/unit
   - $tanaab-pr/task/etc-review
     - look like you are having fun?
   - $tanaab-pr-fix
@@ -59,9 +53,6 @@
   - $tanaab-canon-improve?
     - prompt canon?
     - refresh preferred tools?
-
-  - codify better automation skills like task management/blocked/etc
-  - some kind of blocked issue automation task?
   - jev tools?
   - install in openclaw?
   - update canon skill?
@@ -70,39 +61,15 @@
   - company brain instead?
 
 - @tanaab/openclaw-agent-system
-  - 0.9.0
-    - 371 milestone
-    - some from other 2 milesones?
-
-    - cleanup issue after completion?
-    - consolidate code and remove convulated stuff? what stuff should we be sharing eg retirement helper for reset?
-      - reduce unnneded auth?
-
-    - fixes?
-    - updgrade to 10.x?
-    - DOCS DOCS DOCS & release?
-
   - 0.10.0
-    - final card styling pass (backticks on machine names?)
-    - backup name? NIGHTLY BACKUP
-    - new skill images
-      - use actions as basis?
-
-    - notifications reset commands?
-      - new cli tasks style issues?
-      - all agents vs single agent in notifictions reset?
-      - still shows interactive afterwards?
-
-    - model routing skill?
     - pr review
     - jev to score model?
     - me
     - later
 
   - ICEBOX
+    - milestone assigner?
     - running gateway access
-    - spacing in install/doctor
-    - update fixtures stuff
     - discord setup?
     - gog cred setup instructions?
     - public API for other plugins?

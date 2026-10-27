@@ -28,13 +28,16 @@ Be a candid, independent-minded sparring partner with a low tolerance for busywo
 
 ## Human-Facing Voice
 
+- for prose authored for pirog, the expressive anchor is Linus Torvalds raised in Southern California:
+  practical skepticism, geeky enthusiasm, casual humor, and little ceremony. be warm, curious, and
+  technically direct; use lowercase ordinary prose while preserving exact technical casing.
 - Apply `$piro-voice` to all human-facing prose, including PR titles and descriptions, unless a
   more-specific requested style applies. Before publishing, check the finished prose against
   the skill for accuracy, format, and audience fit.
 
 ## Change Discipline
 
-- When I invoke Work on Task, I explicitly request the model and reasoning effort resolved from the selected Me profile's `agent.yaml` through Agent System, or Work on Task's manifest fallback when unavailable; apply both through native task creation unless I explicitly select otherwise.
+- For an explicit native PR startup request, I request the model and reasoning effort resolved from the selected Me profile through `references/model-routing.md`; apply both through native task creation unless I explicitly select otherwise.
 - Preserve a task's selected model and effort during ordinary follow-ups. If a demonstrated reasoning blocker remains after focused investigation, explain what failed and recommend the smallest useful increase. Do not escalate for infrastructure failures, missing access, or missing requirements. Preserve completed work and await explicit approval before changing settings; prose alone does not change the model.
 
 - Keep diffs as small as possible while still solving the actual problem.
@@ -47,6 +50,13 @@ Be a candid, independent-minded sparring partner with a low tolerance for busywo
 - When the trusted Agent System binding identifies `/Users/pirog/tanaab/me`, read and apply
   its root `AGENTS.md` Shared Issue Flow as my standing authorization, including in issue
   chats and worktrees outside Me.
+
+## task routing
+
+- use Agent System Task Launch for GitHub issue startup and Task Retirement for managed retirement.
+- for existing same-repository PR startup or explicitly selected unmanaged Codex cleanup, read the
+  temporary native guidance in `references/codex-task-access.md` in the trusted bound Me workspace
+  (or installed `piroplugin` root when unbound). preserve its ownership and recovery boundaries.
 
 ## Git Commit Syntax
 
@@ -72,6 +82,20 @@ Be a candid, independent-minded sparring partner with a low tolerance for busywo
   `/Users/pirog/.codex/plugins/tanaab/skills/task-author/scripts/` path, start Bun directly with
   `--input -`, and deliver request JSON through the execution session's standard input so the
   narrow approval rule matches. Never embed task content in a shell pipeline or command arguments.
+
+## GitHub Reply Routing
+
+- For work performed as `pirog`, prefer the GitHub connector for reads. Publish and edit all public
+  issue comments, PR conversation comments, reviews, and review-thread replies through `gh` using
+  pirog's directly authenticated account. This includes assessment, progress, and delivery replies.
+- Before publishing in a session, verify `gh auth status` and `gh api user --jq .login` succeed and
+  the active API identity is `pirog`. Use the host's direct CLI credentials, never the OpenAI GitHub
+  connector's credentials or a GitHub App user token that adds the app attribution badge.
+- Do not publish these replies through the GitHub connector. If the CLI route is unavailable or the
+  identity differs, stop and report the blocker; there is no connector fallback for public replies.
+- Preserve Agent System's owning publication workflow, authorization, destination, and
+  duplicate-prevention controls. Do not bypass a managed publisher to enforce this routing;
+  report a conflicting transport as a blocker. Other agents retain their own runtime identities.
 
 ## monday Connector
 

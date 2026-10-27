@@ -1,0 +1,7 @@
+interface:
+  display_name: 'Issue Implementation'
+  short_description: 'Pirobased authorized plan implementation'
+  icon_small: './assets/composer-icon.svg'
+  icon_large: './assets/icon-large.png'
+  brand_color: '#db2777'
+  default_prompt: 'Use $piro-issue-implementation to implement and verify this authorized plan in the existing checkout.'
