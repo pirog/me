@@ -1,9 +1,8 @@
-# Inputs Example
+# inputs example
 
-This example keeps lightweight, non-mutating coverage on the public `boot.sh` input surface. It
-validates help text, displayed defaults, input validation, and option/environment precedence without
-running the machine-seeding path. Mutating coverage lives in the defaults, payload, and tanaab
-examples.
+check help, defaults, validation, secret masking, and option/environment precedence without
+seeding a machine. the [defaults](../defaults/README.md), [payload](../payload/README.md), and
+[Tanaab](../tanaab/README.md) examples cover the mutating paths.
 
 ## Setup
 

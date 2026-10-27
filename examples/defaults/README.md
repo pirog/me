@@ -1,13 +1,10 @@
-# Defaults Example
+# defaults example
 
-This example runs the real `boot.sh` machine-seeding flow once with default product behavior, then
-verifies the resulting GitHub-hosted macOS runner state. The workflow provides the hidden payload
-directory, required 1Password token, a safe test SSH key, and force mode so the test can prove
-replacement of a conflicting key; Tanaab repository selection and debug behavior stay on their
-empty defaults.
+run `boot.sh` once, then inspect the resulting macOS runner. CI supplies the payload directory,
+1Password token, safe test SSH key, and force mode to exercise conflicting-key replacement.
+Tanaab repository selection stays empty and debug stays off.
 
-This scenario is intended to run in CI by default. Do not run it locally unless the task explicitly
-calls for a local Leia run.
+run in CI; local Leia execution requires explicit authorization.
 
 ## Setup
 
