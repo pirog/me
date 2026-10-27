@@ -3,17 +3,22 @@
 ## PIROG
 
 - PRIORITY
-  - --debug flag for cleanup gha command?
   - update canon
+  - clawhub too big?
   - onepassword for families?
 
-## IDEAS
+  - update goals for pirog/emori?
+    - push back on irrelevant issues?
+  - agent relationships?
+  - some kind of blocked issue automation task?
 
-- jev for test selection in GHA?
+## IDEAS
 
 ## REPOS
 
 - @pirog/me
+  - jev for test selection in GHA?
+
   - TANAABOT?
     - gh script and browser login?
     - monday automations redo?
@@ -39,18 +44,6 @@
   - self improvement issues?
 
 - @tanaab/canon
-  - agent relationships?
-  - documentation voice?
-  - canon support more than one owner eg pirog?
-  - update goals for pirog/emori?
-    - push back on irrelevant issues?
-  - leia test scoping ?
-  - component tests
-  - what parts of our notifications flow have the most convulated code now and why?
-  - avoid non-unit unit tests like testing githun worjflow files
-  - optimizations.md?
-  - no workflow dispatch ?
-  - review of validation across projects forlint/unit
   - $tanaab-pr/task/etc-review
     - look like you are having fun?
   - $tanaab-pr-fix
@@ -60,9 +53,6 @@
   - $tanaab-canon-improve?
     - prompt canon?
     - refresh preferred tools?
-
-  - codify better automation skills like task management/blocked/etc
-  - some kind of blocked issue automation task?
   - jev tools?
   - install in openclaw?
   - update canon skill?
