@@ -30,7 +30,7 @@ Use it as an operator profile for a person at a Mac, a Codex profile, or an Open
 | [Configuration Files](./INVENTORY.md#configuration-files) | Identity, setup, goals, automations, and model profiles.                                       |
 | [Dependencies](./INVENTORY.md#dependencies)               | Base applications and runtimes, plus optional OpenClaw tooling.                                |
 | [Dotfiles](./INVENTORY.md#dotfiles)                       | Shell, editor, terminal, Git, SSH, and Codex configuration.                                    |
-| [Skills](./INVENTORY.md#skills)                           | task startup, assessment, implementation, replies, cleanup, skill authoring, and voice.        |
+| [Skills](./INVENTORY.md#skills)                           | assessment, implementation, replies, skill authoring, and voice.                               |
 
 For the full inventory, see [Inventory](./INVENTORY.md).
 
@@ -55,6 +55,8 @@ For skills-only installation:
 ```sh
 npx --yes --package=@tanaab/codex-tools@1 -- codex-tools install npm:@pirog/me@latest --marketplace pirostore
 ```
+
+`piro-skill-author` also requires the Canon (`tanaab`) plugin for shared authoring and validation.
 
 ## After Pirobooting
 
@@ -82,11 +84,9 @@ Complete the following manual setup tasks for your operator profile, Codex profi
   discovers the manifest; moving it into `.agent-system` does not require rebinding.
 - Run `$agent-system-doctor` to check the profile. If it reports drift, run
   `$agent-system-install` to apply the declared setup steps, then run Doctor again.
-- The Codex-only issue-assignment policy prepares self-assignment by `pirog` in `plan` mode.
-  Version 2 notification execution is not implemented yet: Doctor reports
-  `github-notification-runtime-unsupported`, and Install stops before applying setup. Keep this
-  profile inactive until the Agent System adapter is available; native Codex GitHub authorization
-  supplies access.
+- Agent System owns issue intake and execution under the
+  [profile's issue-assignment policy](./.agent-system/agent.yaml). native Codex GitHub authorization
+  supplies access; Task Launch and Task Retirement own managed issue startup and cleanup.
 - Scheduled work is declared in [`.agent-system/agent.yaml`](./.agent-system/agent.yaml) and
   reconciled through Agent System Install. The 15-minute smoke test stays disabled outside an
   explicitly authorized validation window. Doctor checks saved settings; a real scheduled reply

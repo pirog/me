@@ -57,18 +57,14 @@ enable them. The catalog owns the configured sources and versions.
 [`piroplugin`](./.codex-plugin/plugin.json) ships these skills for Codex. Invoke them by name;
 each has a defined job, not a general license to meddle. Follow the links for workflows and approval boundaries.
 
-For skills-only installation:
-
-```sh
-npx --yes --package=@tanaab/codex-tools@1 -- codex-tools install npm:@pirog/me@latest --marketplace pirostore
-```
+for skills-only installation, see the [Quickstart](./README.md#quickstart).
 
 | Skill                                                         | Owns                                                                                    |
 | ------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
 | [`piro-feedback-reply`](./skills/feedback-reply/)             | concise public candidates using the shared voice, supplied evidence, and event context. |
 | [`piro-issue-assessment`](./skills/issue-assessment/)         | issue investigation and plans that compare local fixes with justified consolidation.    |
 | [`piro-issue-implementation`](./skills/issue-implementation/) | authorized plans implemented with affected callers and existing/new contracts verified. |
-| [`piro-skill-author`](./skills/skill-author/)                 | Skill authoring and optimization.                                                       |
+| [`piro-skill-author`](./skills/skill-author/)                 | piro customization of Canon's shared authoring and validation.                          |
 | [`piro-voice`](./skills/voice/)                               | approachable maintainer prose with practical skepticism, warmth, and geeky enthusiasm.  |
 
 Agent System Task Launch owns issue startup; Task Retirement owns managed retirement. until their
