@@ -1,5 +1,7 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+## v1.0.0 - [October 27, 2026](https://github.com/pirog/me/releases/tag/v1.0.0)
+
 ### new features
 
 - added custom assessment, implementation, and reply skills selected by the Agent System profile. [#125](https://github.com/pirog/me/issues/125)

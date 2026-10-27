@@ -1,6 +1,6 @@
 {
   "name": "piroplugin",
-  "version": "1.0.0-beta.14",
+  "version": "1.0.0",
   "description": "pirog, codified for Codex: assessment, implementation, replies, skill authoring, and shared voice.",
   "author": {
     "name": "@pirog",
