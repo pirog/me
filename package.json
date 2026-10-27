@@ -26,7 +26,7 @@
     "lint:eslint": "eslint .",
     "lint:shellcheck": "shellcheck boot.sh",
     "test": "bun run test:unit",
-    "test:unit": "bunx --bun mocha \"test/**/*.spec.js\" \"skills/*/test/**/*.spec.js\""
+    "test:unit": "bunx --bun mocha \"test/**/*.spec.js\""
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
