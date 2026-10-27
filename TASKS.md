@@ -42,6 +42,7 @@
   - self improvement issues?
 
 - @tanaab/canon
+  - agent relationships?
   - documentation voice?
   - canon support more than one owner eg pirog?
   - update goals for pirog/emori?
