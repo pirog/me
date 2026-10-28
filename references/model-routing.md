@@ -1,7 +1,7 @@
 # Codex Model Routing
 
 Use `$agent-system-model-routing` when its skill and runtime capability are available. Agent System
-owns assessment guidance and profile resolution; Work on Task gathers evidence and applies the
+owns assessment guidance and profile resolution; native PR startup gathers evidence and applies the
 returned selection through native task creation. Hooks advertise the capability without rerouting
 sessions. Other launch skills should reuse this reference instead of maintaining their own router.
 

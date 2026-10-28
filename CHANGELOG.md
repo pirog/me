@@ -1,6 +1,29 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
-- Updated the medium `agent.yaml` profile to `gpt-6.1-sol` with high reasoning effort. [#110](https://github.com/pirog/me/issues/110)
+## v1.0.0 - [October 27, 2026](https://github.com/pirog/me/releases/tag/v1.0.0)
+
+### new features
+
+- added custom assessment, implementation, and reply skills selected by the Agent System profile. [#125](https://github.com/pirog/me/issues/125)
+- enabled Codex issue assignments and feedback under Agent System's v3 workflow policy. [#126](https://github.com/pirog/me/pull/126) [#128](https://github.com/pirog/me/pull/128)
+
+### bug fixes
+
+- excluded Agent System runtime state from npm packages and managed plugin caches. [ef7bc5b](https://github.com/pirog/me/commit/ef7bc5bc7632c4f8ae8cc066c6b0d767c3f679f8)
+
+### improvements
+
+- delegated `piro-skill-author` tooling to Canon while preserving piro names, prompts, and artwork.
+- removed `piro-work-on-task` and `piro-clean-up-task`, retaining temporary native PR startup and archival guidance. [#123](https://github.com/pirog/me/issues/123)
+- removed retired planning skills and their actor and repository registries. [#114](https://github.com/pirog/me/issues/114)
+- updated `piro-voice` using reviewed maintainer writing and shared it across the stage skills. [#142](https://github.com/pirog/me/issues/142) [#125](https://github.com/pirog/me/issues/125)
+- updated the medium `agent.yaml` profile to `gpt-6.1-sol` with high reasoning effort. [#110](https://github.com/pirog/me/issues/110)
+
+### developer notes
+
+- aligned Node.js and Bun versions across local development, plugin packaging, and CI. [#145](https://github.com/pirog/me/issues/145)
+- consolidated setup repairs under `scripts/setup.js`, retiring the `aisync` command. [#114](https://github.com/pirog/me/issues/114)
+- excluded `openclaw` from Dependabot updates so runtime upgrades remain explicit. [#132](https://github.com/pirog/me/issues/132)
 
 ## v1.0.0-beta.14 - [September 29, 2026](https://github.com/pirog/me/releases/tag/v1.0.0-beta.14)
 

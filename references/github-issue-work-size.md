@@ -70,15 +70,3 @@ relevant observed values or sanitized error. Do not convert an exclusion into ze
   none has a verified Work size, report a verified subtotal of `0` plus the exclusions; do not state
   an unqualified completed capacity of `0`.
 - Keep Work size distinct from elapsed time, completed effort, productivity, and composite scores.
-
-## Static Scenarios
-
-- Connector-native `Work size = 5` verifies `5` without an endpoint call.
-- A connector issue with no exposed native fields followed by endpoint `Work size = 5` verifies `5`.
-- No matching endpoint field, or only an unset field, is missing.
-- Endpoint `Work size = 4` is unsupported.
-- Endpoint observations `5` and `8` are conflicting; two observations of `5` verify `5`.
-- A personal-repository `HTTP 404` is endpoint unavailable and does not trigger GraphQL, body
-  fallback, token changes, or connector reconfiguration.
-- Two deduplicated archived issues with verified size `5` produce a verified completed subtotal of
-  `10`.

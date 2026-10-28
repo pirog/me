@@ -27,6 +27,9 @@ describe('package.json plugin payload', () => {
     await mkdir(path.join(source, '.agent-system'), { recursive: true });
     await writeFile(path.join(source, 'package.json'), JSON.stringify(packageJson));
     await copyFile(path.join(repoRoot, '.gitignore'), path.join(source, '.gitignore'));
+    for (const relative of ['.node-version', '.bun-version']) {
+      await copyFile(path.join(repoRoot, relative), path.join(source, relative));
+    }
     for (const relative of configuration) {
       await copyFile(path.join(repoRoot, relative), path.join(source, relative));
     }
@@ -45,18 +48,24 @@ describe('package.json plugin payload', () => {
     await rm(temporary, { recursive: true, force: true });
   });
 
-  it('should exclude runtime state from npm packages while retaining the shared configuration', async () => {
+  it('should exclude runtime state from npm packages while retaining the shared configuration', async function () {
+    this.timeout(10_000);
     const result = await run(
       'npm',
       ['pack', '--dry-run', '--ignore-scripts', '--json', '--cache', path.join(temporary, 'npm')],
       { cwd: source },
     );
-    const [packed] = JSON.parse(result.stdout);
+    const payload = JSON.parse(result.stdout);
+    const packages = Array.isArray(payload) ? payload : Object.values(payload);
+    assert.equal(packages.length, 1);
+    const [packed] = packages;
+    assert.equal(packed.name, packageJson.name);
+    const packedPaths = packed.files.map((file) => file.path);
+    assert.ok(packedPaths.includes('.node-version'));
+    assert.ok(packedPaths.includes('.bun-version'));
+    assert.ok(!packedPaths.includes('.tool-versions'));
     assert.deepEqual(
-      packed.files
-        .map((file) => file.path)
-        .filter((file) => file.startsWith('.agent-system/'))
-        .sort(),
+      packedPaths.filter((file) => file.startsWith('.agent-system/')).sort(),
       configuration,
     );
   });

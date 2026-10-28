@@ -40,7 +40,13 @@ describe('package.json Codex Tools integration', () => {
       await writeFile(path.join(target, 'automations', 'daily-work-plan.md'), 'retired prompt');
       await mkdir(path.join(target, 'skills', 'automation'), { recursive: true });
       await writeFile(path.join(target, 'skills', 'automation', 'SKILL.md'), 'retired sync skill');
-      for (const skill of ['find-work', 'plan-work', 'morning-closeout']) {
+      for (const skill of [
+        'find-work',
+        'plan-work',
+        'morning-closeout',
+        'work-on-task',
+        'clean-up-task',
+      ]) {
         await mkdir(path.join(target, 'skills', skill), { recursive: true });
         await writeFile(path.join(target, 'skills', skill, 'SKILL.md'), 'retired planning skill');
       }
@@ -77,6 +83,8 @@ describe('package.json Codex Tools integration', () => {
         'skills/find-work',
         'skills/plan-work',
         'skills/morning-closeout',
+        'skills/work-on-task',
+        'skills/clean-up-task',
       ]) {
         await assert.rejects(lstat(path.join(target, retired)), { code: 'ENOENT' });
       }

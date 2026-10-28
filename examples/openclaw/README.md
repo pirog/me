@@ -1,7 +1,8 @@
-# OpenClaw Example
+# OpenClaw example
 
-Install the checked-out pirog profile through Agent System in isolated OpenClaw state.
-This checks identity and repeat-install convergence without credentials, setup steps, or a Gateway.
+install the checked-out pirog profile in isolated OpenClaw state. check identity and repeat-install
+convergence without credentials, setup steps, or a Gateway. this fixture does not establish a
+working OpenClaw profile for daily use.
 
 ## Setup
 

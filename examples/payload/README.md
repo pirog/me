@@ -1,11 +1,9 @@
-# Payload Example
+# payload example
 
-This example verifies the automatic `me` payload fallback used when the prepared wrapper is not
-running beside a source checkout and no explicit payload directory is set. It covers the initial
-SSH clone, a safe fast-forward of a clean canonical checkout, and preservation of local work.
+run the standalone wrapper without an explicit payload directory. check the initial SSH clone,
+a safe fast-forward of a clean canonical checkout, and preservation of local work.
 
-This scenario is intended to run in CI by default. Do not run it locally unless the task explicitly
-calls for a local Leia run.
+run in CI; local Leia execution requires explicit authorization.
 
 ## Setup
 

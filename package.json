@@ -1,7 +1,7 @@
 {
   "name": "@pirog/me",
   "description": "pirog, codified: dotfiles, skills, Codex plugins, workflows, and automations.",
-  "version": "1.0.0-beta.14",
+  "version": "1.0.0",
   "author": "Mike Pirog @pirog",
   "license": "MIT",
   "repository": {
@@ -10,7 +10,7 @@
   },
   "bugs": "https://github.com/pirog/me/issues",
   "homepage": "https://github.com/pirog/me",
-  "packageManager": "bun@1.4.3",
+  "packageManager": "bun@1.4.4",
   "engines": {
     "bun": ">=1.4.2 <1.5.0"
   },
@@ -26,7 +26,7 @@
     "lint:eslint": "eslint .",
     "lint:shellcheck": "shellcheck boot.sh",
     "test": "bun run test:unit",
-    "test:unit": "bunx --bun mocha \"test/**/*.spec.js\" \"skills/*/test/**/*.spec.js\""
+    "test:unit": "bunx --bun mocha \"test/**/*.spec.js\""
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -36,7 +36,7 @@
     "eslint-config-prettier": "^10.1.1",
     "globals": "^17.12.0",
     "mocha": "^12.0.2",
-    "openclaw": "2026.9.8",
+    "openclaw": "2026.10.6",
     "prettier": "^3.9.8",
     "shellcheck": "^4.1.0"
   },
@@ -44,6 +44,7 @@
     "marketplace": "pirostore",
     "managedPaths": [
       ".agent-system/agent.yaml",
+      ".agent-system/guidance",
       ".agent-system/setup-agent.yaml",
       ".agent-system/setup-host.yaml",
       ".codex-plugin",
@@ -72,12 +73,13 @@
   },
   "files": [
     ".agent-system/agent.yaml",
+    ".agent-system/guidance/",
     ".agent-system/setup-agent.yaml",
     ".agent-system/setup-host.yaml",
     ".codex-plugin/plugin.json",
     ".mcp.json",
     ".bun-version",
-    ".tool-versions",
+    ".node-version",
     "AGENTS.md",
     "CHANGELOG.md",
     "GOALS.md",
