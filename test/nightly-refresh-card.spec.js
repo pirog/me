@@ -4,7 +4,7 @@ import nightlyRefreshCard from '../utils/nightly-refresh-card.js';
 
 function state() {
   return {
-    host: 'pilot-mac',
+    instanceName: 'pilot-mac',
     date: '2026-10-28',
     attempts: 1,
     trigger: 'manual pilot',
@@ -36,6 +36,7 @@ describe('utils/nightly-refresh-card', () => {
     const report = nightlyRefreshCard(state());
     assert.ok(report.split('\n').every((line) => line.startsWith('>')));
     assert.match(report, /## ✅ NIGHTLY REFRESH/);
+    assert.match(report, /\*\*instance:\*\* `pilot-mac`/);
     assert.match(report, /\| me \| updated \| `aaaaaaaa` → `bbbbbbbb` \| aligned \|/);
     assert.match(report, /\*\*doctor · before:\*\* drift/);
     assert.match(report, /\*\*fresh context:\*\* fresh/);
@@ -58,11 +59,11 @@ describe('utils/nightly-refresh-card', () => {
 
   it('should keep untrusted labels inside the table and quote block', () => {
     const input = state();
-    input.host = 'mac\n# injected <img>';
+    input.instanceName = '`mac`\n# injected <img>';
     input.repositories[0].name = 'repo|fake';
     const report = nightlyRefreshCard(input);
     assert.match(report, /repo&#124;fake/);
-    assert.doesNotMatch(report, /<img>/);
+    assert.match(report, /`` `mac` # injected <img> ``/);
     assert.ok(report.split('\n').every((line) => line.startsWith('>')));
   });
 });

@@ -28,15 +28,24 @@ file exists. never silently accept a generated automation name in place of the r
   Agent System Install only after these gates pass. saved settings and manual execution do not prove
   an overnight run; verify its actual time and delivered report afterward.
 
+merging this disabled pilot does not activate nightly runs. Install may reconcile its retained chat
+and paused schedule, but it must preserve `enabled: false`. after the requirements above pass,
+enable the declaration in Me and run Agent System Install on each bound Codex installation that
+should participate. Install owns chat reconciliation, schedule preparation, native save,
+acknowledgment, and saved-state verification; there is no separate hand-created automation or
+pre-activation step. verify Doctor and then an actual 02:00 occurrence and morning card on each host.
+
 ## each occurrence
 
 1. require an active trusted Me binding. read the instance identity through the supplied
-   `instanceRuntime inspect` route; do not rotate it or infer it from a machine name. use the native
+   `instanceRuntime inspect` route. pass its `instanceId` and readable `displayName` as `instanceId`
+   and `instanceName`; do not substitute the OS hostname, rotate the ID, or guess either value. the
+   card shows the readable instance name in inline code; the UUID only keys retained progress. use the native
    scheduled occurrence's date in `America/New_York`, preserving it across retries. collect fresh
    native activity for all affected checkouts and shared plugins, excluding this maintenance turn.
    if activity is unavailable or exclusivity is unproved, defer with a warning card.
 2. invoke `bun scripts/nightly-refresh-task.js` from the bound source workspace, with JSON on stdin.
-   use `action: sources`, `workspace`, `instanceId`, `date` (`YYYY-MM-DD`), `trigger: scheduled`, and
+   use `action: sources`, `workspace`, `instanceId`, `instanceName`, `date` (`YYYY-MM-DD`), `trigger: scheduled`, and
    `activity: { observedAt: <epoch milliseconds>, activeThreads: [], exclusive: true }` only after
    the exclusive-access requirement is satisfied. for a supervised pilot use `trigger: manual`.
    this observation is a caller responsibility, not proof manufactured by the helper. never turn

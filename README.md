@@ -127,7 +127,8 @@ Doctor checks saved state; a successful scheduled run is separate evidence.
 `nightly-refresh` is a disabled pilot for keeping Agent System, Canon, and Me current on each
 activated Codex installation bound to this profile. it targets clean `main` checkouts at 02:00
 `America/New_York` and produces one quoted morning report with commits, cache status, hook trust,
-and setup results. host names and installation IDs are discovered locally.
+and setup results. the card uses the readable Agent System instance name in inline code;
+installation IDs keep each instance's progress separate.
 
 the source helper preserves interrupted progress and bounds transient retries. shared-cache
 exclusion, native lifecycle deadlines, refreshed context, and the requested automation display name

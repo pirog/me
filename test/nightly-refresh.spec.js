@@ -64,11 +64,12 @@ describe('lib/nightly-refresh', () => {
         };
       }
     };
-    options = { home, now: () => now, run, hostname: 'fixture-host' };
+    options = { home, now: () => now, run };
     request = {
       action: 'sources',
       workspace,
       instanceId: 'fixture-one',
+      instanceName: 'fixture-mac',
       date: '2026-10-28',
       activity: { observedAt: now, activeThreads: [], exclusive: true },
     };
@@ -98,6 +99,22 @@ describe('lib/nightly-refresh', () => {
       assert.equal(await readFile(path.join(repo.root, 'tracked'), 'utf8'), 'before');
     }
     assert.equal(await readFile(path.join(workspace, 'scratch'), 'utf8'), 'keep me');
+  });
+
+  it('should retain source progress under a renamed instance and require its readable name', async () => {
+    await assert.rejects(
+      nightlyRefresh({ ...request, instanceName: undefined }, options),
+      /instanceName/,
+    );
+    const first = await nightlyRefresh(request, options);
+    const renamed = await nightlyRefresh(
+      { ...request, action: 'report', instanceName: 'renamed-mac' },
+      options,
+    );
+    assert.equal(renamed.journal, first.journal);
+    assert.deepEqual(renamed.state.repositories, first.state.repositories);
+    assert.match(renamed.report, /\*\*instance:\*\* `renamed-mac`/);
+    assert.doesNotMatch(renamed.report, /fixture-one|fixture-mac/);
   });
 
   it('should defer a task branch and unavailable exclusive-access evidence', async () => {

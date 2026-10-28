@@ -22,6 +22,15 @@ function commit(value) {
   return /^[a-f0-9]{40,64}$/.test(value ?? '') ? `\`${value.slice(0, 8)}\`` : '—';
 }
 
+/** Match Agent System's literal-value presentation, including embedded backticks. */
+function literal(value) {
+  const label = String(value).replace(/\s+/g, ' ').trim();
+  const width = (label.match(/`+/g) ?? []).reduce((size, run) => Math.max(size, run.length + 1), 1);
+  const delimiter = '`'.repeat(width);
+  const padding = label.startsWith('`') || label.endsWith('`') ? ' ' : '';
+  return delimiter + padding + label + padding + delimiter;
+}
+
 /** Render recorded observations, never infer live readiness from a source or cache update. */
 export default function nightlyRefreshCard(state) {
   const complete =
@@ -42,7 +51,7 @@ export default function nightlyRefreshCard(state) {
   const lines = [
     `## ${icon} NIGHTLY REFRESH`,
     '',
-    `**${text(state.host)} · ${text(state.date)}** — ${outcome}`,
+    `**instance:** ${literal(state.instanceName)} · ${text(state.date)} — ${outcome}`,
     '',
     '| repository | source | commit | Codex cache |',
     '| :-- | :-- | :-- | :-- |',

@@ -133,7 +133,7 @@ jq -n --slurpfile inspected "$TMPDIR/routing.json" \
   | jq -e --slurpfile inspected "$TMPDIR/routing.json" \
     '.status == "unresolved" and .profile == "default" and .candidate == $inspected[0].profiles.default and .reason == "Insufficient complexity evidence."'
 
-# should require native chat reconciliation for intake while retaining the disabled smoke test
+# should require native chat reconciliation while retaining disabled pilots
 set -o pipefail
 runtime="$(jq -r .cachePath "$TMPDIR/cache.json")/dist/codex/codex-runtime.js"
 cd "$GITHUB_WORKSPACE"
@@ -142,7 +142,15 @@ jq -n --arg workspace "$GITHUB_WORKSPACE" \
   '{projects: {schemaVersion: 2, projects: [{projectId: "me-fixture", projectKind: "local", hostId: "local", path: $workspace}]}, threads: []}' > "$TMPDIR/automation-lookups.json"
 node "$runtime" automations list --plugin-data "$TMPDIR/plugin-data" < "$TMPDIR/automation-lookups.json" \
   | tee "$TMPDIR/automation-plan.json" \
-  | jq -e 'if .status == "requires-native-app-sync" and ([.jobs[] | {id, enabled, declared, applicable, nativeId}] | sort_by(.id)) == [{id: "github-issue-assignment", enabled: true, declared: true, applicable: true, nativeId: null}, {id: "smoke-test", enabled: false, declared: true, applicable: true, nativeId: null}] and .actions == [] and any(.findings[]; .id == "github-issue-assignment" and .code == "automation-thread-sync-required") and .conversations == [{id: "github-issue-assignment", routing: "per-automation", nativeId: null, name: "ISSUE ASSIGNMENTS"}] then true else error("automation plan: \(.)") end'
+  | jq -e '. as $plan | if
+      .status == "requires-native-app-sync" and .actions == [] and
+      any(.jobs[]; .id == "github-issue-assignment" and .enabled and .declared and .applicable and .nativeId == null) and
+      all(["smoke-test", "nightly-refresh"][]; . as $id |
+        any($plan.jobs[]; .id == $id and .enabled == false and .declared and .applicable and .nativeId == null)) and
+      all([{id: "github-issue-assignment", name: "ISSUE ASSIGNMENTS"}, {id: "nightly-refresh", name: "NIGHTLY REFRESH"}][]; . as $thread |
+        any($plan.findings[]; .id == $thread.id and .code == "automation-thread-sync-required") and
+        any($plan.conversations[]; .id == $thread.id and .name == $thread.name and .routing == "per-automation" and .nativeId == null))
+    then true else error("automation plan: \(.)") end'
 
 # should leave native state untouched during repeated automation inspection
 set -o pipefail
