@@ -71,7 +71,7 @@ describe('lib/nightly-refresh', () => {
       instanceId: 'fixture-one',
       instanceName: 'fixture-mac',
       date: '2026-10-28',
-      activity: { observedAt: now, activeThreads: [], exclusive: true },
+      activity: { observedAt: now, activeThreads: [], scheduledConsumersPaused: true },
     };
   });
 
@@ -117,16 +117,31 @@ describe('lib/nightly-refresh', () => {
     assert.doesNotMatch(renamed.report, /fixture-one|fixture-mac/);
   });
 
-  it('should defer a task branch and unavailable exclusive-access evidence', async () => {
+  it('should defer a task branch', async () => {
     git(workspace, 'checkout', '-b', 'task-work');
     assert.equal((await nightlyRefresh(request, options)).state.status, 'deferred');
-    const noGate = {
-      ...request,
-      instanceId: 'fixture-two',
-      activity: { ...request.activity, exclusive: false },
-    };
-    assert.equal((await nightlyRefresh(noGate, options)).state.attempts, 0);
   });
+
+  for (const activity of [
+    { scheduledConsumersPaused: false },
+    { scheduledConsumersPaused: undefined },
+    { activeThreads: ['busy-chat'] },
+    { activeThreads: undefined },
+  ]) {
+    it(`should defer without Git when maintenance activity is unsafe: ${JSON.stringify(activity)}`, async () => {
+      const result = await nightlyRefresh(
+        { ...request, activity: { ...request.activity, ...activity } },
+        {
+          ...options,
+          run: () => {
+            throw new Error('must not run');
+          },
+        },
+      );
+      assert.equal(result.state.status, 'deferred');
+      assert.equal(result.state.attempts, 0);
+    });
+  }
 
   it('should reject stale activity observations before executing Git', async () => {
     now += 31_000;

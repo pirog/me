@@ -12,14 +12,14 @@ file exists. never silently accept a generated automation name in place of the r
 
 ## activation requirements
 
-- prove exclusive access to the source checkouts and shared plugin caches for the maintenance
-  interval. an empty `list_threads` snapshot alone is insufficient: a new task can start afterward.
-  pause only affected scheduled consumers through their owning supported controls, preserve their
-  saved state, and let active turns finish. never interrupt work or pause unrelated schedules.
-  if the host cannot exclude new consumers, retain a supervised-only pilot and report the gap.
-- prove recovery across interrupted and same-version cache refreshes with the old runtime available
-  until new trusted context and saved automation reconciliation succeed. do not prune runtimes or
-  roll back across unverified private-state compatibility.
+- use a bounded idle-maintenance window: pause only affected scheduled consumers through their
+  existing owning controls, retain their exact saved state, and verify the pause. defer while
+  relevant turns are active or activity is unknown. never interrupt work or pause unrelated
+  schedules. this does not exclude a manually started chat; recheck activity before each mutation
+  phase and stop if work appears. no global Codex lock is claimed or required.
+- prove recovery across interrupted and same-version cache refreshes. native version upgrades can
+  remove the old runtime path; retain progress outside the cache and require new trusted context
+  before invoking another runtime. do not roll back across unverified private-state compatibility.
 - test native `/hooks` trust renewal in an isolated profile, including rejection of an expanded
   approval scope, exact-definition readback, and a new trusted `SessionStart` context.
 - require an Agent System version supporting `display-name` and `group`. the declaration uses those
@@ -43,11 +43,12 @@ pre-activation step. verify Doctor and then an actual 02:00 occurrence and morni
    card shows the readable instance name in inline code; the UUID only keys retained progress. use the native
    scheduled occurrence's date in `America/New_York`, preserving it across retries. collect fresh
    native activity for all affected checkouts and shared plugins, excluding this maintenance turn.
-   if activity is unavailable or exclusivity is unproved, defer with a warning card.
+   pause affected scheduled consumers as above, retaining their exact prior state outside the
+   plugin cache. if activity or verified pause evidence is unavailable, defer with a warning card.
 2. invoke `bun scripts/nightly-refresh-task.js` from the bound source workspace, with JSON on stdin.
    use `action: sources`, `workspace`, `instanceId`, `instanceName`, `date` (`YYYY-MM-DD`), `trigger: scheduled`, and
-   `activity: { observedAt: <epoch milliseconds>, activeThreads: [], exclusive: true }` only after
-   the exclusive-access requirement is satisfied. for a supervised pilot use `trigger: manual`.
+   `activity: { observedAt: <epoch milliseconds>, activeThreads: [], scheduledConsumersPaused: true }`
+   only after the idle-maintenance requirement is satisfied. for a supervised pilot use `trigger: manual`.
    this observation is a caller responsibility, not proof manufactured by the helper. never turn
    an unknown activity result into an empty list. the helper selects Me and its setup-owned Canon
    and Agent System source roots; it never stashes, resets, rebases, or changes task branches.
@@ -63,7 +64,7 @@ pre-activation step. verify Doctor and then an actual 02:00 occurrence and morni
    binding, records its actual findings, and bounds each subprocess to the remaining attempt budget.
    native approval still applies. use Me's owning plugin repairs: the build-bearing Agent
    System step delegates dependency installation, build, and provider verification to `bun run sync`.
-   do not run those commands a second time. recheck exclusive access before shared cache writes.
+   do not run those commands a second time. recheck activity and saved pauses before shared cache writes.
    Codex Tools Install selects the source version before cache sync; do not use its manifest-changing
    `refresh` command on a clean `main` checkout. stop after the first failed Install step. the helper
    sends SIGTERM before the deadline so Agent System can cancel detached setup children, then SIGKILL
@@ -82,11 +83,18 @@ pre-activation step. verify Doctor and then an actual 02:00 occurrence and morni
    a CLI subprocess showing context does not update this chat's trusted context. if the current
    chat cannot refresh safely, preserve progress and report a context-refresh hold. never infer the
    next executable from a directory listing or use an old prefix after its runtime disappears.
+   a cold client can resume the same chat with renewed trust, but a loaded owner prevents a second
+   client from resuming it. compaction and `hooks/list` do not renew the loaded chat's hook trust in
+   the tested native client. unattended activation requires a supported owner-release/resume or
+   in-place refresh path; launching another client is not sufficient.
 7. complete Install's owned automation plan/prepare/native mutation/acknowledge sequence using that
    refreshed context. reconcile unknown saves before another write. verify all three plugins are
    installed, enabled, and pass their cache checks, even if a setup step would consider one optional.
    require healthy final setup and aligned saved automations, including intake's runtime reference.
-   preserve `smoke-test` disabled. restore only schedules paused by this run through their owner.
+   preserve `smoke-test` disabled. on success, deferral, failure, or a context-refresh hold, restore
+   only schedules paused by this run through their owner and verify their exact prior enabled/paused
+   state. reconcile uncertain native writes first. if restoration cannot finish, retain the prior
+   states and report the recovery action; never silently leave intake paused.
 8. the `setup` action records Doctor and Install directly. record the remaining actual native
    observations using the helper with `action: record`, the same binding
    and date fields, `check`, `status`, and a short redacted `evidence` string. this stores evidence;
@@ -114,7 +122,8 @@ the journal lives under the current user's `.local/state/piroplugin/nightly-refr
 managed plugin cache, keyed by canonical workspace and installation identity. completed source
 updates survive interruption; the next attempt reconciles actual commits before repeating work.
 the source-command lock is shared by instances using the same workspace. it does not lock Codex
-consumers during native lifecycle operations, which is why the exclusive-access gate is required.
+consumers during native lifecycle operations. fresh activity and verified schedule pauses bound
+the maintenance window but cannot prevent a manually started chat from racing with it.
 
 an abrupt process death leaves a lock for inspection: verify the recorded process and its children
 have exited before removing only that maintenance lock. never remove Agent System's tracking locks.
