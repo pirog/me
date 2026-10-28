@@ -48,6 +48,19 @@ npx --yes --package=@tanaab/codex-tools@1 -- codex-tools install npm:@pirog/me@l
 
 `piro-skill-author` also requires the Canon (`tanaab`) plugin for shared authoring and validation.
 
+## what ships
+
+pirog's `me` profile ships with:
+
+- [Piroboot](./PIROBOOT.md): the workstation bootstrap script.
+- [dependencies](./INVENTORY.md#dependencies): applications and command-line tools.
+- [dotfiles](./INVENTORY.md#dotfiles): Stow-managed user configuration.
+- [plugins](./INVENTORY.md#plugins): the Pirostore catalog and local source links.
+- [skills](./INVENTORY.md#skills): assessment, implementation, replies, authoring, and voice.
+- [automations](./INVENTORY.md#automations): issue assignments, nightly refresh, and validation jobs.
+- [configuration files](./INVENTORY.md#configuration-files): the sources that define the profile.
+- [a cheat sheet](./INVENTORY.md#cheat-sheet): common commands and Codex prompts.
+
 ## after pirobooting
 
 ### operator profile
@@ -121,22 +134,6 @@ for automatic pickup, set up assignment intake once, then assign work through Gi
    any resulting PR.
 
 Doctor checks saved state; a successful scheduled run is separate evidence.
-
-### nightly refresh
-
-`nightly-refresh` is a disabled pilot for keeping Agent System, Canon, and Me current on each
-activated Codex installation bound to this profile. it targets clean `main` checkouts at 02:00
-`America/New_York` and produces one quoted morning report with commits, cache status, hook trust,
-and setup results. the card uses the readable Agent System instance name in inline code;
-installation IDs keep each instance's progress separate.
-
-the helper preserves interrupted progress, bounds transient retries, and runs Doctor → Install →
-Doctor through Agent System with the remaining setup budget. the shared automation declaration owns
-the display name and group. shared-cache exclusion and trusted-context renewal in the existing
-nightly chat still need proof before unattended activation. follow the
-[pilot and recovery instructions](./references/nightly-refresh.md); do not enable the declaration
-until those gates pass. the intended automation is `🔄 NIGHTLY REFRESH`, with a plain
-`NIGHTLY REFRESH` chat beside `ISSUE ASSIGNMENTS` in `AGENT SYSTEM`.
 
 ## development
 
