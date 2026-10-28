@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, mkdir, readFile, realpath, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
@@ -241,6 +241,138 @@ describe('lib/nightly-refresh', () => {
       ),
       /attempt expired/,
     );
+  });
+
+  it('should run the existing setup owner within the remaining budget and retain completed phases', async () => {
+    await nightlyRefresh(request, options);
+    const calls = [];
+    const runtime = {
+      argvPrefix: ['/fixture/node', '/fixture/runtime.js', 'setup'],
+      pluginData: '/fixture/data',
+    };
+    options.run = async (command, args, settings) => {
+      calls.push({ command, args, settings });
+      return {
+        code: 0,
+        stdout: JSON.stringify(
+          args.includes('install')
+            ? {
+                status: 'requires-native-app-sync',
+                workspaceDir: await realpath(workspace),
+                outcomes: [{ code: 'setup-applied', status: 'updated' }],
+              }
+            : {
+                status: 'inspected',
+                workspaceDir: await realpath(workspace),
+                findings: [{ status: calls.length === 1 ? 'drift' : 'healthy' }],
+              },
+        ),
+      };
+    };
+    now += 1000;
+    request.activity.observedAt = now;
+    for (const phase of ['doctor-before', 'install', 'doctor-after']) {
+      await nightlyRefresh({ ...request, action: 'setup', phase, setupRuntime: runtime }, options);
+    }
+    const result = await nightlyRefresh(
+      { ...request, action: 'setup', phase: 'install', setupRuntime: runtime },
+      options,
+    );
+    assert.deepEqual(
+      calls.map(({ args }) => args[2]),
+      ['inspect', 'inspect', 'install', 'inspect'],
+    );
+    assert.ok(calls.every(({ settings }) => settings.timeoutMs === 899000));
+    assert.equal(result.state.checks['doctor-before'].status, 'drift');
+    assert.equal(result.state.checks.install.status, 'applied');
+    assert.equal(result.state.checks['doctor-after'].status, 'healthy');
+    assert.equal(result.state.status, 'checking');
+    assert.equal(result.state.checks.automations, undefined);
+    assert.doesNotMatch(await readFile(result.journal, 'utf8'), /fixture\/runtime|fixture\/data/);
+  });
+
+  it('should stop before Install when the native binding differs', async () => {
+    await nightlyRefresh(request, options);
+    const runtime = {
+      argvPrefix: ['/fixture/node', '/fixture/runtime.js', 'setup'],
+      pluginData: '/fixture/data',
+    };
+    let calls = 0;
+    options.run = async () => {
+      calls += 1;
+      return {
+        code: 0,
+        stdout: JSON.stringify({
+          status: 'inspected',
+          workspaceDir: '/another/workspace',
+          findings: [],
+        }),
+      };
+    };
+    const result = await nightlyRefresh(
+      { ...request, action: 'setup', phase: 'doctor-before', setupRuntime: runtime },
+      options,
+    );
+    assert.equal(result.state.status, 'failed');
+    assert.match(result.state.problem, /binding/);
+    assert.equal(calls, 1);
+  });
+
+  it('should retain an uncertain Install and never replay it automatically after interruption', async () => {
+    await nightlyRefresh(request, options);
+    const runtime = {
+      argvPrefix: ['/fixture/node', '/fixture/runtime.js', 'setup'],
+      pluginData: '/fixture/data',
+    };
+    let installs = 0;
+    options.run = async (_command, args) => {
+      if (args.includes('install')) {
+        installs += 1;
+        throw new Error('injected process interruption');
+      }
+      return {
+        code: 0,
+        stdout: JSON.stringify({
+          status: 'inspected',
+          workspaceDir: await realpath(workspace),
+          findings: [],
+        }),
+      };
+    };
+    await nightlyRefresh(
+      { ...request, action: 'setup', phase: 'doctor-before', setupRuntime: runtime },
+      options,
+    );
+    await assert.rejects(
+      nightlyRefresh(
+        { ...request, action: 'setup', phase: 'install', setupRuntime: runtime },
+        options,
+      ),
+      /interruption/,
+    );
+    const result = await nightlyRefresh(
+      { ...request, action: 'setup', phase: 'install', setupRuntime: runtime },
+      options,
+    );
+    assert.equal(result.state.status, 'failed');
+    assert.equal(result.state.pendingSetup.phase, 'install');
+    assert.equal(installs, 1);
+  });
+
+  it('should stop setup on timeout without treating it as a transient fetch failure', async () => {
+    await nightlyRefresh(request, options);
+    const runtime = {
+      argvPrefix: ['/fixture/node', '/fixture/runtime.js', 'setup'],
+      pluginData: '/fixture/data',
+    };
+    options.run = async () => ({ code: null, stdout: '', timedOut: true });
+    const result = await nightlyRefresh(
+      { ...request, action: 'setup', phase: 'doctor-before', setupRuntime: runtime },
+      options,
+    );
+    assert.equal(result.state.status, 'failed');
+    assert.match(result.state.problem, /remaining attempt budget/);
+    assert.equal(result.state.retryAt, undefined);
   });
 
   it('should complete only with all lifecycle observations and report an unchanged next day', async () => {

@@ -130,9 +130,10 @@ activated Codex installation bound to this profile. it targets clean `main` chec
 and setup results. the card uses the readable Agent System instance name in inline code;
 installation IDs keep each instance's progress separate.
 
-the source helper preserves interrupted progress and bounds transient retries. shared-cache
-exclusion, native lifecycle deadlines, refreshed context, and the requested automation display name
-still need their owning integrations before unattended activation. follow the
+the helper preserves interrupted progress, bounds transient retries, and runs Doctor → Install →
+Doctor through Agent System with the remaining setup budget. the shared automation declaration owns
+the display name and group. shared-cache exclusion and trusted-context renewal in the existing
+nightly chat still need proof before unattended activation. follow the
 [pilot and recovery instructions](./references/nightly-refresh.md); do not enable the declaration
 until those gates pass. the intended automation is `🔄 NIGHTLY REFRESH`, with a plain
 `NIGHTLY REFRESH` chat beside `ISSUE ASSIGNMENTS` in `AGENT SYSTEM`.

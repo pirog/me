@@ -22,8 +22,8 @@ file exists. never silently accept a generated automation name in place of the r
   roll back across unverified private-state compatibility.
 - test native `/hooks` trust renewal in an isolated profile, including rejection of an expanded
   approval scope, exact-definition readback, and a new trusted `SessionStart` context.
-- require the owning Agent System automation projection to preserve the requested automation name
-  separately from the plain chat name. the current generated-name fallback is not this contract.
+- require an Agent System version supporting `display-name` and `group`. the declaration uses those
+  shared fields for the emoji-bearing automation name and sidebar group; `thread.name` remains plain.
 - run the source interruption/transient-failure pilot, then the complete native pilot. activate via
   Agent System Install only after these gates pass. saved settings and manual execution do not prove
   an overnight run; verify its actual time and delivered report afterward.
@@ -56,13 +56,21 @@ pre-activation step. verify Doctor and then an actual 02:00 occurrence and morni
    permits at most four source attempts, each bounded to 15 minutes, with 1/2/4-minute waits.
    inspect completed results before retrying. native denials, deterministic failures, and uncertain
    external writes are not transient. `failed` remains held across dates; do not reset its journal.
-4. once sources are ready, invoke Agent System Doctor → Install → Doctor using the current trusted
-   runtime and native approval controls. use Me's owning plugin repairs: the build-bearing Agent
+4. once sources are ready, invoke the helper with `action: setup`, `phase: doctor-before`, and the
+   exact ephemeral `setupRuntime` object from trusted context. then use `phase: install`; after
+   trust/context renewal, use `phase: doctor-after`. include the same occurrence fields and fresh
+   activity observation each time. this calls the existing Agent System setup owner, checks its
+   binding, records its actual findings, and bounds each subprocess to the remaining attempt budget.
+   native approval still applies. use Me's owning plugin repairs: the build-bearing Agent
    System step delegates dependency installation, build, and provider verification to `bun run sync`.
    do not run those commands a second time. recheck exclusive access before shared cache writes.
-   stop after the first failed Install step. a source-process timeout is enforced by the helper;
-   native lifecycle calls retain their own deadlines. if they cannot honor the remaining 15-minute
-   attempt budget, stop and report that integration limitation rather than promise a hard bound.
+   Codex Tools Install selects the source version before cache sync; do not use its manifest-changing
+   `refresh` command on a clean `main` checkout. stop after the first failed Install step. the helper
+   sends SIGTERM before the deadline so Agent System can cancel detached setup children, then SIGKILL
+   at the deadline if needed. an interrupted Install remains uncertain until explicitly reconciled.
+   native hook review and scheduler calls are not cancellable by this subprocess deadline: check the
+   remaining budget before each call, stop when exhausted, and report a hold rather than promise that
+   an in-flight native effect can be cancelled.
 5. review changed Agent System hook definitions and executable changes against the previously
    accepted source. renewal is allowed only for the existing hooks, verified expected origin, and
    unchanged purpose, event/matcher scope, approval authority, and credential access. unknown commands,
@@ -79,7 +87,8 @@ pre-activation step. verify Doctor and then an actual 02:00 occurrence and morni
    installed, enabled, and pass their cache checks, even if a setup step would consider one optional.
    require healthy final setup and aligned saved automations, including intake's runtime reference.
    preserve `smoke-test` disabled. restore only schedules paused by this run through their owner.
-8. record each actual native observation using the helper with `action: record`, the same binding
+8. the `setup` action records Doctor and Install directly. record the remaining actual native
+   observations using the helper with `action: record`, the same binding
    and date fields, `check`, `status`, and a short redacted `evidence` string. this stores evidence;
    it grants no authority to execute or approve an operation. never record an inferred success.
 

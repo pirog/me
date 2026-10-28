@@ -321,7 +321,7 @@ exit 2
     assert.equal(await runSetup(args, { root, home }), 0);
   });
 
-  it('should sync an installed source plugin cache on apply', async () => {
+  it('should select the source version through Install before syncing an installed plugin', async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), 'me-setup-root-'));
     const home = await mkdtemp(path.join(os.tmpdir(), 'me-setup-home-'));
     const links = path.join(root, 'dotfiles', 'ai', '.codex', 'plugins');
@@ -336,14 +336,21 @@ exit 2
     await chmod(path.join(bin, 'bun'), 0o755);
     await writeFile(
       cli,
-      `#!/bin/sh\nif [ "$1" = status ]; then echo '{"ok":true,"inspection":{"installed":true,"enabled":true}}'; exit 0; fi\nprintf '%s\\n' "$@" > '${log}'\n`,
+      `#!/bin/sh\nif [ "$1" = status ]; then echo '{"ok":true,"inspection":{"installed":true,"enabled":true}}'; exit 0; fi\nprintf '%s\\n' "$@" >> '${log}'\n`,
     );
     await chmod(cli, 0o755);
     const originalPath = process.env.PATH;
     process.env.PATH = `${bin}:${originalPath}`;
     try {
       assert.equal(await runSetup(['apply', 'plugin', 'me', 'piroplugin'], { root, home }), 0);
-      assert.match(await readFile(log, 'utf8'), /^cache\nsync\n/);
+      assert.deepEqual((await readFile(log, 'utf8')).trim().split('\n'), [
+        'install',
+        root,
+        'cache',
+        'sync',
+        '--repo-root',
+        root,
+      ]);
     } finally {
       process.env.PATH = originalPath;
     }
@@ -419,7 +426,7 @@ exit 2
       stderr = '';
       process.env.RUNNER_DEBUG = '1';
       assert.equal(await runSetup(['apply', 'plugin', 'me', 'piroplugin'], { root, home }), 2);
-      assert.match(stderr, /debug: setup operation=plugin\.cache-sync reason=access was denied/);
+      assert.match(stderr, /debug: setup operation=plugin\.install reason=access was denied/);
       assert.doesNotMatch(stderr, /super-secret|permission denied|x{100}/);
       assert.ok(Buffer.byteLength(stderr) < 500);
     } finally {

@@ -139,7 +139,7 @@ runtime="$(jq -r .cachePath "$TMPDIR/cache.json")/dist/codex/codex-runtime.js"
 cd "$GITHUB_WORKSPACE"
 bun -e 'import {loadAgentModels} from "./lib/agent-models.js"; import config from "./utils/agent-models-config.js"; const defaults = config(await loadAgentModels()); await Bun.write(process.env.CODEX_HOME + "/config.toml", `model = ${JSON.stringify(defaults.model)}\nmodel_reasoning_effort = ${JSON.stringify(defaults.model_reasoning_effort)}\n`);'
 jq -n --arg workspace "$GITHUB_WORKSPACE" \
-  '{projects: {schemaVersion: 2, projects: [{projectId: "me-fixture", projectKind: "local", hostId: "local", path: $workspace}]}, threads: []}' > "$TMPDIR/automation-lookups.json"
+  '{projects: {schemaVersion: 2, projects: [{projectId: "me-fixture", projectKind: "local", hostId: "local", path: $workspace}]}, threads: [], nativeInventory: {schemaVersion: 4, threads: [], pinnedThreads: [], sections: [], unavailableHosts: [], unavailableSources: []}}' > "$TMPDIR/automation-lookups.json"
 node "$runtime" automations list --plugin-data "$TMPDIR/plugin-data" < "$TMPDIR/automation-lookups.json" \
   | tee "$TMPDIR/automation-plan.json" \
   | jq -e '. as $plan | if
