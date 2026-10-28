@@ -5,7 +5,7 @@ the declared `nightly-refresh` automation. use the newest trusted Agent System c
 workspace and runtime routes; never copy a machine name, user home, instance UUID, or versioned
 runtime path into the saved prompt. each activated instance maintains its own observations.
 
-the automation is `🔄 NIGHTLY REFRESH`. its persistent chat is `NIGHTLY REFRESH`, without an emoji,
+the automation is `🌙 NIGHTLY REFRESH`. its persistent chat is `NIGHTLY REFRESH`, without an emoji,
 in the native `AGENT SYSTEM` sidebar group beside `ISSUE ASSIGNMENTS`. the declaration is disabled
 until the pilot and integration requirements below pass. do not activate it merely because this
 file exists. never silently accept a generated automation name in place of the requested name.
