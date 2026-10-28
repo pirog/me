@@ -17,6 +17,56 @@ import { runSetup } from '../lib/setup.js';
 import { GENERATED_MARKER } from '../lib/codex-config-sync.js';
 
 describe('lib/setup', () => {
+  it('should delegate the build-bearing plugin repair to sync once and stamp only successful work', async () => {
+    const home = await mkdtemp(path.join(os.tmpdir(), 'me-sync-home-'));
+    const root = path.join(home, 'tanaab', 'me');
+    const source = path.join(home, 'tanaab', 'openclaw-agent-system');
+    const links = path.join(root, 'dotfiles', 'ai', '.codex', 'plugins');
+    const bin = path.join(home, 'bin');
+    const log = path.join(home, 'calls');
+    const cli = path.join(source, 'node_modules', '.bin', 'codex-tools');
+    await mkdir(links, { recursive: true });
+    await mkdir(bin);
+    await mkdir(path.dirname(cli), { recursive: true });
+    execFileSync('git', ['init', '-q', source]);
+    execFileSync('git', [
+      '-C',
+      source,
+      'remote',
+      'add',
+      'origin',
+      'git@github.com:tanaabased/openclaw-agent-system.git',
+    ]);
+    await writeFile(path.join(source, '.gitignore'), 'node_modules/\ndist/\n');
+    await symlink(path.relative(links, source), path.join(links, 'agent-system'));
+    await writeFile(
+      path.join(bin, 'bun'),
+      `#!/bin/sh\nprintf '%s\\n' "$*" >> '${log}'\nmkdir -p dist/codex\nprintf 'built' > dist/codex/codex-runtime.js\n`,
+    );
+    await chmod(path.join(bin, 'bun'), 0o755);
+    await writeFile(
+      cli,
+      '#!/bin/sh\nif [ "$1" = status ]; then echo \'{"ok":true,"inspection":{"installed":true,"enabled":true}}\'; fi\n',
+    );
+    await chmod(cli, 0o755);
+    const original = process.env.PATH;
+    process.env.PATH = `${bin}:${original}`;
+    const args = ['plugin', 'openclaw-agent-system', 'agent-system', 'optional', 'build'];
+    const stamp = path.join(source, 'node_modules', '.cache', 'me-setup-build.sha256');
+    try {
+      assert.equal(await runSetup(['apply', ...args], { root, home }), 0);
+      assert.equal(await readFile(log, 'utf8'), 'run sync\n');
+      const before = await readFile(stamp, 'utf8');
+      assert.match(before, /^[a-f0-9]{64}\n$/);
+      await writeFile(path.join(bin, 'bun'), '#!/bin/sh\nexit 1\n');
+      assert.equal(await runSetup(['apply', ...args], { root, home }), 2);
+      assert.equal(await readFile(stamp, 'utf8'), before);
+    } finally {
+      process.env.PATH = original;
+      await rm(home, { recursive: true, force: true });
+    }
+  });
+
   it('should repair the inspected configuration target without invoking Stow', async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), 'me-setup-root-'));
     const home = await mkdtemp(path.join(os.tmpdir(), 'me-setup-home-'));

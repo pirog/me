@@ -54,6 +54,22 @@ setup-agent:
   file: ./setup-agent.yaml
 
 automations:
+  - id: nightly-refresh
+    enabled: false
+    runtimes:
+      - codex
+    thread:
+      name: NIGHTLY REFRESH
+    schedule:
+      cron: "0 2 * * *"
+      timezone: America/New_York
+    prompt: |
+      Run the nightly refresh for this activated Codex installation bound to Me.
+      Resolve the workspace and installation from the newest trusted Agent System context.
+      Read references/nightly-refresh.md in that bound workspace and follow its pilot gates,
+      source refresh, native lifecycle, hook review, recovery, and reporting instructions.
+      This declaration does not establish that the activation gates have passed.
+      Return one quoted status card every morning, including unchanged days.
   - id: smoke-test
     enabled: false
     runtimes:

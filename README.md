@@ -122,6 +122,20 @@ for automatic pickup, set up assignment intake once, then assign work through Gi
 
 Doctor checks saved state; a successful scheduled run is separate evidence.
 
+### nightly refresh
+
+`nightly-refresh` is a disabled pilot for keeping Agent System, Canon, and Me current on each
+activated Codex installation bound to this profile. it targets clean `main` checkouts at 02:00
+`America/New_York` and produces one quoted morning report with commits, cache status, hook trust,
+and setup results. host names and installation IDs are discovered locally.
+
+the source helper preserves interrupted progress and bounds transient retries. shared-cache
+exclusion, native lifecycle deadlines, refreshed context, and the requested automation display name
+still need their owning integrations before unattended activation. follow the
+[pilot and recovery instructions](./references/nightly-refresh.md); do not enable the declaration
+until those gates pass. the intended automation is `🔄 NIGHTLY REFRESH`, with a plain
+`NIGHTLY REFRESH` chat beside `ISSUE ASSIGNMENTS` in `AGENT SYSTEM`.
+
 ## development
 
 use the runtimes in [`.node-version`](./.node-version) and [`.bun-version`](./.bun-version):
