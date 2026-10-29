@@ -4,9 +4,9 @@ description: Pirobased default voice guidance for human-facing prose authored fo
 license: MIT
 metadata:
   type: generic
-  owner: tanaab
+  owner: pirog
   tags:
-    - tanaab
+    - pirog
     - generic
     - writing
   openclaw:

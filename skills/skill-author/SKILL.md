@@ -4,9 +4,9 @@ description: Pirobased skill authoring, validation, and optimization using Canon
 license: MIT
 metadata:
   type: meta
-  owner: tanaab
+  owner: pirog
   tags:
-    - tanaab
+    - pirog
     - meta
     - skills
   openclaw:
@@ -49,7 +49,7 @@ use that project's own authoring policy instead.
 ## Evaluation Criteria
 
 preserve piro's public names and presentation while applying Canon's current structural contract.
-keep `metadata.owner: tanaab` and its tag as Canon provenance; they do not change the acting identity.
+set `metadata.owner: pirog` to identify the skill owner; keep that choice independent of the public namespace.
 
 ## Anti-Patterns
 
@@ -66,7 +66,7 @@ remain read-only; a successful structural check does not prove instruction-follo
 
 1. load the installed Canon Skill Author and its applicable policies. use its create, standardize,
    validate, or optimize workflow without repeating that workflow here.
-2. for this plugin, pass `--namespace piro --container codex-plugin` to Canon's scaffolder and
+2. for this plugin, pass `--owner pirog --namespace piro --container codex-plugin` to Canon's scaffolder and
    validator. retain unprefixed skill folders, `piro-` machine names and prompts, and `Pirobased`
    descriptions. for scaffolding, also pass `--brand-color '#db2777'` and an explicit pirog source
    homepage; choose the skill-specific display name, category, emoji, and prompt for the actual task.
@@ -92,7 +92,7 @@ verify public identity, icon resolution, validation failures, and packaged asset
 
 ## Validation
 
-run the shared validator for every changed skill with the explicit piro namespace and plugin container.
-verify preserved names, prompts, homepages, and icons separately from Canon provenance. exercise both
+run the shared validator for every changed skill with the explicit pirog owner, namespace, and plugin container.
+verify preserved names, prompts, homepages, and icons separately from skill ownership. exercise both
 valid and invalid temporary fixtures before removing any existing local tooling; report structural,
 packaging, and behavioral evidence separately.

@@ -4,9 +4,9 @@ description: Pirobased concise reply composition using the shared maintainer voi
 license: MIT
 metadata:
   type: generic
-  owner: tanaab
+  owner: pirog
   tags:
-    - tanaab
+    - pirog
     - generic
     - communication
   openclaw:
