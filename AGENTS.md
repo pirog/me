@@ -65,6 +65,8 @@ its Codex plugin bundle.
   npm ships the Codex plugin, while bootstrap and Agent System setup use the editable Git checkout.
 - `.agent-system/agent.yaml#automations` owns desired schedules; Agent System owns reconciliation
   under its [Codex contract](https://github.com/tanaabased/openclaw-agent-system/blob/main/CODEX.md#repository-automations).
+  omit `schedule.timezone` by default so schedules use the installation's local timezone. pin a
+  geographic timezone only when the user explicitly requests it.
   Keep `smoke-test` disabled outside an explicitly authorized validation window. This restriction
   does not apply to deliberately assigned intake-test issues.
 - `GOALS.md` owns reviewed direction, priorities, and deferrals. GitHub issues, pull requests, and

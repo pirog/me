@@ -63,7 +63,6 @@ automations:
       name: NIGHTLY REFRESH
     schedule:
       cron: "0 23 * * *"
-      timezone: America/New_York
     prompt: |
       Perform the nightly refresh for this Codex installation using its trusted Me binding.
       Read references/nightly-refresh.md in the bound workspace and follow that procedure:

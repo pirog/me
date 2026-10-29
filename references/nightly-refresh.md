@@ -1,6 +1,6 @@
 # nightly refresh
 
-`🌙 NIGHTLY REFRESH` runs at 23:00 `America/New_York` on each Codex installation where Agent
+`🌙 NIGHTLY REFRESH` runs at 23:00 local time on each Codex installation where Agent
 System Install has activated the declaration. its persistent chat is `NIGHTLY REFRESH` in
 `AGENT SYSTEM`. use the current trusted Me binding and runtime routes; never save a machine-specific
 home, UUID, or versioned runtime path in the prompt. use `instanceRuntime inspect` for the readable
