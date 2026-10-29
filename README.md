@@ -102,11 +102,14 @@ paste the prompt you need into Codex, replacing the placeholder:
 # start or resume an issue without assigning it or enabling scheduled intake
 use $agent-system-task-launch to work on <issue URL>.
 
-# review an existing PR through the temporary native startup route
-start a review of <PR URL> using references/codex-task-access.md in the bound Me workspace.
+# continue an existing same-repository PR
+use $agent-system-task-launch to continue <PR URL>.
 
 # retire managed work without closing the GitHub issue
 use $agent-system-task-retirement to clean up <issue URL>.
+
+# clean up one explicitly selected unmanaged chat
+use $agent-system-task-retirement to clean up chat <exact chat ID>.
 
 # check workspace readiness without applying repairs
 use $agent-system-doctor to check this workspace.
@@ -116,8 +119,6 @@ use $piro-voice to rewrite the following text: <text>.
 ```
 
 see the [full cheat sheet](./INVENTORY.md#cheat-sheet) for maintenance and other prompts.
-existing-PR startup and unmanaged chat cleanup follow the
-[temporary native guidance](./references/codex-task-access.md#temporary-native-task-guidance).
 
 ### issue assignments
 
