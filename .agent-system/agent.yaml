@@ -56,7 +56,6 @@ setup-agent:
 automations:
   - id: nightly-refresh
     display-name: "🌙 NIGHTLY REFRESH"
-    group: AGENT SYSTEM
     enabled: true
     runtimes:
       - codex
