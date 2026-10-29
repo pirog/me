@@ -4,9 +4,9 @@ description: Pirobased implementation of an authorized issue plan, including sha
 license: MIT
 metadata:
   type: workflow
-  owner: tanaab
+  owner: pirog
   tags:
-    - tanaab
+    - pirog
     - workflow
     - task-management
   openclaw:

@@ -4,9 +4,9 @@ description: Pirobased issue assessment that traces behavior and ownership, comp
 license: MIT
 metadata:
   type: workflow
-  owner: tanaab
+  owner: pirog
   tags:
-    - tanaab
+    - pirog
     - workflow
     - task-management
   openclaw:
