@@ -3,7 +3,8 @@
 refresh the operator-selected tanaabot profile using the [bootstrap procedure](./bootstrap.md).
 use the currently approved canonical repository and source paths within their authorized scope;
 ask before expanding that set. resolve `main` once for this run and read this refresh prompt,
-bootstrap, guidance, manifest, index and selected skill references at that same immutable SHA.
+bootstrap, guidance, manifest, shared skills directory listing and selected skill references at that
+same immutable SHA.
 
 report the full revision and files actually read, including whether the revision changed from the
 previous verified load. if prior load evidence is unavailable in this context, say so and perform

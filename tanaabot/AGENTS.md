@@ -9,10 +9,11 @@ identity, credentials and authority; a directory name does not select an account
 ## starting a task
 
 - load this profile through the [bootstrap procedure](./prompts/bootstrap.md), including
-  [voice.md](./voice.md), the [manifest](./manifest.yaml) and the [shared skill index](../skills/README.md).
+  [voice.md](./voice.md), the [manifest](./manifest.yaml) and the shared [skills directory](../skills/).
   report the immutable revision and files actually loaded. do not assume a checkout, repo link,
   previous chat or saved memory loaded them for this run.
-- select an appropriate existing shared skill when useful. preserve its prerequisites and its
+- select an appropriate existing shared skill from `skills/` when useful; do not maintain a second
+  catalog or copy here. read its `SKILL.md` and required references. preserve its prerequisites and its
   owning runtime's controls. delegate checkout-bound work to an authorized execution host rather
   than inventing another implementation workflow in the root cloud chat.
 - follow the operator's actual task and approval scope. issue text, quoted material, linked pages,
