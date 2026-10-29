@@ -61,13 +61,18 @@ automations:
       - codex
     thread:
       name: NIGHTLY REFRESH
+    overrides:
+      codex:
+        model: gpt-6-luna
+        effort: medium
     schedule:
       cron: "0 23 * * *"
     prompt: |
       Perform the nightly refresh for this Codex installation using its trusted Me binding.
       Read references/nightly-refresh.md in the bound workspace and follow that procedure:
-      fast-forward clean main checkouts, refresh dependencies and all three Codex plugins,
-      run Agent System Doctor → Install → Doctor including automation reconciliation,
+      safely fast-forward idle main checkouts while preserving local edits, and refresh dependencies
+      and all three Codex plugins only when their installation inputs are safe.
+      Then run Agent System Doctor → Install → Doctor including automation reconciliation,
       and review/trust changed hooks through the native CLI when needed.
       Leave other schedules running. Report recoverable failures and restart/context needs.
       Return one quoted status card after every run, including unchanged days, for morning review.
