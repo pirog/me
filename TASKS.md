@@ -1,64 +1,45 @@
 # TASKS
 
-## PIROG
+## AGENT SYSTEM
 
-- PRIORITY
-  - update canon
-  - clawhub too big?
-  - onepassword for families?
+- big improvement branch before release?
 
-  - update goals for pirog/emori?
-    - push back on irrelevant issues?
-  - agent relationships?
-  - some kind of blocked issue automation task?
+- doctor output changes? keys? models for automations?
+- other bugs?
+- optimizer?
 
-## IDEAS
+- investigate backend support (file, redis, db, api?)
+- swarm mode for project picker and in general?
+
+## PR REVIEW
+
+- emori
+  - check if work is in scope and if documentation is the least amount possible to achieve goal
+
+- pirog
+  - check if work has introduced unintended blockers or difficulties to the user being able to use agent system to move issues to completion
 
 ## REPOS
 
 - @pirog/me
-  - jev for test selection in GHA?
-
   - TANAABOT?
     - gh script and browser login?
     - monday automations redo?
     - artwork updates?
 
-  - better skill icon format in readme?
   - morning closeout?
-  - audit skills? findwork/getwork?
 
   - better plans and reports?
   - read only email summarizer?
     - labeling for kids/tanaab/etc
-  - blog like pirog skill
   - school calender to gcalendar?
 
-- @tanaab/smutlord
-  - rotate russian words and phrases?
-  - look for bugs and small tasks to do and then self assign
-  - self improvement issues?
-
-- @tanaab/emori
-  - update source repos task?
-  - self improvement issues?
-
 - @tanaab/canon
-  - $tanaab-pr/task/etc-review
-    - look like you are having fun?
-  - $tanaab-pr-fix
-  - $tanaab-pr-optimize?
-    - tools
-    - alone optimization
-  - $tanaab-canon-improve?
-    - prompt canon?
-    - refresh preferred tools?
-  - jev tools?
-  - install in openclaw?
-  - update canon skill?
-  - basically it updates lists every day?
-  - update repo skill && automation?
-  - company brain instead?
+  - other ideas
+    - openai platform memories?
+    - store historic issues etc?
+    - agent-system offload intake/task stuff to endpoint or something?
+    - hosted redis/postgres/etc?
 
 - @tanaab/openclaw-agent-system
   - 0.10.0
@@ -68,10 +49,7 @@
     - later
 
   - ICEBOX
-    - milestone assigner?
-    - running gateway access
-    - discord setup?
-    - gog cred setup instructions?
+    - running gateway access warning?
     - public API for other plugins?
     - rework so everything is API endpoints?
     - API docs?
@@ -80,7 +58,6 @@
     - x.com tool?
     - agent-system/agent creation skill?
     - theme?
-    - "random" comment anywhere support?
     - git encrypted keys?
 
 - @tanaab/mmm
