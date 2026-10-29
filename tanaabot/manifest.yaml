@@ -1,0 +1,10 @@
+schema_version: 1
+display_name: tanaabot
+appearance:
+  key: realistic
+  asset: tanaabot/tanaabot-circle.png
+guidance:
+  - AGENTS.md
+  - tanaabot/AGENTS.md
+  - tanaabot/voice.md
+skill_index: skills/README.md
