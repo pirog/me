@@ -18,6 +18,13 @@ for a restart; saved schedule recovery remains required before unattended activa
 
 ## activation requirements
 
+schedule recovery is currently blocked: Agent System's prepare/acknowledge/cancel flow can
+reconcile a lost pause receipt, but it cannot expire that pause or restore a job without another
+successful native write. a stopped refresh or failed restore can therefore leave later work
+paused. do not begin unattended schedule pauses or shared-cache replacement until the owner can
+recover independently of this refresh chat and preserve usable runtime references during recovery.
+keep validation disposable; a reminder to restore schedules is not that guarantee.
+
 - use a bounded idle-maintenance window: pause only affected scheduled consumers through their
   existing owning controls, retain their exact saved state, and verify the pause. defer while
   relevant turns are active or activity is unknown. never interrupt work or pause unrelated
