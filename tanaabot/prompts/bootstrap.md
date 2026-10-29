@@ -17,7 +17,7 @@ tanaabot/AGENTS.md
 tanaabot/voice.md
 tanaabot/manifest.yaml
 tanaabot/prompts/bootstrap.md
-tanaabot/tanaabot-l338-circle.png
+tanaabot/assets/tanaabot-l338-circle.png
 
 i also approve listing skills/ to discover available skills, without recursively
 reading its contents. resolve main once to one immutable commit SHA. read

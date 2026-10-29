@@ -1,9 +1,11 @@
-# manual synchronization preview
+# appearance synchronization
 
-start with an explicit [bootstrap load](./bootstrap.md) using the operator-approved canonical repo
+start with an explicit [bootstrap load](../../prompts/bootstrap.md) using the operator-approved canonical repo
 and paths. resolve `main` once and use that immutable revision for this prompt, the source load,
 manifest validation, appearance asset and any subsequent preview/apply in this run. do not assume
 the root cloud assistant or a scheduled chat already loaded the guidance.
+
+use this same prompt for manual runs and any later separately approved scheduled runs.
 
 after a complete load, prepare a read-only preview for the supported slice of
 [the #131 pilot](https://github.com/pirog/me/issues/131):
