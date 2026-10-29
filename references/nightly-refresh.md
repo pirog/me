@@ -44,29 +44,19 @@ instance name shown in the card.
    `package.json#codexTools` managed paths; and Me's `dotfiles/ai` if a missing plugin link requires
    Stow. do not execute a locally modified helper to decide whether it is safe. ordinary installed
    ignored dependencies/generated output alone are not an obstruction, but hold unexpected local
-   inputs affecting execution or installation. if Me's shared repair inputs are affected, hold every
-   repair using them. otherwise hold only the affected repository's repair and dependent operations.
+   inputs affecting execution or installation. retain any affected inputs as an Install hold for
+   step 4; source updates already completed remain in place.
 
-   refresh dependencies and plugins for each eligible repository using Me's existing setup repairs,
-   from the bound Me workspace. run these commands once per repository, stopping that repository on
-   failure; do not run a second dependency install or build:
-
-   ```sh
-   bun scripts/setup.js apply plugin me piroplugin
-   bun scripts/setup.js apply plugin canon tanaab
-   bun scripts/setup.js apply plugin openclaw-agent-system agent-system optional build
-   ```
-
-   these repairs install dependencies for Me and Canon; Agent System's `bun run sync` owns its
-   dependency installation, build, and provider verification. each repair then uses Codex Tools
-   Install to select the source version and cache sync to copy its managed content. verify each
-   plugin is installed and enabled and run `bun run codex:check` from each source. a missing optional
-   Agent System checkout is still a warning in this three-repository report.
+   Agent System Install owns plugin repair and live cache synchronization for all three repositories.
+   do not invoke `scripts/setup.js apply plugin`, `codex:sync`, or Codex Tools install/sync directly.
+   let Install run dependency installation, builds, and cache synchronization only for declared
+   steps needing repair; leave healthy plugins unchanged. a missing optional plugin remains absent
+   and must be reported as skipped, not installed or aligned.
 
 4. check eligibility for the full Agent System Install separately: its host/agent setup declarations
    can execute Brewfile, dotfiles, generated configuration and plugin repairs. inspect the manifest,
    guidance, setup declarations, commands/imports and their inputs before invoking those skills.
-   hold Install when any required source update or repair was held, or when it could execute/install
+   hold Install when any required source update or installation input was held, or when it could execute/install
    modified or unknown local inputs; report the affected paths. `TASKS.md` alone does not hold Install.
    when eligible, use the existing Agent System Doctor → Install → Doctor skills against the trusted Me binding.
    Install includes its normal automation plan, native save, acknowledgment, and readback; a setup

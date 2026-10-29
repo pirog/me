@@ -118,9 +118,15 @@ its Codex plugin bundle.
   details into this file. `examples/inputs`, `examples/payload`, and `examples/tanaab` own the public
   interface, payload lifecycle, repository lifecycle, and plugin-link behavior respectively.
 - Never run Leia locally unless the user explicitly requests it.
-- Use `bun run codex:check` for managed plugin changes. When the check reports cache drift, use
-  `bun run codex:sync` and rerun the check. Plugin validation belongs to the shared
-  `tanaabased/actions/validate-codex-plugin@v1` action in CI, not a local wrapper.
+- Do not update the live Codex installation during routine development or validation. Cache drift
+  against a task worktree is expected and does not authorize Install or direct cache sync.
+  Use isolated caches for development verification; keep shared plugin validation in the
+  `tanaabased/actions/validate-codex-plugin@v1` action in CI.
+- Routine live updates for `piroplugin`, Canon's `tanaab` plugin, and Agent System belong to
+  explicitly operator-requested Agent System Install against the trusted Me binding or the
+  authorized nightly refresh. Use merged `main` from the designated source checkouts with
+  unchanged installation inputs. Follow `references/nightly-refresh.md` for the scheduled flow;
+  do not run its setup repairs or cache-sync commands independently as part of task work.
 - Use `scripts/setup.js apply dotfiles` for Stow-owned configuration and `scripts/setup.js apply config`
   for generated Codex configuration. Plugin-link repair restows only `dotfiles/ai`.
   These operations are separate from plugin-cache sync.
@@ -177,8 +183,8 @@ its Codex plugin bundle.
 - Run the narrowest reliable checks first and broaden only when risk justifies it.
 - Run `bun run test` for JavaScript library or helper changes before `bun run lint`.
 - Use `bun run lint` for routine validation and `git diff --check` when text churn is plausible.
-- For managed plugin changes, complete the check/sync/check cycle and verify the shared plugin
-  validation action in CI; report when remote validation has not run.
+- For managed plugin changes, use isolated cache verification and the shared plugin validation
+  action in CI; report when remote validation has not run. Do not repair live cache drift as validation.
 - Run setup repairs only when their live host changes are part of the requested work.
 - Treat `bun run build` as CI-owned unless release or `dist/` verification is explicitly requested.
 - Report when plugin sync, setup repairs, agent restart, Leia, or `bun run build` is intentionally skipped.
