@@ -71,12 +71,13 @@ the installed plugin must expose them before the bound workspace selects them. s
 
 ## automations
 
-| work              | source and purpose                                                                                            |
-| ----------------- | ------------------------------------------------------------------------------------------------------------- |
-| issue assignments | Agent System creates intake from `github.issue-assignment` policy; activate and reconcile it through Install. |
-| `smoke-test`      | disabled; a 15-minute schedule for an explicitly authorized validation window.                                |
+| work                                                 | source and purpose                                                                                                                   |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| issue assignments                                    | Agent System creates intake from `github.issue-assignment` policy; activate and reconcile it through Install.                        |
+| [`nightly-refresh`](./references/nightly-refresh.md) | clean `main` updates to Agent System, Canon, and Me at 23:00 `America/New_York`, with a quoted status card ready for morning review. |
+| `smoke-test`                                         | disabled; a 15-minute schedule for an explicitly authorized validation window.                                                       |
 
-both are configured through the [profile](./.agent-system/agent.yaml), but issue intake is generated
+these are configured through the [profile](./.agent-system/agent.yaml), but issue intake is generated
 by Agent System rather than listed under `automations`. see its
 [Codex automation contract](https://github.com/tanaabased/openclaw-agent-system/blob/main/CODEX.md#repository-automations).
 

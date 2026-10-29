@@ -4,7 +4,7 @@ bootstrap the checked-out pirog profile and install the packaged Agent System pl
 Codex state. check binding, setup, packaged hook output, and model routing without a model login.
 
 repeated installation must leave setup unchanged. automation checks use a project-lookup fixture
-to inspect the disabled smoke test and enabled intake declaration, including the missing native
+to inspect the disabled smoke test and enabled nightly refresh and intake declarations, including the missing native
 intake chat, without creating schedules. native hook approval, interactive skill use, intake
 activation, and scheduled execution require separate desktop validation.
 
@@ -133,16 +133,24 @@ jq -n --slurpfile inspected "$TMPDIR/routing.json" \
   | jq -e --slurpfile inspected "$TMPDIR/routing.json" \
     '.status == "unresolved" and .profile == "default" and .candidate == $inspected[0].profiles.default and .reason == "Insufficient complexity evidence."'
 
-# should require native chat reconciliation for intake while retaining the disabled smoke test
+# should require native chat reconciliation without activating schedules
 set -o pipefail
 runtime="$(jq -r .cachePath "$TMPDIR/cache.json")/dist/codex/codex-runtime.js"
 cd "$GITHUB_WORKSPACE"
 bun -e 'import {loadAgentModels} from "./lib/agent-models.js"; import config from "./utils/agent-models-config.js"; const defaults = config(await loadAgentModels()); await Bun.write(process.env.CODEX_HOME + "/config.toml", `model = ${JSON.stringify(defaults.model)}\nmodel_reasoning_effort = ${JSON.stringify(defaults.model_reasoning_effort)}\n`);'
 jq -n --arg workspace "$GITHUB_WORKSPACE" \
-  '{projects: {schemaVersion: 2, projects: [{projectId: "me-fixture", projectKind: "local", hostId: "local", path: $workspace}]}, threads: []}' > "$TMPDIR/automation-lookups.json"
+  '{projects: {schemaVersion: 2, projects: [{projectId: "me-fixture", projectKind: "local", hostId: "local", path: $workspace}]}, threads: [], nativeInventory: {schemaVersion: 4, threads: [], pinnedThreads: [], sections: [], unavailableHosts: [], unavailableSources: []}}' > "$TMPDIR/automation-lookups.json"
 node "$runtime" automations list --plugin-data "$TMPDIR/plugin-data" < "$TMPDIR/automation-lookups.json" \
   | tee "$TMPDIR/automation-plan.json" \
-  | jq -e 'if .status == "requires-native-app-sync" and ([.jobs[] | {id, enabled, declared, applicable, nativeId}] | sort_by(.id)) == [{id: "github-issue-assignment", enabled: true, declared: true, applicable: true, nativeId: null}, {id: "smoke-test", enabled: false, declared: true, applicable: true, nativeId: null}] and .actions == [] and any(.findings[]; .id == "github-issue-assignment" and .code == "automation-thread-sync-required") and .conversations == [{id: "github-issue-assignment", routing: "per-automation", nativeId: null, name: "ISSUE ASSIGNMENTS"}] then true else error("automation plan: \(.)") end'
+  | jq -e '. as $plan | if
+      .status == "requires-native-app-sync" and .actions == [] and
+      any(.jobs[]; .id == "github-issue-assignment" and .enabled and .declared and .applicable and .nativeId == null) and
+      any(.jobs[]; .id == "smoke-test" and .enabled == false and .declared and .applicable and .nativeId == null) and
+      any(.jobs[]; .id == "nightly-refresh" and .enabled and .declared and .applicable and .nativeId == null) and
+      all([{id: "github-issue-assignment", name: "ISSUE ASSIGNMENTS"}, {id: "nightly-refresh", name: "NIGHTLY REFRESH"}][]; . as $thread |
+        any($plan.findings[]; .id == $thread.id and .code == "automation-thread-sync-required") and
+        any($plan.conversations[]; .id == $thread.id and .name == $thread.name and .routing == "per-automation" and .nativeId == null))
+    then true else error("automation plan: \(.)") end'
 
 # should leave native state untouched during repeated automation inspection
 set -o pipefail

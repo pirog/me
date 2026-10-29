@@ -1,10 +1,11 @@
 /** Accept only the declared Tanaab source checkout for a plugin. */
 export default function isExpectedPluginOrigin(origin, repo) {
+  const owner = repo === 'me' ? 'pirog' : 'tanaabased';
   return [
-    `git@github.com:tanaabased/${repo}.git`,
-    `ssh://git@github.com/tanaabased/${repo}.git`,
-    `ssh://git@github.com:tanaabased/${repo}.git`,
-    `https://github.com/tanaabased/${repo}`,
-    `https://github.com/tanaabased/${repo}.git`,
+    `git@github.com:${owner}/${repo}.git`,
+    `ssh://git@github.com/${owner}/${repo}.git`,
+    `ssh://git@github.com:${owner}/${repo}.git`,
+    `https://github.com/${owner}/${repo}`,
+    `https://github.com/${owner}/${repo}.git`,
   ].includes(origin);
 }

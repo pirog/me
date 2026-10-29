@@ -54,6 +54,24 @@ setup-agent:
   file: ./setup-agent.yaml
 
 automations:
+  - id: nightly-refresh
+    display-name: "🌙 NIGHTLY REFRESH"
+    enabled: true
+    runtimes:
+      - codex
+    thread:
+      name: NIGHTLY REFRESH
+    schedule:
+      cron: "0 23 * * *"
+      timezone: America/New_York
+    prompt: |
+      Perform the nightly refresh for this Codex installation using its trusted Me binding.
+      Read references/nightly-refresh.md in the bound workspace and follow that procedure:
+      fast-forward clean main checkouts, refresh dependencies and all three Codex plugins,
+      run Agent System Doctor → Install → Doctor including automation reconciliation,
+      and review/trust changed hooks through the native CLI when needed.
+      Leave other schedules running. Report recoverable failures and restart/context needs.
+      Return one quoted status card after every run, including unchanged days, for morning review.
   - id: smoke-test
     enabled: false
     runtimes:
