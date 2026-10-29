@@ -57,7 +57,7 @@ automations:
   - id: nightly-refresh
     display-name: "🌙 NIGHTLY REFRESH"
     group: AGENT SYSTEM
-    enabled: false
+    enabled: true
     runtimes:
       - codex
     thread:
@@ -66,14 +66,13 @@ automations:
       cron: "0 23 * * *"
       timezone: America/New_York
     prompt: |
-      Run the nightly refresh for this activated Codex installation bound to Me.
-      Resolve the workspace and installation from the newest trusted Agent System context.
-      Read references/nightly-refresh.md in that bound workspace and follow its pilot gates,
-      source refresh, native lifecycle, hook review, recovery, and reporting instructions.
-      This declaration does not establish that the activation gates have passed.
-      Return one quoted status card when the run finishes, ready for morning review,
-      including unchanged days. Report synced files and trusted hooks separately from
-      loaded-chat adoption; a restart-needed warning is an acceptable staged outcome.
+      Perform the nightly refresh for this Codex installation using its trusted Me binding.
+      Read references/nightly-refresh.md in the bound workspace and follow that procedure:
+      fast-forward clean main checkouts, refresh dependencies and all three Codex plugins,
+      run Agent System Doctor → Install → Doctor including automation reconciliation,
+      and review/trust changed hooks through the native CLI when needed.
+      Leave other schedules running. Report recoverable failures and restart/context needs.
+      Return one quoted status card after every run, including unchanged days, for morning review.
   - id: smoke-test
     enabled: false
     runtimes:

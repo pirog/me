@@ -4,7 +4,7 @@ bootstrap the checked-out pirog profile and install the packaged Agent System pl
 Codex state. check binding, setup, packaged hook output, and model routing without a model login.
 
 repeated installation must leave setup unchanged. automation checks use a project-lookup fixture
-to inspect the disabled smoke test and enabled intake declaration, including the missing native
+to inspect the disabled smoke test and enabled nightly refresh and intake declarations, including the missing native
 intake chat, without creating schedules. native hook approval, interactive skill use, intake
 activation, and scheduled execution require separate desktop validation.
 
@@ -133,7 +133,7 @@ jq -n --slurpfile inspected "$TMPDIR/routing.json" \
   | jq -e --slurpfile inspected "$TMPDIR/routing.json" \
     '.status == "unresolved" and .profile == "default" and .candidate == $inspected[0].profiles.default and .reason == "Insufficient complexity evidence."'
 
-# should require native chat reconciliation while retaining disabled pilots
+# should require native chat reconciliation without activating schedules
 set -o pipefail
 runtime="$(jq -r .cachePath "$TMPDIR/cache.json")/dist/codex/codex-runtime.js"
 cd "$GITHUB_WORKSPACE"
@@ -145,8 +145,8 @@ node "$runtime" automations list --plugin-data "$TMPDIR/plugin-data" < "$TMPDIR/
   | jq -e '. as $plan | if
       .status == "requires-native-app-sync" and .actions == [] and
       any(.jobs[]; .id == "github-issue-assignment" and .enabled and .declared and .applicable and .nativeId == null) and
-      all(["smoke-test", "nightly-refresh"][]; . as $id |
-        any($plan.jobs[]; .id == $id and .enabled == false and .declared and .applicable and .nativeId == null)) and
+      any(.jobs[]; .id == "smoke-test" and .enabled == false and .declared and .applicable and .nativeId == null) and
+      any(.jobs[]; .id == "nightly-refresh" and .enabled and .declared and .applicable and .nativeId == null) and
       all([{id: "github-issue-assignment", name: "ISSUE ASSIGNMENTS"}, {id: "nightly-refresh", name: "NIGHTLY REFRESH"}][]; . as $thread |
         any($plan.findings[]; .id == $thread.id and .code == "automation-thread-sync-required") and
         any($plan.conversations[]; .id == $thread.id and .name == $thread.name and .routing == "per-automation" and .nativeId == null))
