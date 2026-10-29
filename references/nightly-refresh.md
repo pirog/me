@@ -9,13 +9,45 @@ instance name shown in the card.
 ## procedure
 
 1. inspect the bound Me checkout and its setup-owned Canon and OpenClaw Agent System source roots.
-   record each current commit. require the expected repository origin and clean `main` before
-   changing that repository. skip a dirty checkout, task branch, unfinished Git operation, or a
-   checkout with active work; report why and continue with unaffected repositories. never stash,
-   reset, rebase, or interrupt another task. leave other schedules running.
-2. fetch `origin main` and merge only by fast-forward in each eligible checkout. record the resulting
-   commit, including unchanged revisions. divergence and denied access are errors, not retry cases.
-3. refresh dependencies and plugins for each eligible repository using Me's existing setup repairs,
+   record each current commit. require the expected repository origin, `main`, no unfinished Git
+   operation or unmerged index, and no active work in that checkout. use current native chat/worktree
+   and process evidence; if ownership is unclear, skip it. work in a separate checkout alone does
+   not disqualify a source update. local edits alone are allowed. record staged/unstaged changes and
+   relevant untracked/ignored paths without exposing their contents; use NUL-delimited Git listings.
+   report skips and continue with unaffected repositories. never stash, reset, rebase, clean, resolve
+   conflicts, or interrupt another task. leave other schedules running.
+2. recheck eligibility immediately before updating. fetch `origin main`, resolve its fetched commit,
+   and require `git merge-base --is-ancestor HEAD <fetched-commit>` to succeed. then run:
+
+   ```sh
+   git merge --ff-only --no-autostash --no-overwrite-ignore <fetched-commit>
+   ```
+
+   use the verified fetched commit, not an unchecked moving ref. require Git to support these flags;
+   never weaken them to get past a failure. record the resulting commit, including unchanged revisions,
+   and verify local file contents and staging were preserved. divergence, locally ahead `main`,
+   obstruction, overlap and denied access stop this repository's update and dependent installation;
+   continue with unaffected repositories. ordinary Git refusals leave the checkout in place, though
+   fetch may update remote-tracking information. on any failure inspect HEAD, index and working files
+   against the recorded state. an interrupted command or filesystem error may leave partial changes:
+   stop and report uncertainty rather than attempting rollback. never force, autostash or resolve it.
+   keep a successful source update if a later installation fails.
+
+3. separately check installation eligibility after the source update and again before each mutating
+   step. a safe fast-forward does not make modified local inputs safe to execute or install. account
+   for staged and unstaged edits, renames/deletions, and relevant untracked/ignored inputs. `TASKS.md`
+   is scratch outside the managed payload: edits only there permit the full refresh. for other paths,
+   establish that they are unrelated to the step; hold unknown or affected inputs and report why.
+
+   use the existing owners to identify inputs: Me's `scripts/setup.js` and imported helpers for every
+   repair; each target's package/lockfile, build scripts/source, installable package and
+   `package.json#codexTools` managed paths; and Me's `dotfiles/ai` if a missing plugin link requires
+   Stow. do not execute a locally modified helper to decide whether it is safe. ordinary installed
+   ignored dependencies/generated output alone are not an obstruction, but hold unexpected local
+   inputs affecting execution or installation. if Me's shared repair inputs are affected, hold every
+   repair using them. otherwise hold only the affected repository's repair and dependent operations.
+
+   refresh dependencies and plugins for each eligible repository using Me's existing setup repairs,
    from the bound Me workspace. run these commands once per repository, stopping that repository on
    failure; do not run a second dependency install or build:
 
@@ -29,10 +61,14 @@ instance name shown in the card.
    dependency installation, build, and provider verification. each repair then uses Codex Tools
    Install to select the source version and cache sync to copy its managed content. verify each
    plugin is installed and enabled and run `bun run codex:check` from each source. a missing optional
-   Agent System checkout is still a warning in this three-repository report. if Me itself was skipped,
-   skip its mutating setup and the following Install; report the incomplete work.
+   Agent System checkout is still a warning in this three-repository report.
 
-4. use the existing Agent System Doctor → Install → Doctor skills against the trusted Me binding.
+4. check eligibility for the full Agent System Install separately: its host/agent setup declarations
+   can execute Brewfile, dotfiles, generated configuration and plugin repairs. inspect the manifest,
+   guidance, setup declarations, commands/imports and their inputs before invoking those skills.
+   hold Install when any required source update or repair was held, or when it could execute/install
+   modified or unknown local inputs; report the affected paths. `TASKS.md` alone does not hold Install.
+   when eligible, use the existing Agent System Doctor → Install → Doctor skills against the trusted Me binding.
    Install includes its normal automation plan, native save, acknowledgment, and readback; a setup
    subprocess alone does not reconcile schedules. apply declared changes through that owner, preserve
    `smoke-test` disabled, and do not temporarily pause jobs for maintenance. stop on a failed or denied
@@ -55,12 +91,28 @@ checking its outcome; do not repeat an uncertain native write or denied approval
 not a guarantee that a native approval call can be interrupted. ordinary failures get a report and
 can be checked again on the next occurrence; native denials require their normal recovery.
 
+## temporary Luna pilot
+
+the declaration requests `gpt-6-luna` / `medium` through `overrides.codex`. keep the existing
+`NIGHTLY REFRESH` chat/history, 23:00 local schedule, permissions, other automations and disabled
+`smoke-test`. if Install reports `automation-thread-model-drift`, stop for the operator to select
+the requested model and effort through that chat's native controls, then replan Install. retain its
+manual handoff if those controls or persisted readback are unavailable. never replace the chat,
+write scheduler files, use a transient app-server override or send a model turn to clear drift.
+
+verify the persisted native model/effort and Agent System's saved automation readback separately.
+then record one actual refresh on Luna in the same chat, including effective execution settings,
+the status card and any reasoning/recovery failures. prefer the next scheduled occurrence; a manual
+run proves execution only, not scheduled delivery. saved settings or a model's self-report do not
+prove execution. preserve an incomplete pilot as outstanding work.
+
 ## report
 
 return one Markdown quote block after every run, including unchanged days. use ✅ for completed,
 verified work, ⚠️ for skips or restart/context needs, and ❌ for failures. use the readable Agent System
 instance name in backticks, the local occurrence date, and actual short commits. never label an
-unchecked step healthy. keep the card compact, following this shape:
+unchecked step healthy. distinguish source updates from held/failed dependency, plugin and Install
+steps. keep the card compact, following this shape:
 
 > ## ✅ NIGHTLY REFRESH
 >
