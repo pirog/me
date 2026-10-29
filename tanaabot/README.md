@@ -10,8 +10,8 @@ with manual loading and synchronization prompts for the cloud pilot.
 these are reviewable source definitions. installing Me does not load them into the root cloud
 assistant, select its connector account, change its appearance or activate a schedule.
 
-the [voice file](./voice.md) is pending tanaabot's current source text. until that is supplied,
-bootstrap and refresh must report an incomplete profile load.
+the [voice file](./voice.md) captures tanaabot's C-3PO-inspired chat style. load it with the scoped
+guidance; source availability is not proof that a cloud chat has loaded or applied it.
 
 ## manual setup
 
