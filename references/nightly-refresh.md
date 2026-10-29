@@ -10,6 +10,12 @@ in the native `AGENT SYSTEM` sidebar group beside `ISSUE ASSIGNMENTS`. the decla
 until the pilot and integration requirements below pass. do not activate it merely because this
 file exists. never silently accept a generated automation name in place of the requested name.
 
+run at 23:00 `America/New_York`. the initial scope accepts updated sources, synchronized caches,
+and reviewed, trusted hooks with a warning that loaded chats still need a restart. that is a staged
+outcome, not proof that every chat uses the new runtime. post the card when the run finishes for
+morning review. do not restart the desktop app automatically or leave later jobs paused to wait
+for a restart; saved schedule recovery remains required before unattended activation.
+
 ## activation requirements
 
 - use a bounded idle-maintenance window: pause only affected scheduled consumers through their
@@ -24,7 +30,8 @@ file exists. never silently accept a generated automation name in place of the r
   approval scope, exact-definition readback, and a new trusted `SessionStart` context.
 - require an Agent System version supporting `display-name` and `group`. the declaration uses those
   shared fields for the emoji-bearing automation name and sidebar group; `thread.name` remains plain.
-- run the source interruption/transient-failure pilot, then the complete native pilot. activate via
+- run the source interruption/transient-failure pilot, then the native source/cache/trust and
+  schedule-recovery pilot. in-place adoption by the loaded chat is outside this initial scope. activate via
   Agent System Install only after these gates pass. saved settings and manual execution do not prove
   an overnight run; verify its actual time and delivered report afterward.
 
@@ -33,7 +40,7 @@ and paused schedule, but it must preserve `enabled: false`. after the requiremen
 enable the declaration in Me and run Agent System Install on each bound Codex installation that
 should participate. Install owns chat reconciliation, schedule preparation, native save,
 acknowledgment, and saved-state verification; there is no separate hand-created automation or
-pre-activation step. verify Doctor and then an actual 02:00 occurrence and morning card on each host.
+pre-activation step. verify Doctor and then an actual 23:00 occurrence and delivered card on each host.
 
 ## each occurrence
 
@@ -85,8 +92,10 @@ pre-activation step. verify Doctor and then an actual 02:00 occurrence and morni
    next executable from a directory listing or use an old prefix after its runtime disappears.
    a cold client can resume the same chat with renewed trust, but a loaded owner prevents a second
    client from resuming it. compaction and `hooks/list` do not renew the loaded chat's hook trust in
-   the tested native client. unattended activation requires a supported owner-release/resume or
-   in-place refresh path; launching another client is not sufficient.
+   the tested native client. the initial scope may stop at a restart-needed warning after recording
+   the actual source/cache/trust results and restoring schedules. completing runtime adoption and
+   final reconciliation still requires owner-release/resume or in-place refresh; launching another
+   client is not sufficient. never record `context: fresh` or healthy final Doctor from cache equality.
 7. complete Install's owned automation plan/prepare/native mutation/acknowledge sequence using that
    refreshed context. reconcile unknown saves before another write. verify all three plugins are
    installed, enabled, and pass their cache checks, even if a setup step would consider one optional.
