@@ -1,7 +1,7 @@
 {
   "name": "piroplugin",
   "version": "1.0.0",
-  "description": "pirog, codified for Codex: assessment, implementation, replies, skill authoring, and shared voice.",
+  "description": "pirog, codified for Codex: assessment, implementation, replies, blogging, skill authoring, and shared voice.",
   "author": {
     "name": "@pirog",
     "email": "mike@tanaab.dev",
@@ -16,7 +16,7 @@
   "interface": {
     "displayName": "Piroplugin",
     "shortDescription": "Piroproximate AI replicators",
-    "longDescription": "pirog's skills for assessment, implementation, replies, skill authoring, and shared voice in Codex.",
+    "longDescription": "pirog's skills for assessment, implementation, replies, blogging, skill authoring, and shared voice in Codex.",
     "developerName": "@pirog",
     "category": "pirobased",
     "capabilities": ["Interactive", "Write"],

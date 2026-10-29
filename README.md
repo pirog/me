@@ -56,7 +56,7 @@ pirog's `me` profile ships with:
 - [dependencies](./INVENTORY.md#dependencies): applications and command-line tools.
 - [dotfiles](./INVENTORY.md#dotfiles): Stow-managed user configuration.
 - [plugins](./INVENTORY.md#plugins): the Pirostore catalog and local source links.
-- [skills](./INVENTORY.md#skills): assessment, implementation, replies, authoring, and voice.
+- [skills](./INVENTORY.md#skills): assessment, implementation, replies, blogging, authoring, and voice.
 - [automations](./INVENTORY.md#automations): issue assignments, nightly refresh, and validation jobs.
 - [configuration files](./INVENTORY.md#configuration-files): the sources that define the profile.
 - [a cheat sheet](./INVENTORY.md#cheat-sheet): common commands and Codex prompts.
@@ -110,6 +110,9 @@ use $agent-system-task-retirement to clean up <issue URL>.
 
 # check workspace readiness without applying repairs
 use $agent-system-doctor to check this workspace.
+
+# turn an idea and sources into a longer article
+use $piro-blog-author to outline a technical blog post for <reader> from <idea and sources>.
 
 # rewrite supplied prose in the shared voice
 use $piro-voice to rewrite the following text: <text>.

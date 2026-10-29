@@ -1,0 +1,7 @@
+interface:
+  display_name: 'Blog Author'
+  short_description: 'Pirobased blog briefs, outlines, drafts and revisions'
+  icon_small: './assets/composer-icon.svg'
+  icon_large: './assets/icon-large.png'
+  brand_color: '#db2777'
+  default_prompt: 'Use $piro-blog-author to turn this idea and supporting material into a brief, outline, draft or revision, following piro-voice without publishing.'

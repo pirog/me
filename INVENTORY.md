@@ -42,13 +42,13 @@ the `ai` dotpkg installs the [Pirostore catalog](./dotfiles/ai/.agents/plugins/m
 and local source links. entries are optional; catalog availability does not mean installed or enabled.
 see the catalog for sources and versions.
 
-| plugin                                                                | provides                                                                  |
-| --------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| [`agent-system`](https://github.com/tanaabased/openclaw-agent-system) | profile binding, setup checks and repairs, and model routing.             |
-| [`agentbox`](https://github.com/tanaabased/agentbox)                  | Agentbox host setup and diagnostic skills.                                |
-| [`leia`](https://github.com/lando/leia)                               | scenario skills and assets; projects manage their Leia CLI separately.    |
-| [`piroplugin`](./.codex-plugin/plugin.json)                           | personal assessment, implementation, replies, skill authoring, and voice. |
-| [`tanaab`](https://github.com/tanaabased/canon)                       | shared Tanaab authoring and project-management skills.                    |
+| plugin                                                                | provides                                                                            |
+| --------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| [`agent-system`](https://github.com/tanaabased/openclaw-agent-system) | profile binding, setup checks and repairs, and model routing.                       |
+| [`agentbox`](https://github.com/tanaabased/agentbox)                  | Agentbox host setup and diagnostic skills.                                          |
+| [`leia`](https://github.com/lando/leia)                               | scenario skills and assets; projects manage their Leia CLI separately.              |
+| [`piroplugin`](./.codex-plugin/plugin.json)                           | personal assessment, implementation, replies, blogging, skill authoring, and voice. |
+| [`tanaab`](https://github.com/tanaabased/canon)                       | shared Tanaab authoring and project-management skills.                              |
 
 ## skills
 
@@ -57,13 +57,14 @@ each has a defined job, not a general license to meddle.
 
 for skills-only installation, see the [Quickstart](./README.md#quickstart).
 
-| skill                                                         | owns                                                                                    |
-| ------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| [`piro-feedback-reply`](./skills/feedback-reply/)             | concise public candidates using the shared voice, supplied evidence, and event context. |
-| [`piro-issue-assessment`](./skills/issue-assessment/)         | issue investigation and plans that compare local fixes with justified consolidation.    |
-| [`piro-issue-implementation`](./skills/issue-implementation/) | authorized plans implemented with affected callers and existing/new contracts verified. |
-| [`piro-skill-author`](./skills/skill-author/)                 | piro customization of Canon's shared authoring and validation.                          |
-| [`piro-voice`](./skills/voice/)                               | approachable maintainer prose with practical skepticism, warmth, and geeky enthusiasm.  |
+| skill                                                         | owns                                                                                            |
+| ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| [`piro-blog-author`](./skills/blog-author/)                   | longer article briefs, outlines, drafts, and revisions using shared voice and supported claims. |
+| [`piro-feedback-reply`](./skills/feedback-reply/)             | concise public candidates using the shared voice, supplied evidence, and event context.         |
+| [`piro-issue-assessment`](./skills/issue-assessment/)         | issue investigation and plans that compare local fixes with justified consolidation.            |
+| [`piro-issue-implementation`](./skills/issue-implementation/) | authorized plans implemented with affected callers and existing/new contracts verified.         |
+| [`piro-skill-author`](./skills/skill-author/)                 | piro customization of Canon's shared authoring and validation.                                  |
+| [`piro-voice`](./skills/voice/)                               | approachable maintainer prose with practical skepticism, warmth, and geeky enthusiasm.          |
 
 the [profile](./.agent-system/agent.yaml) selects the assessment, implementation, and reply skills.
 the installed plugin must expose them before the bound workspace selects them. see
