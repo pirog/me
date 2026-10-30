@@ -67,7 +67,7 @@ automations:
       cron: "0 23 * * *"
     prompt: |
       Update this Codex installation using its trusted Me binding.
-      Read references/nightly-refresh.md in the bound workspace and follow that procedure:
+      Read references/updates.md in the bound workspace and follow that procedure:
       safely fast-forward eligible main checkouts while preserving local edits, and refresh dependencies
       and all three Codex plugins only when their installation inputs are safe.
       Then run Agent System Doctor → Install → Doctor including automation reconciliation,

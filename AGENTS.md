@@ -129,8 +129,8 @@ its Codex plugin bundle.
   `tanaabased/actions/validate-codex-plugin@v1` action in CI.
 - Routine live updates for `piroplugin`, Canon's `tanaab` plugin, and Agent System belong to
   explicitly operator-requested Agent System Install against the trusted Me binding or the
-  authorized nightly refresh. Use merged `main` from the designated source checkouts with
-  unchanged installation inputs. Follow `references/nightly-refresh.md` for the scheduled flow;
+  authorized scheduled update. Use merged `main` from the designated source checkouts with
+  unchanged installation inputs. Follow `references/updates.md` for the scheduled flow;
   do not run its setup repairs or cache-sync commands independently as part of task work.
 - Use `scripts/setup.js apply dotfiles` for Stow-owned configuration and `scripts/setup.js apply config`
   for generated Codex configuration. Plugin-link repair restows only `dotfiles/ai`.

@@ -4,7 +4,7 @@ bootstrap the checked-out pirog profile and install the packaged Agent System pl
 Codex state. check binding, setup, packaged hook output, and model routing without a model login.
 
 repeated installation must leave setup unchanged. automation checks use a project-lookup fixture
-to inspect the disabled smoke test and enabled nightly refresh and intake declarations, including the missing native
+to inspect the disabled smoke test and enabled update and intake declarations, including the missing native
 intake chat, without creating schedules. native hook approval, interactive skill use, intake
 activation, and scheduled execution require separate desktop validation.
 

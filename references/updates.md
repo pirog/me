@@ -110,26 +110,22 @@ can be checked again on the next occurrence; native denials require their normal
 
 the declaration selects `model: low`, inheriting both model and effort from Me's `models.low`
 profile. use Agent System Doctor → Install → Doctor to reconcile `update` and its `UPDATES` chat in
-`REPORTS`. the ID change from `nightly-refresh` uses removal/replacement reconciliation: pause the
-removed job and provision the new automation/chat. the old chat/history stays separate and is not
-carried into the replacement. verify the old job is paused before allowing the replacement schedule
-to run; if the owner cannot establish a safe cutover, hold activation and report it. optional manual
-deletion of the old job is separate cleanup after replacement verification.
+`REPORTS`. let Install own reconciliation ordering and verify the final saved state.
 
 keep the 23:00 local schedule, permissions, other automations and disabled `smoke-test` unchanged.
 do not adopt a chat by matching title or copy private scheduler/ownership state to preserve identity.
 use Install's supported `threads-sync` plan for chat creation, name, group and model/effort settings,
 including its exact native placement actions, receipts, refreshed sidebar inventory and replan.
-after replacement, ordinary settings changes reconcile that same new chat; attempt supported
-reconciliation before prescribing manual model repair. repeat Install should report aligned settings.
+ordinary settings changes reconcile the existing chat; attempt supported reconciliation before
+prescribing manual model repair. repeat Install should report aligned settings.
 if native reconciliation is blocked, busy, denied, unsupported or has incomplete readback, retain the
 result and follow its supported recovery. never replace a chat merely to clear settings drift, write
 scheduler files, use a transient app-server override or send a model turn to clear drift. never repeat
 an uncertain native mutation.
 
-verify the old job's paused state, the new job/chat binding, persisted name/group, model/effort and
-saved schedule readback separately from merged configuration. use the authorized Install/nightly
-flow against eligible designated `main` sources; routine task-work validation does not activate this change.
+verify the job/chat binding, persisted name/group, model/effort and saved schedule readback separately
+from merged configuration. use the authorized Install/update flow against eligible designated `main`
+sources; routine task-work validation does not activate updates.
 then record one actual refresh using the resolved profile in the same chat, including effective
 execution settings, the status card and any reasoning/recovery failures. prefer the next scheduled
 occurrence; a manual run proves execution only, not scheduled delivery. saved settings or a model's self-report do not

@@ -3,7 +3,6 @@
 ## AGENT SYSTEM
 
 - big improvement branch before release?
-- nightly refresh -> REPORTS: UPDATES
 
 - investigate backend support (file, redis, db, api?)
 

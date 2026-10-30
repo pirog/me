@@ -71,11 +71,11 @@ the installed plugin must expose them before the bound workspace selects them. s
 
 ## automations
 
-| work                                                 | source and purpose                                                                                                                   |
-| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| issue assignments                                    | Agent System creates intake from `github.issue-assignment` policy; activate and reconcile it through Install.                        |
-| [`nightly-refresh`](./references/nightly-refresh.md) | clean `main` updates to Agent System, Canon, and Me at 23:00 `America/New_York`, with a quoted status card ready for morning review. |
-| `smoke-test`                                         | disabled; a 15-minute schedule for an explicitly authorized validation window.                                                       |
+| work                                   | source and purpose                                                                                            |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| issue assignments                      | Agent System creates intake from `github.issue-assignment` policy; activate and reconcile it through Install. |
+| [`⬇️ UPDATE`](./references/updates.md) | safe updates to Agent System, Canon, and Me at 23:00 local time, with a status card in `REPORTS` / `UPDATES`. |
+| `smoke-test`                           | disabled; a 15-minute schedule for an explicitly authorized validation window.                                |
 
 these are configured through the [profile](./.agent-system/agent.yaml), but issue intake is generated
 by Agent System rather than listed under `automations`. see its
@@ -102,7 +102,7 @@ for task selection and fallback, and the [cheat sheet](#cheat-sheet) for applyin
 ## cheat sheet
 
 pick the operation you need, not the whole block. terminal commands run from the source checkout;
-paste Codex prompts into chat. `apply`, `codex:sync`, and Agent System Install change installed state.
+paste Codex prompts into chat. `apply` and Agent System Install change installed state.
 
 ```text
 # terminal — work from the source checkout
@@ -124,15 +124,13 @@ bun scripts/setup.js apply dotfiles
 bun scripts/setup.js check config
 bun scripts/setup.js apply config
 
-# terminal — check plugin-cache drift; sync after editing plugin source, then check again
-bun run codex:check
-bun run codex:sync
+# terminal — inspect plugin-cache drift without changing installed state
 bun run codex:check
 
 # Codex — inspect workspace readiness without applying repairs
 use $agent-system-doctor to check this workspace.
 
-# Codex — apply declared repairs and reconcile automations, then verify saved state
+# Codex — update from merged designated main sources and reconcile automations
 use $agent-system-install, then $agent-system-doctor. report anything still unresolved.
 
 # Codex — bind this profile; confirm the target, then start a fresh chat
@@ -157,6 +155,7 @@ use $piro-skill-author to create <skill name and purpose> in this repository.
 use $piro-voice to rewrite the following text: <text>.
 ```
 
-after model-profile changes, apply `config` and sync the plugin cache, then check defaults in a fresh
-Codex chat. existing chat selections stay unchanged. plugin sync does not reconcile automations;
-Install owns that step. Doctor verifies saved state, not successful scheduled execution.
+after model-profile changes, apply `config`, then check defaults in a fresh Codex chat. existing chat
+selections stay unchanged. live plugin updates belong to explicitly requested Agent System Install
+from merged designated `main` sources or the [scheduled update](./references/updates.md). use isolated
+caches for development checks. Doctor verifies saved state, not successful scheduled execution.

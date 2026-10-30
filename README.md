@@ -57,7 +57,7 @@ pirog's `me` profile ships with:
 - [dotfiles](./INVENTORY.md#dotfiles): Stow-managed user configuration.
 - [plugins](./INVENTORY.md#plugins): the Pirostore catalog and local source links.
 - [skills](./INVENTORY.md#skills): assessment, implementation, replies, authoring, and voice.
-- [automations](./INVENTORY.md#automations): issue assignments, nightly refresh, and validation jobs.
+- [automations](./INVENTORY.md#automations): issue assignments, updates, and validation jobs.
 - [configuration files](./INVENTORY.md#configuration-files): the sources that define the profile.
 - [a cheat sheet](./INVENTORY.md#cheat-sheet): common commands and Codex prompts.
 
