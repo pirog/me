@@ -146,8 +146,8 @@ node "$runtime" automations list --plugin-data "$TMPDIR/plugin-data" < "$TMPDIR/
       .status == "requires-native-app-sync" and .actions == [] and
       any(.jobs[]; .id == "github-issue-assignment" and .enabled and .declared and .applicable and .nativeId == null) and
       any(.jobs[]; .id == "smoke-test" and .enabled == false and .declared and .applicable and .nativeId == null) and
-      any(.jobs[]; .id == "nightly-refresh" and .enabled and .declared and .applicable and .nativeId == null) and
-      all([{id: "github-issue-assignment", name: "ISSUE ASSIGNMENTS"}, {id: "nightly-refresh", name: "NIGHTLY REFRESH"}][]; . as $thread |
+      any(.jobs[]; .id == "update" and .enabled and .declared and .applicable and .nativeId == null) and
+      all([{id: "github-issue-assignment", name: "ISSUE ASSIGNMENTS"}, {id: "update", name: "UPDATES"}][]; . as $thread |
         any($plan.findings[]; .id == $thread.id and .code == "automation-thread-sync-required") and
         any($plan.conversations[]; .id == $thread.id and .name == $thread.name and .routing == "per-automation" and .nativeId == null))
     then true else error("automation plan: \(.)") end'

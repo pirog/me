@@ -1,8 +1,10 @@
-# nightly refresh
+# updates
 
-`🌙 NIGHTLY REFRESH` runs at 23:00 local time on each Codex installation where Agent
-System Install has activated the declaration. its persistent chat is `NIGHTLY REFRESH` in
-`AGENT SYSTEM`. use the current trusted Me binding and runtime routes; never save a machine-specific
+`⬇️ UPDATE` runs at 23:00 local time on each Codex installation where Agent
+System Install has activated the declaration. its persistent chat is `UPDATES` in
+`REPORTS`; section and chat names contain no emoji. its cadence-neutral automation ID is `update`.
+this remains Me's prompt-backed Codex refresh; OpenClaw command jobs own their separate execution
+and report delivery. use the current trusted Me binding and runtime routes; never save a machine-specific
 home, UUID, or versioned runtime path in the prompt. use `instanceRuntime inspect` for the readable
 instance name shown in the card.
 
@@ -10,13 +12,28 @@ instance name shown in the card.
 
 1. inspect the bound Me checkout and its setup-owned Canon and OpenClaw Agent System source roots.
    record each current commit. require the expected repository origin, `main`, no unfinished Git
-   operation or unmerged index, and no active work in that checkout. use current native chat/worktree
-   and process evidence; if ownership is unclear, skip it. work in a separate checkout alone does
-   not disqualify a source update. local edits alone are allowed. record staged/unstaged changes and
-   relevant untracked/ignored paths without exposing their contents; use NUL-delimited Git listings.
+   operation or unmerged index, and no checkout-mutating work. use native `list_threads`, bounded
+   `read_thread` activity for chats using that checkout, Git worktree metadata and relevant process
+   evidence. a shared cwd or active chat alone is not proof of mutation. ordinary `ISSUE ASSIGNMENTS`
+   reads and dispatch into isolated task checkouts do not hold the source checkout, including writes
+   confined to managed task state outside its source/install inputs. work in another checkout alone
+   does not disqualify it. hold for verified source/index mutation, setup/build/install using that
+   checkout, or genuinely unresolved ownership. missing activity readback is unknown; an absent Git
+   process alone does not establish safety between tool calls. local edits alone are allowed.
+
+   record staged/unstaged metadata with NUL-delimited Git listings and retain preservation evidence
+   without printing file contents or raw path trees. start with
+   `git status --porcelain=v2 -z --untracked-files=normal`; scope further untracked/ignored inspection
+   to incoming paths and the setup/install inputs in step 3. collapse ignored directories with
+   `git ls-files --others --directory --ignored --exclude-standard -z -- <relevant-pathspecs>` when needed. do not recursively enumerate
+   dependencies, generated output or `.agent-system/repositories` and managed task checkouts.
+   consume listings privately; report affected paths/counts only. incomplete or truncated evidence
+   remains an unknown-input hold, never a clean result.
    report skips and continue with unaffected repositories. never stash, reset, rebase, clean, resolve
-   conflicts, or interrupt another task. leave other schedules running.
-2. recheck eligibility immediately before updating. fetch `origin main`, resolve its fetched commit,
+   conflicts, or interrupt another task. leave intake and other schedules running.
+
+2. recheck checkout activity and Git eligibility immediately before updating; hold if either changed.
+   fetch `origin main`, resolve its fetched commit,
    and require `git merge-base --is-ancestor HEAD <fetched-commit>` to succeed. then run:
 
    ```sh
@@ -58,7 +75,15 @@ instance name shown in the card.
    guidance, setup declarations, commands/imports and their inputs before invoking those skills.
    hold Install when any required source update or installation input was held, or when it could execute/install
    modified or unknown local inputs; report the affected paths. `TASKS.md` alone does not hold Install.
-   when eligible, use the existing Agent System Doctor → Install → Doctor skills against the trusted Me binding.
+   when eligible, read and use the current Agent System Doctor → Install → Doctor skills against the
+   trusted Me binding. before automation inspection/reconciliation, obtain fresh `list_projects`,
+   the exact `read_thread` results required for declared targets, and `list_threads` including the
+   sidebar sections. pass decoded results through the owner's lookup inputs (`projects`, `threads`,
+   and `nativeInventory` for the complete sidebar inventory where required). a thread title or a
+   hand-built substitute is not a native readback. refresh inputs as required before each write.
+   missing lookup inputs, unreadable saved state or denied host access are inspection blockers;
+   do not label them verified automation drift or absent jobs. report the actual diagnostic and
+   supported next action. only complete inspection can establish aligned or drifted settings.
    Install includes its normal automation plan, native save, acknowledgment, and readback; a setup
    subprocess alone does not reconcile schedules. apply declared changes through that owner, preserve
    `smoke-test` disabled, and do not temporarily pause jobs for maintenance. stop on a failed or denied
@@ -81,31 +106,48 @@ checking its outcome; do not repeat an uncertain native write or denied approval
 not a guarantee that a native approval call can be interrupted. ordinary failures get a report and
 can be checked again on the next occurrence; native denials require their normal recovery.
 
-## shared model profile
+## activation and shared model profile
 
 the declaration selects `model: low`, inheriting both model and effort from Me's `models.low`
-profile. preserve the existing `NIGHTLY REFRESH` chat/history, 23:00 local schedule, permissions,
-other automations and disabled `smoke-test`. use Agent System Doctor → Install → Doctor to reconcile
-settings in that same chat; repeat Install should report aligned settings. if native reconciliation
-is blocked or unsupported, retain the incomplete result and follow its supported recovery. never replace the
-chat, write scheduler files, use a transient app-server override or send a model turn to clear drift.
+profile. use Agent System Doctor → Install → Doctor to reconcile `update` and its `UPDATES` chat in
+`REPORTS`. the ID change from `nightly-refresh` uses removal/replacement reconciliation: pause the
+removed job and provision the new automation/chat. the old chat/history stays separate and is not
+carried into the replacement. verify the old job is paused before allowing the replacement schedule
+to run; if the owner cannot establish a safe cutover, hold activation and report it. optional manual
+deletion of the old job is separate cleanup after replacement verification.
 
-verify the persisted native model/effort and Agent System's saved automation readback separately.
+keep the 23:00 local schedule, permissions, other automations and disabled `smoke-test` unchanged.
+do not adopt a chat by matching title or copy private scheduler/ownership state to preserve identity.
+use Install's supported `threads-sync` plan for chat creation, name, group and model/effort settings,
+including its exact native placement actions, receipts, refreshed sidebar inventory and replan.
+after replacement, ordinary settings changes reconcile that same new chat; attempt supported
+reconciliation before prescribing manual model repair. repeat Install should report aligned settings.
+if native reconciliation is blocked, busy, denied, unsupported or has incomplete readback, retain the
+result and follow its supported recovery. never replace a chat merely to clear settings drift, write
+scheduler files, use a transient app-server override or send a model turn to clear drift. never repeat
+an uncertain native mutation.
+
+verify the old job's paused state, the new job/chat binding, persisted name/group, model/effort and
+saved schedule readback separately from merged configuration. use the authorized Install/nightly
+flow against eligible designated `main` sources; routine task-work validation does not activate this change.
 then record one actual refresh using the resolved profile in the same chat, including effective
 execution settings, the status card and any reasoning/recovery failures. prefer the next scheduled
-occurrence; a manual
-run proves execution only, not scheduled delivery. saved settings or a model's self-report do not
+occurrence; a manual run proves execution only, not scheduled delivery. saved settings or a model's self-report do not
 prove execution. preserve incomplete reconciliation or scheduled-run verification as outstanding work.
 
 ## report
 
-return one Markdown quote block after every run, including unchanged days. use ✅ for completed,
+return one concise Markdown quote block in `REPORTS` / `UPDATES` after every run, including unchanged days.
+use ✅ for completed,
 verified work, ⚠️ for skips or restart/context needs, and ❌ for failures. use the readable Agent System
 instance name in backticks, the local occurrence date, and actual short commits. never label an
 unchecked step healthy. distinguish source updates from held/failed dependency, plugin and Install
-steps. keep the card compact, following this shape:
+steps. missing optional plugins say `skipped / absent`; unchecked steps say `not checked` or `unknown`.
+use ⚠️ overall when required work is skipped, held or unknown, and ❌ for a failed operation; reserve ✅
+overall for completed verified work. successful source updates remain visible when Install is held.
+keep the card compact, following this shape with actual outcomes rather than copying its healthy rows:
 
-> ## ✅ NIGHTLY REFRESH
+> ## ✅ UPDATE
 >
 > **instance:** `readable instance name` · YYYY-MM-DD
 >
