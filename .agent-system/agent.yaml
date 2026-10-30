@@ -61,10 +61,7 @@ automations:
       - codex
     thread:
       name: NIGHTLY REFRESH
-    overrides:
-      codex:
-        model: gpt-6-luna
-        effort: medium
+    model: low
     schedule:
       cron: "0 23 * * *"
     prompt: |

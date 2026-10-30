@@ -81,20 +81,21 @@ checking its outcome; do not repeat an uncertain native write or denied approval
 not a guarantee that a native approval call can be interrupted. ordinary failures get a report and
 can be checked again on the next occurrence; native denials require their normal recovery.
 
-## temporary Luna pilot
+## shared model profile
 
-the declaration requests `gpt-6-luna` / `medium` through `overrides.codex`. keep the existing
-`NIGHTLY REFRESH` chat/history, 23:00 local schedule, permissions, other automations and disabled
-`smoke-test`. if Install reports `automation-thread-model-drift`, stop for the operator to select
-the requested model and effort through that chat's native controls, then replan Install. retain its
-manual handoff if those controls or persisted readback are unavailable. never replace the chat,
-write scheduler files, use a transient app-server override or send a model turn to clear drift.
+the declaration selects `model: low`, inheriting both model and effort from Me's `models.low`
+profile. preserve the existing `NIGHTLY REFRESH` chat/history, 23:00 local schedule, permissions,
+other automations and disabled `smoke-test`. use Agent System Doctor → Install → Doctor to reconcile
+settings in that same chat; repeat Install should report aligned settings. if native reconciliation
+is blocked or unsupported, retain the incomplete result and follow its supported recovery. never replace the
+chat, write scheduler files, use a transient app-server override or send a model turn to clear drift.
 
 verify the persisted native model/effort and Agent System's saved automation readback separately.
-then record one actual refresh on Luna in the same chat, including effective execution settings,
-the status card and any reasoning/recovery failures. prefer the next scheduled occurrence; a manual
+then record one actual refresh using the resolved profile in the same chat, including effective
+execution settings, the status card and any reasoning/recovery failures. prefer the next scheduled
+occurrence; a manual
 run proves execution only, not scheduled delivery. saved settings or a model's self-report do not
-prove execution. preserve an incomplete pilot as outstanding work.
+prove execution. preserve incomplete reconciliation or scheduled-run verification as outstanding work.
 
 ## report
 
