@@ -54,8 +54,8 @@ setup-agent:
   file: ./setup-agent.yaml
 
 automations:
-  - id: nightly-refresh
-    display-name: "⬇️ UPDATE AGENT"
+  - id: update
+    display-name: "⬇️ UPDATE"
     enabled: true
     runtimes:
       - codex

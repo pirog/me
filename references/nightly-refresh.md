@@ -1,8 +1,8 @@
-# agent updates
+# updates
 
-`⬇️ UPDATE AGENT` runs at 23:00 local time on each Codex installation where Agent
+`⬇️ UPDATE` runs at 23:00 local time on each Codex installation where Agent
 System Install has activated the declaration. its persistent chat is `UPDATES` in
-`REPORTS`; section and chat names contain no emoji. keep the stable `nightly-refresh` automation ID.
+`REPORTS`; section and chat names contain no emoji. its cadence-neutral automation ID is `update`.
 this remains Me's prompt-backed Codex refresh; OpenClaw command jobs own their separate execution
 and report delivery. use the current trusted Me binding and runtime routes; never save a machine-specific
 home, UUID, or versioned runtime path in the prompt. use `instanceRuntime inspect` for the readable
@@ -106,22 +106,29 @@ checking its outcome; do not repeat an uncertain native write or denied approval
 not a guarantee that a native approval call can be interrupted. ordinary failures get a report and
 can be checked again on the next occurrence; native denials require their normal recovery.
 
-## shared model profile
+## activation and shared model profile
 
 the declaration selects `model: low`, inheriting both model and effort from Me's `models.low`
-profile. use Agent System Doctor → Install → Doctor to rename the existing owned `NIGHTLY REFRESH`
-chat to `UPDATES`, move it from `AGENT SYSTEM` to `REPORTS`, and reconcile settings in that same chat.
-preserve its native chat ID/history, automation identity, 23:00 local schedule, permissions, other
-automations and disabled `smoke-test`; do not add a new `thread.id` or adopt a chat by matching title.
-use Install's supported `threads-sync` plan for name, group and model/effort drift, including its exact
-native placement actions, receipts, refreshed sidebar inventory and replan. attempt supported existing-chat
+profile. use Agent System Doctor → Install → Doctor to reconcile `update` and its `UPDATES` chat in
+`REPORTS`. the ID change from `nightly-refresh` uses removal/replacement reconciliation: pause the
+removed job and provision the new automation/chat. the old chat/history stays separate and is not
+carried into the replacement. verify the old job is paused before allowing the replacement schedule
+to run; if the owner cannot establish a safe cutover, hold activation and report it. optional manual
+deletion of the old job is separate cleanup after replacement verification.
+
+keep the 23:00 local schedule, permissions, other automations and disabled `smoke-test` unchanged.
+do not adopt a chat by matching title or copy private scheduler/ownership state to preserve identity.
+use Install's supported `threads-sync` plan for chat creation, name, group and model/effort settings,
+including its exact native placement actions, receipts, refreshed sidebar inventory and replan.
+after replacement, ordinary settings changes reconcile that same new chat; attempt supported
 reconciliation before prescribing manual model repair. repeat Install should report aligned settings.
 if native reconciliation is blocked, busy, denied, unsupported or has incomplete readback, retain the
-result and follow its supported recovery. never replace the chat, write scheduler files, use a transient
-app-server override or send a model turn to clear drift. never repeat an uncertain native mutation.
+result and follow its supported recovery. never replace a chat merely to clear settings drift, write
+scheduler files, use a transient app-server override or send a model turn to clear drift. never repeat
+an uncertain native mutation.
 
-verify the persisted name/group, same chat ID/history, model/effort and Agent System's saved automation
-identity/schedule readback separately from merged configuration. use the authorized Install/nightly
+verify the old job's paused state, the new job/chat binding, persisted name/group, model/effort and
+saved schedule readback separately from merged configuration. use the authorized Install/nightly
 flow against eligible designated `main` sources; routine task-work validation does not activate this change.
 then record one actual refresh using the resolved profile in the same chat, including effective
 execution settings, the status card and any reasoning/recovery failures. prefer the next scheduled
@@ -140,7 +147,7 @@ use ⚠️ overall when required work is skipped, held or unknown, and ❌ for a
 overall for completed verified work. successful source updates remain visible when Install is held.
 keep the card compact, following this shape with actual outcomes rather than copying its healthy rows:
 
-> ## ✅ UPDATE AGENT
+> ## ✅ UPDATE
 >
 > **instance:** `readable instance name` · YYYY-MM-DD
 >
