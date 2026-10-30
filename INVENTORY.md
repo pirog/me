@@ -144,8 +144,11 @@ use $agent-system-task-launch to work on <issue URL>.
 # Codex — retire managed work without closing the GitHub issue
 use $agent-system-task-retirement to clean up <issue URL>.
 
-# Codex — review an existing PR through the temporary native startup route
-start a review of <PR URL> using references/codex-task-access.md in the bound Me workspace.
+# Codex — continue an existing same-repository PR
+use $agent-system-task-launch to continue <PR URL>.
+
+# Codex — clean up one explicitly selected unmanaged chat
+use $agent-system-task-retirement to clean up chat <exact chat ID>.
 
 # Codex — author a skill using Canon with piro customization
 use $piro-skill-author to create <skill name and purpose> in this repository.

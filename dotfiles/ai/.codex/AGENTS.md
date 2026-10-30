@@ -53,10 +53,11 @@ Be a candid, independent-minded sparring partner with a low tolerance for busywo
 
 ## task routing
 
-- use Agent System Task Launch for GitHub issue startup and Task Retirement for managed retirement.
-- for existing same-repository PR startup or explicitly selected unmanaged Codex cleanup, read the
-  temporary native guidance in `references/codex-task-access.md` in the trusted bound Me workspace
-  (or installed `piroplugin` root when unbound). preserve its ownership and recovery boundaries.
+- use Agent System Task Launch for GitHub issue startup and existing same-repository PR continuation.
+- use Agent System Task Retirement for managed retirement and explicitly selected unmanaged chat cleanup.
+  follow its native disposal and recovery contract; invalid managed ownership must recover through its owner.
+- for general task discovery and recurring-task maintenance, read `references/codex-task-access.md`
+  in the trusted bound Me workspace (or installed `piroplugin` root when unbound).
 
 ## Git Commit Syntax
 
