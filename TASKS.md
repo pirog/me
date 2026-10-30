@@ -3,13 +3,9 @@
 ## AGENT SYSTEM
 
 - big improvement branch before release?
-
-- doctor output changes? keys? models for automations?
-- other bugs?
-- optimizer?
+- nightly refresh -> REPORTS: UPDATES
 
 - investigate backend support (file, redis, db, api?)
-- swarm mode for project picker and in general?
 
 ## PR REVIEW
 
