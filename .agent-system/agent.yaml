@@ -55,23 +55,25 @@ setup-agent:
 
 automations:
   - id: nightly-refresh
-    display-name: "🌙 NIGHTLY REFRESH"
+    display-name: "⬇️ UPDATE AGENT"
     enabled: true
     runtimes:
       - codex
+    group: REPORTS
     thread:
-      name: NIGHTLY REFRESH
+      name: UPDATES
     model: low
     schedule:
       cron: "0 23 * * *"
     prompt: |
-      Perform the nightly refresh for this Codex installation using its trusted Me binding.
+      Update this Codex installation using its trusted Me binding.
       Read references/nightly-refresh.md in the bound workspace and follow that procedure:
-      safely fast-forward idle main checkouts while preserving local edits, and refresh dependencies
+      safely fast-forward eligible main checkouts while preserving local edits, and refresh dependencies
       and all three Codex plugins only when their installation inputs are safe.
       Then run Agent System Doctor → Install → Doctor including automation reconciliation,
       and review/trust changed hooks through the native CLI when needed.
-      Leave other schedules running. Report recoverable failures and restart/context needs.
+      Ordinary read-only ISSUE ASSIGNMENTS activity alone is not a source-update hold.
+      Leave other schedules running. Report recoverable failures, unknowns and restart/context needs.
       Return one quoted status card after every run, including unchanged days, for morning review.
   - id: smoke-test
     enabled: false
