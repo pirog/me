@@ -1,0 +1,10 @@
+schema_version: 1
+display_name: tanaabot
+appearance:
+  key: l338
+  asset: tanaabot/assets/tanaabot-l338-circle.png
+guidance:
+  - AGENTS.md
+  - tanaabot/AGENTS.md
+  - tanaabot/voice.md
+skills_dir: skills

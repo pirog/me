@@ -12,6 +12,11 @@ pirog's persona and personal operating policy do not replace the contributing ag
 Public documentation follows the house style below; other prose follows the contributor's guidance.
 Repository access and work authority still come from the executing agent's trusted runtime.
 
+the designated tanaabot cloud assistant has its own
+[scoped guidance](https://github.com/pirog/me/blob/main/tanaabot/AGENTS.md). load it only through
+its operator-selected, revision-pinned setup. this pointer does not change a contributor's runtime
+identity, chat voice, credentials, or authority.
+
 ## documentation house style
 
 all contributors write end-user documentation using [piro-voice](./skills/voice/SKILL.md). this
