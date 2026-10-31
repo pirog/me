@@ -38,8 +38,10 @@ read and apply [account policy](./account-policy.md); preferences never grant se
 7. on an inspection or save failure, keep verified selections for this chat and report that they were not persisted;
    don't turn persistence into a prerequisite for authorized service work. diagnose once using the
    returned code. `account-defaults-unsafe-permissions` permits narrowing the verified regular file
-   to mode `0600`, then inspecting again. never widen permissions or retry an access denial. preserve
-   malformed, unreadable or unresolved records until repaired or the operator chooses replacement;
+   to mode `0600`, then inspecting again. use normal native approval when the host sandbox requires
+   access to private plugin storage; a filesystem error is not a service-account denial. never widen
+   file permissions or retry an explicit native approval or service-access denial. preserve malformed,
+   unreadable or unresolved records until repaired or the operator chooses replacement;
    continue with resolved session selections meanwhile. do not repeatedly run discovery or writes
    against an unchanged failure. report saved and session-only choices distinctly.
 
