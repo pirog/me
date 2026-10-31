@@ -69,9 +69,19 @@ read and apply each applicable document before dependent work; reuse complete re
 4. write the complete engineering assessment before its human review. preserve the recommendation,
    rationale, rejected alternative where useful, affected owners/callers, ordered changes, dependencies,
    risks, uncertainty, and verification. identify the smallest reliable test layer for each meaningful
-   behavior or failure. update the existing documentation owner only when the proposed work changes a
-   user-facing contract or makes its guidance wrong; do not invent incidental documentation chores.
-   retain useful partial work and exact questions when blocked.
+   behavior or failure. retain useful partial work and exact questions when blocked.
+
+   for every project, default to no user-facing documentation change unless requested or needed for a
+   concrete user task or decision. this covers READMEs, guides, docs sites, help text and other user-facing
+   docs. add only what the reader needs to install, configure, use, operate or recover the product.
+   implementation changes alone do not justify documentation. keep internal architecture, lifecycle,
+   schema and validation narration out unless the reader must act on it. if removing a proposed
+   paragraph would not impair that task or decision, omit it; do not relocate rejected prose elsewhere.
+   correct misleading guidance with the smallest useful edit.
+
+   before proposing docs, name the concrete reader task or decision and the missing or incorrect
+   instruction. do not add a generic "update documentation" step to an implementation plan.
+
 5. prepare the concise human review using Agent System's
    [user-journey editor](https://github.com/tanaabased/openclaw-agent-system/blob/main/skills/issue-assessment/references/user-journey-editor.md).
    read that reference from the host-discovered Agent System assessment skill's installation when
