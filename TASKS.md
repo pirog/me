@@ -3,7 +3,7 @@
 ## AGENT SYSTEM
 
 - big improvement branch before release?
-
+- no articles for smutlord? add as part of russian roullete?
 - investigate backend support (file, redis, db, api?)
 
 ## PR REVIEW
@@ -18,6 +18,12 @@
 
 - @pirog/me
   - TANAABOT?
+    - automations
+      - scheduled chats can provide usefully organized threads on run?
+      - are they shared on all macs?
+      - agents skills/plugin/etc?
+
+    - voice customization?
     - gh script and browser login?
     - monday automations redo?
     - artwork updates?
