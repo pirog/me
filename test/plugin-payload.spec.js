@@ -27,6 +27,13 @@ describe('package.json plugin payload', () => {
   let temporary;
   let source;
 
+  it('should keep managed plugin content fingerprintable for native hook trust', async () => {
+    const entries = await collectEntries(repoRoot, packageJson.codexTools);
+    for (const [relative, entry] of entries) {
+      assert.notEqual(entry.type, 'symlink', `Native hook trust rejects symlinks: ${relative}`);
+    }
+  });
+
   beforeEach(async () => {
     temporary = await mkdtemp(path.join(os.tmpdir(), 'me-plugin-payload-'));
     source = path.join(temporary, 'source');
