@@ -1,38 +1,48 @@
 # account-default setup
 
-use this flow from `$agent-system-codex-binding` after binding Me, or when the operator asks to
-“set up my accounts”, “update my account defaults”, or “change my account binding”. account-only
-updates preserve the workspace binding. this is a local preference file, not a credential store.
+use this flow from `$agent-system-codex-binding` after binding Me, for account-default updates, or
+when work needs a missing, invalid or unclear account default. no separate setup request is
+required. account-only work preserves workspace binding and does not require a healthy manifest.
+read and apply [account policy](./account-policy.md); preferences never grant service permissions.
 
 1. use the newest trusted `piroplugin-account-context.runtime` for `argvPrefix` and `pluginData`.
-   if absent, report that Piroplugin needs its current trusted hook loaded; do not guess a home,
-   checkout, cache or storage path. read and apply [account policy](./account-policy.md).
-2. append `inspect --plugin-data <pluginData>` to that prefix, with separate shell-safe arguments.
-   preserve existing valid choices unless the operator asks to change them. missing or invalid
-   preferences enter discovery; do not silently migrate old email-only records into invented IDs.
-3. discover the available GitHub and Google connections through native tool metadata. use supported
-   read-only profile checks to obtain each candidate's provider account ID and login/email. inspect
-   identity only; mail, files and events are unnecessary. connector link IDs are temporary routing
-   handles, not provider account IDs. never copy tokens or resolve secrets.
-4. map verified identities to the two profiles, `pirog` and `tanaabot`. exact GitHub logins matching
-   those names are clear matches. for Google, infer likely ownership from the verified identity and
-   operator context; names and domains are evidence, not proof or permission. save clear matches
-   during authorized setup without another confirmation. ask one compact question for uncertain
-   ownership or multiple plausible defaults. previously selected defaults and alternatives need
-   no repeat question. an unavailable service can remain absent without blocking the other one.
-5. assemble version 2 preferences with `profiles.<profile>.<github|google>` containing `default`
-   (the account ID) and `accounts` (objects with `id` plus `login` for GitHub or `email` for Google).
-   keep the selected default in the account list. multiple Google accounts are supported; record
-   approved alternatives without treating them as permission to send, write or switch after failure.
-   only `pirog` and `tanaabot` profiles are supported. keep unchanged profile/provider entries.
-6. append `save --plugin-data <pluginData>` to the runtime prefix and pass the complete JSON through
-   standard input. the helper validates and atomically writes `account-defaults.json` with mode
-   `0600` outside the package. never put private selections in shell arguments, tracked files,
-   examples or fixtures. inspect again and compare the saved choices with the intended choices.
-7. report defaults, alternatives and any unresolved service in the private chat. future hooks load
-   the saved file; use the verified readback in this setup chat. removing a workspace binding does
-   not delete account preferences, sign out connectors, or revoke their credentials.
+   when available, append `inspect --plugin-data <pluginData>` using separate shell-safe arguments.
+   if the runtime is absent, continue discovery for this chat without guessing a storage path.
+   report that persistence needs the current trusted Piroplugin hook; do not require a restart to
+   continue work with an otherwise resolved, verified account.
+2. inspect the affected profile/provider, not just the file's overall status. `partial` results
+   retain valid selections with scoped issues; absent providers and `unconfigured` need discovery
+   only when used. handle file-level inspection failures under step 7 before any write; never rebuild
+   over an unreadable file. preserve existing valid choices and operator-approved task selections. a failed
+   profile check, authentication failure or access denial is not a setup trigger or fallback grant.
+3. discover relevant GitHub and Google connections through native metadata and supported read-only
+   profile checks. obtain provider account IDs and login/email identifiers; no mail, files, events,
+   tokens or secrets are needed. deduplicate connections by provider account ID. don't make GitHub
+   depend on a working Google connector, or one Google service depend on every other Google service.
+4. map verified identities to `pirog` and `tanaabot`. exact GitHub logins matching those names are
+   clear matches. for Google, infer likely ownership from verified identity and operator context;
+   names and domains are evidence, not proof or permission. reuse known choices. ask one compact
+   question only for uncertain ownership or multiple plausible defaults; an unavailable provider
+   can remain absent. preserve the current default when the same verified ID has a new login/email.
+   without an interactive answer, report the affected operation as unresolved and continue unrelated
+   work. don't repeat the question or discovery until relevant state or operator direction changes.
+5. assemble version 2 preferences: `profiles.<pirog|tanaabot>.<github|google>` has `default` (an
+   account ID) and `accounts` (objects with `id` plus `login` or `email`). include the default in the
+   list and retain approved alternatives. refresh identifying text only after verifying the same ID.
+   retain valid unrelated entries; never silently drop unresolved invalid entries during a repair.
+6. when storage is available, append `save --plugin-data <pluginData>` and send complete JSON on
+   standard input. save clear mappings without another confirmation. strict writes reject invalid
+   entries and atomically persist mode `0600`. use the returned readback to verify intended choices;
+   don't repeat a successful save or add a redundant inspection. if readback is uncertain, inspect
+   before considering another write. keep private selections out of arguments and tracked files.
+7. on an inspection or save failure, keep verified selections for this chat and report that they were not persisted;
+   don't turn persistence into a prerequisite for authorized service work. diagnose once using the
+   returned code. `account-defaults-unsafe-permissions` permits narrowing the verified regular file
+   to mode `0600`, then inspecting again. never widen permissions or retry an access denial. preserve
+   malformed, unreadable or unresolved records until repaired or the operator chooses replacement;
+   continue with resolved session selections meanwhile. do not repeatedly run discovery or writes
+   against an unchanged failure. report saved and session-only choices distinctly.
 
-to exercise first-run discovery, preserve the existing file outside the checkout, temporarily move
-it aside, and invoke this flow through Codex Binding. compare the discovered result with the approved
-choices. restore the backup on failure; never erase the only working copy to test onboarding.
+future hooks load saved choices; this chat uses the verified readback or its verified session
+selections. an explicit account selection overrides an older hook snapshot. unbinding the workspace
+does not delete preferences, sign out connectors or revoke credentials.

@@ -17,21 +17,27 @@ the trusted `piroplugin-account-context` below supplies private preferences for 
 keep the default unless the operator or an adopted workflow selects another account. listing an
 alternative does not authorize actions or silent fallback after failed access.
 
-if preferences are missing or invalid, use Codex Binding's account setup when the operator requests
-setup or repair. discover likely matches from verified identities and ask only about meaningful
-ambiguities. until saved, stop operations requiring an unresolved default; unrelated local work
-and explicitly selected, verified accounts can continue. never invent an account ID.
+reuse applicable operator selections and verified session selections first. when work needs a
+default whose saved selection is missing, invalid or unclear, automatically follow the setup guide at the trusted context's `guidePath`. no separate setup request is needed.
+recover only the affected profile/provider; retain valid selections. verify clear matches and ask
+only about meaningful ambiguities. use resolved selections for this chat even if they cannot be
+saved, and report the persistence problem once. unresolved account selection pauses only work that
+needs that account; unrelated work continues. do not invent an account ID or widen action authority.
+in unattended work, report an unresolved choice instead of waiting for interactive input or retrying
+setup every step. revisit it when the operator answers or relevant connection/setup state changes.
 
 ## verify the selected account
 
 resolve the saved provider account ID against current connection metadata, then verify the
-connection's authenticated profile before service work and after connection changes. compare the
-provider ID and saved login/email; report changes for reconciliation instead of silently replacing
-an ID. connection labels only help discovery. Gmail, Drive, Calendar and Contacts have separate
-connection IDs, even for the same Google account. do not persist those connection IDs as account IDs.
+connection's authenticated profile before service work and after connection changes. the verified
+provider ID is authoritative: a changed login/email with the same ID is stale identifying text,
+not an identity mismatch. refresh that text through account setup without blocking the task or
+replacing the ID. connection labels only help discovery. Gmail, Drive, Calendar and Contacts have
+separate connection IDs, even for the same Google account; never persist those as account IDs.
 
-missing, ambiguous or mismatched identity stops the affected operation. failed access never
-authorizes switching accounts, credentials, connectors, CLI authentication or browser sessions.
+an unverified or mismatched authenticated identity stops the affected operation. failed access never
+authorizes switching accounts, credentials, connectors, CLI authentication or browser sessions,
+restarting setup to bypass the failure, or retrying a denial.
 use the selected account through its existing service/runtime owner. keep private account IDs,
 emails, tokens, connection IDs and runtime authorization state out of repositories and packages.
 

@@ -120,7 +120,8 @@ its Codex plugin bundle.
 ## Workflow Routing
 
 - Codex Binding also owns the entry point for this workspace's account-default setup. After binding,
-  or for requests to set up or update account defaults, read and apply
+  for requests to update account defaults, or when work needs a missing or unclear account selection,
+  read and apply
   `references/account-binding.md`. Piroplugin owns the private preferences; workspace binding and
   account selection do not grant service permissions.
 

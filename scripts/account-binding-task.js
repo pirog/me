@@ -1,4 +1,8 @@
-import { inspectAccountDefaults, saveAccountDefaults } from '../lib/account-defaults.js';
+import {
+  accountDefaultsFailure,
+  inspectAccountDefaults,
+  saveAccountDefaults,
+} from '../lib/account-defaults.js';
 
 try {
   const [action, flag, pluginData, ...extra] = process.argv.slice(2);
@@ -8,7 +12,7 @@ try {
     !pluginData ||
     extra.length
   ) {
-    throw new Error('invalid arguments');
+    throw new Error('account-defaults-invalid-arguments');
   }
   let result;
   if (action === 'inspect') {
@@ -18,7 +22,7 @@ try {
     let size = 0;
     for await (const chunk of process.stdin) {
       size += chunk.length;
-      if (size > 8192) throw new Error('input too large');
+      if (size > 8192) throw new Error('account-defaults-too-large');
       chunks.push(chunk);
     }
     result = await saveAccountDefaults(
@@ -27,9 +31,11 @@ try {
     );
   }
   process.stdout.write(`${JSON.stringify(result)}\n`);
-} catch {
+  if (action === 'save' && !['configured', 'unconfigured'].includes(result.status))
+    process.exitCode = 1;
+} catch (error) {
   process.stderr.write(
-    'account binding failed; check the private path and preference format. no account details were logged.\n',
+    `${JSON.stringify({ status: 'error', code: accountDefaultsFailure(error) })}\n`,
   );
   process.exitCode = 1;
 }

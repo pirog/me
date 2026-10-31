@@ -5,7 +5,11 @@ import os from 'node:os';
 import path from 'node:path';
 import { promisify } from 'node:util';
 
-import { inspectAccountDefaults, saveAccountDefaults } from '../lib/account-defaults.js';
+import {
+  accountDefaultsFailure,
+  inspectAccountDefaults,
+  saveAccountDefaults,
+} from '../lib/account-defaults.js';
 import { accountPolicy } from '../lib/account-policy.js';
 import { validateAccountDefaults } from '../utils/validate-account-defaults.js';
 
@@ -85,11 +89,86 @@ describe('account defaults and policy', () => {
     assert.deepEqual((await inspectAccountDefaults(directory)).data, data);
   });
 
+  it('should isolate an invalid provider and retain both profiles usable selections', async () => {
+    const data = preferences();
+    data.profiles.pirog.google.default = '999';
+    await writeFile(path.join(directory, 'account-defaults.json'), JSON.stringify(data), {
+      mode: 0o600,
+    });
+    const result = await inspectAccountDefaults(directory);
+    assert.equal(result.status, 'partial');
+    assert.deepEqual(result.data.profiles.pirog.github, preferences().profiles.pirog.github);
+    assert.deepEqual(result.data.profiles.tanaabot, preferences().profiles.tanaabot);
+    assert.equal(result.data.profiles.pirog.google, undefined);
+    assert.deepEqual(result.issues, [
+      { profile: 'pirog', provider: 'google', code: 'invalid-selection' },
+    ]);
+    assert.deepEqual(context(await accountPolicy(directory)).data, result.data);
+    await assert.rejects(saveAccountDefaults(directory, data), /account-defaults-invalid/);
+    assert.deepEqual(await inspectAccountDefaults(directory), result);
+  });
+
+  it('should isolate a malformed profile without exposing rejected contents', async () => {
+    const data = preferences();
+    data.profiles.tanaabot = 'private-rejected-value';
+    data.profiles['private-unknown-profile'] = {};
+    await writeFile(path.join(directory, 'account-defaults.json'), JSON.stringify(data), {
+      mode: 0o600,
+    });
+    const result = await inspectAccountDefaults(directory);
+    assert.equal(result.status, 'partial');
+    assert.deepEqual(result.data.profiles.pirog, preferences().profiles.pirog);
+    assert.ok(!JSON.stringify(result).includes('private-'));
+  });
+
+  it('should distinguish an empty file from a usable single-provider configuration', async () => {
+    const empty = await saveAccountDefaults(directory, { version: 2, profiles: {} });
+    assert.equal(empty.status, 'unconfigured');
+    const data = {
+      version: 2,
+      profiles: { pirog: { github: preferences().profiles.pirog.github } },
+    };
+    assert.deepEqual(await saveAccountDefaults(directory, data), { status: 'configured', data });
+  });
+
+  it('should preserve account ids and other selections when identifying text changes', async () => {
+    const data = preferences();
+    await saveAccountDefaults(directory, data);
+    data.profiles.pirog.github.accounts[0].login = 'renamed-human-fixture';
+    data.profiles.pirog.google.accounts[0].email = 'renamed@example.test';
+    assert.deepEqual((await saveAccountDefaults(directory, data)).data, data);
+  });
+
+  it('should accept additional accounts within the bounded file size', async () => {
+    const data = preferences();
+    data.profiles.pirog.google.accounts = Array.from({ length: 9 }, (_, index) => ({
+      id: String(456 + index),
+      email: `account${index}@example.test`,
+    }));
+    assert.deepEqual((await saveAccountDefaults(directory, data)).data, data);
+  });
+
+  it('should keep diagnostics actionable without exposing operating system details', () => {
+    for (const [code, expected] of [
+      ['EACCES', 'permission-denied'],
+      ['EPERM', 'permission-denied'],
+      ['EROFS', 'read-only'],
+      ['EIO', 'io-failed'],
+    ]) {
+      assert.equal(
+        accountDefaultsFailure(Object.assign(new Error('private path'), { code })),
+        `account-defaults-${expected}`,
+      );
+    }
+  });
+
   it('should emit policy and unresolved state without inventing runtime paths', async () => {
     const output = await accountPolicy();
     assert.ok(output.startsWith(policy));
     assert.equal(context(output).runtime, null);
     assert.equal(context(output).status, 'invalid');
+    assert.equal(context(output).code, 'account-defaults-path-unavailable');
+    assert.equal(context(output).guidePath, path.join(root, 'references/account-binding.md'));
   });
 
   it('should deliver saved preferences on startup transitions and helper hooks', async () => {
@@ -130,7 +209,10 @@ describe('account defaults and policy', () => {
     }
     await saveAccountDefaults(directory, preferences());
     await chmod(path.join(directory, 'account-defaults.json'), 0o644);
-    assert.equal((await inspectAccountDefaults(directory)).status, 'invalid');
+    assert.deepEqual(await inspectAccountDefaults(directory), {
+      status: 'invalid',
+      code: 'account-defaults-unsafe-permissions',
+    });
   });
 
   it('should reject permissions, tokens, connection ids and defaults outside the known accounts', async () => {
