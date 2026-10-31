@@ -76,14 +76,15 @@ pirog's `me` profile ships with:
 the quickstart's two `--tanaab` options install Agent System (`agent-system`) and Canon (`tanaab`).
 sign into Codex, install `piroplugin` from Pirostore, and confirm all three plugins are enabled.
 
-connect GitHub as `pirog` and monday.com as `Michael Pirog`. authorize Agent System's hook through
-`/hooks`, start a fresh chat, and paste:
+connect GitHub as `pirog` for ordinary pirog work. authorize Agent System's hook and Piroplugin's
+account-policy hooks through `/hooks`, start a fresh chat, and paste:
 
 ```text
 Use $agent-system-codex-binding to bind this plugin to /Users/pirog/tanaab/me.
 ```
 
 confirm the workspace containing [`.agent-system/agent.yaml`](./.agent-system/agent.yaml).
+
 after binding, start a fresh chat and paste:
 
 ```text

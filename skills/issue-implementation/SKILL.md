@@ -59,9 +59,18 @@ read and apply each applicable document before dependent work; reuse complete re
 3. preserve unrelated edits and existing behavior. resolve routine obstacles independently, but ask
    when a consequential missing requirement changes scope or behavior. continue independent work and
    retain useful partial results while awaiting the answer.
-4. correct the existing documentation owner when approved work changes a user-facing contract or makes
-   guidance wrong. explain the reader need; omit incidental documentation edits. do not expand into a
-   repository-wide rewrite because nearby prose could be nicer.
+4. for every project, default to no user-facing documentation change unless requested or needed for a
+   concrete user task or decision. this covers READMEs, guides, docs sites, help text and other user-facing
+   docs. add only what the reader needs to install, configure, use, operate or recover the product.
+   implementation changes alone do not justify documentation. keep internal architecture, lifecycle,
+   schema and validation narration out unless the reader must act on it. if removing a proposed
+   paragraph would not impair that task or decision, omit it; do not relocate rejected prose elsewhere.
+   correct misleading guidance with the smallest useful edit.
+
+   before committing, check every added documentation paragraph against the reader task or decision
+   that justified it. remove paragraphs that fail that test; keep engineering explanation and validation
+   evidence in the PR. do not expand into unrelated documentation cleanup.
+
 5. verify both existing and new contracts at their owning layers, including affected callers and
    meaningful failures. demonstrate a bug regression when practical. derive expectations from behavior,
    not copied implementation or prose. run required repository checks, fix failures introduced here,

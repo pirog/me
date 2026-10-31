@@ -61,9 +61,11 @@
       "assets",
       "automations",
       "bin",
+      "hooks",
       "lib",
       "package.json",
       "references",
+      "scripts/account-policy-task.js",
       "skills",
       "utils"
     ]
@@ -86,8 +88,10 @@
     "INVENTORY.md",
     "PIROBOOT.md",
     "assets/",
+    "hooks/",
     "lib/",
     "references/",
+    "scripts/account-policy-task.js",
     "skills/",
     "utils/"
   ]
