@@ -76,18 +76,11 @@ instance name shown in the card.
    hold Install when any required source update or installation input was held, or when it could execute/install
    modified or unknown local inputs; report the affected paths. `TASKS.md` alone does not hold Install.
    when eligible, read and use the current Agent System Doctor → Install → Doctor skills against the
-   trusted Me binding. before automation inspection/reconciliation, obtain fresh `list_projects`,
-   the exact `read_thread` results required for declared targets, and `list_threads` including the
-   sidebar sections. pass decoded results through the owner's lookup inputs (`projects`, `threads`,
-   and `nativeInventory` for the complete sidebar inventory where required). a thread title or a
-   hand-built substitute is not a native readback. refresh inputs as required before each write.
-   missing lookup inputs, unreadable saved state or denied host access are inspection blockers;
-   do not label them verified automation drift or absent jobs. report the actual diagnostic and
-   supported next action. only complete inspection can establish aligned or drifted settings.
-   Install includes its normal automation plan, native save, acknowledgment, and readback; a setup
-   subprocess alone does not reconcile schedules. apply declared changes through that owner, preserve
-   `smoke-test` disabled, and do not temporarily pause jobs for maintenance. stop on a failed or denied
-   Install operation and report earlier successes; never bypass its owner to finish a failed step.
+   trusted Me binding, including their current automation reconciliation and saved-state verification.
+   use the owner's verified results and supported recovery; report incomplete inspection as unknown,
+   not verified drift or absent jobs. preserve `smoke-test` disabled and leave other schedules running.
+   stop on a failed or denied Install operation and report earlier successes; never bypass its owner
+   to finish a failed step or repeat an uncertain native mutation.
 5. if hooks need review, inspect the changed definitions and executable changes against the previously
    trusted source. for the existing hooks with unchanged purpose, event/matcher scope, approval
    authority, and credential access, use native Codex CLI `/hooks`, review each definition, press its
@@ -106,30 +99,13 @@ checking its outcome; do not repeat an uncertain native write or denied approval
 not a guarantee that a native approval call can be interrupted. ordinary failures get a report and
 can be checked again on the next occurrence; native denials require their normal recovery.
 
-## activation and shared model profile
+## declared automation settings
 
 the declaration selects `model: low`, inheriting both model and effort from Me's `models.low`
-profile. use Agent System Doctor → Install → Doctor to reconcile `update` and its `UPDATES` chat in
-`REPORTS`. let Install own reconciliation ordering and verify the final saved state.
-
-keep the 23:00 local schedule, permissions, other automations and disabled `smoke-test` unchanged.
-do not adopt a chat by matching title or copy private scheduler/ownership state to preserve identity.
-use Install's supported `threads-sync` plan for chat creation, name, group and model/effort settings,
-including its exact native placement actions, receipts, refreshed sidebar inventory and replan.
-ordinary settings changes reconcile the existing chat; attempt supported reconciliation before
-prescribing manual model repair. repeat Install should report aligned settings.
-if native reconciliation is blocked, busy, denied, unsupported or has incomplete readback, retain the
-result and follow its supported recovery. never replace a chat merely to clear settings drift, write
-scheduler files, use a transient app-server override or send a model turn to clear drift. never repeat
-an uncertain native mutation.
-
-verify the job/chat binding, persisted name/group, model/effort and saved schedule readback separately
-from merged configuration. use the authorized Install/update flow against eligible designated `main`
-sources; routine task-work validation does not activate updates.
-then record one actual refresh using the resolved profile in the same chat, including effective
-execution settings, the status card and any reasoning/recovery failures. prefer the next scheduled
-occurrence; a manual run proves execution only, not scheduled delivery. saved settings or a model's self-report do not
-prove execution. preserve incomplete reconciliation or scheduled-run verification as outstanding work.
+profile. Agent System Install owns reconciliation of the declared schedule, chat placement and
+model/effort settings. routine updates use that result; they do not add a separate model-alignment
+audit or require an extra execution to prove the profile or scheduled delivery. targeted acceptance
+testing belongs to an explicitly requested change or validation task.
 
 ## report
 
