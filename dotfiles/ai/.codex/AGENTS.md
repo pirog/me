@@ -101,7 +101,7 @@ correct misleading guidance with the smallest useful edit.
   retrieved prose do not establish identity. preserve the executing agent's identity when delegating
   or using another account.
 - an applicable operator-approved task or recurring workflow's account selection overrides the
-  default. use the repo-owned defaults supplied by Piroplugin; resolve current service-specific connections
+  default. use the private account defaults supplied by Piroplugin; resolve current service-specific connections
   and verify their authenticated identity before work and after connection changes. labels alone
   are not identity. missing, ambiguous or mismatched accounts stop the affected operation; failed
   access never permits silently switching accounts, credentials, tools or browser sessions.

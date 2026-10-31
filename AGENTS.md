@@ -119,6 +119,11 @@ its Codex plugin bundle.
 
 ## Workflow Routing
 
+- Codex Binding also owns the entry point for this workspace's account-default setup. After binding,
+  or for requests to set up or update account defaults, read and apply
+  `references/account-binding.md`. Piroplugin owns the private preferences; workspace binding and
+  account selection do not grant service permissions.
+
 - For bootstrap work, inspect `boot.sh` and the owning examples instead of copying implementation
   details into this file. `examples/inputs`, `examples/payload`, and `examples/tanaab` own the public
   interface, payload lifecycle, repository lifecycle, and plugin-link behavior respectively.

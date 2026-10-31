@@ -65,6 +65,7 @@
       "lib",
       "package.json",
       "references",
+      "scripts/account-binding-task.js",
       "scripts/account-policy-task.js",
       "skills",
       "utils"
@@ -91,6 +92,7 @@
     "hooks/",
     "lib/",
     "references/",
+    "scripts/account-binding-task.js",
     "scripts/account-policy-task.js",
     "skills/",
     "utils/"

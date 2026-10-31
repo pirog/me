@@ -19,6 +19,10 @@ const configuration = [
 const accountPolicyFiles = [
   'hooks/hooks.json',
   'lib/account-policy.js',
+  'lib/account-defaults.js',
+  'utils/validate-account-defaults.js',
+  'scripts/account-binding-task.js',
+  'references/account-binding.md',
   'references/account-policy.md',
   'scripts/account-policy-task.js',
 ];
@@ -99,7 +103,15 @@ describe('package.json plugin payload', () => {
       env: { ...process.env, PLUGIN_ROOT: installed, PLUGIN_DATA: path.join(temporary, 'private') },
     });
     const policy = await readFile(path.join(installed, 'references/account-policy.md'), 'utf8');
-    assert.equal(stdout, policy);
+    assert.ok(stdout.startsWith(policy));
+    assert.match(stdout, /"status":"missing"/);
+    const binding = await run(process.execPath, [
+      path.join(installed, 'scripts/account-binding-task.js'),
+      'inspect',
+      '--plugin-data',
+      path.join(temporary, 'private'),
+    ]);
+    assert.equal(JSON.parse(binding.stdout).status, 'missing');
   });
 
   it('should exclude runtime state from cache selection while retaining the shared configuration', async () => {
