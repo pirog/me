@@ -84,9 +84,8 @@ Use $agent-system-codex-binding to bind this plugin to /Users/pirog/tanaab/me.
 ```
 
 confirm the workspace containing [`.agent-system/agent.yaml`](./.agent-system/agent.yaml).
-binding then discovers account defaults for `pirog` and `tanaabot`, asks about unclear choices, and
-saves the identifiers privately. later, ask Codex Binding to “update my account defaults” to revisit
-them without rebinding the workspace. missing account selections also start this flow when needed.
+binding sets up private account defaults for `pirog` and `tanaabot`. missing defaults trigger setup
+when needed; ask Codex Binding to “update my account defaults” to change them.
 
 after binding, start a fresh chat and paste:
 
