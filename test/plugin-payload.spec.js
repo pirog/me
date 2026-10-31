@@ -99,8 +99,7 @@ describe('package.json plugin payload', () => {
       env: { ...process.env, PLUGIN_ROOT: installed, PLUGIN_DATA: path.join(temporary, 'private') },
     });
     const policy = await readFile(path.join(installed, 'references/account-policy.md'), 'utf8');
-    assert.ok(stdout.startsWith(policy));
-    assert.match(stdout, /private account defaults are unavailable/);
+    assert.equal(stdout, policy);
   });
 
   it('should exclude runtime state from cache selection while retaining the shared configuration', async () => {
