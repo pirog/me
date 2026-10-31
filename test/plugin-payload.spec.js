@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { execFile } from 'node:child_process';
-import { copyFile, mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { copyFile, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { promisify } from 'node:util';
@@ -15,6 +15,12 @@ const configuration = [
   '.agent-system/agent.yaml',
   '.agent-system/setup-agent.yaml',
   '.agent-system/setup-host.yaml',
+];
+const accountPolicyFiles = [
+  'hooks/hooks.json',
+  'lib/account-policy.js',
+  'references/account-policy.md',
+  'scripts/account-policy-task.js',
 ];
 
 describe('package.json plugin payload', () => {
@@ -33,11 +39,17 @@ describe('package.json plugin payload', () => {
     for (const relative of configuration) {
       await copyFile(path.join(repoRoot, relative), path.join(source, relative));
     }
+    for (const relative of accountPolicyFiles) {
+      await mkdir(path.dirname(path.join(source, relative)), { recursive: true });
+      await copyFile(path.join(repoRoot, relative), path.join(source, relative));
+    }
     for (const relative of [
       '.agent-system/backups/fixture/archive.json',
       '.agent-system/repositories/fixture.git/config',
       '.agent-system/worktrees/fixture/README.md',
       '.agent-system/local-only.yaml',
+      '.private/account-defaults.json',
+      'account-defaults.json',
     ]) {
       await mkdir(path.dirname(path.join(source, relative)), { recursive: true });
       await writeFile(path.join(source, relative), 'local runtime fixture');
@@ -52,7 +64,7 @@ describe('package.json plugin payload', () => {
     this.timeout(10_000);
     const result = await run(
       'npm',
-      ['pack', '--dry-run', '--ignore-scripts', '--json', '--cache', path.join(temporary, 'npm')],
+      ['pack', '--ignore-scripts', '--json', '--cache', path.join(temporary, 'npm')],
       { cwd: source },
     );
     const payload = JSON.parse(result.stdout);
@@ -68,6 +80,20 @@ describe('package.json plugin payload', () => {
       packedPaths.filter((file) => file.startsWith('.agent-system/')).sort(),
       configuration,
     );
+    for (const file of accountPolicyFiles) assert.ok(packedPaths.includes(file));
+    assert.ok(!packedPaths.some((file) => file.endsWith('account-defaults.json')));
+    const unpacked = path.join(temporary, 'unpacked');
+    await mkdir(unpacked);
+    await run('tar', ['-xzf', path.join(source, packed.filename), '-C', unpacked]);
+    const installed = path.join(unpacked, 'package');
+    const hooks = JSON.parse(await readFile(path.join(installed, 'hooks/hooks.json'), 'utf8'));
+    const { stdout } = await run('/bin/sh', ['-c', hooks.hooks.SessionStart[0].hooks[0].command], {
+      cwd: temporary,
+      env: { ...process.env, PLUGIN_ROOT: installed, PLUGIN_DATA: path.join(temporary, 'private') },
+    });
+    const policy = await readFile(path.join(installed, 'references/account-policy.md'), 'utf8');
+    assert.ok(stdout.startsWith(policy));
+    assert.match(stdout, /private account defaults are unavailable/);
   });
 
   it('should exclude runtime state from cache selection while retaining the shared configuration', async () => {
@@ -76,5 +102,7 @@ describe('package.json plugin payload', () => {
       [...entries.keys()].filter((file) => file.startsWith('.agent-system/')).sort(),
       configuration,
     );
+    for (const file of accountPolicyFiles) assert.ok(entries.has(file));
+    assert.ok(![...entries.keys()].some((file) => file.endsWith('account-defaults.json')));
   });
 });

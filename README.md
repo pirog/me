@@ -76,14 +76,16 @@ pirog's `me` profile ships with:
 the quickstart's two `--tanaab` options install Agent System (`agent-system`) and Canon (`tanaab`).
 sign into Codex, install `piroplugin` from Pirostore, and confirm all three plugins are enabled.
 
-connect GitHub as `pirog` and monday.com as `Michael Pirog`. authorize Agent System's hook through
-`/hooks`, start a fresh chat, and paste:
+connect GitHub as `pirog` and monday.com as `Michael Pirog` for ordinary pirog work. authorize
+Agent System's hook and Piroplugin's account-policy hooks through `/hooks`, start a fresh chat,
+and paste:
 
 ```text
 Use $agent-system-codex-binding to bind this plugin to /Users/pirog/tanaab/me.
 ```
 
 confirm the workspace containing [`.agent-system/agent.yaml`](./.agent-system/agent.yaml).
+
 after binding, start a fresh chat and paste:
 
 ```text
@@ -91,6 +93,37 @@ Use $agent-system-doctor to check this workspace. Then use $agent-system-install
 for any declared setup repairs and to reconcile its automations.
 Run $agent-system-doctor again and report anything still unresolved.
 ```
+
+### account defaults
+
+Piroplugin injects the [account policy](./references/account-policy.md) on startup, resume, clear,
+compaction, fork and subagent startup where the host supports those hooks. the global
+`~/.codex/AGENTS.md` supplies a concise fallback. neither mechanism enforces tool access or proves
+cloud/scheduled coverage; untrusted or unavailable hooks do not deliver the policy. verify delivery
+in each installed environment before relying on it.
+
+store account preferences in `account-defaults.json` inside the installed plugin's host-provided
+`PLUGIN_DATA` directory, outside the checkout and plugin cache. obtain that directory from the
+host's plugin/hook context; do not guess it from a repository name. use the existing installation
+owner to place the operator-selected preferences there, then start a fresh chat. for example, with
+synthetic identities:
+
+```json
+{
+  "version": 1,
+  "defaults": {
+    "pirog": { "github": "example-human", "google": "human@example.org" },
+    "tanaabot": { "github": "example-bot", "google": "bot@example.org" }
+  }
+}
+```
+
+only these keys are accepted; roles or services may be omitted when no default is configured.
+values are GitHub logins or Google email addresses, never tokens or connection IDs. preferences
+select expected accounts, not execution identity or permissions. missing or invalid preferences
+leave defaults unavailable; an explicit authorized account selection still applies. the agent must
+verify the actual service connection before use. change defaults through this private file, and
+keep recurring authorizations with the task/scheduler owner. the hook does not create or revoke them.
 
 ## usage
 
