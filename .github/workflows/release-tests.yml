@@ -73,7 +73,6 @@ jobs:
           release-url: ${{ github.event.pull_request.html_url }}
           commands: |
             version-injector .codex-plugin/plugin.json --style json --version "$PREPARE_RELEASE_VERSION"
-            bash -euc "for dir in skills/*/assets; do if [ -L \"$dir\" ]; then rm \"$dir\"; mkdir \"$dir\"; cp assets/composer-icon.svg assets/icon-large.png \"$dir/\"; fi; done"
             bun run format:write
             bun run format:check
       - name: Pack plugin
