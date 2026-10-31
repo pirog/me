@@ -65,8 +65,8 @@ its Codex plugin bundle.
   Keep absent `ACTORS.md`, `WORK_REPOS.md`, `AUTOMATIONS.yaml`, `automations`, `bin`,
   `MODEL_ROUTING.yaml`, and the three root YAML manifest paths as retirement selectors until
   old caches no longer need their stale copies removed.
-- `package.json#files` selects the npm payload. npm release preparation materializes the
-  symlinked skill icons in the CI checkout because npm omits symlinks.
+- `package.json#files` selects the npm payload. keep skill assets as regular files so local
+  installs support native hook trust and npm includes the icons.
   npm ships the Codex plugin, while bootstrap and Agent System setup use the editable Git checkout.
 - `.agent-system/agent.yaml#automations` owns desired schedules; Agent System owns reconciliation
   under its [Codex contract](https://github.com/tanaabased/openclaw-agent-system/blob/main/CODEX.md#repository-automations).
