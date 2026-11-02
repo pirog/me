@@ -13,10 +13,10 @@ github:
   runtimes:
     - codex
   max-concurrent-items: 5
-  allowed-repository-owners:
-    - "@tanaabased"
-    - "@pirog"
-    - "@lando"
+  routing:
+    - "tanaabased/*"
+    - "pirog/*"
+    - "lando/*"
   issue-assignment:
     mode: auto
     allowed:
