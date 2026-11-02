@@ -17,6 +17,23 @@ github:
     - "@tanaabased"
     - "@pirog"
     - "@lando"
+  project-pickup:
+    paused: true
+    coordinator:
+      runtime: codex
+      # tanaab-book1; verify installed support and enrollment before activation.
+      instance-id: 39703761-8791-4c82-8012-34d8f0c08c27
+    schedule:
+      cron: "0 3 * * *"
+    window-minutes: 120
+    selection:
+      guidance:
+        file: .agent-system/guidance/project-pickup.md
+    projects:
+      - repository: tanaabased/openclaw-agent-system
+        milestone:
+          number: 12
+          policy: only
   issue-assignment:
     mode: auto
     allowed:
