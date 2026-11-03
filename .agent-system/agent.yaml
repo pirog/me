@@ -80,7 +80,7 @@ automations:
     prompt: |
       Update this Codex installation using its trusted Me binding.
       Read references/updates.md in the bound workspace and follow that procedure:
-      safely fast-forward eligible main checkouts while preserving local edits. Use Agent System Install
+      safely fast-forward eligible main checkouts while preserving local edits. Use Me’s setup helper
       to refresh each eligible Codex plugin independently. Check workspace setup and saved automation
       alignment separately, and review/trust changed hooks through the native CLI when needed.
       Ordinary read-only ISSUE ASSIGNMENTS activity alone is not a source-update hold.

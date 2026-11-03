@@ -439,19 +439,31 @@ exit 2
     }
   });
 
-  it('should report a cache failure after preparation and verify a later repair', async () => {
+  it('should isolate refresh failures and leave a verified plugin alone on repeat', async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), 'me-setup-root-'));
     const home = await mkdtemp(path.join(os.tmpdir(), 'me-setup-home-'));
     const links = path.join(root, 'dotfiles', 'ai', '.codex', 'plugins');
     const cli = path.join(root, 'node_modules', '.bin', 'codex-tools');
     const bin = path.join(home, 'bin');
     const log = path.join(home, 'codex-tools-args');
-    const installed = path.join(home, 'installed');
-    const synced = path.join(home, 'synced');
+    const canon = path.join(home, 'tanaab', 'canon');
+    const canonCli = path.join(canon, 'node_modules', '.bin', 'codex-tools');
     const cacheReady = path.join(home, 'cache-ready');
     await mkdir(links, { recursive: true });
     await mkdir(path.dirname(cli), { recursive: true });
     await mkdir(bin);
+    await mkdir(path.dirname(canonCli), { recursive: true });
+    execFileSync('git', ['init', '-q', canon]);
+    execFileSync('git', [
+      '-C',
+      canon,
+      'remote',
+      'add',
+      'origin',
+      'git@github.com:tanaabased/canon.git',
+    ]);
+    await symlink(path.relative(links, canon), path.join(links, 'tanaab'));
+    await writeFile(path.join(canon, '.installed'), '');
     await symlink(path.relative(links, root), path.join(links, 'piroplugin'));
     await writeFile(path.join(bin, 'bun'), '#!/bin/sh\nexit 0\n');
     await chmod(path.join(bin, 'bun'), 0o755);
@@ -459,7 +471,7 @@ exit 2
       cli,
       `#!/bin/sh
 if [ "$1" = status ]; then
-  if [ -e '${installed}' ]; then
+  if [ -e ".installed" ]; then
     echo '{"ok":true,"inspection":{"installed":true,"enabled":true}}'
     exit 0
   fi
@@ -468,39 +480,52 @@ if [ "$1" = status ]; then
 fi
 if [ "$1" = install ]; then
   echo install >> '${log}'
-  touch '${installed}'
+  touch ".installed"
   exit 0
 fi
 if [ "$1" = cache ] && [ "$2" = sync ]; then
   echo sync >> '${log}'
-  test -f '${cacheReady}' || exit 2
-  touch '${synced}'
+  if [ "$4" = '${root}' ]; then test -f '${cacheReady}' || exit 2; fi
+  touch ".synced"
   exit 0
 fi
 if [ "$1" = cache ] && [ "$2" = check ]; then
-  test -e '${synced}'
+  test -e ".synced"
   exit $?
 fi
 exit 2
 `,
     );
     await chmod(cli, 0o755);
+    await symlink(cli, canonCli);
     const originalPath = process.env.PATH;
     process.env.PATH = `${bin}:${originalPath}`;
     try {
-      const args = ['plugin', 'me', 'piroplugin'];
-      assert.equal(await runSetup(['check', ...args], { root, home }), 1);
+      const meArgs = ['refresh', 'plugin', 'me', 'piroplugin'];
+      const canonArgs = ['refresh', 'plugin', 'canon', 'tanaab', 'optional'];
       const reports = [];
       const options = { root, home, report: (code) => reports.push(code) };
-      assert.equal(await runSetup(['apply', ...args], options), 2);
-      assert.deepEqual(reports, ['prepared', 'cache-failed']);
-      assert.equal(await runSetup(['check', ...args], { root, home }), 1);
+      assert.equal(await runSetup(meArgs, options), 2);
+      assert.deepEqual(reports.splice(0), ['prepared', 'cache-failed']);
+      assert.equal(await runSetup(canonArgs, options), 0);
+      assert.deepEqual(reports.splice(0), ['prepared', 'refreshed']);
+
       await writeFile(cacheReady, '');
-      assert.equal(await runSetup(['apply', ...args], { root, home }), 0);
-      assert.equal(await readFile(log, 'utf8'), 'install\nsync\ninstall\nsync\n');
-      assert.equal(await runSetup(['check', ...args], { root, home }), 0);
+      assert.equal(await runSetup(meArgs, options), 0);
+      assert.deepEqual(reports.splice(0), ['prepared', 'refreshed']);
+      assert.equal(await runSetup(meArgs, options), 0);
+      assert.deepEqual(reports.splice(0), ['unchanged']);
+      assert.equal(await readFile(log, 'utf8'), 'install\nsync\ninstall\nsync\ninstall\nsync\n');
+
+      await rm(cli);
+      assert.equal(await runSetup(meArgs, options), 2);
+      assert.equal(await runSetup(canonArgs, options), 2);
+      assert.deepEqual(reports, ['check-blocked', 'check-blocked']);
+      assert.equal(await readFile(log, 'utf8'), 'install\nsync\ninstall\nsync\ninstall\nsync\n');
     } finally {
       process.env.PATH = originalPath;
+      await rm(root, { recursive: true });
+      await rm(home, { recursive: true });
     }
   });
 });
