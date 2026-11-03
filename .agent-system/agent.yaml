@@ -27,7 +27,7 @@ github:
     projects:
       - repository: tanaabased/openclaw-agent-system
         milestone:
-          number: 12
+          number: 11
           policy: only
   issue-assignment:
     mode: auto

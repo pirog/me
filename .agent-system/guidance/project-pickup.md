@@ -1,13 +1,12 @@
-# routing milestone pickup
+# expansion milestone pickup
 
-for this milestone-12 pilot in `tanaabased/openclaw-agent-system`, advance ready work
-in dependency order:
+for milestone 11 in `tanaabased/openclaw-agent-system`, prefer small, ready work:
 
-- leave #578 to ordinary assignment intake while it is assigned to pirog.
-- consider #579 only after its preceding routing capabilities are delivered and available.
-- consider #599 only after its pickup accounting and eligible-pool prerequisites are
-  delivered and available, including #530 and #578. check any other declared dependencies too.
+- consider #611 first, then #612, when open, unassigned, and ready.
+- consider #533 after those smaller improvements and its prerequisites are satisfied.
+- #530 and other expansion work with explicit pilot prerequisites must wait for the
+  required #529 evidence. one successful runtime does not prove both runtime pilots.
 
-recheck current dependency evidence; these issue references are not a permanent blacklist.
-do not bypass required pilot evidence or take blocked work merely to produce a pickup.
-if nothing qualifies, select nothing.
+recheck current issue and milestone prerequisites; this order does not override them.
+these issue references are not a permanent blacklist. do not take blocked work merely
+to produce a pickup. if nothing qualifies, select nothing.
