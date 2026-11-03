@@ -18,7 +18,6 @@ github:
     - "pirog/*"
     - "lando/*"
   project-pickup:
-    paused: true
     schedule:
       cron: "0 3 * * *"
     window-minutes: 120
