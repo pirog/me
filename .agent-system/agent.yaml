@@ -17,6 +17,18 @@ github:
     - "tanaabased/*"
     - "pirog/*"
     - "lando/*"
+  project-pickup:
+    schedule:
+      cron: "0 3 * * *"
+    window-minutes: 120
+    selection:
+      guidance:
+        file: .agent-system/guidance/project-pickup.md
+    projects:
+      - repository: tanaabased/openclaw-agent-system
+        milestone:
+          number: 12
+          policy: only
   issue-assignment:
     mode: auto
     allowed:
