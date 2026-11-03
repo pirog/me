@@ -18,9 +18,9 @@ github:
     - "pirog/*"
     - "lando/*"
   project-pickup:
-    schedule:
-      cron: "0 3 * * *"
-    window-minutes: 120
+    start: "03:00"
+    window: "2h"
+    scans: 8
     selection:
       guidance:
         file: .agent-system/guidance/project-pickup.md
