@@ -50,42 +50,66 @@ instance name shown in the card.
    stop and report uncertainty rather than attempting rollback. never force, autostash or resolve it.
    keep a successful source update if a later installation fails.
 
-3. separately check installation eligibility after the source update and again before each mutating
-   step. a safe fast-forward does not make modified local inputs safe to execute or install. account
-   for staged and unstaged edits, renames/deletions, and relevant untracked/ignored inputs. `TASKS.md`
-   is scratch outside the managed payload: edits only there permit the full refresh. for other paths,
-   establish that they are unrelated to the step; hold unknown or affected inputs and report why.
+3. refresh eligible plugins one at a time through Me's existing setup helper. run from
+   the bound Me checkout through native command authorization, using the same plugin
+   arguments declared in `.agent-system/setup-agent.yaml`:
 
-   use the existing owners to identify inputs: Me's `scripts/setup.js` and imported helpers for every
-   repair; each target's package/lockfile, build scripts/source, installable package and
-   `package.json#codexTools` managed paths; and Me's `dotfiles/ai` if a missing plugin link requires
-   Stow. do not execute a locally modified helper to decide whether it is safe. ordinary installed
-   ignored dependencies/generated output alone are not an obstruction, but hold unexpected local
-   inputs affecting execution or installation. retain any affected inputs as an Install hold for
-   step 4; source updates already completed remain in place.
+   | checkout     | refresh command                                                                         |
+   | ------------ | --------------------------------------------------------------------------------------- |
+   | Me           | `bun scripts/setup.js refresh plugin me piroplugin`                                     |
+   | Canon        | `bun scripts/setup.js refresh plugin canon tanaab optional`                             |
+   | Agent System | `bun scripts/setup.js refresh plugin openclaw-agent-system agent-system optional build` |
 
-   Agent System Install owns plugin repair and live cache synchronization for all three repositories.
-   do not invoke `scripts/setup.js apply plugin`, `codex:sync`, or Codex Tools install/sync directly.
-   let Install run dependency installation, builds, and cache synchronization only for declared
-   steps needing repair; leave healthy plugins unchanged. a missing optional plugin remains absent
-   and must be reported as skipped, not installed or aligned.
+   the helper checks the plugin, repairs only drift, and verifies the result using
+   Codex Tools. keep Agent System last because it can replace the installed runtime.
 
-4. check eligibility for the full Agent System Install separately: its host/agent setup declarations
-   can execute Brewfile, dotfiles, generated configuration and plugin repairs. inspect the manifest,
-   guidance, setup declarations, commands/imports and their inputs before invoking those skills.
-   hold Install when any required source update or installation input was held, or when it could execute/install
-   modified or unknown local inputs; report the affected paths. `TASKS.md` alone does not hold Install.
-   when eligible, read and use the current Agent System Doctor → Install → Doctor skills against the
-   trusted Me binding, including their current automation reconciliation and saved-state verification.
-   use the owner's verified results and supported recovery; report incomplete inspection as unknown,
-   not verified drift or absent jobs. preserve `smoke-test` disabled and leave other schedules running.
-   stop on a failed or denied Install operation and report earlier successes; never bypass its owner
-   to finish a failed step or repeat an uncertain native mutation.
+   check inputs before running each command. verify the plugin arguments against the
+   expected merged declaration. allow edits outside what the operation consumes. a local
+   UPDATE prompt edit can hold Me's plugin payload and schedule work while Canon and
+   Agent System remain eligible. keep `TASKS.md` out of these checks. verify local edits
+   and staging remain preserved after each operation.
+
+   for each plugin, require safe target checkout and source inputs as in steps 1–2. check
+   its package/lockfile, scripts, build source, installable package and
+   `package.json#codexTools` managed paths. account for staged and unstaged edits,
+   renames/deletions, and relevant untracked/ignored inputs. every plugin also uses Me's
+   `scripts/setup.js`, its transitive imports, the setup declaration, Me's inspection
+   CLI and the required host tools. prove those are safe independently of Me's plugin
+   eligibility. hold the consuming steps if a shared executable or declaration changed
+   unsafely. inspect Git metadata before running any helper and never execute a modified
+   helper to determine whether it is safe. ordinary generated output and installed
+   dependencies alone are expected. missing or unexpectedly changed prerequisites
+   require a hold where their safety cannot be established.
+
+   a missing source link can restow the entire AI package. before running a refresh with a missing link
+   also check Me's `dotfiles/ai`, destination ownership and shared link inputs. a healthy
+   existing link does not require restowing. hold unexpected links or occupied paths.
+   the helper stops the selected refresh on a blocked check. verify current
+   shared prerequisites after a step that could change them. continue to an independent
+   eligible peer after a known step-local hold or failure. stop affected work for stale
+   binding, native denial, uncertain effects, or a shared prerequisite that cannot be
+   verified. retain earlier verified work and never repeat an uncertain mutation.
+
+4. evaluate workspace setup and native automations separately. check the manifest,
+   setup declarations, commands/imports, Brewfile, dotfiles and generated configuration
+   inputs before running affected workspace steps. for eligible workspace work, use the
+   existing Me setup commands for `brewfile`, `dotfiles`, and `config` in declaration
+   order. run the declared check first, apply only on drift, and check again after apply.
+   stop dependent workspace steps if a prerequisite is held or fails.
+
+   check schedule inputs separately and use fresh trusted automation context to
+   reconcile and verify saved definitions through the existing Agent System Install
+   automation-only path. a plugin hold alone is not an automation hold. an unsafe
+   manifest or automation declaration can hold schedules even when a plugin refresh
+   succeeds. preserve `smoke-test` disabled and leave unrelated schedules running.
+   if fresh runtime context is unavailable after self-refresh, report the remaining
+   checks as pending and follow step 6.
+
 5. if hooks need review, inspect the changed definitions and executable changes against the previously
    trusted source. for the existing hooks with unchanged purpose, event/matcher scope, approval
    authority, and credential access, use native Codex CLI `/hooks`, review each definition, press its
    displayed trust control, and verify `Trusted`. broader or unclear changes need operator review.
-   never edit trust storage or use bypass flags. if trust is needed to continue step 4, do this first.
+   never edit trust storage or use bypass flags. if trust is needed for an operation, do this first.
 6. report actual results. synced caches and trusted hooks do not prove an already-loaded chat adopted
    the new runtime. use fresh trusted context when the supported lifecycle supplies it; otherwise
    report `restart/context needed` and any unfinished Doctor or automation reconciliation. do not
@@ -115,6 +139,11 @@ verified work, ⚠️ for skips or restart/context needs, and ❌ for failures. 
 instance name in backticks, the local occurrence date, and actual short commits. never label an
 unchecked step healthy. distinguish source updates from held/failed dependency, plugin and Install
 steps. missing optional plugins say `skipped / absent`; unchecked steps say `not checked` or `unknown`.
+use the helper results per plugin. `absent` is skipped. `unchanged` is healthy.
+`refreshed` means the cache passed verification after repair. `prepared` confirms dependency/build work completed,
+even if version selection or cache repair later failed. report `prepare-failed`,
+`install-failed`, `cache-failed`, `verify-failed`, `check-blocked` or a link hold against its actual phase. only a
+successful final check verifies the cache.
 use ⚠️ overall when required work is skipped, held or unknown, and ❌ for a failed operation; reserve ✅
 overall for completed verified work. successful source updates remain visible when Install is held.
 keep the card compact, following this shape with actual outcomes rather than copying its healthy rows:
@@ -129,7 +158,7 @@ keep the card compact, following this shape with actual outcomes rather than cop
 > | Canon        | unchanged `commit`         | installed            | enabled / aligned    |
 > | Me           | unchanged `commit`         | installed            | enabled / aligned    |
 >
-> **Doctor → Install → Doctor:** actual outcomes, including saved automation alignment
+> **workspace setup / saved automations:** actual outcomes and any hold or failure reasons
 >
 > **hooks / loaded context:** actual trust and adoption status
 >
