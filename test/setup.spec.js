@@ -267,7 +267,9 @@ exit 2
     const home = await mkdtemp(path.join(os.tmpdir(), 'me-setup-home-'));
     const args = ['check', 'plugin', 'canon', 'tanaab', 'optional'];
 
-    assert.equal(await runSetup(args, { root, home }), 0);
+    const reports = [];
+    assert.equal(await runSetup(args, { root, home, report: (code) => reports.push(code) }), 0);
+    assert.deepEqual(reports, ['absent']);
     await mkdir(path.join(root, 'dotfiles', 'ai', '.codex', 'plugins'), { recursive: true });
     await symlink(
       'missing-source',
@@ -437,7 +439,7 @@ exit 2
     }
   });
 
-  it('should sync a newly installed source plugin before reporting healthy', async () => {
+  it('should report a cache failure after preparation and verify a later repair', async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), 'me-setup-root-'));
     const home = await mkdtemp(path.join(os.tmpdir(), 'me-setup-home-'));
     const links = path.join(root, 'dotfiles', 'ai', '.codex', 'plugins');
@@ -446,6 +448,7 @@ exit 2
     const log = path.join(home, 'codex-tools-args');
     const installed = path.join(home, 'installed');
     const synced = path.join(home, 'synced');
+    const cacheReady = path.join(home, 'cache-ready');
     await mkdir(links, { recursive: true });
     await mkdir(path.dirname(cli), { recursive: true });
     await mkdir(bin);
@@ -470,6 +473,7 @@ if [ "$1" = install ]; then
 fi
 if [ "$1" = cache ] && [ "$2" = sync ]; then
   echo sync >> '${log}'
+  test -f '${cacheReady}' || exit 2
   touch '${synced}'
   exit 0
 fi
@@ -486,8 +490,14 @@ exit 2
     try {
       const args = ['plugin', 'me', 'piroplugin'];
       assert.equal(await runSetup(['check', ...args], { root, home }), 1);
+      const reports = [];
+      const options = { root, home, report: (code) => reports.push(code) };
+      assert.equal(await runSetup(['apply', ...args], options), 2);
+      assert.deepEqual(reports, ['prepared', 'cache-failed']);
+      assert.equal(await runSetup(['check', ...args], { root, home }), 1);
+      await writeFile(cacheReady, '');
       assert.equal(await runSetup(['apply', ...args], { root, home }), 0);
-      assert.equal(await readFile(log, 'utf8'), 'install\nsync\n');
+      assert.equal(await readFile(log, 'utf8'), 'install\nsync\ninstall\nsync\n');
       assert.equal(await runSetup(['check', ...args], { root, home }), 0);
     } finally {
       process.env.PATH = originalPath;

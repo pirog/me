@@ -15,6 +15,7 @@ steps:
       command: bun
       args: [scripts/setup.js, apply, config]
   - id: piroplugin
+    independent: true
     runtimes: [codex]
     check:
       command: bun
@@ -24,6 +25,7 @@ steps:
       args: [scripts/setup.js, apply, plugin, me, piroplugin]
       timeout-seconds: 900
   - id: tanaab-plugin
+    independent: true
     runtimes: [codex]
     check:
       command: bun
@@ -33,6 +35,7 @@ steps:
       args: [scripts/setup.js, apply, plugin, canon, tanaab, optional]
       timeout-seconds: 900
   - id: agent-system-plugin
+    independent: true
     runtimes: [codex]
     check:
       command: bun
