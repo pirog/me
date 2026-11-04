@@ -1,12 +1,49 @@
 # TASKS
 
+## TANAABOT
+
+- separate tanaabot repo?
+  - scaffold
+    - agent-system files and definitions
+    - skills and voice?
+    - readme format
+    - appearance sync can be removed for now
+    - piroboot script?
+    - make into codex plugin as well
+    - dotfiles?
+    - pets for dot appearance?
+    - testing?
+
+  - install script
+    - bootbox
+    - brewfile
+    - dotfiles
+      - AGENTS.md?
+    - ssh
+    - LINUX PATH HANDLING
+    - op environment stuff?
+
+  - sync more automations
+    - cloud automations need to be setup inside the chat
+    - cloud can delegate to dotcomp, codex cloud or mac
+
+  - tailscale benefits?
+  - for review chats where do we store state? github?
+
+- voice customization?
+- gh script and browser login?
+- monday automations redo?
+- artwork updates?
+
 ## AGENT SYSTEM
 
-- big improvement branch before release?
+### PROJECT PICKUP
+
+- project-pickup-automation-drift
+- notifications reset for project pickup
+
 - no articles for smutlord? add as part of russian roullete?
 - investigate backend support (file, redis, db, api?)
-
-## PR REVIEW
 
 - emori
   - check if work is in scope and if documentation is the least amount possible to achieve goal
@@ -18,17 +55,7 @@
 
 - @pirog/me
   - TANAABOT?
-    - automations
-      - scheduled chats can provide usefully organized threads on run?
-      - are they shared on all macs?
-      - agents skills/plugin/etc?
-
-    - voice customization?
-    - gh script and browser login?
-    - monday automations redo?
-    - artwork updates?
-
-  - morning closeout?
+    - morning closeout?
 
   - better plans and reports?
   - read only email summarizer?
@@ -41,6 +68,7 @@
     - store historic issues etc?
     - agent-system offload intake/task stuff to endpoint or something?
     - hosted redis/postgres/etc?
+    - codex cloud skill?
 
 - @tanaab/openclaw-agent-system
   - 0.10.0
