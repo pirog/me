@@ -90,20 +90,32 @@ instance name shown in the card.
    binding, native denial, uncertain effects, or a shared prerequisite that cannot be
    verified. retain earlier verified work and never repeat an uncertain mutation.
 
-4. evaluate workspace setup and native automations separately. check the manifest,
-   setup declarations, commands/imports, Brewfile, dotfiles and generated configuration
-   inputs before running affected workspace steps. for eligible workspace work, use the
-   existing Me setup commands for `brewfile`, `dotfiles`, and `config` in declaration
-   order. run the declared check first, apply only on drift, and check again after apply.
-   stop dependent workspace steps if a prerequisite is held or fails.
+4. after eligible source pulls, dependency installs/builds and plugin/cache refreshes have
+   completed or reached a recorded hold/failure, read and use the current Agent System
+   Doctor → Install → Doctor skills against the trusted Me binding. the first Doctor
+   inspects the post-refresh state. both Doctors include supported setup, saved automation
+   definitions and persisted intake/pickup readiness; selected setup checks do not replace them.
 
-   check schedule inputs separately and use fresh trusted automation context to
-   reconcile and verify saved definitions through the existing Agent System Install
-   automation-only path. a plugin hold alone is not an automation hold. an unsafe
-   manifest or automation declaration can hold schedules even when a plugin refresh
-   succeeds. preserve `smoke-test` disabled and leave unrelated schedules running.
-   if fresh runtime context is unavailable after self-refresh, report the remaining
-   checks as pending and follow step 6.
+   check the manifest, setup declarations, commands/imports, Brewfile, dotfiles, generated
+   configuration and plugin inputs before the phases that consume them. a repository's
+   refresh hold or failure alone does not hold the lifecycle: establish which inputs are
+   unsafe or unavailable. continue safe inspection and independent automation work through
+   their existing owners. if full Install would consume a held input, retain that Install
+   hold without undoing or preventing the independent refreshes already completed.
+   never execute an unsafe check or bypass a recorded hold, denial or uncertain mutation.
+
+   use full Install for declared host/agent setup and its complete native automation
+   reconciliation, including chat/schedule preparation, native writes and saved-state
+   verification when needed. let Install check declared steps and apply only drift;
+   leave healthy plugins unchanged and do not repeat their dependency/build/cache work.
+   preserve installation identity, `smoke-test` disabled and unrelated schedules. respect
+   Install's existing stop-on-failure behavior; do not retry a failed step through a direct
+   helper or substitute selected workspace repairs for Install.
+
+   finish with the full final Doctor when safe and permitted, including after a held or
+   failed Install. report incomplete or unavailable findings as pending, never healthy.
+   use fresh trusted runtime context after self-refresh and for Install's automation
+   handoff; if unavailable, retain completed work and follow step 6.
 
 5. if hooks need review, inspect the changed definitions and executable changes against the previously
    trusted source. for the existing hooks with unchanged purpose, event/matcher scope, approval
@@ -138,7 +150,9 @@ use ✅ for completed,
 verified work, ⚠️ for skips or restart/context needs, and ❌ for failures. use the readable Agent System
 instance name in backticks, the local occurrence date, and actual short commits. never label an
 unchecked step healthy. distinguish source updates from held/failed dependency, plugin and Install
-steps. missing optional plugins say `skipped / absent`; unchecked steps say `not checked` or `unknown`.
+steps. report first Doctor, Install setup/native automations and final Doctor separately,
+including their holds, failures and unresolved readiness. missing optional plugins say
+`skipped / absent`; unchecked steps say `not checked` or `unknown`.
 use the helper results per plugin. `absent` is skipped. `unchanged` is healthy.
 `refreshed` means the cache passed verification after repair. `prepared` confirms dependency/build work completed,
 even if version selection or cache repair later failed. report `prepare-failed`,
@@ -158,7 +172,11 @@ keep the card compact, following this shape with actual outcomes rather than cop
 > | Canon        | unchanged `commit`         | installed            | enabled / aligned    |
 > | Me           | unchanged `commit`         | installed            | enabled / aligned    |
 >
-> **workspace setup / saved automations:** actual outcomes and any hold or failure reasons
+> **first Doctor:** post-refresh setup, saved automations and persisted intake/pickup findings
+>
+> **Install:** declared setup / native automation outcomes and any hold or failure reasons
+>
+> **final Doctor:** final readiness findings, including unresolved or unchecked work
 >
 > **hooks / loaded context:** actual trust and adoption status
 >
