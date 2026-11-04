@@ -37,10 +37,9 @@
 
 ## AGENT SYSTEM
 
-### PROJECT PICKUP
-
-- project-pickup-automation-drift
-- notifications reset for project pickup
+- remove more machinery in 632, why are we storing plans and all of this?
+- confusing guidance accumulates remove stored plans etc?
+- remove old allowed repo owners?
 
 - no articles for smutlord? add as part of russian roullete?
 - investigate backend support (file, redis, db, api?)
