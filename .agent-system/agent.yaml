@@ -6,9 +6,16 @@ agent:
   name: Mike Pirog
   avatar: assets/icon-large-circle.png
 
+git:
+  ssh:
+    private-keys:
+      - path: ~/.ssh/id_pirog
+
 github:
   host: github.com
   username: pirog
+  config:
+    git-protocol: ssh
   schema-version: 3
   runtimes:
     - codex
