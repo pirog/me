@@ -24,11 +24,11 @@ github:
     - "tanaabased/*"
     - "pirog/*"
     - "lando/*"
-  project-pickup:
+  issue-pickup:
     projects:
       - repository: tanaabased/openclaw-agent-system
         milestone:
-          number: 11
+          number: 14
           policy: only
   issue-assignment:
     mode: auto
