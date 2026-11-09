@@ -13,7 +13,6 @@ activation, and scheduled execution require separate desktop validation.
 ```bash
 # should bootstrap the codex setup prerequisites
 boot.sh \
-  --op-token "$OPTOKEN" \
   --ssh-key 'omfsw2uztmi2xqpid5g3kiv6ba/id_test' \
   --force
 test -d "$HOME/.codex" && ! test -L "$HOME/.codex"
