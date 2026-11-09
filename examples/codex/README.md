@@ -83,7 +83,7 @@ plugin_root=$(jq -r .cachePath "$TMPDIR/cache.json")
 printf '%s\n' '{"hook_event_name":"SessionStart","source":"startup"}' \
   | PLUGIN_DATA="$TMPDIR/plugin-data" PLUGIN_ROOT="$plugin_root" node "$plugin_root/dist/codex/codex-runtime.js" session-start \
   | jq -r '.hookSpecificOutput.additionalContext' | sed -n '/^{/,/^}/p' \
-  | jq -e --arg workspace "$GITHUB_WORKSPACE" '.binding | .status == "active" and .workspaceDir == $workspace and .context.identity == {id: "pirog", name: "Mike Pirog", avatar: "assets/icon-large-circle.png"} and .context.github == {host: "github.com", username: "pirog"}'
+  | jq -e --arg workspace "$GITHUB_WORKSPACE" '.binding | .status == "active" and .workspaceDir == $workspace and .context.identity == {id: "pirog", name: "Mike Pirog", avatar: "assets/icon-large-circle.png"} and .context.github.host == "github.com" and .context.github.username == "pirog"'
 test -s "$GITHUB_WORKSPACE/assets/icon-large-circle.png"
 
 # should expose model routing through the packaged hook
@@ -106,8 +106,8 @@ bun -e 'import assert from "node:assert/strict"; import {loadAgentModels} from "
 set -o pipefail
 runtime="$(jq -r .cachePath "$TMPDIR/cache.json")/dist/codex/codex-runtime.js"
 for tier in low medium high; do
-  jq -n --slurpfile inspected "$TMPDIR/routing.json" --arg tier "$tier" \
-    '{action: "resolve", manifestDigest: $inspected[0].manifestDigest, context: "Bounded integration fixture with explicit Complexity.", assessment: {complexity: $tier, reason: "Explicit fixture Complexity."}, evidence: {complexity: $tier, source: "user"}}' \
+  jq -n --arg tier "$tier" \
+    '{action: "resolve", context: "Bounded integration fixture with explicit Complexity.", assessment: {complexity: $tier, reason: "Explicit fixture Complexity."}, evidence: {complexity: $tier, source: "user"}}' \
     | node "$runtime" model-routing --plugin-data "$TMPDIR/plugin-data" \
     | jq -e --slurpfile inspected "$TMPDIR/routing.json" --arg tier "$tier" \
       '.status == "resolved" and .candidate == $inspected[0].profiles[$tier] and .application == "not-requested" and .execution == "unverified"'
@@ -117,8 +117,8 @@ done
 set -o pipefail
 runtime="$(jq -r .cachePath "$TMPDIR/cache.json")/dist/codex/codex-runtime.js"
 for override in '{"model":"explicit-model"}' '{"effort":"medium"}'; do
-  jq -n --slurpfile inspected "$TMPDIR/routing.json" --argjson override "$override" \
-    '{action: "resolve", manifestDigest: $inspected[0].manifestDigest, context: "Bounded override fixture.", assessment: {complexity: "medium", reason: "Interacting concerns."}, overrides: $override}' \
+  jq -n --argjson override "$override" \
+    '{action: "resolve", context: "Bounded override fixture.", assessment: {complexity: "medium", reason: "Interacting concerns."}, overrides: $override}' \
     | node "$runtime" model-routing --plugin-data "$TMPDIR/plugin-data" \
     | jq -e --slurpfile inspected "$TMPDIR/routing.json" --argjson override "$override" \
       '.candidate.model == ($override.model // $inspected[0].profiles.medium.model) and .candidate.thinking == ($override.effort // $inspected[0].profiles.medium.thinking)'
@@ -127,8 +127,8 @@ done
 # should retain unresolved reasoning when explicitly selecting the default
 set -o pipefail
 runtime="$(jq -r .cachePath "$TMPDIR/cache.json")/dist/codex/codex-runtime.js"
-jq -n --slurpfile inspected "$TMPDIR/routing.json" \
-  '{action: "resolve", manifestDigest: $inspected[0].manifestDigest, context: "No defensible tier in this fixture.", assessment: {complexity: "unset", reason: "Insufficient complexity evidence."}, fallback: "default"}' \
+jq -n \
+  '{action: "resolve", context: "No defensible tier in this fixture.", assessment: {complexity: "unset", reason: "Insufficient complexity evidence."}, fallback: "default"}' \
   | node "$runtime" model-routing --plugin-data "$TMPDIR/plugin-data" \
   | jq -e --slurpfile inspected "$TMPDIR/routing.json" \
     '.status == "unresolved" and .profile == "default" and .candidate == $inspected[0].profiles.default and .reason == "Insufficient complexity evidence."'
