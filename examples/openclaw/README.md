@@ -18,6 +18,7 @@ openclaw config set agents.defaults.skipBootstrap true --strict-json
 set -o pipefail
 cd "$GITHUB_WORKSPACE"
 openclaw agent-system validate
+openclaw agent-system credentials set op --from-env
 openclaw agent-system install --skip-setup --json \
   | jq -e '.agentId == "pirog" and (.outcomes | any(.component == "agent" and .status == "created"))'
 
