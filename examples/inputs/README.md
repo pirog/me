@@ -54,7 +54,7 @@ if boot.sh --help | grep -F "TANAAB_"; then exit 1; fi
 
 # should show default input values
 boot.sh --help | grep -F -- "--ssh-key" | grep -F "[default: vmruk4ny353aly6tbom7z3v2hy/id_pirog,vmruk4ny353aly6tbom7z3v2hy/id_agentbox1]"
-boot.sh --help | grep -F -- "--op-token" | grep -F "[default: none]"
+env -u PIROME_OP_TOKEN -u OP_SERVICE_ACCOUNT_TOKEN boot.sh --help | grep -F -- "--op-token" | grep -F "[default: none]"
 boot.sh --help | grep -F -- "--tanaab" | grep -F "[default: none]"
 boot.sh --help | grep -F -- "--debug" | grep -F "[default: off]"
 boot.sh --help | grep -F -- "--force" | grep -F "[default: off]"

@@ -1,8 +1,8 @@
 # OpenClaw example
 
 install the checked-out pirog profile in isolated OpenClaw state. check identity and repeat-install
-convergence without credentials, setup steps, or a Gateway. this fixture does not establish a
-working OpenClaw profile for daily use.
+convergence using the configured 1Password environment, without setup steps or a Gateway. this fixture
+does not establish a working OpenClaw profile for daily use.
 
 ## Setup
 
@@ -18,6 +18,7 @@ openclaw config set agents.defaults.skipBootstrap true --strict-json
 set -o pipefail
 cd "$GITHUB_WORKSPACE"
 openclaw agent-system validate
+openclaw agent-system credentials set op --from-env
 openclaw agent-system install --skip-setup --json \
   | jq -e '.agentId == "pirog" and (.outcomes | any(.component == "agent" and .status == "created"))'
 

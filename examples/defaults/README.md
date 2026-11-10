@@ -21,14 +21,13 @@ test "$PIROME_PAYLOAD_DIR" = "$GITHUB_WORKSPACE"
 test -d "$PIROME_PAYLOAD_DIR/.git"
 
 # should have the op token test secret available
-test -n "$OPTOKEN"
+test -n "$OP_SERVICE_ACCOUNT_TOKEN"
 
 # should run boot.sh once and overwrite a conflicting ssh key
 mkdir -p "$HOME/.ssh"
 printf '%s\n' 'not-a-private-key' > "$HOME/.ssh/id_test"
 chmod 600 "$HOME/.ssh/id_test"
 boot.sh \
-  --op-token "$OPTOKEN" \
   --ssh-key 'omfsw2uztmi2xqpid5g3kiv6ba/id_test' \
   --force 2>&1 | tee "$TMPDIR/setup.log"
 ```

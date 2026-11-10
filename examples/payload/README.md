@@ -19,11 +19,10 @@ GIT_CONFIG_GLOBAL="$TMPDIR/gitconfig" git config --global protocol.file.allow al
 GIT_CONFIG_GLOBAL="$TMPDIR/gitconfig" git config --global url."file://$TMPDIR/me-origin.git".insteadOf git@github.com:pirog/me.git
 rm -rf "$HOME/tanaab/me" "$HOME/tanaab/canon"
 rm -f "$HOME/.codex/plugins/tanaab"
-test -n "$OPTOKEN"
+test -n "$OP_SERVICE_ACCOUNT_TOKEN"
 
 # should clone the canonical me payload via ssh
 env -u PIROME_PAYLOAD_DIR GIT_CONFIG_GLOBAL="$TMPDIR/gitconfig" "$TMPDIR/piroboot" \
-  --op-token "$OPTOKEN" \
   --ssh-key 'omfsw2uztmi2xqpid5g3kiv6ba/id_test'
 ```
 
@@ -42,7 +41,6 @@ test "$(git -C "$HOME/tanaab/me" remote get-url origin)" = "git@github.com:pirog
 git -C "$HOME/tanaab/me" reset --hard origin/main^2
 test "$(git -C "$HOME/tanaab/me" rev-parse HEAD)" != "$(git -C "$HOME/tanaab/me" rev-parse origin/main)"
 env -u PIROME_PAYLOAD_DIR GIT_CONFIG_GLOBAL="$TMPDIR/gitconfig" "$TMPDIR/piroboot" \
-  --op-token "$OPTOKEN" \
   --ssh-key 'omfsw2uztmi2xqpid5g3kiv6ba/id_test'
 test "$(git -C "$HOME/tanaab/me" rev-parse HEAD)" = "$(git -C "$HOME/tanaab/me" rev-parse origin/main)"
 
@@ -51,7 +49,6 @@ git -C "$HOME/tanaab/me" reset --hard origin/main^2
 printf '%s\n' 'local payload work' > "$HOME/tanaab/me/payload-local-work.txt"
 payload_head="$(git -C "$HOME/tanaab/me" rev-parse HEAD)"
 env -u PIROME_PAYLOAD_DIR GIT_CONFIG_GLOBAL="$TMPDIR/gitconfig" "$TMPDIR/piroboot" \
-  --op-token "$OPTOKEN" \
   --ssh-key 'omfsw2uztmi2xqpid5g3kiv6ba/id_test'
 test -f "$HOME/tanaab/me/payload-local-work.txt"
 test "$(git -C "$HOME/tanaab/me" rev-parse HEAD)" = "$payload_head"

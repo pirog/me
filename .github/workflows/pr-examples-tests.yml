@@ -61,7 +61,7 @@ jobs:
           CODEX_TOOLS_CODEX_HOME: ${{ runner.temp }}/codex-home
           NO_COLOR: '1'
           PIROME_PAYLOAD_DIR: ${{ github.workspace }}
-          OPTOKEN: ${{ secrets.TANAAB_OP_TEST }}
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.PIROKEY }}
         with:
           scenarios: examples/${{ matrix.example }}/README.md
           shell: bash

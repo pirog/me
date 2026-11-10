@@ -43,11 +43,10 @@ rm -rf "$HOME/tanaab/canon" "$HOME/tanaab/agentbox"
 rm -f "$HOME/.codex/plugins/tanaab" "$HOME/.codex/plugins/agentbox-plugin"
 rm -f "$PIROME_PAYLOAD_DIR/dotfiles/ai/.codex/plugins/tanaab"
 rm -f "$PIROME_PAYLOAD_DIR/dotfiles/ai/.codex/plugins/agentbox-plugin"
-test -n "$OPTOKEN"
+test -n "$OP_SERVICE_ACCOUNT_TOKEN"
 
 # should clone two selected tanaab repositories
 GIT_CONFIG_GLOBAL="$TMPDIR/gitconfig" boot.sh \
-  --op-token "$OPTOKEN" \
   --ssh-key 'omfsw2uztmi2xqpid5g3kiv6ba/id_test' \
   --tanaab canon \
   --tanaab agentbox
@@ -82,7 +81,6 @@ ln -s "$HOME/tanaab/canon" "$PIROME_PAYLOAD_DIR/dotfiles/ai/.codex/plugins/tanaa
 
 # should fast-forward clean work and preserve dirty work while detecting a new plugin
 GIT_CONFIG_GLOBAL="$TMPDIR/gitconfig" boot.sh \
-  --op-token "$OPTOKEN" \
   --ssh-key 'omfsw2uztmi2xqpid5g3kiv6ba/id_test' \
   --tanaab canon \
   --tanaab agentbox
@@ -96,7 +94,6 @@ case "$(readlink "$PIROME_PAYLOAD_DIR/dotfiles/ai/.codex/plugins/agentbox-plugin
 # should remove a generated link when the checkout stops declaring a plugin
 rm -f "$HOME/tanaab/agentbox/.codex-plugin/plugin.json"
 GIT_CONFIG_GLOBAL="$TMPDIR/gitconfig" boot.sh \
-  --op-token "$OPTOKEN" \
   --ssh-key 'omfsw2uztmi2xqpid5g3kiv6ba/id_test'
 ! test -e "$PIROME_PAYLOAD_DIR/dotfiles/ai/.codex/plugins/agentbox-plugin"
 ! test -L "$PIROME_PAYLOAD_DIR/dotfiles/ai/.codex/plugins/agentbox-plugin"
