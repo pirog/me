@@ -16,11 +16,10 @@ sudo touch /opt/tanaab/agentbox/bin/health.sh
 sudo chmod 755 /opt/tanaab/agentbox/bin/health.sh
 sudo touch /Library/LaunchDaemons/dev.tanaab.agentbox.health.plist
 rm -f "$HOME/.ssh/id_test"
-test -n "$OPTOKEN"
+test -n "$OP_SERVICE_ACCOUNT_TOKEN"
 
 # should apply me with Agentbox cask skips
 HOMEBREW_BUNDLE_CASK_SKIP="codex-app" boot.sh \
-  --op-token "$OPTOKEN" \
   --ssh-key 'omfsw2uztmi2xqpid5g3kiv6ba/id_test' \
   --debug 2>&1 | tee "$TMPDIR/setup.log"
 ```

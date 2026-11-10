@@ -5,6 +5,11 @@ agent:
   id: pirog
   name: Mike Pirog
   avatar: assets/icon-large-circle.png
+  email:
+    from-environment: EMAIL
+
+environment:
+  op: zsstdfqknicwfv5glv76gd6tue
 
 git:
   ssh:
@@ -14,6 +19,7 @@ git:
 github:
   host: github.com
   username: pirog
+  token: GH_TOKEN
   config:
     git-protocol: ssh
   schema-version: 3
@@ -24,11 +30,11 @@ github:
     - "tanaabased/*"
     - "pirog/*"
     - "lando/*"
-  project-pickup:
+  issue-pickup:
     projects:
       - repository: tanaabased/openclaw-agent-system
         milestone:
-          number: 11
+          number: 14
           policy: only
   issue-assignment:
     mode: auto
