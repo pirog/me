@@ -1,0 +1,21 @@
+defaults: &reporting
+  runtimes: [codex]
+  group: REPORTS
+  thread:
+    name: UPDATES
+  model: low
+
+automations:
+  - <<: *reporting
+    id: update
+    display-name: "⬇️ UPDATE"
+    schedule:
+      cron: "0 23 * * *"
+    prompt:
+      file: ../prompts/update.md
+  - <<: *reporting
+    id: smoke-test
+    enabled: false
+    schedule: every 15 minutes
+    prompt:
+      file: ../prompts/smoke-test.md

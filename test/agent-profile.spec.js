@@ -10,7 +10,10 @@ describe('agent profile static invariants', () => {
   it('should preserve workspace assets, adjacent setup files, and the disabled smoke test', async () => {
     const manifest = await yaml(manifestPath);
     await access(path.join(root, manifest.agent.avatar));
-    const smokeTest = manifest.automations.find(({ id }) => id === 'smoke-test');
+    const { automations } = await yaml(
+      path.resolve(path.dirname(manifestPath), manifest.automations.file),
+    );
+    const smokeTest = automations.find(({ id }) => id === 'smoke-test');
     if (smokeTest) assert.equal(smokeTest.enabled, false);
 
     for (const section of ['setup-host', 'setup-agent']) {
