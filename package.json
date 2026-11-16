@@ -44,6 +44,7 @@
     "marketplace": "pirostore",
     "managedPaths": [
       ".agent-system/agent.yaml",
+      ".agent-system/automations.yml",
       ".agent-system/guidance",
       ".agent-system/setup-agent.yaml",
       ".agent-system/setup-host.yaml",
@@ -64,6 +65,7 @@
       "hooks",
       "lib",
       "package.json",
+      "prompts",
       "references",
       "scripts/account-binding-task.js",
       "scripts/account-policy-task.js",
@@ -76,6 +78,7 @@
   },
   "files": [
     ".agent-system/agent.yaml",
+    ".agent-system/automations.yml",
     ".agent-system/guidance/",
     ".agent-system/setup-agent.yaml",
     ".agent-system/setup-host.yaml",
@@ -91,6 +94,7 @@
     "assets/",
     "hooks/",
     "lib/",
+    "prompts/",
     "references/",
     "scripts/account-binding-task.js",
     "scripts/account-policy-task.js",
