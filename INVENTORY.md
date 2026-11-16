@@ -91,6 +91,7 @@ edit these sources to change the profile:
 | [`.agent-system/agent.yaml`](./.agent-system/agent.yaml)                           | identity, model profiles, setup, GitHub notification policy, and the automation file reference. |
 | [`.agent-system/automations.yml`](./.agent-system/automations.yml)                 | automation settings and shared defaults.                                                        |
 | [`prompts/`](./prompts/)                                                           | automation instructions.                                                                        |
+| [`guidance/`](./guidance/)                                                         | task assessment guidance.                                                                       |
 | [`GOALS.md`](./GOALS.md)                                                           | direction, priorities, and deferrals.                                                           |
 | [`dotfiles/ai/.codex/AGENTS.md`](./dotfiles/ai/.codex/AGENTS.md)                   | global collaboration, voice, and change-discipline guidance.                                    |
 | [`dotfiles/ai/.codex/config.shared.toml`](./dotfiles/ai/.codex/config.shared.toml) | portable Codex settings, including service tier and Fast mode.                                  |

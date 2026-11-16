@@ -31,6 +31,11 @@ describe('package.json Codex Tools integration', () => {
       await writeFile(path.join(target, 'ACTORS.md'), 'retired actor registry');
       await writeFile(path.join(target, 'WORK_REPOS.md'), 'retired repository registry');
       await writeFile(path.join(target, 'AUTOMATIONS.yaml'), 'retired schedules');
+      await mkdir(path.join(target, '.agent-system', 'guidance'), { recursive: true });
+      await writeFile(
+        path.join(target, '.agent-system', 'guidance', 'assessment.md'),
+        'superseded guidance location',
+      );
       for (const manifest of ['agent.yaml', 'setup-host.yaml', 'setup-agent.yaml']) {
         await writeFile(path.join(target, manifest), 'superseded root manifest');
       }
@@ -64,6 +69,7 @@ describe('package.json Codex Tools integration', () => {
             'agent.yaml',
             'setup-host.yaml',
             'setup-agent.yaml',
+            '.agent-system/guidance',
           ].includes(relative)
         )
           continue;
@@ -79,6 +85,7 @@ describe('package.json Codex Tools integration', () => {
         'agent.yaml',
         'setup-host.yaml',
         'setup-agent.yaml',
+        '.agent-system/guidance',
         'skills/automation',
         'skills/find-work',
         'skills/plan-work',

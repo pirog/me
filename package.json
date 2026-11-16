@@ -62,6 +62,7 @@
       "assets",
       "automations",
       "bin",
+      "guidance",
       "hooks",
       "lib",
       "package.json",
@@ -79,7 +80,6 @@
   "files": [
     ".agent-system/agent.yaml",
     ".agent-system/automations.yml",
-    ".agent-system/guidance/",
     ".agent-system/setup-agent.yaml",
     ".agent-system/setup-host.yaml",
     ".codex-plugin/plugin.json",
@@ -92,6 +92,7 @@
     "INVENTORY.md",
     "PIROBOOT.md",
     "assets/",
+    "guidance/",
     "hooks/",
     "lib/",
     "prompts/",

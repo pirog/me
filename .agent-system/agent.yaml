@@ -47,7 +47,7 @@ github:
     assessment:
       skill: piroplugin:piro-issue-assessment
       guidance:
-        file: .agent-system/guidance/assessment.md
+        file: guidance/assessment.md
     implementation:
       skill: piroplugin:piro-issue-implementation
     feedback:
