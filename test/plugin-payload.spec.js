@@ -13,8 +13,23 @@ const run = promisify(execFile);
 const repoRoot = path.resolve(import.meta.dirname, '..');
 const configuration = [
   '.agent-system/agent.yaml',
+  '.agent-system/automations.yml',
   '.agent-system/setup-agent.yaml',
   '.agent-system/setup-host.yaml',
+];
+const automationPath = path.join(repoRoot, '.agent-system/automations.yml');
+const automationDocument = globalThis.Bun.YAML.parse(await readFile(automationPath, 'utf8'));
+const automationPrompts = automationDocument.automations.map(({ prompt }) =>
+  path.relative(repoRoot, path.resolve(path.dirname(automationPath), prompt.file)),
+);
+const manifest = globalThis.Bun.YAML.parse(
+  await readFile(path.join(repoRoot, '.agent-system/agent.yaml'), 'utf8'),
+);
+const referencedContent = [
+  ...automationPrompts,
+  ...Object.values(manifest.github['issue-assignment']).flatMap((selection) =>
+    selection?.guidance?.file ? [selection.guidance.file] : [],
+  ),
 ];
 const accountPolicyFiles = [
   'hooks/hooks.json',
@@ -47,7 +62,8 @@ describe('package.json plugin payload', () => {
     for (const relative of ['.node-version', '.bun-version']) {
       await copyFile(path.join(repoRoot, relative), path.join(source, relative));
     }
-    for (const relative of configuration) {
+    for (const relative of [...configuration, ...referencedContent]) {
+      await mkdir(path.dirname(path.join(source, relative)), { recursive: true });
       await copyFile(path.join(repoRoot, relative), path.join(source, relative));
     }
     for (const relative of accountPolicyFiles) {
@@ -91,7 +107,8 @@ describe('package.json plugin payload', () => {
       packedPaths.filter((file) => file.startsWith('.agent-system/')).sort(),
       configuration,
     );
-    for (const file of accountPolicyFiles) assert.ok(packedPaths.includes(file));
+    for (const file of [...accountPolicyFiles, ...referencedContent])
+      assert.ok(packedPaths.includes(file));
     assert.ok(!packedPaths.some((file) => file.endsWith('account-defaults.json')));
     const unpacked = path.join(temporary, 'unpacked');
     await mkdir(unpacked);
@@ -120,7 +137,7 @@ describe('package.json plugin payload', () => {
       [...entries.keys()].filter((file) => file.startsWith('.agent-system/')).sort(),
       configuration,
     );
-    for (const file of accountPolicyFiles) assert.ok(entries.has(file));
+    for (const file of [...accountPolicyFiles, ...referencedContent]) assert.ok(entries.has(file));
     assert.ok(![...entries.keys()].some((file) => file.endsWith('account-defaults.json')));
   });
 });

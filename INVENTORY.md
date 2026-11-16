@@ -77,7 +77,8 @@ the installed plugin must expose them before the bound workspace selects them. s
 | [`⬇️ UPDATE`](./references/updates.md) | safe updates to Agent System, Canon, and Me at 23:00 local time, with a status card in `REPORTS` / `UPDATES`. |
 | `smoke-test`                           | disabled; a 15-minute schedule for an explicitly authorized validation window.                                |
 
-these are configured through the [profile](./.agent-system/agent.yaml), but issue intake is generated
+edit [automation settings](./.agent-system/automations.yml) or their [prompts](./prompts/).
+the [profile](./.agent-system/agent.yaml) references those settings, but issue intake is generated
 by Agent System rather than listed under `automations`. see its
 [Codex automation contract](https://github.com/tanaabased/openclaw-agent-system/blob/main/CODEX.md#repository-automations).
 
@@ -85,14 +86,17 @@ by Agent System rather than listed under `automations`. see its
 
 edit these sources to change the profile:
 
-| file                                                                               | owns                                                                                      |
-| ---------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| [`.agent-system/agent.yaml`](./.agent-system/agent.yaml)                           | identity, model profiles, setup, GitHub notification policy, and automation declarations. |
-| [`GOALS.md`](./GOALS.md)                                                           | direction, priorities, and deferrals.                                                     |
-| [`dotfiles/ai/.codex/AGENTS.md`](./dotfiles/ai/.codex/AGENTS.md)                   | global collaboration, voice, and change-discipline guidance.                              |
-| [`dotfiles/ai/.codex/config.shared.toml`](./dotfiles/ai/.codex/config.shared.toml) | portable Codex settings, including service tier and Fast mode.                            |
-| `~/.codex/config.local.toml`                                                       | machine-specific settings, including project trust and local paths.                       |
-| `~/.codex/config.toml`                                                             | generated output; edit its source inputs instead.                                         |
+| file                                                                               | owns                                                                                            |
+| ---------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| [`.agent-system/agent.yaml`](./.agent-system/agent.yaml)                           | identity, model profiles, setup, GitHub notification policy, and the automation file reference. |
+| [`.agent-system/automations.yml`](./.agent-system/automations.yml)                 | automation settings and shared defaults.                                                        |
+| [`prompts/`](./prompts/)                                                           | automation instructions.                                                                        |
+| [`guidance/`](./guidance/)                                                         | task assessment guidance.                                                                       |
+| [`GOALS.md`](./GOALS.md)                                                           | direction, priorities, and deferrals.                                                           |
+| [`dotfiles/ai/.codex/AGENTS.md`](./dotfiles/ai/.codex/AGENTS.md)                   | global collaboration, voice, and change-discipline guidance.                                    |
+| [`dotfiles/ai/.codex/config.shared.toml`](./dotfiles/ai/.codex/config.shared.toml) | portable Codex settings, including service tier and Fast mode.                                  |
+| `~/.codex/config.local.toml`                                                       | machine-specific settings, including project trust and local paths.                             |
+| `~/.codex/config.toml`                                                             | generated output; edit its source inputs instead.                                               |
 
 local configuration may add settings, but cannot override exact keys owned by the shared file or
 the manifest's default model and effort. the model loader generates app defaults; Agent System
