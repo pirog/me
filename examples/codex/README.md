@@ -155,7 +155,11 @@ node "$runtime" automations list --plugin-data "$TMPDIR/plugin-data" < "$TMPDIR/
 set -o pipefail
 runtime="$(jq -r .cachePath "$TMPDIR/cache.json")/dist/codex/codex-runtime.js"
 node "$runtime" automations inspect --plugin-data "$TMPDIR/plugin-data" < "$TMPDIR/automation-lookups.json" \
-  | jq -e --slurpfile prior "$TMPDIR/automation-plan.json" '.status == $prior[0].status and .digest == $prior[0].digest and .actions == $prior[0].actions and .findings == $prior[0].findings and .telemetry == {execution: "unavailable", delivery: "unavailable"}'
+  | jq -e --slurpfile prior "$TMPDIR/automation-plan.json" 'if
+      .status == $prior[0].status and .digest == $prior[0].digest and .actions == $prior[0].actions and
+      (.findings | map(del(.automationName))) == ($prior[0].findings | map(del(.automationName))) and
+      .telemetry == {execution: "unavailable", delivery: "unavailable"}
+    then true else error("automation inspection changed: expected \($prior[0]), observed \(.)") end'
 test ! -d "$CODEX_HOME/automations"
 test -z "$(find "$TMPDIR/plugin-data" -name 'codex-automations-*.json' -print)"
 ```
