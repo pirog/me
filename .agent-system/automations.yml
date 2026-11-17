@@ -1,14 +1,14 @@
 defaults: &reporting
   runtimes: [codex]
   group: REPORTS
-  thread:
-    name: UPDATES
   model: low
 
 automations:
   - <<: *reporting
     id: update
     display-name: "⬇️ UPDATE"
+    thread:
+      name: UPDATES
     schedule:
       cron: "0 23 * * *"
     prompt:
