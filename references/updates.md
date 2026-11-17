@@ -123,10 +123,11 @@ instance name shown in the card.
    displayed trust control, and verify `Trusted`. broader or unclear changes need operator review.
    never edit trust storage or use bypass flags. if trust is needed for an operation, do this first.
 6. report actual results. synced caches and trusted hooks do not prove an already-loaded chat adopted
-   the new runtime. use fresh trusted context when the supported lifecycle supplies it; otherwise
-   report `restart/context needed` and any unfinished Doctor or automation reconciliation. do not
-   guess a replacement executable after an old runtime path disappears. do not restart the desktop
-   app automatically. this warning is an acceptable first-run outcome, not a reason to pause jobs.
+   the new runtime. use fresh trusted context when the supported lifecycle supplies it. if missing
+   context prevents required work, report the unfinished step and needed action as a warning.
+   otherwise, existing chats retaining earlier context is an informational repository note, not an
+   update failure or a requirement to open a new chat. do not guess a replacement executable after
+   an old runtime path disappears or restart the desktop app automatically.
 
 keep each attempt to about 15 minutes: give subprocesses only the remaining time and stop launching
 new work when it is exhausted. only clearly transient network failures may retry, up to three times
@@ -145,39 +146,49 @@ testing belongs to an explicitly requested change or validation task.
 
 ## report
 
-return one concise Markdown quote block in `REPORTS` / `UPDATES` after every run, including unchanged days.
-use ✅ for completed,
-verified work, ⚠️ for skips or restart/context needs, and ❌ for failures. use the readable Agent System
-instance name in backticks, the local occurrence date, and actual short commits. never label an
-unchecked step healthy. distinguish source updates from held/failed dependency, plugin and Install
-steps. report first Doctor, Install setup/native automations and final Doctor separately,
-including their holds, failures and unresolved readiness. missing optional plugins say
-`skipped / absent`; unchecked steps say `not checked` or `unknown`.
-use the helper results per plugin. `absent` is skipped. `unchanged` is healthy.
-`refreshed` means the cache passed verification after repair. `prepared` confirms dependency/build work completed,
-even if version selection or cache repair later failed. report `prepare-failed`,
-`install-failed`, `cache-failed`, `verify-failed`, `check-blocked` or a link hold against its actual phase. only a
-successful final check verifies the cache.
-use ⚠️ overall when required work is skipped, held or unknown, and ❌ for a failed operation; reserve ✅
-overall for completed verified work. successful source updates remain visible when Install is held.
-keep the card compact, following this shape with actual outcomes rather than copying its healthy rows:
+return one concise Markdown quote block in `REPORTS` / `UPDATES` after every run, including unchanged
+days. use the two tables below in one card: repository outcomes with their own hooks and notes,
+then `me check` for first Doctor, Install and final Doctor. use the readable instance name,
+local occurrence date and actual short commits. keep notes beside the affected entry rather than
+adding a separate attention or hooks footer.
 
-> ## ✅ UPDATE
+use these statuses for each repository and Me check; the header reflects the worst unresolved
+outcome across both tables, including hooks (❌ before ⚠️ before ✅):
+
+- ✅ completed and verified, or already current. no unnecessary install/build is required for green.
+- ⚠️ required work is held, skipped or unknown, including hooks awaiting trust. name the affected
+  step and next action in its notes; never call an unchecked step healthy.
+- ❌ an operation failed and remains unresolved. preserve successful earlier phases in the result.
+
+an intentionally disabled job, absent optional plugin or lack of hooks is not a warning. show
+`— skipped / absent` or `— none` where applicable without implying installation or trust.
+routine advice about existing chats retaining earlier context does not downgrade success.
+if a permitted retry resolves a failure and verifies the result, report the final status and briefly
+note recovery. these reporting rules do not authorize retries or bypass holds or denials.
+
+use the existing helper results: `unchanged` verifies the cache was already aligned; `refreshed`
+verifies it after repair; `prepared` confirms dependency/build work only. distinguish source changes
+from installed results and identify the actual failed phase (`prepare-failed`, `install-failed`,
+`cache-failed`, `verify-failed`, `check-blocked` or link hold). do not add duplicate verification.
+
+report hooks per repository: `✅ trusted` after verified trust, `✅ unchanged` when existing trusted
+definitions and handlers did not change, `⚠️ trust needed`, `⚠️ unknown`, or `— none` when absent.
+the repository status includes its hook outcome. Me check notes retain setup, native automation
+and intake/pickup findings, including anything held or unchecked. use actual outcomes rather than
+copying the example's healthy rows:
+
+> ## ✅ UPDATE · RUN RESULTS
 >
 > **instance:** `readable instance name` · YYYY-MM-DD
 >
-> | repository   | source / commit            | dependencies / build | Codex plugin / cache |
-> | :----------- | :------------------------- | :------------------- | :------------------- |
-> | Agent System | updated `before` → `after` | synced               | enabled / aligned    |
-> | Canon        | unchanged `commit`         | installed            | enabled / aligned    |
-> | Me           | unchanged `commit`         | installed            | enabled / aligned    |
+> | repository   | status     | source / installed result                    | hooks        | notes                                                         |
+> | ------------ | ---------- | -------------------------------------------- | ------------ | ------------------------------------------------------------- |
+> | Agent System | ✅ updated | `before` → `after`; build and cache verified | ✅ unchanged | existing chats may retain earlier context; no restart needed. |
+> | Canon        | ✅ current | `commit`; cache aligned                      | — none       | no dependency or build work needed.                           |
+> | Me           | ✅ current | `commit`; cache aligned                      | ✅ unchanged | preserved the local `TASKS.md` edit.                          |
 >
-> **first Doctor:** post-refresh setup, saved automations and persisted intake/pickup findings
->
-> **Install:** declared setup / native automation outcomes and any hold or failure reasons
->
-> **final Doctor:** final readiness findings, including unresolved or unchecked work
->
-> **hooks / loaded context:** actual trust and adoption status
->
-> **attention:** only if needed; state the failed step and next action
+> | me check     | status     | notes                                             |
+> | ------------ | ---------- | ------------------------------------------------- |
+> | first Doctor | ✅ healthy | setup healthy; intake ready; automations aligned. |
+> | Install      | ✅ aligned | no setup or schedule changes needed.              |
+> | final Doctor | ✅ healthy | no remaining drift or pending repairs.            |
