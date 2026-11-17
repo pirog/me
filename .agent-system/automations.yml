@@ -1,12 +1,12 @@
 defaults: &reporting
   runtimes: [codex]
-  group: REPORTS
   model: low
 
 automations:
   - <<: *reporting
     id: update
     display-name: "⬇️ UPDATE"
+    group: REPORTS
     thread:
       name: UPDATES
     schedule:
