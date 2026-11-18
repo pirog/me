@@ -50,12 +50,6 @@ jobs:
       - name: Put prepared scripts on PATH
         shell: bash
         run: echo "$PWD/dist" >> "$GITHUB_PATH"
-      - name: Install Codex CLI 0.169.1
-        shell: bash
-        run: |
-          npm install --global --prefix "$RUNNER_TEMP/codex-cli" @openai/codex@0.169.1
-          echo "$RUNNER_TEMP/codex-cli/bin" >> "$GITHUB_PATH"
-          "$RUNNER_TEMP/codex-cli/bin/codex" --version
       - name: Refresh Homebrew when needed
         shell: bash
         run: HOMEBREW_NO_AUTO_UPDATE= brew update-if-needed
