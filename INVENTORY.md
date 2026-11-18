@@ -71,11 +71,11 @@ the installed plugin must expose them before the bound workspace selects them. s
 
 ## automations
 
-| work                                   | source and purpose                                                                                            |
-| -------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| issue assignments                      | Agent System creates intake from `github.issue-assignment` policy; activate and reconcile it through Install. |
-| [`⬇️ UPDATE`](./references/updates.md) | safe updates to Agent System, Canon, and Me at 23:00 local time, with a status card in `REPORTS` / `UPDATES`. |
-| `smoke-test`                           | disabled; a 15-minute schedule for an explicitly authorized validation window.                                |
+| work                                          | source and purpose                                                                                                                         |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| issue assignments                             | Agent System creates intake from `github.issue-assignment` policy; activate and reconcile it through Install.                              |
+| [`⬇️ SYSTEM UPDATE`](./references/updates.md) | safe updates to Agent System, Canon, and Me at 23:00 local time, with a verdict and installed-state report in `REPORTS` / `SYSTEM UPDATE`. |
+| `smoke-test`                                  | disabled; a 15-minute schedule for an explicitly authorized validation window.                                                             |
 
 edit [automation settings](./.agent-system/automations.yml) or their [prompts](./prompts/).
 the [profile](./.agent-system/agent.yaml) references those settings, but issue intake is generated
