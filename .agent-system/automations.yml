@@ -4,11 +4,11 @@ defaults: &reporting
 
 automations:
   - <<: *reporting
-    id: update
-    display-name: "⬇️ UPDATE"
+    id: system-update
+    display-name: "⬇️ SYSTEM UPDATE"
     group: REPORTS
     thread:
-      name: UPDATES
+      name: SYSTEM UPDATE
     schedule:
       cron: "0 23 * * *"
     prompt:

@@ -1,8 +1,8 @@
 # updates
 
-`⬇️ UPDATE` runs at 23:00 local time on each Codex installation where Agent
-System Install has activated the declaration. its persistent chat is `UPDATES` in
-`REPORTS`; section and chat names contain no emoji. its cadence-neutral automation ID is `update`.
+`⬇️ SYSTEM UPDATE` runs at 23:00 local time on each Codex installation where Agent
+System Install has activated the declaration. its persistent chat is `SYSTEM UPDATE` in
+`REPORTS`. the automation ID is `system-update`.
 this remains Me's prompt-backed Codex refresh; OpenClaw command jobs own their separate execution
 and report delivery. use the current trusted Me binding and runtime routes; never save a machine-specific
 home, UUID, or versioned runtime path in the prompt. use `instanceRuntime inspect` for the readable
@@ -65,7 +65,7 @@ instance name shown in the card.
 
    check inputs before running each command. verify the plugin arguments against the
    expected merged declaration. allow edits outside what the operation consumes. a local
-   UPDATE prompt edit can hold Me's plugin payload and schedule work while Canon and
+   update prompt edit can hold Me's plugin payload and schedule work while Canon and
    Agent System remain eligible. keep `TASKS.md` out of these checks. verify local edits
    and staging remain preserved after each operation.
 
@@ -146,49 +146,146 @@ testing belongs to an explicitly requested change or validation task.
 
 ## report
 
-return one concise Markdown quote block in `REPORTS` / `UPDATES` after every run, including unchanged
-days. use the two tables below in one card: repository outcomes with their own hooks and notes,
-then `me check` for first Doctor, Install and final Doctor. use the readable instance name,
-local occurrence date and actual short commits. keep notes beside the affected entry rather than
-adding a separate attention or hooks footer.
+return two separate Markdown blockquotes in `REPORTS` / `SYSTEM UPDATE` after every run, including
+unchanged, incomplete, and failed runs. separate them with a blank line outside the quotes.
 
-use these statuses for each repository and Me check; the header reflects the worst unresolved
-outcome across both tables, including hooks (❌ before ⚠️ before ✅):
+### verdict card
 
-- ✅ completed and verified, or already current. no unnecessary install/build is required for green.
-- ⚠️ required work is held, skipped or unknown, including hooks awaiting trust. name the affected
-  step and next action in its notes; never call an unchecked step healthy.
-- ❌ an operation failed and remains unresolved. preserve successful earlier phases in the result.
+keep all eight rows together in the order shown below. use a status emoji and a short result for
+each check. keep versions, paths and phase details in the status report.
 
-an intentionally disabled job, absent optional plugin or lack of hooks is not a warning. show
-`— skipped / absent` or `— none` where applicable without implying installation or trust.
-routine advice about existing chats retaining earlier context does not downgrade success.
-if a permitted retry resolves a failure and verifies the result, report the final status and briefly
-note recovery. these reporting rules do not authorize retries or bypass holds or denials.
+- `❌ SYSTEM UPDATE · FAILED` if any required operation failed and remains unresolved.
+- `⚠️ SYSTEM UPDATE · INCOMPLETE` if required work or evidence is held, skipped, or unverified,
+  including hooks awaiting trust, and no required operation failed.
+- `✅ SYSTEM UPDATE · PASSED` if the required checks completed and were verified, including an
+  already-current installation.
 
-use the existing helper results: `unchanged` verifies the cache was already aligned; `refreshed`
-verifies it after repair; `prepared` confirms dependency/build work only. distinguish source changes
-from installed results and identify the actual failed phase (`prepare-failed`, `install-failed`,
-`cache-failed`, `verify-failed`, `check-blocked` or link hold). do not add duplicate verification.
+use the same precedence for the rows. a verified absent optional plugin, inapplicable dependency,
+intentionally disabled job, or verified lack of hooks does not downgrade the result. use
+`— absent` or `— not applicable` where relevant. if a permitted retry succeeds, use the verified
+final result. include a **Notes** list below the rows only when needed, ordered ❌ errors, ⚠️
+warnings, then ℹ️ information. name the affected check and the next action when there is one.
+recovered failures and routine advice about earlier chat context are informational.
 
-report hooks per repository: `✅ trusted` after verified trust, `✅ unchanged` when existing trusted
-definitions and handlers did not change, `⚠️ trust needed`, `⚠️ unknown`, or `— none` when absent.
-the repository status includes its hook outcome. Me check notes retain setup, native automation
-and intake/pickup findings, including anything held or unchecked. use actual outcomes rather than
-copying the example's healthy rows:
-
-> ## ✅ UPDATE · RUN RESULTS
+> ## ✅ SYSTEM UPDATE · PASSED
 >
-> **instance:** `readable instance name` · YYYY-MM-DD
+> - ✅ **Environment** — verified
+> - ✅ **Dependencies** — verified
+> - ✅ **Dotfiles** — verified
+> - ✅ **Me** — current
+> - ✅ **Agent System** — current
+> - ✅ **Canon** — current
+> - ✅ **Identity** — verified
+> - ✅ **Doctor → Install → Doctor** — completed
+
+### status report
+
+always follow the verdict with exactly one `ℹ️ STATUS REPORT`, regardless of debug. keep every
+section below, using H3 headings and unordered lists with bold field labels. replace the
+placeholders with observed values and preserve successful steps when another step is held or
+fails. report unavailable values as held, failed, unverified, absent, or inapplicable as appropriate.
+keep raw logs and credentials out of both cards.
+
+use the current run's evidence within the existing budget:
+
+- **Environment** — use the trusted binding and instance inspection, the observed OS, and the
+  actual task shell. verify the task shell separately from the login shell setting.
+- **Dependencies** — match the local Homebrew installed inventory to the applicable entries in
+  the bound `Brewfile`. give each applicable brew and cask its own row and observed version.
+  label `codex` as OpenAI Codex CLI and `codex-app` as Codex Desktop. report Me's installed
+  `@tanaab/codex-tools` from its local package metadata. a package range in `package.json`
+  does not verify the installed version.
+- **Dotfiles** — use the Stow setup check and its package set. report the actual source directory
+  and Me source revision. only list packages as verified when the check covers them.
+- **Me**, **Agent System**, and **Canon** — use each verified source root and resulting commit.
+  show an exact tag, a tag plus commit count and short SHA, or a short SHA for an untagged source.
+  compare HEAD to the `origin/main` commit fetched in this run. report aligned, ahead, behind,
+  or diverged where verified, and unverified when the fetch or comparison did not finish.
+  use the installed identity, version, and resolved cache directory from the existing Codex Tools
+  status evidence or its read-only status command after the input safety checks. keep the actual
+  checkout name, including `openclaw-agent-system` in its path.
+- **Identity** — use the verified GitHub login and effective Git author and committer identities.
+  report the verified transport and observed Git signing status. distinguish signing configuration
+  from evidence of a verified signature. no test commit is required.
+- **Doctor and Install** — report the first Doctor, what Install actually reconciled (including
+  an already-aligned result), and the final Doctor's setup, saved-automation alignment, and
+  intake/pickup results. use the owning runtime's readback for those findings. keep a held or failed
+  Install visible even when final Doctor can still verify other work.
+
+reuse the setup helper's results. `unchanged` verifies the cache was already aligned,
+`refreshed` verifies it after repair, and `prepared` confirms dependency/build work only. keep
+source movement separate from cache sync. name the actual failed or held phase
+(`prepare-failed`, `install-failed`, `cache-failed`, `verify-failed`, `check-blocked`, or link
+hold). report hooks where applicable as trusted, unchanged and trusted, trust needed, unknown,
+or none, based on the existing hook review and trust readback. the plugin's verdict row includes
+its hook outcome. reuse evidence already collected, including when the check could only finish
+in part.
+
+> ## ℹ️ STATUS REPORT
 >
-> | repository   | status     | source / installed result                    | hooks        | notes                                                         |
-> | ------------ | ---------- | -------------------------------------------- | ------------ | ------------------------------------------------------------- |
-> | Agent System | ✅ updated | `before` → `after`; build and cache verified | ✅ unchanged | existing chats may retain earlier context; no restart needed. |
-> | Canon        | ✅ current | `commit`; cache aligned                      | — none       | no dependency or build work needed.                           |
-> | Me           | ✅ current | `commit`; cache aligned                      | ✅ unchanged | preserved the local `TASKS.md` edit.                          |
+> ### Environment
 >
-> | me check     | status     | notes                                             |
-> | ------------ | ---------- | ------------------------------------------------- |
-> | first Doctor | ✅ healthy | setup healthy; intake ready; automations aligned. |
-> | Install      | ✅ aligned | no setup or schedule changes needed.              |
-> | final Doctor | ✅ healthy | no remaining drift or pending repairs.            |
+> - **Runtime** standalone Codex
+> - **Instance** `<readable name>`
+> - **OS** `<observed OS and version>`
+> - **Task shell** `<observed shell>`
+> - **Bound Me workspace** `<path>`
+>
+> ### Dependencies
+>
+> - **OpenAI Codex CLI** `<installed version>`
+> - **Codex Desktop** `<installed version>`
+> - **@tanaab/codex-tools** `<installed Me version>`
+> - **Other applicable Brewfile entry** `<installed version, one row per entry>`
+>
+> ### Dotfiles
+>
+> - **Verified Stow packages** `<package names>`
+> - **Source directory** `<path>`
+> - **Me source revision** `<tag or SHA>`
+>
+> ### Me
+>
+> - **Source revision** `<tag or SHA>`
+> - **Fetched origin/main** `<comparison and short SHA>`
+> - **Source directory** `<path>`
+> - **Installed plugin** `<identity and version>`
+> - **Cache directory** `<resolved path>`
+> - **Sync** `<verified outcome>`
+> - **Hooks** `<trust status>`
+>
+> ### Agent System
+>
+> - **Source revision** `<tag or SHA>`
+> - **Fetched origin/main** `<comparison and short SHA>`
+> - **Source directory** `<path to openclaw-agent-system>`
+> - **Installed plugin** `<identity and version>`
+> - **Cache directory** `<resolved path>`
+> - **Sync** `<verified outcome>`
+> - **Hooks** `<trust status>`
+>
+> ### Canon
+>
+> - **Source revision** `<tag or SHA>`
+> - **Fetched origin/main** `<comparison and short SHA>`
+> - **Source directory** `<path>`
+> - **Installed plugin** `<identity and version>`
+> - **Cache directory** `<resolved path>`
+> - **Sync** `<verified outcome>`
+> - **Hooks** `<trust status>`
+>
+> ### Identity
+>
+> - **GitHub login** `<verified login>`
+> - **Git author** `<effective identity>`
+> - **Git committer** `<effective identity>`
+> - **Transport** `<verified transport>`
+> - **Signing** `<observed status>`
+>
+> ### Doctor and Install
+>
+> - **First Doctor** `<setup, saved automations, and intake findings>`
+> - **Install** `<verified reconciliations or reason held or failed>`
+> - **Final Doctor setup** `<outcome>`
+> - **Final Doctor saved automations** `<alignment outcome>`
+> - **Final Doctor intake and pickup** `<readiness outcome>`
