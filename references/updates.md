@@ -146,8 +146,9 @@ testing belongs to an explicitly requested change or validation task.
 
 ## report
 
-return two separate Markdown blockquotes in `REPORTS` / `SYSTEM UPDATE` after every run, including
-unchanged, incomplete, and failed runs. separate them with a blank line outside the quotes.
+return three separate Markdown blockquotes in the order below in `REPORTS` / `SYSTEM UPDATE` after every run, including
+unchanged, incomplete, and failed runs, regardless of debug. separate them with a blank line
+outside the quotes. keep raw logs and credentials out of the cards.
 
 ### verdict card
 
@@ -176,15 +177,43 @@ recovered failures and routine advice about earlier chat context are information
 > - ✅ **Agent System** — current
 > - ✅ **Canon** — current
 > - ✅ **Identity** — verified
-> - ✅ **Doctor → Install → Doctor** — completed
+> - ✅ **Doctor** — healthy
+
+### doctor report
+
+use the final Doctor from the existing Doctor → Install → Doctor run. carry its findings into a
+single blockquote. give each section heading its own status icon and short result. use plain
+bullets with bold labels for individual findings, in declaration order. include the remediation
+Doctor provides for drift or blockers. when the final inspection is unavailable, identify the
+missing findings and reason. keep any unresolved Install failure in the verdict Notes.
+
+> ## 🩺 DOCTOR REPORT
+>
+> ### ✅ Workspace setup — healthy
+>
+> - **brewfile** — `<finding>`
+> - **dotfiles** — `<finding>`
+> - **codex-config** — `<finding>`
+> - **piroplugin** — `<finding>`
+> - **tanaab-plugin** — `<finding>`
+> - **agent-system-plugin** — `<finding>`
+> - **Instance identity** — `<readable name, masked ID and readiness>`
+>
+> ### ✅ Saved automations — aligned, zero pending actions
+>
+> - **`<automation name>`** — `<finding for each current automation>`
+> - **Retired** — `<retirements reported by Doctor, when present>`
+>
+> ### ✅ Issue intake and pickup — ready
+>
+> - **Intake** — `<readiness, recorded assignments and blockers>`
+> - **Pickup** — `<enrollment and native schedule readiness>`
 
 ### status report
 
-always follow the verdict with exactly one `ℹ️ STATUS REPORT`, regardless of debug. keep every
-section below, using H3 headings and unordered lists with bold field labels. replace the
-placeholders with observed values and preserve successful steps when another step is held or
-fails. report unavailable values as held, failed, unverified, absent, or inapplicable as appropriate.
-keep raw logs and credentials out of both cards.
+finish with one `ℹ️ STATUS REPORT`. match each of its seven section headings to the status icon
+and short result on the corresponding verdict row. use plain bullets with bold field labels.
+replace the example values with observed results, including anything held, failed or unverified.
 
 use the current run's evidence within the existing budget:
 
@@ -207,10 +236,6 @@ use the current run's evidence within the existing budget:
 - **Identity** — use the verified GitHub login and effective Git author and committer identities.
   report the verified transport and observed Git signing status. distinguish signing configuration
   from evidence of a verified signature. no test commit is required.
-- **Doctor and Install** — report the first Doctor, what Install actually reconciled (including
-  an already-aligned result), and the final Doctor's setup, saved-automation alignment, and
-  intake/pickup results. use the owning runtime's readback for those findings. keep a held or failed
-  Install visible even when final Doctor can still verify other work.
 
 reuse the setup helper's results. `unchanged` verifies the cache was already aligned,
 `refreshed` verifies it after repair, and `prepared` confirms dependency/build work only. keep
@@ -223,7 +248,7 @@ in part.
 
 > ## ℹ️ STATUS REPORT
 >
-> ### Environment
+> ### ✅ Environment — verified
 >
 > - **Runtime** standalone Codex
 > - **Instance** `<readable name>`
@@ -231,20 +256,20 @@ in part.
 > - **Task shell** `<observed shell>`
 > - **Bound Me workspace** `<path>`
 >
-> ### Dependencies
+> ### ✅ Dependencies — verified
 >
 > - **OpenAI Codex CLI** `<installed version>`
 > - **Codex Desktop** `<installed version>`
 > - **@tanaab/codex-tools** `<installed Me version>`
 > - **Other applicable Brewfile entry** `<installed version, one row per entry>`
 >
-> ### Dotfiles
+> ### ✅ Dotfiles — verified
 >
 > - **Verified Stow packages** `<package names>`
 > - **Source directory** `<path>`
 > - **Me source revision** `<tag or SHA>`
 >
-> ### Me
+> ### ✅ Me — current
 >
 > - **Source revision** `<tag or SHA>`
 > - **Fetched origin/main** `<comparison and short SHA>`
@@ -254,7 +279,7 @@ in part.
 > - **Sync** `<verified outcome>`
 > - **Hooks** `<trust status>`
 >
-> ### Agent System
+> ### ✅ Agent System — current
 >
 > - **Source revision** `<tag or SHA>`
 > - **Fetched origin/main** `<comparison and short SHA>`
@@ -264,7 +289,7 @@ in part.
 > - **Sync** `<verified outcome>`
 > - **Hooks** `<trust status>`
 >
-> ### Canon
+> ### ✅ Canon — current
 >
 > - **Source revision** `<tag or SHA>`
 > - **Fetched origin/main** `<comparison and short SHA>`
@@ -274,18 +299,10 @@ in part.
 > - **Sync** `<verified outcome>`
 > - **Hooks** `<trust status>`
 >
-> ### Identity
+> ### ✅ Identity — verified
 >
 > - **GitHub login** `<verified login>`
 > - **Git author** `<effective identity>`
 > - **Git committer** `<effective identity>`
 > - **Transport** `<verified transport>`
 > - **Signing** `<observed status>`
->
-> ### Doctor and Install
->
-> - **First Doctor** `<setup, saved automations, and intake findings>`
-> - **Install** `<verified reconciliations or reason held or failed>`
-> - **Final Doctor setup** `<outcome>`
-> - **Final Doctor saved automations** `<alignment outcome>`
-> - **Final Doctor intake and pickup** `<readiness outcome>`

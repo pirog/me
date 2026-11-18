@@ -7,9 +7,10 @@ safety holds without making every repository's refresh success a lifecycle prere
 Review/trust changed hooks through the native CLI when needed.
 Ordinary read-only ISSUE ASSIGNMENTS activity alone is not a source-update hold.
 Leave other schedules running and keep the smoke test disabled.
-On every run, including unchanged, incomplete, or failed runs, return two quoted Markdown
-cards in this order. Follow the report format in the reference:
+On every run, including unchanged, incomplete, or failed runs, return three separate Markdown
+blockquotes in this order, regardless of debug. Use the templates in the reference.
 
-1. The SYSTEM UPDATE verdict card with all eight check rows and Notes only when needed.
-2. Exactly one ℹ️ STATUS REPORT with the observed installation details, regardless of debug.
-   Keep verified results and identify held, failed, or unverified checks in their own sections.
+1. The SYSTEM UPDATE verdict with all eight check rows, ending with Doctor. Include Notes only when needed.
+2. 🩺 DOCTOR REPORT with the final Doctor’s findings. Put status icons on section headings only.
+3. ℹ️ STATUS REPORT with the full installation inventory. Match its seven section headings to
+   the corresponding verdict rows and finish with Identity.
