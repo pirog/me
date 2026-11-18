@@ -320,7 +320,27 @@ exit 2
       cli,
       '#!/bin/sh\necho \'{"ok":false,"inspection":{"installed":false,"enabled":false}}\'\nexit 1\n',
     );
-    assert.equal(await runSetup(args, { root, home }), 0);
+    const codex = path.join(path.dirname(cli), 'codex');
+    const originalPath = process.env.PATH;
+    process.env.PATH = `${path.dirname(cli)}:${originalPath}`;
+    try {
+      for (const [pluginId, expected] of [
+        ['tanaab@created-by-me-remote', 0],
+        ['tanaab@pirostore', 1],
+      ]) {
+        const inventory = { installed: [{ pluginId, installed: true, version: '0.14.1' }] };
+        await writeFile(
+          codex,
+          `#!/bin/sh\n[ "$*" = "plugin list --json --marketplace=pirostore" ] || exit 2\necho '${JSON.stringify(inventory)}'\n`,
+        );
+        await chmod(codex, 0o755);
+        assert.equal(await runSetup(args, { root, home }), expected);
+      }
+      await writeFile(codex, '#!/bin/sh\nexit 1\n');
+      assert.equal(await runSetup(args, { root, home }), 2);
+    } finally {
+      process.env.PATH = originalPath;
+    }
   });
 
   it('should select the source version through Install before syncing an installed plugin', async () => {
@@ -348,10 +368,14 @@ exit 2
       assert.deepEqual((await readFile(log, 'utf8')).trim().split('\n'), [
         'install',
         root,
+        '--marketplace',
+        'pirostore',
         'cache',
         'sync',
         '--repo-root',
         root,
+        '--marketplace',
+        'pirostore',
       ]);
     } finally {
       process.env.PATH = originalPath;
@@ -463,7 +487,12 @@ exit 2
       'git@github.com:tanaabased/canon.git',
     ]);
     await symlink(path.relative(links, canon), path.join(links, 'tanaab'));
-    await writeFile(path.join(canon, '.installed'), '');
+    const codex = path.join(bin, 'codex');
+    await writeFile(
+      codex,
+      `#!/bin/sh\necho '{"installed":[{"pluginId":"tanaab@pirostore","installed":true,"version":"0.14.1"}]}'\n`,
+    );
+    await chmod(codex, 0o755);
     await symlink(path.relative(links, root), path.join(links, 'piroplugin'));
     await writeFile(path.join(bin, 'bun'), '#!/bin/sh\nexit 0\n');
     await chmod(path.join(bin, 'bun'), 0o755);
