@@ -234,6 +234,7 @@ use the current run's evidence within the existing budget:
   status evidence or its read-only status command after the input safety checks. keep the actual
   checkout name, including `openclaw-agent-system` in its path.
 - **Identity** — use the verified GitHub login and effective Git author and committer identities.
+  copy each identity verbatim into a Markdown code span, preserving the literal `<` and `>` around the email address.
   report the verified transport and observed Git signing status. distinguish signing configuration
   from evidence of a verified signature. no test commit is required.
 
