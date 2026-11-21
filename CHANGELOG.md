@@ -1,5 +1,20 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+### new features
+
+- added private Codex account defaults for `pirog` and `tanaabot` for GitHub and Google. trust Piroplugin's account-policy hooks in `/hooks`. [#133](https://github.com/pirog/me/issues/133) [#171](https://github.com/pirog/me/pull/171)
+- added `SYSTEM UPDATE` to refresh Me, Canon, and Agent System independently, preserve local work, and report installed state. [#160](https://github.com/pirog/me/pull/160) [#163](https://github.com/pirog/me/pull/163) [#193](https://github.com/pirog/me/pull/193)
+
+### bug fixes
+
+- fixed plugin refresh so a retry repairs a home link left missing after Stow fails. [#198](https://github.com/pirog/me/issues/198)
+
+### improvements
+
+- migrated the profile to `github.issue-pickup`, which requires Agent System `v0.10.0` or newer. [#184](https://github.com/pirog/me/pull/184)
+- removed the obsolete `tanaabot` scaffold. its workspace lives in the [tanaabot repository](https://github.com/tanaabased/tanaabot). [#179](https://github.com/pirog/me/pull/179)
+- updated the Codex model profiles to GPT-6.2. [#189](https://github.com/pirog/me/pull/189)
+
 ## v1.0.0 - [October 27, 2026](https://github.com/pirog/me/releases/tag/v1.0.0)
 
 ### new features

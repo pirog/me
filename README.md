@@ -1,31 +1,28 @@
-# `me`
+<h1 align="center">me</h1>
 
 <p align="center">
   <img src="./assets/icon-large-circle.png" alt="pirog" width="180" />
 </p>
 
 <p align="center">
-  <a href="https://github.com/pirog/me/releases"><img src="https://img.shields.io/github/v/release/pirog/me?include_prereleases&sort=semver" alt="Latest release" /></a>
-  <a href="https://app.netlify.com/projects/pirog-boot-me/deploys"><img src="https://api.netlify.com/api/v1/badges/1150311b-5f04-4b40-a722-747abdc6fbf5/deploy-status" alt="Netlify Status" /></a>
-  <img src="https://img.shields.io/badge/macOS-26%2B-111827" alt="macOS 26+" />
-  <img src="https://img.shields.io/badge/Codex-piroplugin-00c88a" alt="Codex plugin: piroplugin" />
+  set up a Mac with pirog's tools and dotfiles, and give Codex pirog's guidance for GitHub-backed work.
 </p>
 
-`me` gives a Mac pirog's tools, dotfiles, habits, and prejudices—and gives Codex a job beyond
-producing agreeable paragraphs. workstation setup and GitHub-backed task work, in one editable profile.
+<p align="center">
+  <a href="https://github.com/pirog/me/releases/latest"><img src="https://img.shields.io/github/v/release/pirog/me?label=STABLE&amp;color=blue" alt="Latest stable release" /></a>
+  <a href="https://github.com/pirog/me/releases"><img src="https://img.shields.io/github/v/release/pirog/me?include_prereleases&amp;sort=date&amp;label=EDGE&amp;color=blue" alt="Latest release including prereleases" /></a>
+  <a href="https://github.com/pirog/me/actions/workflows/pr-examples-tests.yml?query=event%3Apull_request"><img src="https://img.shields.io/github/actions/workflow/status/pirog/me/pr-examples-tests.yml?event=pull_request&amp;label=LEIA" alt="Leia scenario test status" /></a>
+  <a href="https://app.netlify.com/projects/pirog-boot-me/deploys"><img src="https://api.netlify.com/api/v1/badges/1150311b-5f04-4b40-a722-747abdc6fbf5/deploy-status" alt="Netlify bootstrap deployment status" /></a>
+</p>
 
-use it as:
-
-- an [operator profile](#operator-profile) to set up a computer for manual use as pirog.
-- a [Codex binding](#codex-binding) to have Codex work with pirog's guidance and preferences,
-  automate assigned GitHub issue work, and review pull requests on request.
-
-**we recommend using both.**
-
-requires macOS 26 or newer. see [Inventory](./INVENTORY.md) for what ships and
-[Piroboot](./PIROBOOT.md) for bootstrap options.
+<p align="center">
+  <a href="#quickstart"><img src="https://img.shields.io/badge/OS-macOS%2026%2B-6f42c1" alt="Workstation setup for macOS 26 and newer" /></a>
+  <a href="#codex-binding"><img src="https://img.shields.io/badge/CODEX-plugin-6f42c1" alt="Set up the piroplugin Codex plugin" /></a>
+</p>
 
 ## quickstart
+
+workstation setup requires macOS 26 or newer.
 
 for workstation and Codex setup, provide a 1Password service account token and run the hosted
 bootstrap. it installs applications and dotfiles and retrieves the configured private SSH keys:
@@ -102,7 +99,8 @@ Run $agent-system-doctor again and report anything still unresolved.
 paste the prompt you need into Codex, replacing the placeholder:
 
 ```text
-# start or resume an issue without assigning it or enabling scheduled intake
+# start an issue without enabling scheduled intake
+# Task Launch attempts to add you as an assignee
 use $agent-system-task-launch to work on <issue URL>.
 
 # continue an existing same-repository PR
@@ -125,11 +123,17 @@ see the [full cheat sheet](./INVENTORY.md#cheat-sheet) for maintenance and other
 
 ### issue assignments
 
-for automatic pickup, set up assignment intake once, then assign work through GitHub:
+assignment intake starts work when an approved assigner assigns an eligible issue to you. scheduled
+issue pickup can also find and assign eligible issues. pickup in this profile requires
+Agent System `v0.10.0` or newer. on an existing installation, check the
+[Agent System upgrade guide](https://github.com/tanaabased/openclaw-agent-system/blob/main/UPGRADING.md)
+before running Install.
 
-1. configure approved assigners, repository owners, and the workflow mode in the
+to set up assignment intake:
+
+1. configure approved assigners, repository routing, and the workflow mode in the
    [profile](./.agent-system/agent.yaml). see Agent System's
-   [GitHub workflow configuration](https://github.com/tanaabased/openclaw-agent-system/blob/main/MANIFEST.md#github-workflows).
+   [GitHub workflow configuration](https://github.com/tanaabased/openclaw-agent-system/blob/main/channels/github/CONFIG.md).
 2. use `$agent-system-install` to activate and reconcile intake, then `$agent-system-doctor` to
    check saved state. see the [Codex automation contract](https://github.com/tanaabased/openclaw-agent-system/blob/main/CODEX.md#repository-automations)
    for how scheduled jobs are managed.

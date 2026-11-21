@@ -6,6 +6,7 @@ import {
   mkdir,
   readFile,
   readlink,
+  realpath,
   rm,
   symlink,
   writeFile,
@@ -30,6 +31,14 @@ async function stubPluginDependencies(bin, source, scripts = {}) {
   );
 }
 
+async function linkPlugin(links, home, name, source) {
+  const homeLinks = path.join(home, '.codex', 'plugins');
+  const link = path.join(links, name);
+  await mkdir(homeLinks, { recursive: true });
+  await symlink(path.relative(links, source), link);
+  await symlink(path.relative(homeLinks, link), path.join(homeLinks, name));
+}
+
 describe('lib/setup', () => {
   it('should delegate the build-bearing plugin repair to sync once and stamp only successful work', async () => {
     const home = await mkdtemp(path.join(os.tmpdir(), 'me-sync-home-'));
@@ -52,7 +61,7 @@ describe('lib/setup', () => {
       'git@github.com:tanaabased/openclaw-agent-system.git',
     ]);
     await writeFile(path.join(source, '.gitignore'), 'node_modules/\ndist/\n');
-    await symlink(path.relative(links, source), path.join(links, 'agent-system'));
+    await linkPlugin(links, home, 'agent-system', source);
     await stubPluginDependencies(bin, source, {
       sync: `echo build >> '${log}' && mkdir -p dist/codex && echo built > dist/codex/codex-runtime.js`,
     });
@@ -313,7 +322,7 @@ exit 2
       'origin',
       'git@github.com:tanaabased/canon.git',
     ]);
-    await symlink(path.relative(links, source), path.join(links, 'tanaab'));
+    await linkPlugin(links, home, 'tanaab', source);
     await writeFile(
       cli,
       '#!/bin/sh\nif [ "$1" = status ]; then echo \'{"ok":true,"inspection":{"installed":true,"enabled":true}}\'; exit 0; fi\nexit 0\n',
@@ -365,7 +374,7 @@ exit 2
     await mkdir(links, { recursive: true });
     await mkdir(path.dirname(cli), { recursive: true });
     await mkdir(bin);
-    await symlink(path.relative(links, root), path.join(links, 'piroplugin'));
+    await linkPlugin(links, home, 'piroplugin', root);
     await stubPluginDependencies(bin, root);
     await writeFile(
       cli,
@@ -393,34 +402,63 @@ exit 2
     }
   });
 
-  it('should restow only AI links into the supplied home when creating a plugin link', async () => {
+  it('should repair a missing home plugin link after Stow fails', async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), 'me-setup-root-'));
     const home = await mkdtemp(path.join(os.tmpdir(), 'me-setup-home-'));
     const bin = path.join(home, 'bin');
     const cli = path.join(root, 'node_modules', '.bin', 'codex-tools');
     const log = path.join(home, 'stow-args');
+    const link = path.join(root, 'dotfiles', 'ai', '.codex', 'plugins', 'piroplugin');
+    const homeLink = path.join(home, '.codex', 'plugins', 'piroplugin');
     await mkdir(bin);
     await mkdir(path.dirname(cli), { recursive: true });
     await stubPluginDependencies(bin, root);
-    await writeFile(path.join(bin, 'stow'), `#!/bin/sh\nprintf '%s\\n' "$@" > '${log}'\n`);
-    await chmod(path.join(bin, 'stow'), 0o755);
+    await writeFile(
+      path.join(bin, 'stow'),
+      `#!/bin/sh
+if [ ! -e '${log}' ]; then touch '${log}'; exit 1; fi
+printf '%s\\n' "$@" > '${log}'
+ln -s '${link}' '${homeLink}'
+`,
+      { mode: 0o755 },
+    );
     await writeFile(
       cli,
-      '#!/bin/sh\nif [ "$1" = status ]; then echo \'{"inspection":{"installed":true,"enabled":true}}\'; fi\n',
+      '#!/bin/sh\nif [ "$1" = status ]; then echo \'{"ok":true,"inspection":{"installed":true,"enabled":true}}\'; fi\n',
+      { mode: 0o755 },
     );
-    await chmod(cli, 0o755);
     const originalPath = process.env.PATH;
     process.env.PATH = `${bin}:${originalPath}`;
+    const request = ['refresh', 'plugin', 'me', 'piroplugin'];
+    const reports = [];
+    const options = { root, home, report: (code) => reports.push(code) };
     try {
-      assert.equal(await runSetup(['apply', 'plugin', 'me', 'piroplugin'], { root, home }), 0);
+      assert.equal(await runSetup(request, options), 2);
+      assert.ok(reports.includes('link-failed'));
+      assert.equal(path.resolve(path.dirname(link), await readlink(link)), root);
+      await assert.rejects(readlink(homeLink), { code: 'ENOENT' });
+
+      reports.length = 0;
+      assert.equal(await runSetup(request, options), 0);
+      assert.ok(reports.includes('refreshed'));
+      assert.equal(await realpath(homeLink), await realpath(root));
       const args = (await readFile(log, 'utf8')).trim().split('\n');
       assert.equal(args[args.indexOf('--target') + 1], home);
       assert.equal(args.at(-1), 'ai');
       assert.ok(args.includes('--restow'));
       assert.ok(args.includes('--no-folding'));
-      const link = path.join(root, 'dotfiles', 'ai', '.codex', 'plugins', 'piroplugin');
-      assert.equal(path.resolve(path.dirname(link), await readlink(link)), root);
       await assert.rejects(readFile(path.join(home, '.codex', 'config.toml')), { code: 'ENOENT' });
+
+      reports.length = 0;
+      assert.equal(await runSetup(request, options), 0);
+      assert.deepEqual(reports, ['unchanged']);
+
+      await rm(homeLink);
+      await writeFile(homeLink, 'occupied');
+      reports.length = 0;
+      assert.equal(await runSetup(request, options), 2);
+      assert.deepEqual(reports, ['link-blocked']);
+      assert.equal(await readFile(homeLink, 'utf8'), 'occupied');
     } finally {
       process.env.PATH = originalPath;
       await rm(root, { recursive: true });
@@ -437,7 +475,7 @@ exit 2
     await mkdir(links, { recursive: true });
     await mkdir(path.dirname(cli), { recursive: true });
     await mkdir(bin);
-    await symlink(path.relative(links, root), path.join(links, 'piroplugin'));
+    await linkPlugin(links, home, 'piroplugin', root);
     await stubPluginDependencies(bin, root);
     await writeFile(
       cli,
@@ -493,14 +531,14 @@ exit 2
       'origin',
       'git@github.com:tanaabased/canon.git',
     ]);
-    await symlink(path.relative(links, canon), path.join(links, 'tanaab'));
+    await linkPlugin(links, home, 'tanaab', canon);
     const codex = path.join(bin, 'codex');
     await writeFile(
       codex,
       `#!/bin/sh\necho '{"installed":[{"pluginId":"tanaab@pirostore","installed":true,"version":"0.14.1"}]}'\n`,
     );
     await chmod(codex, 0o755);
-    await symlink(path.relative(links, root), path.join(links, 'piroplugin'));
+    await linkPlugin(links, home, 'piroplugin', root);
     await stubPluginDependencies(bin, root);
     await writeFile(
       cli,

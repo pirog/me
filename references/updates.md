@@ -81,9 +81,9 @@ instance name shown in the card.
    dependencies alone are expected. missing or unexpectedly changed prerequisites
    require a hold where their safety cannot be established.
 
-   a missing source link can restow the entire AI package. before running a refresh with a missing link
-   also check Me's `dotfiles/ai`, destination ownership and shared link inputs. a healthy
-   existing link does not require restowing. hold unexpected links or occupied paths.
+   a missing link in Me's `dotfiles/ai` or in `~/.codex/plugins` requires checking the AI package,
+   destination ownership, and shared link inputs before refresh. refresh uses Stow if the home
+   link needs repair. hold unexpected links or occupied paths.
    the helper stops the selected refresh on a blocked check. verify current
    shared prerequisites after a step that could change them. continue to an independent
    eligible peer after a known step-local hold or failure. stop affected work for stale

@@ -28,7 +28,7 @@ read and apply each applicable document before dependent work; reuse complete re
 
 - **Before writing human-facing prose:** read and apply [piro-voice](../voice/SKILL.md).
 - **Before preparing the concise human review:** read and apply the
-  [user-journey editor](https://github.com/tanaabased/openclaw-agent-system/blob/main/skills/issue-assessment/references/user-journey-editor.md)
+  [user-journey editor](https://github.com/tanaabased/openclaw-agent-system/blob/main/skills/task-assessment/references/user-journey-editor.md)
   from the host-discovered Agent System assessment skill installation, as required by step 5.
   if unavailable, preserve the full assessment and report the setup limitation.
 
@@ -83,7 +83,7 @@ read and apply each applicable document before dependent work; reuse complete re
    instruction. do not add a generic "update documentation" step to an implementation plan.
 
 5. prepare the concise human review using Agent System's
-   [user-journey editor](https://github.com/tanaabased/openclaw-agent-system/blob/main/skills/issue-assessment/references/user-journey-editor.md).
+   [user-journey editor](https://github.com/tanaabased/openclaw-agent-system/blob/main/skills/task-assessment/references/user-journey-editor.md).
    read that reference from the host-discovered Agent System assessment skill's installation when
    available; use its isolated helper with a small factual brief and the same selected model/effort.
    apply the editing method only, without invoking the default assessment entry. the editor may change
@@ -111,7 +111,7 @@ and next action. the host retains the complete source and owns any subsequent ha
 ## Bundled Resources
 
 - [shared voice](../voice/SKILL.md): human-facing expression.
-- [Agent System assessment method](https://github.com/tanaabased/openclaw-agent-system/blob/main/skills/issue-assessment/SKILL.md): upstream method and host boundary.
+- [Agent System assessment method](https://github.com/tanaabased/openclaw-agent-system/blob/main/skills/task-assessment/SKILL.md): upstream method and host boundary.
 - `agents/openai.yaml` and `assets/`: native discovery and presentation.
 
 ## Validation
