@@ -141,7 +141,7 @@ use $agent-system-install, then $agent-system-doctor. report anything still unre
 use $agent-system-codex-binding to bind this plugin to /Users/pirog/tanaab/me.
 
 # Codex — start an issue without enabling scheduled intake
-# Task Launch attempts to add you as an assignee
+# Agent System's Task Launch attempts to add you as an assignee
 use $agent-system-task-launch to work on <issue URL>.
 
 # Codex — retire managed work without closing the GitHub issue

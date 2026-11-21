@@ -12,7 +12,6 @@
 ### improvements
 
 - migrated the profile to `github.issue-pickup`, which requires Agent System `v0.10.0` or newer. [#184](https://github.com/pirog/me/pull/184)
-- removed the obsolete `tanaabot` scaffold. its workspace lives in the [tanaabot repository](https://github.com/tanaabased/tanaabot). [#179](https://github.com/pirog/me/pull/179)
 - updated the Codex model profiles to GPT-6.2. [#189](https://github.com/pirog/me/pull/189)
 
 ## v1.0.0 - [October 27, 2026](https://github.com/pirog/me/releases/tag/v1.0.0)

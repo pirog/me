@@ -100,7 +100,7 @@ paste the prompt you need into Codex, replacing the placeholder:
 
 ```text
 # start an issue without enabling scheduled intake
-# Task Launch attempts to add you as an assignee
+# Agent System's Task Launch attempts to add you as an assignee
 use $agent-system-task-launch to work on <issue URL>.
 
 # continue an existing same-repository PR
@@ -126,9 +126,9 @@ see the [full cheat sheet](./INVENTORY.md#cheat-sheet) for maintenance and other
 assignment intake starts work when an approved assigner assigns an eligible issue to you. scheduled
 issue pickup can also find and assign eligible issues. pickup in this profile requires
 Agent System `v0.10.0` or newer. when upgrading from Me `v1.0.0`, update both the Me checkout and
-Agent System before running Install. if you maintain a custom profile, migrate
-`github.allowed-repository-owners` to `github.routing` using the
-[Agent System upgrade guide](https://github.com/tanaabased/openclaw-agent-system/blob/main/UPGRADING.md).
+Agent System before running Install. see the
+[Agent System upgrade guide](https://github.com/tanaabased/openclaw-agent-system/blob/main/UPGRADING.md)
+for version-specific steps.
 
 to set up assignment intake:
 
