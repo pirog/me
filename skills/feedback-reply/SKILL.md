@@ -73,7 +73,7 @@ read and apply each applicable document before dependent work; reuse complete re
 ## Bundled Resources
 
 - [piro-voice](../voice/SKILL.md): the shared voice, including its reviewed source notes and samples.
-- [Agent System composition method](https://github.com/tanaabased/openclaw-agent-system/blob/main/skills/feedback-reply/SKILL.md): upstream event-specific composition and host boundary.
+- [Agent System composition method](https://github.com/tanaabased/openclaw-agent-system/blob/main/skills/github-reply/SKILL.md): upstream event-specific composition and host boundary.
 - `agents/openai.yaml` and `assets/`: native discovery and presentation.
 
 ## Validation

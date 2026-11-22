@@ -14,6 +14,7 @@ const restrictedBuiltinImports = builtinModules
 
 export default defineConfig([
   globalIgnores([
+    '.agent-system/{backups,repositories,worktrees}/',
     '**/node_modules/**',
     '**/temp/**',
     '**/cache/**',

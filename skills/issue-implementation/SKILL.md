@@ -99,7 +99,7 @@ completion, PR delivery, deployment, and merge; only claim what the evidence est
 ## Bundled Resources
 
 - [shared voice](../voice/SKILL.md): human-facing expression.
-- [Agent System implementation method](https://github.com/tanaabased/openclaw-agent-system/blob/main/skills/issue-implementation/SKILL.md): upstream substantive method and host boundary.
+- [Agent System implementation method](https://github.com/tanaabased/openclaw-agent-system/blob/main/skills/task-implementation/SKILL.md): upstream substantive method and host boundary.
 - `agents/openai.yaml` and `assets/`: native discovery and presentation.
 
 ## Validation
