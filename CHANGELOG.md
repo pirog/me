@@ -1,5 +1,7 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+## v1.1.0 - [November 22, 2026](https://github.com/pirog/me/releases/tag/v1.1.0)
+
 ### new features
 
 - added private Codex account defaults for `pirog` and `tanaabot` for GitHub and Google. trust Piroplugin's account-policy hooks in `/hooks`. [#133](https://github.com/pirog/me/issues/133) [#171](https://github.com/pirog/me/pull/171)
