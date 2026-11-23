@@ -1,67 +1,36 @@
 # TASKS
 
-## TANAABOT
+## RELEASES
 
-- separate tanaabot repo?
-  - scaffold
-    - agent-system files and definitions
-    - skills and voice?
-    - readme format
-    - appearance sync can be removed for now
-    - piroboot script?
-    - make into codex plugin as well
-    - dotfiles?
-    - pets for dot appearance?
-    - testing?
-
-  - install script
-    - bootbox
-    - brewfile
-    - dotfiles
-      - AGENTS.md?
-    - ssh
-    - LINUX PATH HANDLING
-    - op environment stuff?
-
-  - sync more automations
-    - cloud automations need to be setup inside the chat
-    - cloud can delegate to dotcomp, codex cloud or mac
-
-  - tailscale benefits?
-  - for review chats where do we store state? github?
-
-- voice customization?
-- gh script and browser login?
-- monday automations redo?
-- artwork updates?
-
-## AGENT SYSTEM
-
-- remove more machinery in 632, why are we storing plans and all of this?
-- confusing guidance accumulates remove stored plans etc?
-- remove old allowed repo owners?
-
-- no articles for smutlord? add as part of russian roullete?
-- investigate backend support (file, redis, db, api?)
-
-- emori
-  - check if work is in scope and if documentation is the least amount possible to achieve goal
-
-- pirog
-  - check if work has introduced unintended blockers or difficulties to the user being able to use agent system to move issues to completion
+- rebuild everything?!
 
 ## REPOS
 
-- @pirog/me
-  - TANAABOT?
-    - morning closeout?
+- @tanaab/smutlord
+  - smutlord more russian? map things liekt that -< omit or without -> no
+  - voice customization?
+  - issue-pickup changes?
 
-  - better plans and reports?
-  - read only email summarizer?
-    - labeling for kids/tanaab/etc
-  - school calender to gcalendar?
+- @tanaab/emori
+  - issue-pickup changes?
+
+- @tanaab/codex-tools
+  - clawhub?
 
 - @tanaab/canon
+  - badges
+  - refactor skills?
+  - skill colors like actions?
+  - code organization?
+    - modules and generixc?
+  - API presentation?
+  - agents.md in skills for requirements?
+  - card headers all uppercase?
+  - card styling for chats?
+  - codex-plugin-author formatting foir codex-tools build?
+  - move optimizer standards into the repo?
+  - code comments lowercase?
+  - update check release
   - other ideas
     - openai platform memories?
     - store historic issues etc?
@@ -69,12 +38,47 @@
     - hosted redis/postgres/etc?
     - codex cloud skill?
 
+- @tanaab/tanaabot
+  - gh script and browser login?
+  - monday automations redo?
+  - artwork updates?
+  - plugin info on status report?
+  - tailscale benefits?
+  - for review chats where do we store state? github?
+
+- @pirog/me
+  - card headers all uppercase?
+  - sync agent.yaml better
+  - make sure local skills are disavled after every sync automation pirog/me?
+  - swarm mode routing stuff?
+  - agent-system stuff on home computer on milestone pirog?
+  - align smoke test emoji etc?
+  - make sure local skills are disavled after every sync automation
+  - TANAABOT?
+    - morning closeout?
+  - better plans and reports?
+  - read only email summarizer?
+    - labeling for kids/tanaab/etc
+  - school calender to gcalendar?
+
 - @tanaab/openclaw-agent-system
-  - 0.10.0
+  - docs?
+  - 0.11.0
     - pr review
     - jev to score model?
     - me
     - later
+    - review flow
+      - agent system design for codex install?
+        - 1password env -> .env for dotfiles?
+      - model delegator per turn?
+      - investigate backend support (file, redis, db, api?)
+
+      - emori
+        - check if work is in scope and if documentation is the least amount possible to achieve goal
+
+      - pirog
+        - check if work has introduced unintended blockers or difficulties to the user being able to use agent system to move issues to completion
 
   - ICEBOX
     - running gateway access warning?
@@ -240,3 +244,10 @@
   - rebase on THEME
   - get blog rolling
     - rss/etc
+
+- @leia
+  - fix broken should declarations
+
+```
+
+```
