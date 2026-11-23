@@ -27,15 +27,23 @@ github:
     - codex
   max-concurrent-items: 5
   routing:
-    - "tanaabased/*"
-    - "pirog/*"
-    - "lando/*"
+    - pirog/me: "39703761-8791-4c82-8012-34d8f0c08c27"
+    - tanaabased/openclaw-agent-system: "39703761-8791-4c82-8012-34d8f0c08c27"
+    - tanaabased/tanaabot: "39703761-8791-4c82-8012-34d8f0c08c27"
+    - "tanaabased/*": swarm
+    - "pirog/*": swarm
+    - "lando/*": swarm
   issue-pickup:
     projects:
+      - repository: pirog/me
+        limit: 1
+        milestone: { number: 3, policy: only }
       - repository: tanaabased/openclaw-agent-system
-        milestone:
-          number: 14
-          policy: only
+        limit: 1
+        milestone: { number: 16, policy: only }
+      - repository: tanaabased/tanaabot
+        limit: 1
+        milestone: { number: 3, policy: only }
   issue-assignment:
     mode: auto
     allowed:
