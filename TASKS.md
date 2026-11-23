@@ -1,65 +1,44 @@
 # TASKS
 
-## RELEASES
+## HOLIDAY WORK
 
-- rebuild everything?!
+- PIROG
+  - investigate codex credits?
+  - canon refactor
+  - Crunchy Bridge?
+  - jev
+  - alpaca?
 
-## REPOS
+  - nonprofit accounts
+    - github?
+    - aws?
 
-- @tanaab/smutlord
-  - smutlord more russian? map things liekt that -< omit or without -> no
-  - voice customization?
-  - issue-pickup changes?
+  - tanaabot
+  - agent system
+  - pirog
 
-- @tanaab/emori
-  - issue-pickup changes?
+- EMORI
+  - temenos
+  - agent system
+  - component-playground
+  - emori
 
-- @tanaab/codex-tools
-  - clawhub?
+- SMUTLORD
+  - bug fixes
+  - smutlord
 
-- @tanaab/canon
-  - badges
-  - refactor skills?
-  - skill colors like actions?
-  - code organization?
-    - modules and generixc?
-  - API presentation?
-  - agents.md in skills for requirements?
-  - card headers all uppercase?
-  - card styling for chats?
-  - codex-plugin-author formatting foir codex-tools build?
-  - move optimizer standards into the repo?
-  - code comments lowercase?
-  - update check release
-  - other ideas
-    - openai platform memories?
-    - store historic issues etc?
-    - agent-system offload intake/task stuff to endpoint or something?
-    - hosted redis/postgres/etc?
-    - codex cloud skill?
+## HOLIDAY PREP
 
-- @tanaab/tanaabot
-  - gh script and browser login?
-  - monday automations redo?
-  - artwork updates?
-  - plugin info on status report?
-  - tailscale benefits?
-  - for review chats where do we store state? github?
-
-- @pirog/me
-  - card headers all uppercase?
-  - sync agent.yaml better
-  - make sure local skills are disavled after every sync automation pirog/me?
-  - swarm mode routing stuff?
-  - agent-system stuff on home computer on milestone pirog?
-  - align smoke test emoji etc?
-  - make sure local skills are disavled after every sync automation
-  - TANAABOT?
-    - morning closeout?
-  - better plans and reports?
-  - read only email summarizer?
-    - labeling for kids/tanaab/etc
-  - school calender to gcalendar?
+- @tanaab/component-playground
+  - better description
+  - redirects
+  - about/project url?
+  - optimizer? project stnadard?
+  - domain setup?
+  - release/trusted pub/netlify/etc
+  - docs/deploy/netlify/build.env?
+  - badges: 34a6ccb8-9d9f-44e7-a5bf-99a47fc54e5f
+  - improved milestone new issues?
 
 - @tanaab/openclaw-agent-system
   - docs?
@@ -73,10 +52,8 @@
         - 1password env -> .env for dotfiles?
       - model delegator per turn?
       - investigate backend support (file, redis, db, api?)
-
       - emori
         - check if work is in scope and if documentation is the least amount possible to achieve goal
-
       - pirog
         - check if work has introduced unintended blockers or difficulties to the user being able to use agent system to move issues to completion
 
@@ -94,7 +71,6 @@
 
 - @tanaab/mmm
   - mmm milestones
-  - jev account/alpaca accounts?
 
 - @tanaab/devtool
   - runtime
@@ -114,25 +90,7 @@
 
   - complete
 
-## AGENTS
-
-- temenos?
-- setup TBD? admin/daily agent, reuse tanaabot?!
-- discord
-
 ## EMORI ISSUES?
-
-- @tanaab/component-playground
-  - better description
-  - redirects
-  - about/project url?
-  - optimizer? project stnadard?
-  - domain setup?
-  - release/trusted pub/netlify/etc
-  - docs/deploy/netlify/build.env?
-  - badges: 34a6ccb8-9d9f-44e7-a5bf-99a47fc54e5f
-
-  - improved milestone new issues?
 
 - @tanaab/agentbox
   - openclaw agentbox plugin?
