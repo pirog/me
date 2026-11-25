@@ -15,6 +15,9 @@ user_paths=()
 if [[ -n "${HOMEBREW_PREFIX:-}" && -d "$HOMEBREW_PREFIX/opt/node@26/bin" ]]; then
   user_paths+=("$HOMEBREW_PREFIX/opt/node@26/bin")
 fi
+if [[ -n "${HOMEBREW_PREFIX:-}" && -d "$HOMEBREW_PREFIX/opt/libpq/bin" ]]; then
+  user_paths+=("$HOMEBREW_PREFIX/opt/libpq/bin")
+fi
 [[ -d "$HOME/.lando/bin" ]] && user_paths+=("$HOME/.lando/bin")
 
 path=($user_paths $path)
