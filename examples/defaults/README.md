@@ -50,6 +50,12 @@ command -v op >/dev/null
 # should satisfy the me payload Brewfile
 brew bundle check --file "$PIROME_PAYLOAD_DIR/Brewfile" --no-upgrade
 
+# should run the libpq client in a fresh login zsh
+zsh -lc '[[ $(command -v psql) == "$(brew --prefix)/opt/libpq/bin/psql" ]] && psql --version'
+
+# should run the libpq client in a fresh interactive zsh
+zsh -ic '[[ $(command -v psql) == "$(brew --prefix)/opt/libpq/bin/psql" ]] && psql --version'
+
 # should protect the ssh directory permissions
 test "$(stat -f '%Lp' "$HOME/.ssh")" = "700"
 
