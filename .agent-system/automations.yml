@@ -15,7 +15,10 @@ automations:
       file: ../prompts/update.md
   - <<: *reporting
     id: smoke-test
+    display-name: "🔥 SMOKE TEST"
     enabled: false
+    thread:
+      name: SMOKE TEST
     schedule: every 15 minutes
     prompt:
       file: ../prompts/smoke-test.md
