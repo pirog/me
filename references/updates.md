@@ -148,8 +148,10 @@ testing belongs to an explicitly requested change or validation task.
 
 return three separate Markdown blockquotes in the order below in `REPORTS` / `SYSTEM UPDATE` after every run, including
 unchanged, incomplete, and failed runs, regardless of debug. separate them with a blank line
-outside the quotes. use uppercase card titles and section labels in every outcome. keep the case
-of status text, finding labels, and literal values. keep raw logs and credentials out of the cards.
+outside the quotes. use ALL CAPS only for each card's opening title, the highest-level heading
+(usually H1 or H2). preserve the author's casing for every later heading, even at the same level.
+this rule applies only to headings: labels, table headers, status values, and identifiers keep
+their own formatting. keep raw logs and credentials out of the cards.
 
 ### verdict card
 
@@ -190,7 +192,7 @@ missing findings and reason. keep any unresolved Install failure in the verdict 
 
 > ## 🩺 DOCTOR REPORT
 >
-> ### ✅ WORKSPACE SETUP — healthy
+> ### ✅ Workspace setup — healthy
 >
 > - **brewfile** — `<finding>`
 > - **dotfiles** — `<finding>`
@@ -200,12 +202,12 @@ missing findings and reason. keep any unresolved Install failure in the verdict 
 > - **agent-system-plugin** — `<finding>`
 > - **Instance identity** — `<readable name, masked ID and readiness>`
 >
-> ### ✅ SAVED AUTOMATIONS — aligned, zero pending actions
+> ### ✅ Saved automations — aligned, zero pending actions
 >
 > - **`<automation name>`** — `<finding for each current automation>`
 > - **Retired** — `<retirements reported by Doctor, when present>`
 >
-> ### ✅ ISSUE INTAKE AND PICKUP — ready
+> ### ✅ Issue intake and pickup — ready
 >
 > - **Intake** — `<readiness, recorded assignments and blockers>`
 > - **Pickup** — `<enrollment and native schedule readiness>`
@@ -250,7 +252,7 @@ in part.
 
 > ## ℹ️ STATUS REPORT
 >
-> ### ✅ ENVIRONMENT — verified
+> ### ✅ Environment — verified
 >
 > - **Runtime** standalone Codex
 > - **Instance** `<readable name>`
@@ -258,20 +260,20 @@ in part.
 > - **Task shell** `<observed shell>`
 > - **Bound Me workspace** `<path>`
 >
-> ### ✅ DEPENDENCIES — verified
+> ### ✅ Dependencies — verified
 >
 > - **OpenAI Codex CLI** `<installed version>`
 > - **Codex Desktop** `<installed version>`
 > - **@tanaab/codex-tools** `<installed Me version>`
 > - **Other applicable Brewfile entry** `<installed version, one row per entry>`
 >
-> ### ✅ DOTFILES — verified
+> ### ✅ Dotfiles — verified
 >
 > - **Verified Stow packages** `<package names>`
 > - **Source directory** `<path>`
 > - **Me source revision** `<tag or SHA>`
 >
-> ### ✅ ME — current
+> ### ✅ Me — current
 >
 > - **Source revision** `<tag or SHA>`
 > - **Fetched origin/main** `<comparison and short SHA>`
@@ -281,7 +283,7 @@ in part.
 > - **Sync** `<verified outcome>`
 > - **Hooks** `<trust status>`
 >
-> ### ✅ AGENT SYSTEM — current
+> ### ✅ Agent System — current
 >
 > - **Source revision** `<tag or SHA>`
 > - **Fetched origin/main** `<comparison and short SHA>`
@@ -291,7 +293,7 @@ in part.
 > - **Sync** `<verified outcome>`
 > - **Hooks** `<trust status>`
 >
-> ### ✅ CANON — current
+> ### ✅ Canon — current
 >
 > - **Source revision** `<tag or SHA>`
 > - **Fetched origin/main** `<comparison and short SHA>`
@@ -301,7 +303,7 @@ in part.
 > - **Sync** `<verified outcome>`
 > - **Hooks** `<trust status>`
 >
-> ### ✅ IDENTITY — verified
+> ### ✅ Identity — verified
 >
 > - **GitHub login** `<verified login>`
 > - **Git author** `<effective identity>`
