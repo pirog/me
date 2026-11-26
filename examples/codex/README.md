@@ -49,23 +49,29 @@ node "$runtime" binding bind --plugin-data "$TMPDIR/plugin-data" --workspace "$G
 node "$runtime" binding inspect --plugin-data "$TMPDIR/plugin-data" \
   | jq -e --arg workspace "$GITHUB_WORKSPACE" '.status == "bound" and .binding.workspaceDir == $workspace and .preview.manifest.status == "valid" and .preview.manifest.agentId == "pirog"'
 
+# should enroll the 1password credential for the bound workspace
+set -o pipefail
+runtime="$(jq -r .cachePath "$TMPDIR/cache.json")/dist/codex/codex-runtime.js"
+node "$runtime" credentials set op --plugin-data "$TMPDIR/plugin-data" --from-env </dev/null \
+  | jq -e '.status == "healthy" and .code == "codex-op-binding-ready"'
+
 # should apply host setup before the configured agent setup steps
 set -o pipefail
 runtime="$(jq -r .cachePath "$TMPDIR/cache.json")/dist/codex/codex-runtime.js"
-RUNNER_DEBUG=1 node "$runtime" setup install --plugin-data "$TMPDIR/plugin-data" \
+env -u OP_SERVICE_ACCOUNT_TOKEN RUNNER_DEBUG=1 node "$runtime" setup install --plugin-data "$TMPDIR/plugin-data" </dev/null \
   | tee "$TMPDIR/setup-install.json" \
   | jq -e 'if .status == "requires-native-app-sync" and [.outcomes[] | select(.component == "setup") | .stepId] == ["brewfile", "dotfiles", "codex-config", "piroplugin", "tanaab-plugin", "agent-system-plugin"] and all(.outcomes[] | select(.component == "setup"); .code == "setup-applied" or .code == "setup-unchanged") and any(.outcomes[]; .component == "instance-identity" and .code == "instance-identity-ready" and (.status == "created" or .status == "unchanged")) then true else error("setup install: \(.)") end'
 
 # should inspect healthy setup with intake awaiting native activation
 set -o pipefail
 runtime="$(jq -r .cachePath "$TMPDIR/cache.json")/dist/codex/codex-runtime.js"
-RUNNER_DEBUG=1 node "$runtime" setup inspect --plugin-data "$TMPDIR/plugin-data" \
+env -u OP_SERVICE_ACCOUNT_TOKEN RUNNER_DEBUG=1 node "$runtime" setup inspect --plugin-data "$TMPDIR/plugin-data" </dev/null \
   | jq -e 'if .status == "inspected" and [.findings[] | select(.component == "setup") | .stepId] == ["brewfile", "dotfiles", "codex-config", "piroplugin", "tanaab-plugin", "agent-system-plugin"] and all(.findings[] | select(.component == "setup"); .component == "setup" and .code == "setup-healthy" and .status == "healthy") and .intake.code == "intake-activation-required" and any(.findings[]; .component == "instance-identity" and .code == "instance-identity-ready" and .status == "healthy") then true else error("setup inspect: \(.)") end'
 
-# should leave repeated setup installation unchanged
+# should reuse the enrolled credential and leave repeated setup installation unchanged
 set -o pipefail
 runtime="$(jq -r .cachePath "$TMPDIR/cache.json")/dist/codex/codex-runtime.js"
-RUNNER_DEBUG=1 node "$runtime" setup install --plugin-data "$TMPDIR/plugin-data" \
+env -u OP_SERVICE_ACCOUNT_TOKEN RUNNER_DEBUG=1 node "$runtime" setup install --plugin-data "$TMPDIR/plugin-data" </dev/null \
   | jq -e 'if .status == "requires-native-app-sync" and [.outcomes[] | select(.component == "setup") | .stepId] == ["brewfile", "dotfiles", "codex-config", "piroplugin", "tanaab-plugin", "agent-system-plugin"] and all(.outcomes[] | select(.component == "setup"); .code == "setup-unchanged") and any(.outcomes[]; .component == "instance-identity" and .code == "instance-identity-ready" and .status == "unchanged") then true else error("setup convergence: \(.)") end'
 
 # should generate configuration through focused setup repair
