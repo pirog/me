@@ -14,6 +14,17 @@ automations:
     prompt:
       file: ../prompts/update.md
   - <<: *reporting
+    id: cloud-canon-skills
+    display-name: "CLOUD CANON SKILLS"
+    group: REPORTS
+    thread:
+      name: CLOUD CANON SKILLS
+    schedule:
+      cron: "30 0 * * *"
+      timezone: America/New_York
+    prompt:
+      file: ../prompts/cloud-canon-skills.md
+  - <<: *reporting
     id: smoke-test
     display-name: "🔥 SMOKE TEST"
     enabled: false
